@@ -1,0 +1,1120 @@
+.code {
+  color: rgb(75, 85, 99);
+}
+
+:root {
+  --color-prettylights-syntax-comment: rgb(156, 163, 175);
+  --color-prettylights-syntax-constant: rgb(55, 65, 81);
+  --color-prettylights-syntax-entity: rgb(17, 24, 39);
+  --color-prettylights-syntax-storage-modifier-import: rgb(55, 65, 81);
+  --color-prettylights-syntax-entity-tag: rgb(17, 24, 39);
+  --color-prettylights-syntax-keyword: rgb(3, 7, 18);
+  --color-prettylights-syntax-string: rgb(31, 41, 55);
+  --color-prettylights-syntax-variable: rgb(75, 85, 99);
+  --color-prettylights-syntax-brackethighlighter-unmatched: #82071e;
+  --color-prettylights-syntax-invalid-illegal-text: #f6f8fa;
+  --color-prettylights-syntax-invalid-illegal-bg: #82071e;
+  --color-prettylights-syntax-carriage-return-text: #f6f8fa;
+  --color-prettylights-syntax-carriage-return-bg: rgb(3, 7, 18);
+  --color-prettylights-syntax-string-regexp: rgb(17, 24, 39);
+  --color-prettylights-syntax-markup-list: #3b2300;
+  --color-prettylights-syntax-markup-heading: #0550ae;
+  --color-prettylights-syntax-markup-italic: rgb(55, 65, 81);
+  --color-prettylights-syntax-markup-bold: rgb(55, 65, 81);
+  --color-prettylights-syntax-markup-deleted-text: #82071e;
+  --color-prettylights-syntax-markup-deleted-bg: #ffebe9;
+  --color-prettylights-syntax-markup-inserted-text: rgb(17, 24, 39);
+  --color-prettylights-syntax-markup-inserted-bg: #dafbe1;
+  --color-prettylights-syntax-markup-changed-text: rgb(75, 85, 99);
+  --color-prettylights-syntax-markup-changed-bg: #ffd8b5;
+  --color-prettylights-syntax-markup-ignored-text: #eaeef2;
+  --color-prettylights-syntax-markup-ignored-bg: #0550ae;
+  --color-prettylights-syntax-meta-diff-range: #8250df;
+  --color-prettylights-syntax-brackethighlighter-angle: #57606a;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #8c959f;
+  --color-prettylights-syntax-constant-other-reference-link: rgb(
+    31,
+    41,
+    55
+  );
+  --color-prettylights-syntax-comment: rgb(156, 163, 175);
+  --color-prettylights-syntax-entity: rgb(17, 24, 39);
+  --color-prettylights-syntax-storage-modifier-import: rgb(55, 65, 81);
+  --color-prettylights-syntax-entity-tag: rgb(17, 24, 39);
+  --color-prettylights-syntax-keyword: rgb(3, 7, 18);
+  --color-prettylights-syntax-string: rgb(31, 41, 55);
+  --color-prettylights-syntax-variable: rgb(75, 85, 99);
+  --color-prettylights-syntax-brackethighlighter-unmatched: #82071e;
+  --color-prettylights-syntax-invalid-illegal-text: #f6f8fa;
+  --color-prettylights-syntax-invalid-illegal-bg: #82071e;
+  --color-prettylights-syntax-carriage-return-text: #f6f8fa;
+  --color-prettylights-syntax-carriage-return-bg: rgb(3, 7, 18);
+  --color-prettylights-syntax-string-regexp: rgb(17, 24, 39);
+  --color-prettylights-syntax-markup-list: #3b2300;
+  --color-prettylights-syntax-markup-heading: #0550ae;
+  --color-prettylights-syntax-markup-italic: rgb(55, 65, 81);
+  --color-prettylights-syntax-markup-bold: rgb(55, 65, 81);
+  --color-prettylights-syntax-markup-deleted-text: #82071e;
+  --color-prettylights-syntax-markup-deleted-bg: #ffebe9;
+  --color-prettylights-syntax-markup-inserted-text: rgb(17, 24, 39);
+  --color-prettylights-syntax-markup-inserted-bg: #dafbe1;
+  --color-prettylights-syntax-markup-changed-text: rgb(75, 85, 99);
+  --color-prettylights-syntax-markup-changed-bg: #ffd8b5;
+  --color-prettylights-syntax-markup-ignored-text: #eaeef2;
+  --color-prettylights-syntax-markup-ignored-bg: #0550ae;
+  --color-prettylights-syntax-meta-diff-range: #8250df;
+  --color-prettylights-syntax-brackethighlighter-angle: #57606a;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #8c959f;
+  --color-prettylights-syntax-constant-other-reference-link: rgb(
+    31,
+    41,
+    55
+  );
+}
+
+.code-vibe-formal.code-tint-gray,
+.code-vibe-formal.code-tint-gray * {
+  color: rgb(75, 85, 99);
+
+  --color-prettylights-syntax-comment: rgb(156, 163, 175);
+  --color-prettylights-syntax-constant: rgb(55, 65, 81);
+  --color-prettylights-syntax-entity: rgb(17, 24, 39);
+  --color-prettylights-syntax-storage-modifier-import: rgb(55, 65, 81);
+  --color-prettylights-syntax-entity-tag: rgb(17, 24, 39);
+  --color-prettylights-syntax-keyword: rgb(3, 7, 18);
+  --color-prettylights-syntax-string: rgb(31, 41, 55);
+  --color-prettylights-syntax-variable: rgb(75, 85, 99);
+  --color-prettylights-syntax-brackethighlighter-unmatched: #82071e;
+  --color-prettylights-syntax-invalid-illegal-text: #f6f8fa;
+  --color-prettylights-syntax-invalid-illegal-bg: #82071e;
+  --color-prettylights-syntax-carriage-return-text: #f6f8fa;
+  --color-prettylights-syntax-carriage-return-bg: rgb(3, 7, 18);
+  --color-prettylights-syntax-string-regexp: rgb(17, 24, 39);
+  --color-prettylights-syntax-markup-list: #3b2300;
+  --color-prettylights-syntax-markup-heading: #0550ae;
+  --color-prettylights-syntax-markup-italic: rgb(55, 65, 81);
+  --color-prettylights-syntax-markup-bold: rgb(55, 65, 81);
+  --color-prettylights-syntax-markup-deleted-text: #82071e;
+  --color-prettylights-syntax-markup-deleted-bg: #ffebe9;
+  --color-prettylights-syntax-markup-inserted-text: rgb(17, 24, 39);
+  --color-prettylights-syntax-markup-inserted-bg: #dafbe1;
+  --color-prettylights-syntax-markup-changed-text: rgb(75, 85, 99);
+  --color-prettylights-syntax-markup-changed-bg: #ffd8b5;
+  --color-prettylights-syntax-markup-ignored-text: #eaeef2;
+  --color-prettylights-syntax-markup-ignored-bg: #0550ae;
+  --color-prettylights-syntax-meta-diff-range: #8250df;
+  --color-prettylights-syntax-brackethighlighter-angle: #57606a;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #8c959f;
+  --color-prettylights-syntax-constant-other-reference-link: rgb(
+    31,
+    41,
+    55
+  );
+  --color-prettylights-syntax-comment: rgb(156, 163, 175);
+  --color-prettylights-syntax-entity: rgb(17, 24, 39);
+  --color-prettylights-syntax-storage-modifier-import: rgb(55, 65, 81);
+  --color-prettylights-syntax-entity-tag: rgb(17, 24, 39);
+  --color-prettylights-syntax-keyword: rgb(3, 7, 18);
+  --color-prettylights-syntax-string: rgb(31, 41, 55);
+  --color-prettylights-syntax-variable: rgb(75, 85, 99);
+  --color-prettylights-syntax-brackethighlighter-unmatched: #82071e;
+  --color-prettylights-syntax-invalid-illegal-text: #f6f8fa;
+  --color-prettylights-syntax-invalid-illegal-bg: #82071e;
+  --color-prettylights-syntax-carriage-return-text: #f6f8fa;
+  --color-prettylights-syntax-carriage-return-bg: rgb(3, 7, 18);
+  --color-prettylights-syntax-string-regexp: rgb(17, 24, 39);
+  --color-prettylights-syntax-markup-list: #3b2300;
+  --color-prettylights-syntax-markup-heading: #0550ae;
+  --color-prettylights-syntax-markup-italic: rgb(55, 65, 81);
+  --color-prettylights-syntax-markup-bold: rgb(55, 65, 81);
+  --color-prettylights-syntax-markup-deleted-text: #82071e;
+  --color-prettylights-syntax-markup-deleted-bg: #ffebe9;
+  --color-prettylights-syntax-markup-inserted-text: rgb(17, 24, 39);
+  --color-prettylights-syntax-markup-inserted-bg: #dafbe1;
+  --color-prettylights-syntax-markup-changed-text: rgb(75, 85, 99);
+  --color-prettylights-syntax-markup-changed-bg: #ffd8b5;
+  --color-prettylights-syntax-markup-ignored-text: #eaeef2;
+  --color-prettylights-syntax-markup-ignored-bg: #0550ae;
+  --color-prettylights-syntax-meta-diff-range: #8250df;
+  --color-prettylights-syntax-brackethighlighter-angle: #57606a;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #8c959f;
+  --color-prettylights-syntax-constant-other-reference-link: rgb(
+    31,
+    41,
+    55
+  );
+}
+
+.code-tint-amber {
+}
+
+.code-tint-emerald {
+}
+
+.code-vibe-formal.code-tint-blue,
+.code-vibe-formal.code-tint-blue * {
+  color: rgb(37, 99, 235);
+
+  --color-prettylights-syntax-comment: rgb(96, 165, 250);
+  --color-prettylights-syntax-constant: rgb(29, 78, 216);
+  --color-prettylights-syntax-entity: rgb(30, 58, 138);
+  --color-prettylights-syntax-storage-modifier-import: rgb(29, 78, 216);
+  --color-prettylights-syntax-entity-tag: rgb(30, 58, 138);
+  --color-prettylights-syntax-keyword: rgb(23, 37, 84);
+  --color-prettylights-syntax-string: rgb(31, 41, 55);
+  --color-prettylights-syntax-variable: rgb(37, 99, 235);
+  --color-prettylights-syntax-brackethighlighter-unmatched: #82071e;
+  --color-prettylights-syntax-invalid-illegal-text: #f6f8fa;
+  --color-prettylights-syntax-invalid-illegal-bg: #82071e;
+  --color-prettylights-syntax-carriage-return-text: #f6f8fa;
+  --color-prettylights-syntax-carriage-return-bg: rgb(23, 37, 84);
+  --color-prettylights-syntax-string-regexp: rgb(30, 58, 138);
+  --color-prettylights-syntax-markup-list: #3b2300;
+  --color-prettylights-syntax-markup-heading: #0550ae;
+  --color-prettylights-syntax-markup-italic: rgb(29, 78, 216);
+  --color-prettylights-syntax-markup-bold: rgb(29, 78, 216);
+  --color-prettylights-syntax-markup-deleted-text: #82071e;
+  --color-prettylights-syntax-markup-deleted-bg: #ffebe9;
+  --color-prettylights-syntax-markup-inserted-text: rgb(30, 58, 138);
+  --color-prettylights-syntax-markup-inserted-bg: #dafbe1;
+  --color-prettylights-syntax-markup-changed-text: rgb(37, 99, 235);
+  --color-prettylights-syntax-markup-changed-bg: #ffd8b5;
+  --color-prettylights-syntax-markup-ignored-text: #eaeef2;
+  --color-prettylights-syntax-markup-ignored-bg: #0550ae;
+  --color-prettylights-syntax-meta-diff-range: #8250df;
+  --color-prettylights-syntax-brackethighlighter-angle: #57606a;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #8c959f;
+  --color-prettylights-syntax-constant-other-reference-link: rgb(
+    31,
+    41,
+    55
+  );
+  --color-prettylights-syntax-comment: rgb(96, 165, 250);
+  --color-prettylights-syntax-entity: rgb(30, 58, 138);
+  --color-prettylights-syntax-storage-modifier-import: rgb(29, 78, 216);
+  --color-prettylights-syntax-entity-tag: rgb(30, 58, 138);
+  --color-prettylights-syntax-keyword: rgb(23, 37, 84);
+  --color-prettylights-syntax-string: rgb(31, 41, 55);
+  --color-prettylights-syntax-variable: rgb(37, 99, 235);
+  --color-prettylights-syntax-brackethighlighter-unmatched: #82071e;
+  --color-prettylights-syntax-invalid-illegal-text: #f6f8fa;
+  --color-prettylights-syntax-invalid-illegal-bg: #82071e;
+  --color-prettylights-syntax-carriage-return-text: #f6f8fa;
+  --color-prettylights-syntax-carriage-return-bg: rgb(23, 37, 84);
+  --color-prettylights-syntax-string-regexp: rgb(30, 58, 138);
+  --color-prettylights-syntax-markup-list: #3b2300;
+  --color-prettylights-syntax-markup-heading: #0550ae;
+  --color-prettylights-syntax-markup-italic: rgb(29, 78, 216);
+  --color-prettylights-syntax-markup-bold: rgb(29, 78, 216);
+  --color-prettylights-syntax-markup-deleted-text: #82071e;
+  --color-prettylights-syntax-markup-deleted-bg: #ffebe9;
+  --color-prettylights-syntax-markup-inserted-text: rgb(30, 58, 138);
+  --color-prettylights-syntax-markup-inserted-bg: #dafbe1;
+  --color-prettylights-syntax-markup-changed-text: rgb(37, 99, 235);
+  --color-prettylights-syntax-markup-changed-bg: #ffd8b5;
+  --color-prettylights-syntax-markup-ignored-text: #eaeef2;
+  --color-prettylights-syntax-markup-ignored-bg: #0550ae;
+  --color-prettylights-syntax-meta-diff-range: #8250df;
+  --color-prettylights-syntax-brackethighlighter-angle: #57606a;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #8c959f;
+  --color-prettylights-syntax-constant-other-reference-link: rgb(
+    31,
+    41,
+    55
+  );
+}
+
+.code-tint-violet {
+}
+
+.code-tint-pink {
+}
+
+.code-tint-rose {
+  --color-prettylights-syntax-comment: rgb(96, 165, 250);
+  --color-prettylights-syntax-constant: #0550ae;
+  --color-prettylights-syntax-entity: #6639ba;
+  --color-prettylights-syntax-storage-modifier-import: #24292f;
+  --color-prettylights-syntax-entity-tag: #116329;
+  --color-prettylights-syntax-keyword: #cf222e;
+  --color-prettylights-syntax-string: #0a3069;
+  --color-prettylights-syntax-variable: #953800;
+  --color-prettylights-syntax-brackethighlighter-unmatched: #82071e;
+  --color-prettylights-syntax-invalid-illegal-text: #f6f8fa;
+  --color-prettylights-syntax-invalid-illegal-bg: #82071e;
+  --color-prettylights-syntax-carriage-return-text: #f6f8fa;
+  --color-prettylights-syntax-carriage-return-bg: #cf222e;
+  --color-prettylights-syntax-string-regexp: #116329;
+  --color-prettylights-syntax-markup-list: #3b2300;
+  --color-prettylights-syntax-markup-heading: #0550ae;
+  --color-prettylights-syntax-markup-italic: #24292f;
+  --color-prettylights-syntax-markup-bold: #24292f;
+  --color-prettylights-syntax-markup-deleted-text: #82071e;
+  --color-prettylights-syntax-markup-deleted-bg: #ffebe9;
+  --color-prettylights-syntax-markup-inserted-text: #116329;
+  --color-prettylights-syntax-markup-inserted-bg: #dafbe1;
+  --color-prettylights-syntax-markup-changed-text: #953800;
+  --color-prettylights-syntax-markup-changed-bg: #ffd8b5;
+  --color-prettylights-syntax-markup-ignored-text: #eaeef2;
+  --color-prettylights-syntax-markup-ignored-bg: #0550ae;
+  --color-prettylights-syntax-meta-diff-range: #8250df;
+  --color-prettylights-syntax-brackethighlighter-angle: #57606a;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #8c959f;
+  --color-prettylights-syntax-constant-other-reference-link: #0a3069;
+  --color-prettylights-syntax-comment: #6e7781;
+  --color-prettylights-syntax-constant: #0550ae;
+  --color-prettylights-syntax-entity: #6639ba;
+  --color-prettylights-syntax-storage-modifier-import: #24292f;
+  --color-prettylights-syntax-entity-tag: #116329;
+  --color-prettylights-syntax-keyword: #cf222e;
+  --color-prettylights-syntax-string: #0a3069;
+  --color-prettylights-syntax-variable: #953800;
+  --color-prettylights-syntax-brackethighlighter-unmatched: #82071e;
+  --color-prettylights-syntax-invalid-illegal-text: #f6f8fa;
+  --color-prettylights-syntax-invalid-illegal-bg: #82071e;
+  --color-prettylights-syntax-carriage-return-text: #f6f8fa;
+  --color-prettylights-syntax-carriage-return-bg: #cf222e;
+  --color-prettylights-syntax-string-regexp: #116329;
+  --color-prettylights-syntax-markup-list: #3b2300;
+  --color-prettylights-syntax-markup-heading: #0550ae;
+  --color-prettylights-syntax-markup-italic: #24292f;
+  --color-prettylights-syntax-markup-bold: #24292f;
+  --color-prettylights-syntax-markup-deleted-text: #82071e;
+  --color-prettylights-syntax-markup-deleted-bg: #ffebe9;
+  --color-prettylights-syntax-markup-inserted-text: #116329;
+  --color-prettylights-syntax-markup-inserted-bg: #dafbe1;
+  --color-prettylights-syntax-markup-changed-text: #953800;
+  --color-prettylights-syntax-markup-changed-bg: #ffd8b5;
+  --color-prettylights-syntax-markup-ignored-text: #eaeef2;
+  --color-prettylights-syntax-markup-ignored-bg: #0550ae;
+  --color-prettylights-syntax-meta-diff-range: #8250df;
+  --color-prettylights-syntax-brackethighlighter-angle: #57606a;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #8c959f;
+  --color-prettylights-syntax-constant-other-reference-link: #0a3069;
+}
+
+.pl-c {
+  color: var(--color-prettylights-syntax-comment);
+  font-style: italic;
+}
+
+.pl-c1,
+.pl-s .pl-v {
+  color: var(--color-prettylights-syntax-constant);
+  font-weight: bold;
+}
+
+.pl-e,
+.pl-en {
+  color: var(--color-prettylights-syntax-entity);
+  font-weight: bold;
+}
+
+.pl-smi,
+.pl-s .pl-s1 {
+  color: var(--color-prettylights-syntax-storage-modifier-import);
+}
+
+.pl-ent {
+  color: var(--color-prettylights-syntax-entity-tag);
+  font-weight: bold;
+}
+
+.pl-k {
+  color: var(--color-prettylights-syntax-keyword);
+  font-weight: bold;
+}
+
+.pl-s,
+.pl-pds,
+.pl-s .pl-pse .pl-s1,
+.pl-sr,
+.pl-sr .pl-cce,
+.pl-sr .pl-sre,
+.pl-sr .pl-sra {
+  color: var(--color-prettylights-syntax-string);
+  font-weight: bold;
+}
+
+.pl-v,
+.pl-smw {
+  color: var(--color-prettylights-syntax-variable);
+}
+
+.pl-bu {
+  color: var(--color-prettylights-syntax-brackethighlighter-unmatched);
+}
+
+.pl-ii {
+  color: var(--color-prettylights-syntax-invalid-illegal-text);
+  background-color: var(--color-prettylights-syntax-invalid-illegal-bg);
+}
+
+.pl-c2 {
+  color: var(--color-prettylights-syntax-carriage-return-text);
+  background-color: var(--color-prettylights-syntax-carriage-return-bg);
+}
+
+.pl-sr .pl-cce {
+  font-weight: bold;
+  color: var(--color-prettylights-syntax-string-regexp);
+}
+
+.pl-ml {
+  color: var(--color-prettylights-syntax-markup-list);
+}
+
+.pl-mh,
+.pl-mh .pl-en,
+.pl-ms {
+  font-weight: bold;
+  color: var(--color-prettylights-syntax-markup-heading);
+}
+
+.pl-mi {
+  font-style: italic;
+  color: var(--color-prettylights-syntax-markup-italic);
+}
+
+.pl-mb {
+  font-weight: bold;
+  color: var(--color-prettylights-syntax-markup-bold);
+}
+
+.pl-md {
+  color: var(--color-prettylights-syntax-markup-deleted-text);
+  background-color: var(--color-prettylights-syntax-markup-deleted-bg);
+}
+
+.pl-mi1 {
+  color: var(--color-prettylights-syntax-markup-inserted-text);
+  background-color: var(--color-prettylights-syntax-markup-inserted-bg);
+}
+
+.pl-mc {
+  color: var(--color-prettylights-syntax-markup-changed-text);
+  background-color: var(--color-prettylights-syntax-markup-changed-bg);
+}
+
+.pl-mi2 {
+  color: var(--color-prettylights-syntax-markup-ignored-text);
+  background-color: var(--color-prettylights-syntax-markup-ignored-bg);
+}
+
+.pl-mdr {
+  font-weight: bold;
+  color: var(--color-prettylights-syntax-meta-diff-range);
+}
+
+.pl-ba {
+  color: var(--color-prettylights-syntax-brackethighlighter-angle);
+}
+
+.pl-sg {
+  color: var(--color-prettylights-syntax-sublimelinter-gutter-mark);
+}
+
+.pl-corl {
+  text-decoration: underline;
+  color: var(--color-prettylights-syntax-constant-other-reference-link);
+}
+
+.code-vibe-formal * {
+  font-family: ComputerModernTypewriter;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.code-vibe-formal .pl-c {
+  font-style: italic;
+  font-family: ComputerModernTypewriterItalic;
+}
+
+.code-vibe-formal .pl-c1,
+.code-vibe-formal .pl-s .pl-v {
+  font-weight: bold;
+  font-family: ComputerModernTypewriterBold;
+  font-style: normal;
+}
+
+.code-vibe-formal .pl-e,
+.code-vibe-formal .pl-en {
+  font-weight: bold;
+  font-family: ComputerModernTypewriterBold;
+  font-style: normal;
+}
+
+.code-vibe-formal .pl-ent {
+  font-weight: bold;
+  font-family: ComputerModernTypewriterBold;
+  font-style: normal;
+}
+
+.code-vibe-formal .pl-k {
+  font-weight: bold;
+  font-family: ComputerModernTypewriterBold;
+  font-style: normal;
+}
+
+.code-vibe-formal .pl-s,
+.code-vibe-formal .pl-pds,
+.code-vibe-formal .pl-s .pl-pse .pl-s1,
+.code-vibe-formal .pl-sr,
+.code-vibe-formal .pl-sr .pl-cce,
+.code-vibe-formal .pl-sr .pl-sre,
+.code-vibe-formal .pl-sr .pl-sra {
+  font-weight: bold;
+  font-family: ComputerModernTypewriterBold;
+  font-style: normal;
+}
+
+.code-vibe-formal .pl-sr .pl-cce {
+  font-weight: bold;
+  font-family: ComputerModernTypewriterBold;
+  font-style: normal;
+}
+
+.code-vibe-formal .pl-mh,
+.code-vibe-formal .pl-mh .pl-en,
+.code-vibe-formal .pl-ms {
+  font-weight: bold;
+  font-family: ComputerModernTypewriterBold;
+  font-style: normal;
+}
+
+.code-vibe-formal .pl-mi {
+  font-style: italic;
+  font-family: ComputerModernTypewriterItalic;
+}
+
+.code-vibe-formal .pl-mb {
+  font-weight: bold;
+  font-family: ComputerModernTypewriterBold;
+  font-style: normal;
+}
+
+.code-vibe-formal .pl-mdr {
+  font-weight: bold;
+  font-family: ComputerModernTypewriterBold;
+  font-style: normal;
+}
+
+/*
+
+.code-vibe-elemental * {
+  font-family: Hermit;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-c {
+  font-style: italic;
+  font-family: HermitItalic;
+}
+
+.code-vibe-elemental .pl-c1,
+.code-vibe-elemental .pl-s .pl-v {
+  font-weight: bold;
+  font-family: HermitBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-e,
+.code-vibe-elemental .pl-en {
+  font-weight: bold;
+  font-family: HermitBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-ent {
+  font-weight: bold;
+  font-family: HermitBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-k {
+  font-weight: bold;
+  font-family: HermitBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-s,
+.code-vibe-elemental .pl-pds,
+.code-vibe-elemental .pl-s .pl-pse .pl-s1,
+.code-vibe-elemental .pl-sr,
+.code-vibe-elemental .pl-sr .pl-cce,
+.code-vibe-elemental .pl-sr .pl-sre,
+.code-vibe-elemental .pl-sr .pl-sra {
+  font-weight: bold;
+  font-family: HermitBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-sr .pl-cce {
+  font-weight: bold;
+  font-family: HermitBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-mh,
+.code-vibe-elemental .pl-mh .pl-en,
+.code-vibe-elemental .pl-ms {
+  font-weight: bold;
+  font-family: HermitBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-mi {
+  font-style: italic;
+  font-family: HermitItalic;
+}
+
+.code-vibe-elemental .pl-mb {
+  font-weight: bold;
+  font-family: HermitBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-mdr {
+  font-weight: bold;
+  font-family: HermitBold;
+  font-style: normal;
+} */
+
+/* Elemental */
+/*
+.code-vibe-elemental * {
+  font-family: JuliaMono;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-c {
+  font-style: italic;
+  font-family: JuliaMonoItalic;
+}
+
+.code-vibe-elemental .pl-c1,
+.code-vibe-elemental .pl-s .pl-v {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-e,
+.code-vibe-elemental .pl-en {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-ent {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-k {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-s,
+.code-vibe-elemental .pl-pds,
+.code-vibe-elemental .pl-s .pl-pse .pl-s1,
+.code-vibe-elemental .pl-sr,
+.code-vibe-elemental .pl-sr .pl-cce,
+.code-vibe-elemental .pl-sr .pl-sre,
+.code-vibe-elemental .pl-sr .pl-sra {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-sr .pl-cce {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-mh,
+.code-vibe-elemental .pl-mh .pl-en,
+.code-vibe-elemental .pl-ms {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-mi {
+  font-style: italic;
+  font-family: JuliaMonoItalic;
+}
+
+.code-vibe-elemental .pl-mb {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-mdr {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+} */
+
+.code-vibe-elemental * {
+  font-family: TwilioSansMono;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-c {
+  font-style: italic;
+  font-family: TwilioSansMonoItalic;
+}
+
+.code-vibe-elemental .pl-c1,
+.code-vibe-elemental .pl-s .pl-v {
+  font-weight: bold;
+  font-family: TwilioSansMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-e,
+.code-vibe-elemental .pl-en {
+  font-weight: bold;
+  font-family: TwilioSansMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-ent {
+  font-weight: bold;
+  font-family: TwilioSansMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-k {
+  font-weight: bold;
+  font-family: TwilioSansMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-s,
+.code-vibe-elemental .pl-pds,
+.code-vibe-elemental .pl-s .pl-pse .pl-s1,
+.code-vibe-elemental .pl-sr,
+.code-vibe-elemental .pl-sr .pl-cce,
+.code-vibe-elemental .pl-sr .pl-sre,
+.code-vibe-elemental .pl-sr .pl-sra {
+  font-weight: bold;
+  font-family: TwilioSansMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-sr .pl-cce {
+  font-weight: bold;
+  font-family: TwilioSansMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-mh,
+.code-vibe-elemental .pl-mh .pl-en,
+.code-vibe-elemental .pl-ms {
+  font-weight: bold;
+  font-family: TwilioSansMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-mi {
+  font-style: italic;
+  font-family: TwilioSansMonoItalic;
+}
+
+.code-vibe-elemental .pl-mb {
+  font-weight: bold;
+  font-family: TwilioSansMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-elemental .pl-mdr {
+  font-weight: bold;
+  font-family: TwilioSansMonoBold;
+  font-style: normal;
+}
+
+/* calm */
+
+.code-vibe-calm.code-tint-gray {
+  background: rgb(249, 250, 251);
+}
+
+.code-vibe-calm.code-tint-blue {
+  background: rgb(239, 246, 255);
+}
+
+.code-vibe-calm.code-tint-violet {
+  background: rgb(245, 243, 255);
+}
+
+.code-vibe-calm * {
+  font-family: JuliaMono;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.code-vibe-calm .pl-c {
+  font-style: italic;
+  font-family: JuliaMonoItalic;
+}
+
+.code-vibe-calm .pl-c1,
+.code-vibe-calm .pl-s .pl-v {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-calm .pl-e,
+.code-vibe-calm .pl-en {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-calm .pl-ent {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-calm .pl-k {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-calm .pl-s,
+.code-vibe-calm .pl-pds,
+.code-vibe-calm .pl-s .pl-pse .pl-s1,
+.code-vibe-calm .pl-sr,
+.code-vibe-calm .pl-sr .pl-cce,
+.code-vibe-calm .pl-sr .pl-sre,
+.code-vibe-calm .pl-sr .pl-sra {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-calm .pl-sr .pl-cce {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-calm .pl-mh,
+.code-vibe-calm .pl-mh .pl-en,
+.code-vibe-calm .pl-ms {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-calm .pl-mi {
+  font-style: italic;
+  font-family: JuliaMonoItalic;
+}
+
+.code-vibe-calm .pl-mb {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-calm .pl-mdr {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+/* pleasant */
+
+.code-vibe-pleasant.code-tint-gray {
+  background: rgb(249, 250, 251);
+}
+
+.code-vibe-pleasant.code-tint-blue {
+  background: rgb(239, 246, 255);
+}
+
+.code-vibe-pleasant.code-tint-violet {
+  background: rgb(245, 243, 255);
+}
+
+.code-vibe-pleasant * {
+  font-family: JuliaMono;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.code-vibe-pleasant .pl-c {
+  font-style: italic;
+  font-family: JuliaMonoItalic;
+}
+
+.code-vibe-pleasant .pl-c1,
+.code-vibe-pleasant .pl-s .pl-v {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-pleasant .pl-e,
+.code-vibe-pleasant .pl-en {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-pleasant .pl-ent {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-pleasant .pl-k {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-pleasant .pl-s,
+.code-vibe-pleasant .pl-pds,
+.code-vibe-pleasant .pl-s .pl-pse .pl-s1,
+.code-vibe-pleasant .pl-sr,
+.code-vibe-pleasant .pl-sr .pl-cce,
+.code-vibe-pleasant .pl-sr .pl-sre,
+.code-vibe-pleasant .pl-sr .pl-sra {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-pleasant .pl-sr .pl-cce {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-pleasant .pl-mh,
+.code-vibe-pleasant .pl-mh .pl-en,
+.code-vibe-pleasant .pl-ms {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-pleasant .pl-mi {
+  font-style: italic;
+  font-family: JuliaMonoItalic;
+}
+
+.code-vibe-pleasant .pl-mb {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+.code-vibe-pleasant .pl-mdr {
+  font-weight: bold;
+  font-family: JuliaMonoBold;
+  font-style: normal;
+}
+
+/* contemporary */
+
+.code-vibe-contemporary.code-tint-gray {
+  background: rgb(249, 250, 251);
+}
+
+.code-vibe-contemporary.code-tint-blue {
+  background: rgb(239, 246, 255);
+}
+
+.code-vibe-contemporary.code-tint-violet {
+  background: rgb(245, 243, 255);
+}
+
+.code-vibe-contemporary * {
+  font-family: 'Roboto Mono';
+  font-weight: normal;
+  font-style: normal;
+}
+
+.code-vibe-contemporary .pl-c {
+  font-style: italic;
+  font-family: 'Roboto Mono';
+}
+
+.code-vibe-contemporary .pl-c1,
+.code-vibe-contemporary .pl-s .pl-v {
+  font-weight: bold;
+  font-family: 'Roboto Mono';
+  font-style: normal;
+}
+
+.code-vibe-contemporary .pl-e,
+.code-vibe-contemporary .pl-en {
+  font-weight: bold;
+  font-family: 'Roboto Mono';
+  font-style: normal;
+}
+
+.code-vibe-contemporary .pl-ent {
+  font-weight: bold;
+  font-family: 'Roboto Mono';
+  font-style: normal;
+}
+
+.code-vibe-contemporary .pl-k {
+  font-weight: bold;
+  font-family: 'Roboto Mono';
+  font-style: normal;
+}
+
+.code-vibe-contemporary .pl-s,
+.code-vibe-contemporary .pl-pds,
+.code-vibe-contemporary .pl-s .pl-pse .pl-s1,
+.code-vibe-contemporary .pl-sr,
+.code-vibe-contemporary .pl-sr .pl-cce,
+.code-vibe-contemporary .pl-sr .pl-sre,
+.code-vibe-contemporary .pl-sr .pl-sra {
+  font-weight: bold;
+  font-family: 'Roboto Mono';
+  font-style: normal;
+}
+
+.code-vibe-contemporary .pl-sr .pl-cce {
+  font-weight: bold;
+  font-family: 'Roboto Mono';
+  font-style: normal;
+}
+
+.code-vibe-contemporary .pl-mh,
+.code-vibe-contemporary .pl-mh .pl-en,
+.code-vibe-contemporary .pl-ms {
+  font-weight: bold;
+  font-family: 'Roboto Mono';
+  font-style: normal;
+}
+
+.code-vibe-contemporary .pl-mi {
+  font-style: italic;
+  font-family: 'Roboto Mono';
+}
+
+.code-vibe-contemporary .pl-mb {
+  font-weight: bold;
+  font-family: 'Roboto Mono';
+  font-style: normal;
+}
+
+.code-vibe-contemporary .pl-mdr {
+  font-weight: bold;
+  font-family: 'Roboto Mono';
+  font-style: normal;
+}
+
+/* book */
+
+.code-vibe-book.code-tint-gray {
+  background: rgb(249, 250, 251);
+}
+
+.code-vibe-book.code-tint-blue {
+  background: rgb(239, 246, 255);
+}
+
+.code-vibe-book.code-tint-violet {
+  background: rgb(245, 243, 255);
+}
+
+.code-vibe-book * {
+  font-family: 'Source Code Pro';
+  font-weight: normal;
+  font-style: normal;
+}
+
+.code-vibe-book .pl-c {
+  font-style: italic;
+  font-family: 'Source Code Pro';
+}
+
+.code-vibe-book .pl-c1,
+.code-vibe-book .pl-s .pl-v {
+  font-weight: bold;
+  font-family: 'Source Code Pro';
+  font-style: normal;
+}
+
+.code-vibe-book .pl-e,
+.code-vibe-book .pl-en {
+  font-weight: bold;
+  font-family: 'Source Code Pro';
+  font-style: normal;
+}
+
+.code-vibe-book .pl-ent {
+  font-weight: bold;
+  font-family: 'Source Code Pro';
+  font-style: normal;
+}
+
+.code-vibe-book .pl-k {
+  font-weight: bold;
+  font-family: 'Source Code Pro';
+  font-style: normal;
+}
+
+.code-vibe-book .pl-s,
+.code-vibe-book .pl-pds,
+.code-vibe-book .pl-s .pl-pse .pl-s1,
+.code-vibe-book .pl-sr,
+.code-vibe-book .pl-sr .pl-cce,
+.code-vibe-book .pl-sr .pl-sre,
+.code-vibe-book .pl-sr .pl-sra {
+  font-weight: bold;
+  font-family: 'Source Code Pro';
+  font-style: normal;
+}
+
+.code-vibe-book .pl-sr .pl-cce {
+  font-weight: bold;
+  font-family: 'Source Code Pro';
+  font-style: normal;
+}
+
+.code-vibe-book .pl-mh,
+.code-vibe-book .pl-mh .pl-en,
+.code-vibe-book .pl-ms {
+  font-weight: bold;
+  font-family: 'Source Code Pro';
+  font-style: normal;
+}
+
+.code-vibe-book .pl-mi {
+  font-style: italic;
+  font-family: 'Source Code Pro';
+}
+
+.code-vibe-book .pl-mb {
+  font-weight: bold;
+  font-family: 'Source Code Pro';
+  font-style: normal;
+}
+
+.code-vibe-book .pl-mdr {
+  font-weight: bold;
+  font-family: 'Source Code Pro';
+  font-style: normal;
+}

@@ -1,0 +1,420 @@
+@font-face {
+  font-family: ToneEtch;
+  src: url('/font/ToneEtch.otf') format('opentype');
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+.font-ToneEtch {
+  font-family: 'ToneEtch';
+}
+
+.font-NotoEmoji {
+  font-family: 'Noto Emoji';
+}
+
+.font-NotoKufiArabic {
+  font-family: 'Noto Kufi Arabic';
+}
+
+.font-NotoNaskhArabic {
+  font-family: 'Noto Naskh Arabic';
+}
+
+.font-NotoNastaliqUrdu {
+  font-family: 'Noto Nastaliq Urdu';
+}
+
+.font-NotoRashiHebrew {
+  font-family: 'Noto Rashi Hebrew';
+}
+
+.font-NotoSans {
+  font-family: 'Noto Sans';
+}
+
+.font-NotoSansAdlam {
+  font-family: 'Noto Sans Adlam';
+}
+
+.font-NotoSansAdlamUnjoined {
+  font-family: 'Noto Sans Adlam Unjoined';
+}
+
+.font-NotoSansArabic {
+  font-family: 'Noto Sans Arabic';
+}
+
+.font-NotoSansArmenian {
+  font-family: 'Noto Sans Armenian';
+}
+
+.font-NotoSansBalinese {
+  font-family: 'Noto Sans Balinese';
+}
+
+.font-NotoSansBamum {
+  font-family: 'Noto Sans Bamum';
+}
+
+.font-NotoSansBassaVah {
+  font-family: 'Noto Sans Bassa Vah';
+}
+
+.font-NotoSansBengali {
+  font-family: 'Noto Sans Bengali';
+}
+
+.font-NotoSansCanadianAboriginal {
+  font-family: 'Noto Sans Canadian Aboriginal';
+}
+
+.font-NotoSansCham {
+  font-family: 'Noto Sans Cham';
+}
+
+.font-NotoSansCherokee {
+  font-family: 'Noto Sans Cherokee';
+}
+
+.font-NotoSansDevanagari {
+  font-family: 'Noto Sans Devanagari';
+}
+
+.font-NotoSansDisplay {
+  font-family: 'Noto Sans Display';
+}
+
+.font-NotoSansDuployan {
+  font-family: 'Noto Sans Duployan';
+}
+
+.font-NotoSansEthiopic {
+  font-family: 'Noto Sans Ethiopic';
+}
+
+.font-NotoSansGeorgian {
+  font-family: 'Noto Sans Georgian';
+}
+
+.font-NotoSansGujarati {
+  font-family: 'Noto Sans Gujarati';
+}
+
+.font-NotoSansGunjalaGondi {
+  font-family: 'Noto Sans Gunjala Gondi';
+}
+
+.font-NotoSansGurmukhi {
+  font-family: 'Noto Sans Gurmukhi';
+}
+
+.font-NotoSansHanifiRohingya {
+  font-family: 'Noto Sans Hanifi Rohingya';
+}
+
+.font-NotoSansHebrew {
+  font-family: 'Noto Sans Hebrew';
+}
+
+.font-NotoSansHk {
+  font-family: 'Noto Sans HK';
+}
+
+.font-NotoSansJavanese {
+  font-family: 'Noto Sans Javanese';
+}
+
+.font-NotoSansJp {
+  font-family: 'Noto Sans JP';
+}
+
+.font-NotoSansKannada {
+  font-family: 'Noto Sans Kannada';
+}
+
+.font-NotoSansKawi {
+  font-family: 'Noto Sans Kawi';
+}
+
+.font-NotoSansKayahLi {
+  font-family: 'Noto Sans Kayah Li';
+}
+
+.font-NotoSansKhmer {
+  font-family: 'Noto Sans Khmer';
+}
+
+.font-NotoSansKr {
+  font-family: 'Noto Sans KR';
+}
+
+.font-NotoSansLao {
+  font-family: 'Noto Sans Lao';
+}
+
+.font-NotoSansLaoLooped {
+  font-family: 'Noto Sans Lao Looped';
+}
+
+.font-NotoSansLisu {
+  font-family: 'Noto Sans Lisu';
+}
+
+.font-NotoSansMalayalam {
+  font-family: 'Noto Sans Malayalam';
+}
+
+.font-NotoSansMedefaidrin {
+  font-family: 'Noto Sans Medefaidrin';
+}
+
+.font-NotoSansMeeteiMayek {
+  font-family: 'Noto Sans Meetei Mayek';
+}
+
+.font-NotoSansMono {
+  font-family: 'Noto Sans Mono';
+}
+
+.font-NotoSansMyanmar {
+  font-family: 'Noto Sans Myanmar';
+}
+
+.font-NotoSansNagMundari {
+  font-family: 'Noto Sans Nag Mundari';
+}
+
+.font-NotoSansNewTaiLue {
+  font-family: 'Noto Sans New Tai Lue';
+}
+
+.font-NotoSansNkoUnjoined {
+  font-family: 'Noto Sans NKo Unjoined';
+}
+
+.font-NotoSansOlChiki {
+  font-family: 'Noto Sans Ol Chiki';
+}
+
+.font-NotoSansOriya {
+  font-family: 'Noto Sans Oriya';
+}
+
+.font-NotoSansSC {
+  font-family: 'Noto Sans SC';
+}
+
+.font-NotoSansSinhala {
+  font-family: 'Noto Sans Sinhala';
+}
+
+.font-NotoSansSoraSompeng {
+  font-family: 'Noto Sans Sora Sompeng';
+}
+
+.font-NotoSansSundanese {
+  font-family: 'Noto Sans Sundanese';
+}
+
+.font-NotoSansSymbols {
+  font-family: 'Noto Sans Symbols';
+}
+
+.font-NotoSansSyriac {
+  font-family: 'Noto Sans Syriac';
+}
+
+.font-NotoSansSyriacEastern {
+  font-family: 'Noto Sans Syriac Eastern';
+}
+
+.font-NotoSansTaiTham {
+  font-family: 'Noto Sans Tai Tham';
+}
+
+.font-NotoSansTamil {
+  font-family: 'Noto Sans Tamil';
+}
+
+.font-NotoSansTangsa {
+  font-family: 'Noto Sans Tangsa';
+}
+
+.font-NotoSansTc {
+  font-family: 'Noto Sans TC';
+}
+
+.font-NotoSansTelugu {
+  font-family: 'Noto Sans Telugu';
+}
+
+.font-NotoSansThaana {
+  font-family: 'Noto Sans Thaana';
+}
+
+.font-NotoSansThai {
+  font-family: 'Noto Sans Thai';
+}
+
+.font-NotoSansThaiLooped {
+  font-family: 'Noto Sans Thai Looped';
+}
+
+.font-NotoSansVithkuqi {
+  font-family: 'Noto Sans Vithkuqi';
+}
+
+.font-NotoSerif {
+  font-family: 'Noto Serif';
+}
+
+.font-NotoSerifArmenian {
+  font-family: 'Noto Serif Armenian';
+}
+
+.font-NotoSerifBengali {
+  font-family: 'Noto Serif Bengali';
+}
+
+.font-NotoSerifDevanagari {
+  font-family: 'Noto Serif Devanagari';
+}
+
+.font-NotoSerifDisplay {
+  font-family: 'Noto Serif Display';
+}
+
+.font-NotoSerifEthiopic {
+  font-family: 'Noto Serif Ethiopic';
+}
+
+.font-NotoSerifGeorgian {
+  font-family: 'Noto Serif Georgian';
+}
+
+.font-NotoSerifGujarati {
+  font-family: 'Noto Serif Gujarati';
+}
+
+.font-NotoSerifGurmukhi {
+  font-family: 'Noto Serif Gurmukhi';
+}
+
+.font-NotoSerifHebrew {
+  font-family: 'Noto Serif Hebrew';
+}
+
+.font-NotoSerifHk {
+  font-family: 'Noto Serif HK';
+}
+
+.font-NotoSerifKannada {
+  font-family: 'Noto Serif Kannada';
+}
+
+.font-NotoSerifKhmer {
+  font-family: 'Noto Serif Khmer';
+}
+
+.font-NotoSerifKhojki {
+  font-family: 'Noto Serif Khojki';
+}
+
+.font-NotoSerifLao {
+  font-family: 'Noto Serif Lao';
+}
+
+.font-NotoSerifMalayalam {
+  font-family: 'Noto Serif Malayalam';
+}
+
+.font-NotoSerifMyanmar {
+  font-family: 'Noto Serif Myanmar';
+}
+
+.font-NotoSerifNpHmong {
+  font-family: 'Noto Serif NP Hmong';
+}
+
+.font-NotoSerifOriya {
+  font-family: 'Noto Serif Oriya';
+}
+
+.font-NotoSerifSinhala {
+  font-family: 'Noto Serif Sinhala';
+}
+
+.font-NotoSerifTamil {
+  font-family: 'Noto Serif Tamil';
+}
+
+.font-NotoSerifTelugu {
+  font-family: 'Noto Serif Telugu';
+}
+
+.font-NotoSerifThai {
+  font-family: 'Noto Serif Thai';
+}
+
+.font-NotoSerifTibetan {
+  font-family: 'Noto Serif Tibetan';
+}
+
+.font-NotoSerifToto {
+  font-family: 'Noto Serif Toto';
+}
+
+.font-NotoSerifVithkuqi {
+  font-family: 'Noto Serif Vithkuqi';
+}
+
+.font-NotoSerifYezidi {
+  font-family: 'Noto Serif Yezidi';
+}
+
+.font-NotoTraditionalNushu {
+  font-family: 'Noto Traditional Nushu';
+}
+
+.font-NotoSansSignWriting {
+  font-family: 'Noto Sans SignWriting';
+}
+
+.font-NotoSansMayanNumerals {
+  font-family: 'Noto Sans Mayan Numerals';
+}
+
+.font-NotoMusic {
+  font-family: 'Noto Music';
+}
+
+.font-NotoSerifKhitanSmallScript {
+  font-family: 'Noto Serif Khitan Small Script';
+}
+
+.font-NotoSansAnatolianHieroglyphs {
+  font-family: 'Noto Sans Anatolian Hieroglyphs';
+}
+
+.font-NotoSansCyproMinoan {
+  font-family: 'Noto Sans Cypro Minoan';
+}
+
+.font-NotoSansCuneiform {
+  font-family: 'Noto Sans Cuneiform';
+}
+
+body {
+  --tw-text-opacity: 1;
+  color: rgb(55 65 81 / var(--tw-text-opacity));
+}
+
+.sticky {
+  position: sticky;
+}
+
+.z-100 {
+  z-index: 100;
+}

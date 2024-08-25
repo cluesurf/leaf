@@ -1,0 +1,1078 @@
+@import url('text.css');
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+.font-YoungSerif {
+  font-family: 'Young Serif';
+}
+
+@font-face {
+  font-family: 'Noto Znamenny Musical Notation';
+  src: url('/font/NotoZnamennyMusicalNotation-Regular.otf')
+    format('opentype');
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: ComputerModernSerif;
+  src: url('/font/computer-modern/cmunrm.ttf') format('truetype');
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: ComputerModernSerifItalic;
+  src: url('/font/computer-modern/cmunti.ttf') format('truetype');
+  font-style: italic;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: ComputerModernSerifBold;
+  src: url('/font/computer-modern/cmunbx.ttf') format('truetype');
+  font-style: normal;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: ComputerModernSerifBoldItalic;
+  src: url('/font/computer-modern/cmunbi.ttf') format('truetype');
+  font-style: italic;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+.font-ComputerModernSerif {
+  font-family: ComputerModernSerif;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-ComputerModernSerifBold {
+  font-family: ComputerModernSerifBold;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-ComputerModernSerifItalic {
+  font-family: ComputerModernSerifItalic;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.font-ComputerModernSerifBoldItalic {
+  font-family: ComputerModernSerifBoldItalic;
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: ComputerModernTypewriter;
+  src: url('/font/computer-modern/cmuntt.ttf') format('truetype');
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: ComputerModernTypewriterItalic;
+  src: url('/font/computer-modern/cmunit.ttf') format('truetype');
+  font-style: italic;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: ComputerModernTypewriterBold;
+  src: url('/font/computer-modern/cmuntb.ttf') format('truetype');
+  font-style: normal;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: ComputerModernTypewriterBoldItalic;
+  src: url('/font/computer-modern/cmuntx.ttf') format('truetype');
+  font-style: italic;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+.font-ComputerModernTypewriter {
+  font-family: ComputerModernTypewriter;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-ComputerModernTypewriterBold {
+  font-family: ComputerModernTypewriterBold;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-ComputerModernTypewriterItalic {
+  font-family: ComputerModernTypewriterItalic;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.font-ComputerModernTypewriterBoldItalic {
+  font-family: ComputerModernTypewriterBoldItalic;
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: Hermit;
+  src: url('/font/hermit/Hermit-Regular.otf') format('opentype');
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: HermitItalic;
+  src: url('/font/hermit/Hermit-RegularItalic.otf') format('opentype');
+  font-style: italic;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: HermitBold;
+  src: url('/font/hermit/Hermit-Bold.otf') format('opentype');
+  font-style: normal;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: HermitBoldItalic;
+  src: url('/font/hermit/Hermit-BoldItalic.otf') format('opentype');
+  font-style: italic;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+.font-Hermit {
+  font-family: Hermit;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-HermitBold {
+  font-family: HermitBold;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-HermitItalic {
+  font-family: HermitItalic;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.font-HermitBoldItalic {
+  font-family: HermitBoldItalic;
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: JuliaMono;
+  src: url('/font/julia-mono/JuliaMono-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: JuliaMonoItalic;
+  src: url('/font/julia-mono/JuliaMono-RegularItalic.ttf')
+    format('truetype');
+  font-style: italic;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: JuliaMonoBold;
+  src: url('/font/julia-mono/JuliaMono-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: JuliaMonoBoldItalic;
+  src: url('/font/julia-mono/JuliaMono-BoldItalic.ttf')
+    format('truetype');
+  font-style: italic;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+.font-JuliaMono {
+  font-family: JuliaMono;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-JuliaMonoBold {
+  font-family: JuliaMonoBold;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-JuliaMonoItalic {
+  font-family: JuliaMonoItalic;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.font-JuliaMonoBoldItalic {
+  font-family: JuliaMonoBoldItalic;
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: TwilioSansMono;
+  src: url('/font/twilio-sans-mono/TwilioSansMono-Regular.otf')
+    format('opentype');
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: TwilioSansMonoItalic;
+  src: url('/font/twilio-sans-mono/TwilioSansMono-RegularItl.otf')
+    format('opentype');
+  font-style: italic;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: TwilioSansMonoBold;
+  src: url('/font/twilio-sans-mono/TwilioSansMono-Bold.otf')
+    format('opentype');
+  font-style: normal;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: TwilioSansMonoBoldItalic;
+  src: url('/font/twilio-sans-mono/TwilioSansMono-BoldItl.otf')
+    format('opentype');
+  font-style: italic;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+.font-TwilioSansMono {
+  font-family: TwilioSansMono;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-TwilioSansMonoBold {
+  font-family: TwilioSansMonoBold;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-TwilioSansMonoItalic {
+  font-family: TwilioSansMonoItalic;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.font-TwilioSansMonoBoldItalic {
+  font-family: TwilioSansMonoBoldItalic;
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: Karla;
+  src: url('/font/karla/Karla-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: KarlaItalic;
+  src: url('/font/karla/Karla-Italic.ttf') format('truetype');
+  font-style: italic;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: KarlaBold;
+  src: url('/font/karla/Karla-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: KarlaBoldItalic;
+  src: url('/font/karla/Karla-BoldItalic.ttf') format('truetype');
+  font-style: italic;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+.font-Karla {
+  font-family: Karla;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-KarlaBold {
+  font-family: KarlaBold;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-KarlaItalic {
+  font-family: KarlaItalic;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.font-KarlaBoldItalic {
+  font-family: KarlaBoldItalic;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.font-Arimo {
+  font-family: 'Arimo', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.font-ArimoBold {
+  font-family: 'Arimo', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.font-ArimoItalic {
+  font-family: 'Arimo', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.font-ArimoBoldItalic {
+  font-family: 'Arimo', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.font-math-SansSerif {
+  font-family: KaTeX_SansSerif;
+}
+.font-math-Typewriter {
+  font-family: KaTeX_Typewriter;
+}
+.font-math-Normal {
+  font-family: KaTeX_Math;
+  font-style: italic;
+}
+.font-math-Main {
+  font-family: KaTeX_Main;
+  font-style: italic;
+}
+
+code * {
+  font-family: 'Noto Sans';
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+html,
+body {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #020617;
+}
+
+:root {
+  --font-noto-code: var(--font-noto-sans-mono), var(--font-noto-sans-sc),
+    var(--font-noto-sans-tc) monospace;
+}
+
+/*
+* {
+  font-family: 'inherit';
+} */
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.shadow-blend {
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  mix-blend-mode: color-dodge;
+}
+
+.flex-all {
+  flex: 1;
+}
+
+.overflow-ellipsis {
+  text-overflow: ellipsis;
+}
+
+::selection {
+  background-color: #a7f3d0;
+  color: rgb(51, 51, 51);
+}
+
+@media (prefers-color-scheme: dark) {
+  ::selection {
+    background-color: black;
+  }
+
+  html,
+  body {
+    background: rgb(24, 24, 27);
+  }
+}
+
+.table-fixed-header > thead > tr {
+  z-index: 400;
+}
+
+*[align='center'] {
+  text-align: center;
+}
+
+*[align='right'] {
+  text-align: right;
+}
+
+.sticky-table-header th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+* {
+  border: none;
+}
+
+@keyframes fade-in-out {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.monaco-editor-overlaymessage {
+  /* visibility: hidden !important; */
+}
+
+*:focus-visible {
+  outline: none;
+}
+
+@keyframes toastSlideRight {
+  from {
+    transform: translateX(var(--radix-toast-swipe-end-x));
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type='number'] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+.react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+}
+/*
+.react-pdf__Document.previous-document {
+    canvas {
+      opacity: 0.5;
+    }
+  }
+  &.rendering-document {
+    position: absolute;
+    .react-pdf__Page {
+      box-shadow: none;
+    }
+  }
+} */
+
+/*
+.react-pdf__message {
+  display: none;
+} */
+
+html,
+body {
+  width: 100%;
+}
+
+.MonacoThemeScope-theme-termsurf-light-violet .mtk6 {
+  color: #7c3aed;
+}
+
+.MonacoThemeScope-theme .monaco-editor .bracket-highlighting-0,
+.MonacoThemeScope-theme .monaco-editor .bracket-highlighting-1,
+.MonacoThemeScope-theme .monaco-editor .bracket-highlighting-2 {
+  color: #777777;
+}
+
+.MonacoThemeScope-theme-termsurf-light-violet .cursors-layer .cursor {
+  background-color: #5b21b6;
+  border-color: #5b21b6;
+}
+
+.MonacoThemeScope-theme-termsurf-light-violet
+  .monaco-editor
+  .view-overlays
+  .current-line,
+.MonacoThemeScope-theme-termsurf-light-violet
+  .monaco-editor
+  .selected-text {
+  background-color: #ede9fe;
+}
+
+.MonacoThemeScope-theme-termsurf-light-blue .mtk6 {
+  color: #2563eb;
+}
+
+.MonacoThemeScope-theme-termsurf-light-blue
+  .monaco-editor
+  .cursors-layer
+  .cursor {
+  background-color: #1e40af;
+  border-color: #1e40af;
+}
+
+.MonacoThemeScope-theme-termsurf-light-blue
+  .monaco-editor
+  .view-overlays
+  .current-line,
+.MonacoThemeScope-theme-termsurf-light-blue
+  .monaco-editor
+  .selected-text {
+  background-color: #dbeafe;
+}
+/*  */
+
+.monaco-editor .lines-content {
+  margin-left: 16px;
+  /* margin-right: 16px; */
+}
+
+.monaco-editor .decorationsOverviewRuler {
+  display: none !important;
+}
+/*
+.horizontal-virtual-list .ReactVirtualized__Grid {
+  padding: 16px !important;
+} */
+
+.horizontal-virtual-list .ReactVirtualized__Grid__innerScrollContainer {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  max-width: none !important;
+  padding: 16px !important;
+}
+
+h1 + p,
+h2 + p,
+h3 + p,
+h4 + p,
+h5 + p,
+h6 + p,
+h1 + ol,
+h2 + ol,
+h3 + ol,
+h4 + ol,
+h5 + ol,
+h6 + ul,
+h1 + ul,
+h2 + ul,
+h3 + ul,
+h4 + ul,
+h5 + ul,
+h6 + ul,
+p + p {
+  margin-top: 0px !important;
+}
+
+em,
+strong,
+time {
+  font-size: inherit;
+}
+
+.katex {
+  font-size: 180% !important;
+}
+
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 32px;
+  height: 0px;
+  top: -16px;
+  left: -8px;
+  transform: scale(0.4);
+}
+.lds-ellipsis div {
+  position: absolute;
+  top: 33px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 8px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 8px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 32px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 56px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
+  }
+}
+/*
+.sticky-table-header th {
+  position: unset;
+  top: auto;
+}
+
+.sticky-table-header thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+} */
+
+.katex-display {
+  margin: 0 !important;
+}
+
+.font-AlegreyaSans {
+  font-family: 'Alegreya Sans', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.font-AlegreyaSansBold {
+  font-family: 'Alegreya Sans', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.font-AlegreyaSansItalic {
+  font-family: 'Alegreya Sans', sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.font-AlegreyaSansBoldItalic {
+  font-family: 'Alegreya Sans', sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.font-Alegreya {
+  font-family: 'Alegreya', serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.font-AlegreyaBold {
+  font-family: 'Alegreya', serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.font-AlegreyaItalic {
+  font-family: 'Alegreya', serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.font-AlegreyaBoldItalic {
+  font-family: 'Alegreya', serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.katex-inline .katex {
+  font-size: 120% !important;
+}
+
+@font-face {
+  font-family: NewZen;
+  src: url('/font/new-zen/New Zen Regular.otf') format('opentype');
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: NewZenItalic;
+  src: url('/font/new-zen/New Zen Regular Italic.otf')
+    format('opentype');
+  font-style: italic;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: NewZenBold;
+  src: url('/font/new-zen/New Zen Bold.otf') format('opentype');
+  font-style: normal;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: NewZenBoldItalic;
+  src: url('/font/new-zen/New Zen Bold Italic.otf') format('opentype');
+  font-style: italic;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
+}
+
+.font-NewZen {
+  font-family: NewZen;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-NewZenBold {
+  font-family: NewZenBold;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-NewZenItalic {
+  font-family: NewZenItalic;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.font-NewZenBoldItalic {
+  font-family: NewZenBoldItalic;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.font-Roboto {
+  font-family: Roboto;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-RobotoBold {
+  font-family: Roboto;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-RobotoItalic {
+  font-family: Roboto;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.font-RobotoBoldItalic {
+  font-family: Roboto;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.font-RobotoMono {
+  font-family: 'Roboto Mono';
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-RobotoMonoBold {
+  font-family: 'Roboto Mono';
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-RobotoMonoItalic {
+  font-family: 'Roboto Mono';
+  font-weight: normal;
+  font-style: italic;
+}
+
+.font-RobotoMonoBoldItalic {
+  font-family: 'Roboto Mono';
+  font-weight: bold;
+  font-style: italic;
+}
+
+.font-RobotoSlab {
+  font-family: 'Roboto Slab';
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-RobotoSlabBold {
+  font-family: 'Roboto Slab';
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-SourceSans3 {
+  font-family: 'Source Sans 3';
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-SourceSans3Bold {
+  font-family: 'Source Sans 3';
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-SourceSans3Italic {
+  font-family: 'Source Sans 3';
+  font-weight: normal;
+  font-style: italic;
+}
+
+.font-SourceSans3BoldItalic {
+  font-family: 'Source Sans 3';
+  font-weight: bold;
+  font-style: italic;
+}
+
+.font-LibreBaskerville {
+  font-family: 'Libre Baskerville';
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-LibreBaskervilleBold {
+  font-family: 'Libre Baskerville';
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-LibreBaskervilleItalic {
+  font-family: 'Libre Baskerville';
+  font-weight: normal;
+  font-style: italic;
+}
+
+.font-LibreBaskervilleBoldItalic {
+  font-family: 'Libre Baskerville';
+  font-weight: bold;
+  font-style: italic;
+}
+
+.font-CrimsonText {
+  font-family: 'Crimson Text';
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-CrimsonTextBold {
+  font-family: 'Crimson Text';
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-CrimsonTextItalic {
+  font-family: 'Crimson Text';
+  font-weight: normal;
+  font-style: italic;
+}
+
+.font-CrimsonTextBoldItalic {
+  font-family: 'Crimson Text';
+  font-weight: bold;
+  font-style: italic;
+}
+
+.font-Montserrat {
+  font-family: 'Montserrat';
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-MontserratBold {
+  font-family: 'Montserrat';
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-MontserratItalic {
+  font-family: 'Montserrat';
+  font-weight: normal;
+  font-style: italic;
+}
+
+.font-MontserratBoldItalic {
+  font-family: 'Montserrat';
+  font-weight: bold;
+  font-style: italic;
+}
+
+.font-NotoSansMono {
+  font-family: 'Noto Sans Mono';
+}
+
+.font-loading-base-light {
+  background: linear-gradient(
+    -45deg,
+    rgb(243, 244, 246),
+    rgb(209, 213, 219)
+  );
+}
+
+.font-loading {
+  background-size: 400% 400%;
+  animation: loadin-skeleton-gradient 2s ease infinite;
+  color: transparent;
+}
+
+.font-loading-base-input {
+  background: linear-gradient(
+    -45deg,
+    rgb(249, 250, 251),
+    rgb(209, 213, 219)
+  );
+}
+
+@keyframes loadin-skeleton-gradient {
+  0% {
+    background-position: 10% 0%;
+  }
+  50% {
+    background-position: 91% 100%;
+  }
+  100% {
+    background-position: 10% 0%;
+  }
+}
+
+::selection,
+.light-selection *::selection {
+  background-color: #a7f3d0;
+}
+
+@media (prefers-color-scheme: dark) {
+  ::selection {
+    background-color: rgb(4, 120, 87);
+  }
+
+  * {
+    scrollbar-color: rgb(100, 116, 139);
+  }
+}
+
+.font-NotoSansGeorgian {
+  font-family: 'Noto Sans Georgian';
+}
+
+.font-NotoSansArmenian {
+  font-family: 'Noto Sans Armenian';
+}
+
+.font-NotoZnamennyMusicalNotation {
+  font-family: 'Noto Znamenny Musical Notation';
+}

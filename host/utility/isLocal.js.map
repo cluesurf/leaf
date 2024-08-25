@@ -1,0 +1,1 @@
+{"version":3,"file":"isLocal.js","sourceRoot":"","sources":["../../utility/isLocal.ts"],"names":[],"mappings":"AAAA,MAAM,KAAK,GACT,OAAO,MAAM,KAAK,WAAW;IAC7B,CAAC,CAAC,MAAM,CAAC,QAAQ,CAAC,QAAQ,CAAC,KAAK,CAAC,WAAW,CAAC;IAC7C,CAAC,CAAC,MAAM,CAAC,QAAQ,CAAC,IAAI,CAAA;AAExB,eAAe,KAAK,CAAA"}
