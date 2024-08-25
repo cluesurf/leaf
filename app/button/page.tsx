@@ -1,6 +1,6 @@
 'use client'
 
-import CenterLayout from '../component/CenterLayout'
+import CenterLayout from '../../component/layout/CenterLayout'
 
 export default function Page() {
   return (

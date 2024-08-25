@@ -42,7 +42,7 @@ export default function Label({
   const [isStarting, isFontReady, hasFontWaited, fontClassName] =
     useText(font)
 
-  let textColorClass
+  let textColorClass: string
 
   if (isStarting || (isFontReady && hasFontWaited)) {
     textColorClass = `${fontClassName}`

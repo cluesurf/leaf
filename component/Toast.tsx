@@ -1,7 +1,7 @@
 import * as RadixToast from '@radix-ui/react-toast'
 import cx from 'classnames'
 import { createContext, useCallback, useContext, useState } from 'react'
-import { NavigationContext } from './layout/AppLayout'
+import { NavigationContext } from './navigation'
 
 export type ToastContext = {
   isOpen: boolean

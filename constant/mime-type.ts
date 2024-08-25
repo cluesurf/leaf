@@ -1,7 +1,11 @@
-const MIME_TYPE_MAP: Record<
-  string,
-  { mime: string; extensions: Array<string> }
-> = {
+export type MimeType = {
+  mime: string
+  extensions: Array<string>
+}
+
+export type MimeTypes = Record<string, MimeType>
+
+const MIME_TYPE: MimeTypes = {
   '123': {
     mime: 'application/vnd.lotus-1-2-3',
     extensions: ['.123'],
@@ -5334,4 +5338,4 @@ const MIME_TYPE_MAP: Record<
   },
 }
 
-export default MIME_TYPE_MAP
+export default MIME_TYPE

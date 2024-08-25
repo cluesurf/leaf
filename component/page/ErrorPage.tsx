@@ -15,17 +15,13 @@ export default function ErrorPage({
 }: ErrorPageInput) {
   return (
     <div className="relative">
-      <div className="px-16 flex flex-col gap-16 items-center">
-        <H1 className="text-center">Error</H1>
-        <P>Something went wrong!</P>
-        {error.stack && (
-          <P className="whitespace-pre overflow-x-auto">
-            {error.stack}
-          </P>
-        )}
-        <div className="flex justify-center">
-          <Button onClick={() => reset()}>Try again</Button>
-        </div>
+      <H1 className="text-center">Error</H1>
+      <P>Something went wrong!</P>
+      {error.stack && (
+        <P className="whitespace-pre overflow-x-auto">{error.stack}</P>
+      )}
+      <div className="flex justify-center">
+        <Button onClick={() => reset()}>Try again</Button>
       </div>
       {children}
     </div>

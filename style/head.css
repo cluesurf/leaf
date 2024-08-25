@@ -1,4 +1,9 @@
+@import url('base.css');
+
+@import 'katex/dist/katex.min.css';
+
 @import url('text.css');
+@import url('code.css');
 
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';

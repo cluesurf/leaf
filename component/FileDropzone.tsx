@@ -8,7 +8,7 @@ import {
   getRoundedClass,
 } from './Input'
 import { useText } from './Text'
-import { useAppSettings } from '~/hook/useAppSettings'
+import useSettings from '~/hook/useSettings'
 
 // https://react-dropzone.js.org/
 export default function FileDropzone({
@@ -36,7 +36,7 @@ export default function FileDropzone({
 }) {
   const [isStarting, isFontReady, hasFontWaited, fontClassName] =
     useText(font)
-  const { MIME_TYPE } = useAppSettings()
+  const MIME_TYPE = useSettings('mimeTypes')
 
   const handleDrop = useCallback(
     (files: Array<File>) => {

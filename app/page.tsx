@@ -1,7 +1,7 @@
 'use client'
 
-import Button, { IconButton, LinkButton } from '~/component/Button'
-import CenterLayout from './component/CenterLayout'
+import React, { useState } from 'react'
+import Button from '~/component/Button'
 import {
   H1,
   H2,
@@ -35,13 +35,9 @@ import TriangleDownIcon from '~/component/icon/TriangleDown'
 import TriangleUpIcon from '~/component/icon/TriangleUp'
 import UserIcon from '~/component/icon/User'
 import Input from '~/component/Input'
-import TextInput from '~/component/TextInput'
 import Label from '~/component/Label'
 import Field from '~/component/Field'
-import { useState } from 'react'
 import Text from '~/component/Text'
-import { useFonts } from '~/hook/useConfiguration'
-import { DEFAULT_SETTINGS } from '~/constant/setting'
 import TriangleLeftIcon from '~/component/icon/TriangleLeft'
 import TriangleRightIcon from '~/component/icon/TriangleRight'
 import ListIcon from '~/component/icon/List'
@@ -54,6 +50,18 @@ import XTwitterIcon from '~/component/icon/XTwitter'
 import Gloss from '~/component/Gloss'
 import List from '~/component/List'
 import Switch from '~/component/Switch'
+import Environment from '~/component/Environment'
+import { FONT, SCRIPT } from '~/constant/settings'
+import useFonts from '~/hook/useFonts'
+import Loading from '~/component/Loading'
+
+const FONT_LIST = [
+  'Noto Sans Mono',
+  'Noto Sans SC',
+  'Noto Serif Tibetan',
+]
+
+const NECESSARY_FONT_LIST = ['Noto Sans Mono', 'Tone Etch']
 
 const BUTTON_COLORS = [
   'purple',
@@ -88,24 +96,27 @@ function ControlledSwitch(props: any) {
 
 export default function Page() {
   return (
-    <CenterLayout>
+    <Environment settings={{ fonts: FONT, scripts: SCRIPT }}>
       <Content />
-    </CenterLayout>
+    </Environment>
   )
 }
 
 function Content() {
-  useFonts([
-    DEFAULT_SETTINGS.fonts.NotoSansSC,
-    DEFAULT_SETTINGS.fonts.NotoSerifTibetan,
-  ])
+  const isReady = useFonts(NECESSARY_FONT_LIST)
+
+  useFonts(FONT_LIST)
+
+  if (!isReady) {
+    return <Loading />
+  }
 
   return (
     <>
       <H1>Leaf</H1>
       <P>
-        Welcome to TermSurf's Leaf UI kit. Here is an overview of the
-        components. Click into each one to see variations.
+        Welcome to TermSurf&apos;s Leaf UI kit. Here is an overview of
+        the components. Click into each one to see variations.
       </P>
       <H2 className="flex justify-between cursor-pointer items-center">
         <span>Button</span>
@@ -159,30 +170,30 @@ function Content() {
           gap={16}
         >
           {[
-            <HomeIcon />,
-            <AlertIcon />,
-            <BackIcon />,
-            <CheckIcon />,
-            <CloseIcon />,
-            <CopyIcon />,
-            <DownloadIcon />,
-            <ExpandIcon />,
-            <GearIcon />,
-            <GitHubIcon />,
-            <MenuIcon />,
-            <MessageIcon />,
-            <ScissorsIcon />,
-            <TriangleUpIcon />,
-            <TriangleRightIcon />,
-            <TriangleDownIcon />,
-            <TriangleLeftIcon />,
-            <UserIcon />,
-            <ListIcon />,
-            <SearchIcon />,
-            <LinkIcon />,
-            <GridIcon />,
-            <YouTubeIcon />,
-            <XTwitterIcon />,
+            <HomeIcon key="HomeIcon" />,
+            <AlertIcon key="AlertIcon" />,
+            <BackIcon key="BackIcon" />,
+            <CheckIcon key="CheckIcon" />,
+            <CloseIcon key="CloseIcon" />,
+            <CopyIcon key="CopyIcon" />,
+            <DownloadIcon key="DownloadIcon" />,
+            <ExpandIcon key="ExpandIcon" />,
+            <GearIcon key="GearIcon" />,
+            <GitHubIcon key="GitHubIcon" />,
+            <MenuIcon key="MenuIcon" />,
+            <MessageIcon key="MessageIcon" />,
+            <ScissorsIcon key="ScissorsIcon" />,
+            <TriangleUpIcon key="TriangleUpIcon" />,
+            <TriangleRightIcon key="TriangleRightIcon" />,
+            <TriangleDownIcon key="TriangleDownIcon" />,
+            <TriangleLeftIcon key="TriangleLeftIcon" />,
+            <UserIcon key="UserIcon" />,
+            <ListIcon key="ListIcon" />,
+            <SearchIcon key="SearchIcon" />,
+            <LinkIcon key="LinkIcon" />,
+            <GridIcon key="GridIcon" />,
+            <YouTubeIcon key="YouTubeIcon" />,
+            <XTwitterIcon key="XTwitterIcon" />,
           ].map((icon, i) => (
             <div
               key={i}
@@ -339,7 +350,7 @@ function Content() {
         </Table>
       </div>
       <H2>Font</H2>
-      <div className="p-16">
+      <div className="p-16 flex flex-col gap-16">
         <Text
           tag="div"
           size={24}

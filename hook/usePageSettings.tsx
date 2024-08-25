@@ -33,7 +33,7 @@ export function usePageSettings<S = Base, C = Base>() {
 }
 
 function updateQueryParams(stored: Base, queryMap: QueryMap) {
-  const query = []
+  const query: Array<string> = []
   let hasKey = false
   for (const name in stored) {
     hasKey = true
@@ -121,10 +121,11 @@ export function PageSettings({
   useEffect(() => {
     const stored = get(path)
     const queried = getQueryParams(base ?? {}, queryMap, query)
-    const next = defaults({}, queried, stored, base)
+    const next = defaults({}, queried, stored, base) as Base
     updateQueryParams(next, queryMap)
     _setStored(next)
     setIsLoaded(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const setStored = useCallback(
@@ -134,7 +135,7 @@ export function PageSettings({
       updateQueryParams(next, queryMap)
       _setStored(stored)
     },
-    [path, base],
+    [path, base, queryMap],
   )
 
   return (

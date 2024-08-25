@@ -1,22 +1,23 @@
-import React from 'react'
-import { AppSettings, AppSettingsContext } from '~/hook/useAppSettings'
-import { DataStorageContextProvider } from '~/hook/useDataStorage'
-import { FontProvider } from '~/hook/useConfiguration'
+import Container from '~/component/Container'
+import MicrosoftClarity from '~/component/script/Clarity'
+import GA from '~/component/script/GA'
+import { ViewportDimensions } from '~/hook/useViewportDimensions'
+import Script from 'next/script'
 
 export default function Client({
-  settings,
   children,
 }: {
   children: React.ReactNode
-  settings: AppSettings
 }) {
   return (
-    <AppSettingsContext.Provider value={settings}>
-      <FontProvider>
-        <DataStorageContextProvider>
-          {children}
-        </DataStorageContextProvider>
-      </FontProvider>
-    </AppSettingsContext.Provider>
+    <ViewportDimensions>
+      <Container>
+        <MicrosoftClarity />
+        <GA />
+        <Script id="disable-scroll-restoration">{`window.history.scrollRestoration = "manual"`}</Script>
+        {children}
+        {/* <Analytics /> */}
+      </Container>
+    </ViewportDimensions>
   )
 }

@@ -141,7 +141,7 @@ export function calculateTrianglePositions(
   const unit = unitVector(p1, p2)
   const normal = normalVector(p1, p2)
 
-  const positions = []
+  const positions: Array<{ baseCenter: Point; tip: Point }> = []
 
   for (let i = 1; i <= triangles; i++) {
     const baseCenter = {

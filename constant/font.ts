@@ -1,200 +1,123 @@
-import FontFaceObserver from 'fontfaceobserver'
+import { Font } from '~/utility/font'
 
-export const FONT_OBSERVER_TIMEOUT = 30000
+export const FONT_NAME = [
+  'Noto Kufi Arabic',
+  'Noto Sans',
+  'Noto Sans Armenian',
+  'Noto Sans Bengali',
+  'Noto Sans Canadian',
+  'Noto Sans Cuneiform',
+  'Noto Sans Devanagari',
+  'Noto Sans Egyptian',
+  'Noto Sans Ethiopic',
+  'Noto Sans Georgian',
+  'Noto Sans Gujarati',
+  'Noto Sans Gurmukhi',
+  'Noto Sans Hebrew',
+  'Noto Sans JP',
+  'Noto Sans KR',
+  'Noto Sans Kannada',
+  'Noto Sans Khmer',
+  'Noto Sans Malayalam',
+  'Noto Sans Mono',
+  'Noto Sans Oriya',
+  'Noto Sans Runic',
+  'Noto Sans SC',
+  'Noto Sans Sinhala',
+  'Noto Sans Syriac',
+  'Noto Sans Tamil',
+  'Noto Sans Telugu',
+  'Noto Sans Thai',
+  'Noto Serif Tibetan',
+  'IMing',
+  'Mizra',
+  'Qahiri',
+  'TWKai',
+  'TWKaiExt',
+  'ToneEtch',
+  'YeZiGongChangChuanQiuShaXingKai',
+]
 
-export function addStylesheetURL(url: string) {
-  var link = document.createElement('link')
-  link.rel = 'stylesheet'
-  link.href = url
-  document.getElementsByTagName('head')[0].appendChild(link)
+export type FontName = (typeof FONT_NAME)[number]
+
+export type Fonts = Record<string, Font>
+
+const FONT: Fonts = {
+  'Noto Sans Mono': {
+    google: true,
+    family: 'Noto Sans Mono',
+    test: '\u0128\u0300\u0301\u0329\u0308\u0303\u0323\u01AF\u0129\u1EA0',
+    styles: [
+      {
+        weight: 400,
+      },
+      {
+        weight: 700,
+      },
+    ],
+  },
+  'Noto Sans SC': {
+    google: true,
+    family: 'Noto Sans SC',
+    test: '类家庭',
+    styles: [
+      {
+        weight: 400,
+      },
+      {
+        weight: 700,
+      },
+    ],
+  },
+  'Noto Serif Tibetan': {
+    google: true,
+    family: 'Noto Serif Tibetan',
+    test: 'སེང',
+
+    styles: [
+      {
+        weight: 400,
+      },
+      {
+        weight: 700,
+      },
+    ],
+  },
+  'Tone Etch': {
+    family: 'ToneEtch',
+    test: 'abc',
+  },
 }
 
-export type GoogleFontStyleDeclaration = {
-  italic?: boolean
-  weight: number
-}
+// amharic: ['Noto Sans Ethiopic', 'ጥበብ'],
+//   arabic: ['Noto Kufi Arabic', 'حديقة'],
+//   armenian: ['Noto Sans Armenian'],
+//   bengali: ['Noto Sans Bengali'],
+//   canadian: ['Noto Sans Canadian Aboriginal', 'ᕿᓚᓗᒐᖅ'],
+//   chinese: ['Noto Sans SC', '晓'],
+//   cuneiform: ['Noto Sans Cuneiform'],
+//   devanagari: ['Noto Sans Devanagari', 'टोकरी'],
+//   egyptian: ['Noto Sans Egyptian Hieroglyphs'],
+//   georgian: ['Noto Sans Georgian', 'ფრჩხილი'],
+//   gujarati: ['Noto Sans Gujarati'],
+//   gurmukhi: ['Noto Sans Gurmukhi'],
+//   hebrew: ['Noto Sans Hebrew', 'אזהרה'],
+//   hindi: ['Noto Sans Devanagari', 'टोकरी'],
+//   inuktitut: ['Noto Sans Canadian Aboriginal', 'ᕿᓚᓗᒐᖅ'],
+//   japanese: ['Noto Sans JP', 'ばった'],
+//   kannada: ['Noto Sans Kannada'],
+//   khmer: ['Noto Sans Khmer'],
+//   korean: ['Noto Sans KR'],
+//   latin: ['Noto Sans Mono', 'IEAOU'],
+//   malayalam: ['Noto Sans Malayalam'],
+//   oriya: ['Noto Sans Oriya'],
+//   runic: ['Noto Sans Runic'],
+//   sanskrit: ['Noto Sans Devanagari', 'टोकरी'],
+//   sinhala: ['Noto Sans Sinhala'],
+//   syriac: ['Noto Sans Syriac'],
+//   tamil: ['Noto Sans Tamil', 'புஷ்பம்'],
+//   telugu: ['Noto Sans Telugu'],
+//   thai: ['Noto Sans Thai', 'บ้าน'],
+//   tibetan: ['Noto Serif Tibetan', 'སེང'],
 
-export type GoogleFontDeclaration = {
-  google: true
-  family: string
-  string?: string
-  styles: Array<GoogleFontStyleDeclaration>
-}
-
-export type FontDataType = {
-  family: string
-  string: string
-}
-
-export async function loadFonts(
-  fonts: Array<FontDataType | GoogleFontDeclaration>,
-) {
-  const localFonts = fonts.filter(x => !('google' in x))
-  const googleFonts = fonts.filter(x => 'google' in x && x.google)
-
-  await Promise.all([
-    loadLocalFonts(localFonts as any),
-    loadGoogleFonts(googleFonts as any),
-  ])
-
-  // await wait(160)
-}
-
-export async function loadLocalFonts(fonts: Array<FontDataType>) {
-  const promiseList: Array<Promise<FontFaceObserverResult>> = []
-
-  for (const font of fonts) {
-    const promise = makeFontFaceObserver(font)
-    promiseList.push(promise)
-  }
-
-  const result = await Promise.all(promiseList)
-  // TODO: maybe send an error back if one failed.
-}
-
-export async function loadGoogleFonts(
-  fonts: Array<GoogleFontDeclaration>,
-) {
-  if (!(await loadGoogleFontCss(fonts))) {
-    // already loaded
-    return Promise.resolve()
-  }
-  const promiseList: Array<Promise<FontFaceObserverResult>> = []
-
-  for (const font of fonts) {
-    const promise = makeFontFaceObserver(font)
-    promiseList.push(promise)
-  }
-
-  const result = await Promise.all(promiseList)
-  // TODO: maybe send an error back if one failed.
-}
-
-export type FontFaceObserverResult =
-  | FontFaceObserverRise
-  | FontFaceObserverFall
-
-export type FontFaceObserverRise = {
-  form: 'rise'
-  font: GoogleFontDeclaration | FontDataType
-}
-
-export type FontFaceObserverFall = {
-  form: 'kink'
-  kink: any
-  font: GoogleFontDeclaration | FontDataType
-}
-
-async function makeFontFaceObserver(
-  font: GoogleFontDeclaration | FontDataType,
-) {
-  return new Promise<FontFaceObserverResult>(async res => {
-    let attempt = 0
-
-    while (true) {
-      try {
-        const observer = new FontFaceObserver(font.family)
-        await observer.load(font.string, FONT_OBSERVER_TIMEOUT)
-        return res({
-          form: 'rise',
-          font,
-        })
-      } catch (e) {
-        console.error(e)
-        if (attempt === 2) {
-          return res({
-            form: 'kink',
-            kink: e,
-            font,
-          })
-        }
-      }
-
-      attempt++
-    }
-  })
-}
-
-const loadGoogleFontStyle = (url: string) => {
-  // addStylesheetURL(url)
-
-  return new Promise<void>(res => {
-    var xhr = new XMLHttpRequest()
-    xhr.open('GET', url, true)
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState == 4 && xhr.status == 200) {
-        let css = xhr.responseText
-        css = css.replace(/}/g, 'font-display: swap; }')
-
-        const head = document.getElementsByTagName('head')[0]
-        const style = document.createElement('style')
-        style.appendChild(document.createTextNode(css))
-        head.appendChild(style)
-
-        res()
-      }
-    }
-    xhr.send()
-  })
-}
-
-export async function loadGoogleFontCss(
-  fonts: Array<GoogleFontDeclaration>,
-) {
-  const list: Array<string> = []
-  for (const dec of fonts) {
-    const italics = dec.styles.filter(x => x.italic)
-    const regulars = dec.styles.filter(x => !x.italic)
-    const text: Array<string> = []
-    text.push(`family=${dec.family.replace(/\s+/g, '+')}:`)
-
-    const types: Array<string> = []
-
-    if (italics.length) {
-      types.push(`ital`)
-    }
-
-    if (regulars.length) {
-      types.push(`wght`)
-    }
-
-    text.push(`${types.join(',')}@`)
-
-    const weights: Array<string> = []
-
-    regulars.forEach(x => {
-      const key = `${dec.family}:regular:${x.weight}`
-      // if (!LOADED_FONTS[key]) {
-      weights.push(`${italics.length ? '0,' : ''}${x.weight}`)
-      //   LOADED_FONTS[key] = true
-      // }
-    })
-
-    italics.forEach(x => {
-      const key = `${dec.family}:italic:${x.weight}`
-      // if (!LOADED_FONTS[key]) {
-      weights.push(`${regulars.length ? '1,' : ''}${x.weight}`)
-      //   LOADED_FONTS[key] = true
-      // }
-    })
-
-    if (weights.length) {
-      text.push(weights.join(';'))
-
-      list.push(text.join(''))
-    }
-  }
-
-  if (list.length) {
-    const link = `https://fonts.googleapis.com/css2?${list.join(
-      '&',
-    )}&display=swap`
-
-    // addStylesheetURL(link)
-    await loadGoogleFontStyle(link)
-
-    return true
-  }
-
-  return false
-}
+export default FONT

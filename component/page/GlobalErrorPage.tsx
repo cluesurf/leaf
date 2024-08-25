@@ -10,13 +10,11 @@ export default function GlobalErrorPage({
 }: ErrorPageInput) {
   return (
     <div className="relative">
-      <div className="px-16 flex flex-col gap-16 items-center">
-        <H1 className="text-center">Error</H1>
-        <P>Something went wrong!</P>
-        <P className="whitespace-pre-wrap">{error.digest}</P>
-        <div className="flex justify-center">
-          <Button onClick={() => reset()}>Try again</Button>
-        </div>
+      <H1 className="text-center">Error</H1>
+      <P>Something went wrong!</P>
+      <P className="whitespace-pre-wrap">{error.digest}</P>
+      <div className="flex justify-center">
+        <Button onClick={() => reset()}>Try again</Button>
       </div>
       {children}
     </div>

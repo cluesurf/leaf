@@ -2,7 +2,8 @@ import React from 'react'
 import Link from 'next/link'
 import MenuIcon from '~/component/icon/Menu'
 import TriangleUpIcon from '~/component/icon/TriangleUp'
-import { NavigationBottom, NavigationTop } from '~/component/navigation'
+import NavigationTop from '~/component/navigation/Top'
+import NavigationBottom from '~/component/navigation/Bottom'
 
 export function useNavigation({
   onMenuOpen,

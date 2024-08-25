@@ -1,37 +1,14 @@
 import React, { useEffect, useState } from 'react'
+import cx from 'classnames'
 import {
   NavigationBindingInput,
   NavigationInput,
-  NavigationOverlay,
   bindTrigger,
   checkScrollDirectionIsUp,
-} from './utility'
-import { ViewportLayoutFill } from '../ViewportGrid'
-import cx from 'classnames'
+} from '~/component/navigation'
+import NavigationOverlay from './Overlay'
+import { ViewportLayoutFill } from '~/component/ViewportGrid'
 import { useViewportLayoutFill } from '~/hook/useViewportLayout'
-
-// type NavigationOverlayInput = {
-//   children: React.ReactNode
-// }
-
-// export function NavigationOverlay({ children }: NavigationOverlayInput) {
-//   const c = [
-//     C.backgroundFillBase3,
-//     C.flex,
-//     C.column,
-//     C.gap16,
-//     // C.height100VhMinus64,
-//     // C.top64,
-//     C.paddingBottom16,
-//     C.paddingBottom16,
-//     C.scrollY,
-//     C.positionFixed,
-//     C.width100P,
-//     // C.widthMax720,
-//     // C.zIndex1001,
-//   ]
-//   return <div className={c.join(' ')}>{children}</div>
-// }
 
 type NavInput = {
   children: React.ReactNode
@@ -75,7 +52,7 @@ function Container({
   )
 }
 
-export function NavigationBottom(
+export default function NavigationBottom(
   props: NavigationInput & {
     x?: NavigationBindingInput
   },

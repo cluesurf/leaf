@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
+import cx from 'classnames'
 import {
   NavigationInput,
-  NavigationOverlay,
   bindTrigger,
   checkScrollDirectionIsUp,
-} from './utility'
-import { ViewportLayoutFill } from '../ViewportGrid'
-import cx from 'classnames'
+} from '.'
+import NavigationOverlay from './Overlay'
+import { ViewportLayoutFill } from '~/component/ViewportGrid'
 import { useViewportLayoutFill } from '~/hook/useViewportLayout'
 
 type NavInput = {
@@ -51,7 +51,7 @@ function Container({
   )
 }
 
-export function NavigationTop(props: NavigationInput) {
+export default function NavigationTop(props: NavigationInput) {
   const [showMenu, setShowMenu] = useState(false)
   const [fadeMenu, setFadeMenu] = useState(false)
   const [dropMenu, setDropMenu] = useState(true)

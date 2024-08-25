@@ -6,14 +6,12 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import {
-  ConfigurationContext,
-  FontContext,
-  FontContextInput,
-  getScriptFont,
-} from '~/hook/useConfiguration'
 import cx from 'classnames'
 import tone from '@termsurf/tone'
+import FontsContext, { FontsContextInput } from '~/context/FontsContext'
+import useSettings from '~/hook/useSettings'
+import { getScriptFont } from '~/utility/font'
+import { FontName } from '~/constant/font'
 
 const processors = {
   tone: (text: string) => tone.make(text),
@@ -34,7 +32,7 @@ export type TInput = {
   tag?: keyof JSX.IntrinsicElements
 } & React.ComponentPropsWithoutRef<any>
 
-function checkFonts(state: FontContextInput, fonts: Array<string>) {
+function checkFonts(state: FontsContextInput, fonts: Array<FontName>) {
   for (const font of fonts) {
     if (!state.fonts[font]) {
       return false
@@ -55,10 +53,10 @@ export function useText(
   font: string | Array<string> | undefined,
   script?: string | Array<string> | undefined,
 ) {
-  const state = useContext(FontContext)
-  const config = useContext(ConfigurationContext)
+  const state = useContext(FontsContext)
+  const scriptConfig = useSettings('scripts')
 
-  const fonts = useMemo(() => {
+  const fonts = useMemo<Array<FontName>>(() => {
     if (Array.isArray(font)) {
       return font
     }
@@ -67,17 +65,19 @@ export function useText(
       return [font]
     }
 
-    if (script && config) {
+    console.log('scriptConfig', scriptConfig)
+
+    if (script && scriptConfig) {
       const scripts = Array.isArray(script) ? script : [script]
       const scriptFonts = scripts.map(script =>
-        getScriptFont(config.data, script, 'modern'),
+        getScriptFont(scriptConfig, script),
       )
 
       return scriptFonts
     }
 
     return ['Noto Sans Mono']
-  }, [font, script, config])
+  }, [font, script, scriptConfig])
 
   const checked = checkFonts(state, fonts)
   const [hasWaited, setHasWaited] = useState(checked)
@@ -137,6 +137,7 @@ export default function Text({
   const text = processor
     ? processors[processor](value!)
     : (value ?? children)!
+
   const [isStarting, isReady, hasWaited, fontClassName] = useText(
     font,
     script,

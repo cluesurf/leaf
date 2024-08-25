@@ -1,6 +1,15 @@
-export type MimeType = {
-  mime: string
-  extensions: Array<string>
+
+export type NestedObjectType = {
+  [key: string]: NestedObjectValueType
 }
 
-export type MimeTypes = Record<string, MimeType>
+export type NestedObjectValueType =
+  | NestedObjectType
+  | string
+  | boolean
+  | number
+  | null
+  | undefined
+  | Array<
+      NestedObjectType | string | boolean | number | null | undefined
+    >
