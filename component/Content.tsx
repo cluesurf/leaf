@@ -232,8 +232,8 @@ export function P({
         align === 'center'
           ? `text-center`
           : align === 'right'
-          ? 'text-right'
-          : undefined,
+            ? 'text-right'
+            : undefined,
         type === 'secondary'
           ? 'text-gray-500 dark:text-gray-600'
           : 'text-gray-700 dark:text-gray-400',
@@ -278,16 +278,19 @@ export function Table({ children }: TableInput) {
       return
     }
 
-    const columnList = ref.current.querySelectorAll('.fixed-column-cue')
+    const columnList = Array.prototype.slice.call(
+      ref.current.querySelectorAll('.fixed-column-cue'),
+    )
 
     for (const column of columnList) {
       const th = column.closest('th')
       if (th) {
         const index = th.cellIndex
-        const tdList: NodeListOf<HTMLTableCellElement> =
+        const tdList = Array.prototype.slice.call(
           ref.current.querySelectorAll(
             `tbody tr td:nth-child(${index + 1})`,
-          )
+          ),
+        )
 
         const rect = th.getBoundingClientRect()
         th.style.width = `${rect.width}px`
@@ -482,8 +485,8 @@ export function H1({
         align === 'center'
           ? `text-center`
           : align === 'right'
-          ? 'text-right'
-          : undefined,
+            ? 'text-right'
+            : undefined,
       )}
     >
       {children}
@@ -518,8 +521,8 @@ export function H2({
         align === 'center'
           ? `text-center`
           : align === 'right'
-          ? 'text-right'
-          : undefined,
+            ? 'text-right'
+            : undefined,
       )}
     >
       {children}
@@ -555,8 +558,8 @@ export function H3({
         align === 'center'
           ? `text-center`
           : align === 'right'
-          ? 'text-right'
-          : undefined,
+            ? 'text-right'
+            : undefined,
         'font-bold mb-24 border-0 border-solid border-gray-100 pt-8 mx-16 text-gray-700 dark:text-gray-400 leading-content',
         border ? `border-b-4` : undefined,
       )}
