@@ -1,7 +1,7 @@
 import Emitter from 'eventemitter3'
 import { Record as IRecord, Stack, List, Map } from 'immutable'
 import defaults from 'lodash/defaults'
-import isEqual from 'lodash/isequal'
+import isEqual from 'lodash/isEqual'
 
 export type IMode = 'command' | 'input' | 'default' | 'delegate'
 
@@ -15,8 +15,11 @@ export type Callbacks = {
 
 export default class InteractionManager extends Emitter {
   callbacks: Record<string, Callbacks>
+
   history: History
+
   mode: IMode
+
   loaded: boolean
 
   constructor() {
@@ -137,7 +140,9 @@ class History extends IRecord(DEFAULTS) {
    * Go back to previous state. Return itself if no previous state.
    */
   undo(current: IState) {
-    if (!this.canUndo) return this
+    if (!this.canUndo) {
+      return this
+    }
 
     return this.merge({
       undos: this.undos.pop(),
@@ -149,7 +154,9 @@ class History extends IRecord(DEFAULTS) {
    * Go to next state. Return itself if no next state
    */
   redo(current: IState) {
-    if (!this.canRedo) return this
+    if (!this.canRedo) {
+      return this
+    }
 
     return this.merge({
       undos: this.undos.push(current),

@@ -28,7 +28,7 @@ export function Item({
   return href ? (
     <li className="font-medium list-none block even:bg-gray-100 bg-gray-200 font-NotoSansMono hover:opacity-70 transition-all text-lg">
       <Link
-        className="flex w-full justify-between p-16 no-underline"
+        className="flex w-full items-center justify-between p-16 no-underline"
         href={href}
         target={target}
       >

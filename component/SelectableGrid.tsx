@@ -65,7 +65,6 @@ export function SelectableGrid({
 
   const onKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLElement>) => {
-      console.log(event)
       switch (event.key) {
         case 'Enter':
           event.preventDefault()
@@ -338,8 +337,6 @@ export class SelectableGridManager {
     if (!row?.[c]) {
       return
     }
-
-    console.log(this.multiple, this.selected, r, c)
 
     if (this.multiple) {
       this.selected[`${r}:${c}`] = true

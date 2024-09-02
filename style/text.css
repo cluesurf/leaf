@@ -1,5 +1,5 @@
 @font-face {
-  font-family: ToneEtch;
+  font-family: Tone Etch;
   src: url('/font/ToneEtch.otf') format('opentype');
   font-style: normal;
   font-weight: normal;
@@ -7,7 +7,7 @@
 }
 
 .font-ToneEtch {
-  font-family: 'ToneEtch';
+  font-family: 'Tone Etch';
 }
 
 .font-NotoEmoji {

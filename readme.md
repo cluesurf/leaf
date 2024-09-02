@@ -18,6 +18,16 @@
 
 This is the UI kit used in TermSurf products. If you are working on one of the open source TermSurf websites, we are using this UI library internally. Add any components you need here, if necessary, so they can be shared across the TermSurf apps.
 
+## Usage
+
+```bash
+pnpm add @termsurf/leaf
+```
+
+```tsx
+<Button />
+```
+
 ## Development
 
 ```

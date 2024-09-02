@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import React, {
   CSSProperties,
   useContext,
@@ -64,8 +65,6 @@ export function useText(
     if (font) {
       return [font]
     }
-
-    console.log('scriptConfig', scriptConfig)
 
     if (script && scriptConfig) {
       const scripts = Array.isArray(script) ? script : [script]

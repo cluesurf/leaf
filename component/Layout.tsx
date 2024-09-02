@@ -15,6 +15,7 @@ import Loading from '~/component/Loading'
 import NavigationOverlay from './navigation/Overlay'
 import useFonts from '~/hook/useFonts'
 import { FontName } from '~/constant/font'
+import HomeIcon from './icon/Home'
 
 export type LayoutInput = {
   fonts?: Array<FontName>
@@ -38,7 +39,7 @@ export default function Layout({
   right: rightContent,
   menu: menuContent,
   configuration: configurationContent,
-  logo,
+  logo = <HomeIcon />,
   fonts = ['Noto Sans Mono'],
 }: LayoutInput) {
   const isFontLoaded = useFonts(fonts)
@@ -57,8 +58,6 @@ export default function Layout({
   const onOpenConfiguration = () => {
     setConfiguration(configurationContent)
   }
-
-  const handleOpenConfiguration = () => {}
 
   const leftIsHidden = layout.width < 804
   const rightIsHidden = layout.width < 1056
@@ -155,7 +154,7 @@ export default function Layout({
   const navigation = useNavigation({
     bottom,
     up,
-    top: layout.width === 0 ? undefined : topContent,
+    top: topContent,
     logo,
     onMenuOpen: handleMenuOpen,
     bottomNavigationClassName,
@@ -167,7 +166,7 @@ export default function Layout({
   useEffect(() => {
     navigationContext.setTopIsVisible(showNavigationTop)
     navigationContext.setBottomIsVisible(showNavigationBottom)
-  }, [showNavigationTop, showNavigationBottom])
+  }, [showNavigationTop, showNavigationBottom, navigationContext])
 
   return (
     <>
@@ -180,14 +179,14 @@ export default function Layout({
           middleClassName="bg-white dark:bg-gray-950"
           left={
             leftIsHidden || !isFontLoaded ? undefined : (
-              <div className="h-full w-full bg-gray-100 dark:bg-gray-900">
+              <div className="h-full w-full bg-gray-50 dark:bg-gray-900">
                 {leftContent}
               </div>
             )
           }
           right={
             rightIsHidden || !isFontLoaded ? undefined : (
-              <div className="h-full w-full bg-gray-100 dark:bg-gray-900">
+              <div className="h-full w-full bg-gray-50 dark:bg-gray-900">
                 {right}
               </div>
             )

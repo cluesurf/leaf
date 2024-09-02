@@ -6,7 +6,7 @@ import {
 
 export type Setting = keyof SettingsType
 
-export type SettingsInput = Record<Setting, () => Promise<any>>
+export type SettingsInput = Record<string, () => Promise<any>>
 
 export default function Settings({
   value = {},
@@ -32,7 +32,7 @@ export default function Settings({
       setState(state as SettingsType)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keys.join(':')])
+  }, [value])
 
   return (
     <SettingsContext.Provider value={state}>

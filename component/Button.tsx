@@ -134,7 +134,7 @@ export function Button({
   const sizeClassName = getSizeClassNames(size, ghost)
 
   return (
-    <T
+    <button
       className={cx(
         className,
         sizeClassName,
@@ -153,11 +153,9 @@ export function Button({
         align === 'right' ? 'justify-end' : undefined,
       )}
       {...props}
-      tag="button"
-      font={font}
     >
-      {children}
-    </T>
+      <T font={font}>{children}</T>
+    </button>
   )
 }
 

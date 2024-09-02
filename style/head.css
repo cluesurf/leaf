@@ -671,7 +671,12 @@ time {
 }
 
 .katex {
-  font-size: 180% !important;
+  font-size: 110% !important;
+  font-family:
+    Noto Sans Mono,
+    KaTeX_Main,
+    Times New Roman,
+    serif;
 }
 
 .lds-ellipsis {

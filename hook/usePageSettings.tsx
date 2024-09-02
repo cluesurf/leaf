@@ -1,4 +1,4 @@
-import kebabCase from 'lodash/kebabcase'
+import kebabCase from 'lodash/kebabCase'
 import defaults from 'lodash/defaults'
 import {
   createContext,

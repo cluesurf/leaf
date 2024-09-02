@@ -6,7 +6,7 @@ import React, {
 } from 'react'
 import classNames from 'classnames'
 import chunk from 'lodash/chunk'
-import isEqual from 'lodash/isequal'
+import isEqual from 'lodash/isEqual'
 import { useSize } from '~/hook/useSize'
 
 type Align = 'center' | 'left'

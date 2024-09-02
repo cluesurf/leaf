@@ -1,7 +1,7 @@
 import { useContext, useLayoutEffect, useState } from 'react'
 import { FontName } from '~/constant/font'
 import FontsContext from '~/context/FontsContext'
-import { loadFonts } from '~/utility/font'
+import { Font, loadFonts } from '~/utility/font'
 import useSettings from './useSettings'
 
 export default function useFonts(list: Array<FontName> = []) {
@@ -10,7 +10,9 @@ export default function useFonts(list: Array<FontName> = []) {
   const FONT = useSettings('fonts')
 
   useLayoutEffect(() => {
-    const fonts = FONT ? list.map(family => FONT[family]) : []
+    const fonts: Array<Font> = FONT
+      ? list.map(family => FONT[family])
+      : []
     loadFonts(fonts)
       .then(() => {
         setIsLoaded(true)

@@ -34,7 +34,7 @@ export const FONT_NAME = [
   'Qahiri',
   'TWKai',
   'TWKaiExt',
-  'ToneEtch',
+  'Tone Etch',
   'YeZiGongChangChuanQiuShaXingKai',
 ]
 
@@ -84,7 +84,7 @@ const FONT: Fonts = {
     ],
   },
   'Tone Etch': {
-    family: 'ToneEtch',
+    family: 'Tone Etch',
     test: 'abc',
   },
 }

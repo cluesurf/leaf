@@ -271,7 +271,7 @@ const SCRIPT: Record<ScriptName, ScriptFonts> = {
     default: 'modern',
     font: 'modern',
     fonts: {
-      modern: 'ToneEtch',
+      modern: 'Tone Etch',
     },
   },
 }

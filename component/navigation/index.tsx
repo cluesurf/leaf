@@ -35,7 +35,7 @@ export type NavigationContextValues = {
 
 export const NavigationContext = createContext<NavigationContextValues>(
   {
-    topIsVisible: false,
+    topIsVisible: true,
     setTopIsVisible: (val: boolean | SetStateAction<boolean>) => {},
     bottomIsVisible: false,
     setBottomIsVisible: (val: boolean | SetStateAction<boolean>) => {},
