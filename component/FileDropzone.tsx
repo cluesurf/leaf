@@ -22,6 +22,7 @@ export default function FileDropzone({
   bottomed,
   borderClassName,
   font = 'Noto Sans Mono',
+  simulateDragging = false,
 }: {
   font?: string | Array<string>
   color?: InputColor
@@ -33,6 +34,7 @@ export default function FileDropzone({
   multiple?: boolean
   onDrop?: (files: Array<File>) => void
   borderClassName?: string
+  simulateDragging?: boolean
 }) {
   const [isStarting, isFontReady, hasFontWaited, fontClassName] =
     useText(font)
@@ -73,8 +75,8 @@ export default function FileDropzone({
   const colorClass = color && INPUT_COLOR[color]
   const waitingColorClass = color && INPUT_WAITING[color]
 
-  let backgroundColorClass
-  let textColorClass
+  let backgroundColorClass: string | undefined
+  let textColorClass: string | undefined
 
   if (isStarting || (isFontReady && hasFontWaited)) {
     backgroundColorClass = colorClass
@@ -102,7 +104,7 @@ export default function FileDropzone({
         className={cx(
           'transition-all duration-200',
           'absolute top-0 bottom-0 right-0 left-0 border-4',
-          isDragActive
+          isDragActive || simulateDragging
             ? cx(borderClassName, roundedClassName, `border-dashed`)
             : undefined,
         )}

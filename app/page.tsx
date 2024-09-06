@@ -54,6 +54,8 @@ import Environment from '~/component/Environment'
 import { FONT, SCRIPT } from '~/constant/settings'
 import useFonts from '~/hook/useFonts'
 import Loading from '~/component/Loading'
+import FileDropzone from '~/component/FileDropzone'
+import Dots from '~/component/Dots'
 
 const FONT_LIST = [
   'Noto Sans Mono',
@@ -162,6 +164,22 @@ function Content() {
         ))}
       </div>
       <H2>File Dropzone</H2>
+
+      <div className="p-16">
+        <FileDropzone
+          simulateDragging
+          color="base"
+        >
+          drop file
+        </FileDropzone>
+      </div>
+      <H2>Loading</H2>
+
+      <div className="p-16">
+        <div className="bg-gray-800 w-64 h-32 flex justify-center items-center rounded-sm">
+          <Dots />
+        </div>
+      </div>
       <H2>Icon</H2>
       <div className="p-16">
         <Grid

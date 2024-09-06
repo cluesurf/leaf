@@ -9,19 +9,19 @@ export type Setting = keyof SettingsType
 export type SettingsInput = Record<string, () => Promise<any>>
 
 export default function Settings({
-  value = {},
+  value,
   children,
 }: {
   value?: object
   children: React.ReactNode
 }) {
   const [state, setState] = useState<SettingsType>({})
-  const keys = Object.keys(value)
+  const keys = value ? Object.keys(value) : []
 
   useEffect(() => {
     Promise.all(
       keys.map(key => {
-        return value[key]().then(data => ({ key, data }))
+        return value?.[key]().then(data => ({ key, data }))
       }),
     ).then(results => {
       const state = results.reduce((m, x) => {
