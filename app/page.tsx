@@ -116,13 +116,9 @@ export default function Page() {
 }
 
 function Content() {
-  const isReady = useFonts(NECESSARY_FONT_LIST)
+  useFonts(NECESSARY_FONT_LIST)
 
   useFonts(FONT_LIST)
-
-  if (!isReady) {
-    return <Loading />
-  }
 
   return (
     <>
@@ -131,6 +127,29 @@ function Content() {
         Welcome to TermSurf&apos;s Leaf UI kit. Here is an overview of
         the components. Click into each one to see variations.
       </P>
+      <H2>Font</H2>
+      <div className="p-16 flex flex-col gap-16">
+        {/* <Text
+          tag="div"
+          size={24}
+        >
+          hello
+        </Text> */}
+        {/* <Text
+          tag="div"
+          script="chinese"
+          size={32}
+        >
+          鉴于对人类家庭所有成员的固
+        </Text> */}
+        <Text
+          tag="div"
+          script="tibetan"
+          size={32}
+        >
+          དགའ་ལྡན་
+        </Text>
+      </div>
       <H2 className="flex justify-between cursor-pointer items-center">
         <span>Button</span>
         <Link href="/button">
@@ -377,29 +396,6 @@ function Content() {
             </TR>
           </TBody>
         </Table>
-      </div>
-      <H2>Font</H2>
-      <div className="p-16 flex flex-col gap-16">
-        <Text
-          tag="div"
-          size={24}
-        >
-          hello
-        </Text>
-        <Text
-          tag="div"
-          script="chinese"
-          size={32}
-        >
-          鉴于对人类家庭所有成员的固
-        </Text>
-        <Text
-          tag="div"
-          script="tibetan"
-          size={32}
-        >
-          དགའ་ལྡན་
-        </Text>
       </div>
       <H2>Switch</H2>
       <div className="p-16">

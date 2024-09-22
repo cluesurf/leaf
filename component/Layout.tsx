@@ -42,7 +42,8 @@ export default function Layout({
   logo = <HomeIcon />,
   fonts = ['Noto Sans Mono'],
 }: LayoutInput) {
-  const isFontLoaded = useFonts(fonts)
+  useFonts(fonts)
+
   const [menu, setMenu] = useState<React.ReactNode>()
   const [configuration, setConfiguration] = useState<React.ReactNode>()
   const navigationContext = useContext(NavigationContext)
@@ -179,28 +180,24 @@ export default function Layout({
           scrollerRef={scrollerRef}
           middleClassName="bg-white dark:bg-gray-950"
           left={
-            leftIsHidden || !isFontLoaded ? undefined : (
+            leftIsHidden ? undefined : (
               <div className="h-full w-full bg-gray-50 dark:bg-gray-900">
                 {leftContent}
               </div>
             )
           }
           right={
-            rightIsHidden || !isFontLoaded ? undefined : (
+            rightIsHidden ? undefined : (
               <div className="h-full w-full bg-gray-50 dark:bg-gray-900">
                 {right}
               </div>
             )
           }
           middle={
-            isFontLoaded ? (
-              <div className="relative pt-32 min-h-screen-minus-nav flex flex-col justify-between">
-                <main className="relative flex-1">{children}</main>
-                {/* {!hideFooter && <Footer />} */}
-              </div>
-            ) : (
-              <Loading />
-            )
+            <div className="relative pt-32 min-h-screen-minus-nav flex flex-col justify-between">
+              <main className="relative flex-1">{children}</main>
+              {/* {!hideFooter && <Footer />} */}
+            </div>
           }
           middleOverlay={middleOverlay}
         />

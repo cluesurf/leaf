@@ -34,7 +34,7 @@ export type TInput = {
 } & React.ComponentPropsWithoutRef<any>
 
 function checkDocumentFont(text: string) {
-  return typeof document !== 'undefined' && document.fonts.check(text)
+  return false //typeof document !== 'undefined' && document.fonts.check(text)
 }
 
 function checkFonts(state: FontsContextInput, fonts: Array<FontName>) {
@@ -124,21 +124,24 @@ export default function Text({
     : (value ?? children)!
 
   const [isReady, fontClassName, hiding] = useText(font, script)
+  const [startedReady] = useState(!hiding)
   const [isRendered, setIsRendered] = useState(!hiding)
   const [transitionState, setTransitionState] = useState<string>()
   const [animated, setAnimated] = useState(false)
 
-  useLayoutEffect(() => {
-    if (isReady) {
+  useEffect(() => {
+    if (startedReady) {
+      setTransitionState('fade-in')
+    } else if (isReady) {
       if (!isRendered) {
         setTransitionState('fade-in')
       } else {
         setTransitionState('fade-out')
       }
     }
-  }, [isReady])
+  }, [isReady, startedReady])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setIsRendered(!hiding)
   }, [hiding, isReady])
 

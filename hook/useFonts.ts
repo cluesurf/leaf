@@ -5,7 +5,6 @@ import { Font, loadFonts } from '~/utility/font'
 import useSettings from './useSettings'
 
 export default function useFonts(list: Array<FontName> = []) {
-  const [isLoaded, setIsLoaded] = useState(false)
   const state = useContext(FontsContext)
   const FONT = useSettings('fonts')
 
@@ -13,28 +12,17 @@ export default function useFonts(list: Array<FontName> = []) {
     const fonts: Array<Font> = FONT
       ? list.map(family => FONT[family])
       : []
-    loadFonts(fonts)
-      .then(() => {
-        setIsLoaded(true)
 
-        const fonts = list.reduce<Record<string, boolean>>(
-          (m, family) => {
-            if (FONT && FONT[family]) {
-              m[family] = true
-            }
-            return m
-          },
-          {},
-        )
+    for (const font of fonts) {
+      loadFonts([font])
+        .then(() => {
+          state.update(f => ({ ...f, [font.family]: true }))
+        })
+        .catch(e => {
+          console.error(e)
+        })
+    }
 
-        state.update(f => ({ ...f, ...fonts }))
-      })
-      .catch(e => {
-        console.error(e)
-        setIsLoaded(false)
-      })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list.join(':'), FONT])
-
-  return isLoaded
 }
