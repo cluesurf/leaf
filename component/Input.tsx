@@ -4,7 +4,9 @@ import React, {
   MutableRefObject,
   RefObject,
   useEffect,
+  useLayoutEffect,
   useRef,
+  useState,
 } from 'react'
 import cx from 'classnames'
 import { useText } from './Text'
@@ -71,29 +73,34 @@ function Input(
 ) {
   const { value, onChange, ...rest } = props
   const ref = useRef<HTMLInputElement>(null)
-  const [isStarting, isFontReady, hasFontWaited, fontClassName] =
-    useText(font)
+  const [isReady, fontClassName, hiding] = useText(font)
+  const [isRendered, setIsRendered] = useState(!hiding)
+  const [transitionState, setTransitionState] = useState<string>()
+  const [animated, setAnimated] = useState(false)
+
+  useLayoutEffect(() => {
+    if (isReady) {
+      if (!isRendered) {
+        setTransitionState('fade-in')
+      } else {
+        setTransitionState('fade-out')
+      }
+    }
+  }, [isReady])
+
+  useLayoutEffect(() => {
+    setIsRendered(!hiding)
+  }, [hiding, isReady])
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     onChange?.(e)
   }
 
   const rounded = getRoundedClass(labelled, bottomed)
-  const colorClass = color && INPUT_COLOR[color]
-  const waitingColorClass = color && INPUT_WAITING[color]
 
-  let backgroundColorClass
-  let textColorClass
+  let textColorClass = `placeholder:italic`
 
-  if (isStarting || (isFontReady && hasFontWaited)) {
-    backgroundColorClass = colorClass
-    textColorClass = `${fontClassName} placeholder:italic`
-  } else if (hasFontWaited) {
-    backgroundColorClass = waitingColorClass
-    textColorClass = `text-transparent placeholder:text-transparent`
-  } else {
-    textColorClass = `text-transparent placeholder:text-transparent`
-  }
+  const backgroundColorClass = color && INPUT_COLOR[color]
 
   return (
     <div
@@ -113,8 +120,15 @@ function Input(
         onChange={handleChange}
         autoComplete={autoComplete}
         spellCheck={spellCheck}
+        onTransitionEnd={() => {
+          setAnimated(true)
+          setTransitionState('fade-in')
+        }}
         className={cx(
           textColorClass,
+          animated ? `transition-opacity` : undefined,
+          hiding ? `opacity-0` : `opacity-1`,
+          isReady ? fontClassName : `${fontClassName}-fallback`,
           size === 'small' ? 'text-sm' : undefined,
           size === 'small' ? 'h-32' : 'h-48',
           'bg-transparent block w-full py-8',

@@ -56,6 +56,7 @@ import useFonts from '~/hook/useFonts'
 import Loading from '~/component/Loading'
 import FileDropzone from '~/component/FileDropzone'
 import Dots from '~/component/Dots'
+import SettingsOverlay from '~/component/SettingsOverlay'
 
 const FONT_LIST = [
   'Noto Sans Mono',
@@ -97,8 +98,18 @@ function ControlledSwitch(props: any) {
 }
 
 export default function Page() {
+  // const handleHide
+  // const [configuration, setConfiguration] = useState<React.ReactNode>(
+  //   <SettingsOverlay onHide={}>
+  //     <div className="bg-red-400 w-full h-256" />
+  //   </SettingsOverlay>,
+  // )
+
   return (
-    <Environment settings={{ fonts: FONT, scripts: SCRIPT }}>
+    <Environment
+      // configuration={configuration}
+      settings={{ fonts: FONT, scripts: SCRIPT }}
+    >
       <Content />
     </Environment>
   )
@@ -170,7 +181,7 @@ function Content() {
           simulateDragging
           color="base"
         >
-          drop file
+          <Text>drop file</Text>
         </FileDropzone>
       </div>
       <H2>Loading</H2>

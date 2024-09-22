@@ -17,10 +17,15 @@ export default function useFonts(list: Array<FontName> = []) {
       .then(() => {
         setIsLoaded(true)
 
-        const fonts = list.reduce<Record<string, boolean>>((m, x) => {
-          m[x] = true
-          return m
-        }, {})
+        const fonts = list.reduce<Record<string, boolean>>(
+          (m, family) => {
+            if (FONT && FONT[family]) {
+              m[family] = true
+            }
+            return m
+          },
+          {},
+        )
 
         state.update(f => ({ ...f, ...fonts }))
       })
@@ -29,7 +34,7 @@ export default function useFonts(list: Array<FontName> = []) {
         setIsLoaded(false)
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [list.join(':')])
+  }, [list.join(':'), FONT])
 
   return isLoaded
 }

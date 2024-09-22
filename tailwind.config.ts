@@ -1,10 +1,10 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss'
 
 const config: Config = {
   content: [
-    "./component/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./hook/**/*.{js,ts,jsx,tsx,mdx}",
+    './component/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './hook/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -102,7 +102,10 @@ const config: Config = {
           '100%': { transform: 'translateX(-200px)', opacity: '0' },
         },
         'scale-in-content': {
-          '0%': { transform: 'rotateX(-30deg) scale(0.9)', opacity: '0' },
+          '0%': {
+            transform: 'rotateX(-30deg) scale(0.9)',
+            opacity: '0',
+          },
           '100%': { transform: 'rotateX(0deg) scale(1)', opacity: '1' },
         },
         'scale-out-content': {
@@ -162,7 +165,7 @@ const config: Config = {
         h6: ['20px', '1.2'],
         xl: ['20px', '1.7'],
         lg: ['18px', '1.7'],
-        base: ['18px', '1.7'],
+        base: ['16px', '1.7'],
         sm: ['14px', '1.7'],
         xs: ['12px', '1.7'],
         xxs: ['10px', '1.7'],
@@ -383,5 +386,5 @@ const config: Config = {
     },
   },
   plugins: [require('tailwindcss-radix')()],
-};
-export default config;
+}
+export default config

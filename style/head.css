@@ -1022,10 +1022,6 @@ time {
   font-style: italic;
 }
 
-.font-NotoSansMono {
-  font-family: 'Noto Sans Mono';
-}
-
 .font-loading-base-light {
   background: linear-gradient(
     -45deg,

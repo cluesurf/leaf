@@ -56,7 +56,8 @@ export default function Layout({
   )
 
   const onOpenConfiguration = () => {
-    setConfiguration(configurationContent)
+    // setConfiguration(configurationContent)
+    setMiddleOverlay(configurationContent)
   }
 
   const leftIsHidden = layout.width < 804
@@ -124,7 +125,7 @@ export default function Layout({
             )}
           >
             <div className="w-48 h-48" />
-            {rightIsHidden ? (
+            {rightIsHidden && configurationContent ? (
               <span
                 className="block p-12 [&_path]:hover:fill-violet-500 [&_path]:transition-all cursor-pointer w-48 h-48 transition-all pointer-events-auto"
                 onClick={onOpenConfiguration}

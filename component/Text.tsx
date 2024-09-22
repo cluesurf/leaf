@@ -33,9 +33,13 @@ export type TInput = {
   tag?: keyof JSX.IntrinsicElements
 } & React.ComponentPropsWithoutRef<any>
 
+function checkDocumentFont(text: string) {
+  return typeof document !== 'undefined' && document.fonts.check(text)
+}
+
 function checkFonts(state: FontsContextInput, fonts: Array<FontName>) {
   for (const font of fonts) {
-    if (!state.fonts[font]) {
+    if (!checkDocumentFont(`16px "${font}"`) && !state.fonts[font]) {
       return false
     }
   }
@@ -79,43 +83,25 @@ export function useText(
   }, [font, script, scriptConfig])
 
   const checked = checkFonts(state, fonts)
-  const [hasWaited, setHasWaited] = useState(checked)
   const [isReady, setIsReady] = useState(checked)
-  const [isStarting, setIsStarting] = useState(true)
-  const [timer, setTimer] = useState<NodeJS.Timeout>()
+  const [isInvisible, setIsInvisible] = useState(!checked)
   const fontClassName = getFontClassNames(fonts).join(' ')
 
   useLayoutEffect(() => {
-    setIsStarting(false)
-  }, [isStarting])
+    const timer = setTimeout(() => setIsInvisible(false), 500)
 
-  useEffect(() => {
-    let t: NodeJS.Timeout
-
-    const removeTimer = () => clearTimeout(t)
-
-    if (hasWaited) {
-      return removeTimer
-    }
-
-    t = setTimeout(() => setHasWaited(true), 1000)
-
-    setTimer(t)
-
-    return removeTimer
-  }, [hasWaited])
+    return () => clearTimeout(timer)
+  }, [])
 
   useLayoutEffect(() => {
     const checked = checkFonts(state, fonts)
-    if (checked && !isReady) {
+    if (checked) {
       setIsReady(true)
-      setHasWaited(true)
-      clearTimeout(timer)
-      setTimer(undefined)
+      setIsInvisible(false)
     }
-  }, [state, fonts, isReady, timer])
+  }, [state, fonts])
 
-  return [isStarting, isReady, hasWaited, fontClassName]
+  return [isReady, fontClassName, isInvisible]
 }
 
 export default function Text({
@@ -137,10 +123,24 @@ export default function Text({
     ? processors[processor](value!)
     : (value ?? children)!
 
-  const [isStarting, isReady, hasWaited, fontClassName] = useText(
-    font,
-    script,
-  )
+  const [isReady, fontClassName, hiding] = useText(font, script)
+  const [isRendered, setIsRendered] = useState(!hiding)
+  const [transitionState, setTransitionState] = useState<string>()
+  const [animated, setAnimated] = useState(false)
+
+  useLayoutEffect(() => {
+    if (isReady) {
+      if (!isRendered) {
+        setTransitionState('fade-in')
+      } else {
+        setTransitionState('fade-out')
+      }
+    }
+  }, [isReady])
+
+  useLayoutEffect(() => {
+    setIsRendered(!hiding)
+  }, [hiding, isReady])
 
   const actualStyles = {
     ...style,
@@ -149,31 +149,20 @@ export default function Text({
 
   const Tag = tag as keyof JSX.IntrinsicElements
 
-  if (isStarting || (isReady && hasWaited)) {
+  if (transitionState === 'fade-out') {
     return (
       <Tag
         {...props}
         style={actualStyles}
         className={cx(
           className,
-          fontClassName,
-          bold ? 'font-bold' : undefined,
+          `${fontClassName}-fallback`,
+          'opacity-0 transition-opacity',
         )}
-      >
-        {text}
-      </Tag>
-    )
-  }
-
-  if (hasWaited) {
-    return (
-      <Tag
-        {...props}
-        style={actualStyles}
-        className={cx(
-          `font-loading font-loading-${theme}-${background}`,
-          bold ? 'font-bold' : undefined,
-        )}
+        onTransitionEnd={() => {
+          setAnimated(true)
+          setTransitionState('fade-in')
+        }}
       >
         {text}
       </Tag>
@@ -184,7 +173,12 @@ export default function Text({
     <Tag
       {...props}
       style={actualStyles}
-      className={`text-transparent`}
+      className={cx(
+        className,
+        animated ? `transition-opacity` : undefined,
+        hiding ? `opacity-0` : `opacity-1`,
+        isReady ? fontClassName : `${fontClassName}-fallback`,
+      )}
     >
       {text}
     </Tag>

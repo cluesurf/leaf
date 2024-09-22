@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import cx from 'classnames'
 import {
@@ -36,8 +36,6 @@ export default function FileDropzone({
   borderClassName?: string
   simulateDragging?: boolean
 }) {
-  const [isStarting, isFontReady, hasFontWaited, fontClassName] =
-    useText(font)
   const MIME_TYPE = useSettings('mimeTypes')
 
   const handleDrop = useCallback(
@@ -73,28 +71,14 @@ export default function FileDropzone({
   const roundedClassName = getRoundedClass(topped, bottomed)
 
   const colorClass = color && INPUT_COLOR[color]
-  const waitingColorClass = color && INPUT_WAITING[color]
-
-  let backgroundColorClass: string | undefined
-  let textColorClass: string | undefined
-
-  if (isStarting || (isFontReady && hasFontWaited)) {
-    backgroundColorClass = colorClass
-    textColorClass = `text-gray-950 ${fontClassName}`
-  } else if (hasFontWaited) {
-    backgroundColorClass = waitingColorClass
-    textColorClass = `text-transparent`
-  } else {
-    textColorClass = `text-transparent`
-  }
 
   return (
     <div
       className={cx(
         className,
         roundedClassName,
-        backgroundColorClass,
-        textColorClass,
+        colorClass,
+        `text-gray-950`,
         'p-16 transition-all duration-200 relative cursor-pointer hover:opacity-70',
       )}
       {...getRootProps()}

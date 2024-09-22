@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import cx from 'classnames'
 import { InputColor } from './Input'
 import { useText } from './Text'
@@ -29,28 +29,14 @@ export default function Label({
   htmlFor,
   color,
   bottomless,
-  font = 'Noto Sans Mono',
 }: {
   children: React.ReactNode
   className?: string
   htmlFor?: string
   color?: LabelColor
   bottomless?: boolean
-  font?: string | Array<string>
 }) {
   const colorClass = color && LABEL_COLOR[color]
-  const [isStarting, isFontReady, hasFontWaited, fontClassName] =
-    useText(font)
-
-  let textColorClass: string
-
-  if (isStarting || (isFontReady && hasFontWaited)) {
-    textColorClass = `${fontClassName}`
-  } else if (hasFontWaited) {
-    textColorClass = `text-transparent`
-  } else {
-    textColorClass = `text-transparent`
-  }
 
   return (
     <label
@@ -58,7 +44,6 @@ export default function Label({
       className={cx(
         className,
         colorClass,
-        textColorClass,
         'flex font-bold text-xs py-4 px-16 items-center justify-between',
         bottomless ? `rounded-sm` : 'rounded-t-sm',
       )}

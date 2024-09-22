@@ -178,6 +178,11 @@
   font-family: 'Noto Sans Mono';
 }
 
+.font-NotoSansMono-fallback {
+  font-family: Monaco, Consolas, 'Courier New', Courier, monospace;
+  font-weight: bold;
+}
+
 .font-NotoSansMyanmar {
   font-family: 'Noto Sans Myanmar';
 }
