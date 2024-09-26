@@ -1,6 +1,7 @@
 import React from 'react'
 import { H1, P } from '~/component/Content'
 import { Button } from '~/component/Button'
+import useScripts from '~/hook/useScripts'
 
 export type ErrorPageInput = {
   error: Error & { digest?: string }
@@ -13,8 +14,10 @@ export default function ErrorPage({
   reset,
   children,
 }: ErrorPageInput) {
+  useScripts(['code'])
+
   return (
-    <div className="relative">
+    <div className="relative mt-64">
       <H1 className="text-center">Error</H1>
       <P>Something went wrong!</P>
       {error.stack && (

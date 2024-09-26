@@ -102,6 +102,13 @@ const SCRIPT: Record<ScriptName, ScriptFonts> = {
       modern: 'Noto Sans Avestan',
     },
   },
+  code: {
+    default: 'modern',
+    selection: 'modern',
+    fonts: {
+      modern: 'Noto Sans Mono',
+    },
+  },
   balinese: {
     default: 'modern',
     selection: 'modern',

@@ -1,5 +1,6 @@
 import React from 'react'
 import { P, H1, H2, H3, H4, A } from '~/component/Content'
+import useScripts from '~/hook/useScripts'
 
 export default function PrivacyPolicyPage({
   title,
@@ -8,8 +9,10 @@ export default function PrivacyPolicyPage({
   title: string
   children?: React.ReactNode
 }) {
+  useScripts(['code'])
+
   return (
-    <div className="relative">
+    <div className="relative mt-64">
       <div className="py-16">
         <H1 className="text-center whitespace-pre-line">
           Privacy Policy{'\n'}for{'\n'}
