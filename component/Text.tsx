@@ -11,8 +11,10 @@ import cx from 'classnames'
 import tone from '@termsurf/tone'
 import FontsContext, { FontsContextInput } from '~/context/FontsContext'
 import useSettings from '~/hook/useSettings'
-import { getScriptFont } from '~/utility/font'
+import { Font, getScriptFont } from '~/utility/font'
 import { FontName } from '~/constant/font'
+
+const DEFAULT_FONT_CONFIG = {}
 
 const processors = {
   tone: (text: string) => tone.make(text),
@@ -31,25 +33,29 @@ export type TInput = {
   bold?: boolean
   size?: number
   tag?: keyof JSX.IntrinsicElements
+  leading?: 'heading' | 'body' | 'base'
 } & React.ComponentPropsWithoutRef<any>
 
 function checkDocumentFont(text: string) {
   return false //typeof document !== 'undefined' && document.fonts.check(text)
 }
 
-function checkFonts(state: FontsContextInput, fonts: Array<FontName>) {
+function checkFonts(state: FontsContextInput, fonts: Array<Font>) {
   for (const font of fonts) {
-    if (!checkDocumentFont(`16px "${font}"`) && !state.fonts[font]) {
+    if (
+      !checkDocumentFont(`16px "${font}"`) &&
+      !state.fonts[font.family]
+    ) {
       return false
     }
   }
   return true
 }
 
-function getFontClassNames(fonts: Array<string>) {
+function getFontClassNames(fonts: Array<Font>) {
   const classNames: Array<string> = []
   for (const font of fonts) {
-    classNames.push(`font-${font.replace(/\s+/g, '')}`)
+    classNames.push(`font-${font.family.replace(/\s+/g, '')}`)
   }
   return classNames
 }
@@ -60,15 +66,15 @@ export function useText(
 ) {
   const state = useContext(FontsContext)
   const scriptConfig = useSettings('scripts')
-  const fontConfig = useSettings('fonts')
+  const fontConfig = useSettings('fonts') ?? DEFAULT_FONT_CONFIG
 
-  const fonts = useMemo<Array<FontName>>(() => {
+  const fonts = useMemo<Array<Font>>(() => {
     if (Array.isArray(font)) {
-      return fontConfig ? font.map(name => fontConfig[])
+      return font.map(name => fontConfig[name]).filter(x => x)
     }
 
     if (font) {
-      return [font]
+      return [font].map(name => fontConfig[name]).filter(x => x)
     }
 
     if (script && scriptConfig) {
@@ -77,11 +83,13 @@ export function useText(
         getScriptFont(scriptConfig, script),
       )
 
-      return scriptFonts
+      return scriptFonts.map(name => fontConfig[name]).filter(x => x)
     }
 
     return ['Noto Sans Mono']
-  }, [font, script, scriptConfig])
+      .map(name => fontConfig[name])
+      .filter(x => x)
+  }, [font, script, scriptConfig, fontConfig])
 
   const checked = checkFonts(state, fonts)
   const [isReady, setIsReady] = useState(checked)
@@ -105,7 +113,7 @@ export function useText(
     }
   }, [state, fonts])
 
-  return [isReady, fontClassName, isInvisible]
+  return [isReady, fontClassName, isInvisible, fonts[0]?.lineHeight]
 }
 
 export default function Text({
@@ -121,18 +129,23 @@ export default function Text({
   size,
   bold,
   tag = 'span',
+  leading = 'body',
   ...props
 }: TInput) {
   const text = processor
     ? processors[processor](value!)
     : (value ?? children)!
 
-  const [isReady, fontClassName, hiding] = useText(font, script)
+  const [isReady, fontClassName, hiding, lineHeights] = useText(
+    font,
+    script,
+  )
   const [startedReady] = useState(!hiding)
   const [isRendered, setIsRendered] = useState(!hiding)
   const [transitionState, setTransitionState] =
     useState<string>('fade-in')
   const [animated, setAnimated] = useState(false)
+  const lineHeight = lineHeights?.[leading] ?? 1.7
 
   useEffect(() => {
     if (startedReady) {
@@ -153,6 +166,7 @@ export default function Text({
   const actualStyles = {
     ...style,
     fontSize: size,
+    lineHeight: lineHeight,
   }
 
   const Tag = tag as keyof JSX.IntrinsicElements

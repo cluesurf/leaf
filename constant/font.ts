@@ -45,6 +45,11 @@ export type Fonts = Record<string, Font>
 const FONT: Fonts = {
   'Noto Sans Mono': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     family: 'Noto Sans Mono',
     test: '\u0128\u0300\u0301\u0329\u0308\u0303\u0323\u01AF\u0129\u1EA0',
     styles: [
@@ -58,6 +63,11 @@ const FONT: Fonts = {
   },
   'Noto Sans SC': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     family: 'Noto Sans SC',
     test: '类家庭',
     styles: [
@@ -71,6 +81,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Tibetan': {
     google: true,
+    lineHeight: {
+      heading: 1.7,
+      body: 1.7,
+      base: 1.5,
+    },
     family: 'Noto Serif Tibetan',
     test: 'སེང',
     styles: [
@@ -85,9 +100,19 @@ const FONT: Fonts = {
   'Tone Etch': {
     family: 'Tone Etch',
     test: 'abc',
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
   },
   'Noto Color Emoji': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Color Emoji',
     styles: [
@@ -101,6 +126,11 @@ const FONT: Fonts = {
   },
   'Noto Emoji': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Emoji',
     styles: [
@@ -114,7 +144,12 @@ const FONT: Fonts = {
   },
   'Noto Kufi Arabic': {
     google: true,
-    test: '',
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
+    test: 'بتجخدرسص',
     family: 'Noto Kufi Arabic',
     styles: [
       {
@@ -127,6 +162,11 @@ const FONT: Fonts = {
   },
   'Noto Music': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Music',
     styles: [
@@ -140,7 +180,12 @@ const FONT: Fonts = {
   },
   'Noto Naskh Arabic': {
     google: true,
-    test: '',
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
+    test: 'بتجخدرسص',
     family: 'Noto Naskh Arabic',
     styles: [
       {
@@ -153,6 +198,11 @@ const FONT: Fonts = {
   },
   'Noto Nastaliq Urdu': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Nastaliq Urdu',
     styles: [
@@ -166,6 +216,11 @@ const FONT: Fonts = {
   },
   'Noto Rashi Hebrew': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Rashi Hebrew',
     styles: [
@@ -179,6 +234,11 @@ const FONT: Fonts = {
   },
   'Noto Sans': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: 'abc',
     family: 'Noto Sans',
     styles: [
@@ -192,6 +252,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Adlam': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Adlam',
     styles: [
@@ -205,6 +270,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Adlam Unjoined': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Adlam Unjoined',
     styles: [
@@ -218,6 +288,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Anatolian Hieroglyphs': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Anatolian Hieroglyphs',
     styles: [
@@ -231,7 +306,12 @@ const FONT: Fonts = {
   },
   'Noto Sans Arabic': {
     google: true,
-    test: '',
+    lineHeight: {
+      heading: 1,
+      body: 1.2,
+      base: 1,
+    },
+    test: 'بتجخدرسص',
     family: 'Noto Sans Arabic',
     styles: [
       {
@@ -244,6 +324,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Armenian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Armenian',
     styles: [
@@ -257,6 +342,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Avestan': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Avestan',
     styles: [
@@ -270,6 +360,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Balinese': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Balinese',
     styles: [
@@ -283,6 +378,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Bamum': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Bamum',
     styles: [
@@ -296,6 +396,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Bassa Vah': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Bassa Vah',
     styles: [
@@ -309,6 +414,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Batak': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Batak',
     styles: [
@@ -322,6 +432,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Bengali': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Bengali',
     styles: [
@@ -335,6 +450,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Bhaiksuki': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Bhaiksuki',
     styles: [
@@ -348,6 +468,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Brahmi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Brahmi',
     styles: [
@@ -361,6 +486,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Buginese': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Buginese',
     styles: [
@@ -374,6 +504,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Buhid': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Buhid',
     styles: [
@@ -387,6 +522,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Canadian Aboriginal': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Canadian Aboriginal',
     styles: [
@@ -400,6 +540,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Carian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Carian',
     styles: [
@@ -413,6 +558,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Caucasian Albanian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Caucasian Albanian',
     styles: [
@@ -426,6 +576,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Chakma': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Chakma',
     styles: [
@@ -439,6 +594,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Cham': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Cham',
     styles: [
@@ -452,6 +612,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Cherokee': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Cherokee',
     styles: [
@@ -465,6 +630,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Chorasmian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Chorasmian',
     styles: [
@@ -478,6 +648,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Coptic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Coptic',
     styles: [
@@ -491,6 +666,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Cuneiform': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Cuneiform',
     styles: [
@@ -504,6 +684,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Cypriot': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Cypriot',
     styles: [
@@ -517,6 +702,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Cypro Minoan': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Cypro Minoan',
     styles: [
@@ -530,6 +720,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Deseret': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Deseret',
     styles: [
@@ -543,6 +738,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Devanagari': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Devanagari',
     styles: [
@@ -556,6 +756,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Display': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Display',
     styles: [
@@ -569,6 +774,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Duployan': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Duployan',
     styles: [
@@ -582,6 +792,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Egyptian Hieroglyphs': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Egyptian Hieroglyphs',
     styles: [
@@ -595,6 +810,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Elbasan': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Elbasan',
     styles: [
@@ -608,6 +828,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Elymaic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Elymaic',
     styles: [
@@ -621,6 +846,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Ethiopic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Ethiopic',
     styles: [
@@ -634,6 +864,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Georgian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Georgian',
     styles: [
@@ -647,6 +882,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Glagolitic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Glagolitic',
     styles: [
@@ -660,6 +900,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Gothic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Gothic',
     styles: [
@@ -673,6 +918,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Grantha': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Grantha',
     styles: [
@@ -686,6 +936,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Gujarati': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Gujarati',
     styles: [
@@ -699,6 +954,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Gunjala Gondi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Gunjala Gondi',
     styles: [
@@ -712,6 +972,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Gurmukhi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Gurmukhi',
     styles: [
@@ -725,6 +990,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Hanifi Rohingya': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Hanifi Rohingya',
     styles: [
@@ -738,6 +1008,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Hanunoo': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Hanunoo',
     styles: [
@@ -751,6 +1026,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Hatran': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Hatran',
     styles: [
@@ -764,7 +1044,12 @@ const FONT: Fonts = {
   },
   'Noto Sans Hebrew': {
     google: true,
-    test: '',
+    lineHeight: {
+      heading: 1,
+      body: 1.2,
+      base: 1,
+    },
+    test: 'שתלמצחכע',
     family: 'Noto Sans Hebrew',
     styles: [
       {
@@ -777,6 +1062,11 @@ const FONT: Fonts = {
   },
   'Noto Sans HK': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans HK',
     styles: [
@@ -790,6 +1080,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Imperial Aramaic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Imperial Aramaic',
     styles: [
@@ -803,6 +1098,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Indic Siyaq Numbers': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Indic Siyaq Numbers',
     styles: [
@@ -816,6 +1116,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Inscriptional Pahlavi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Inscriptional Pahlavi',
     styles: [
@@ -829,6 +1134,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Inscriptional Parthian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Inscriptional Parthian',
     styles: [
@@ -842,6 +1152,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Javanese': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Javanese',
     styles: [
@@ -855,6 +1170,11 @@ const FONT: Fonts = {
   },
   'Noto Sans JP': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans JP',
     styles: [
@@ -868,6 +1188,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Kaithi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Kaithi',
     styles: [
@@ -881,6 +1206,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Kannada': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Kannada',
     styles: [
@@ -894,6 +1224,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Kawi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Kawi',
     styles: [
@@ -907,6 +1242,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Kayah Li': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Kayah Li',
     styles: [
@@ -920,6 +1260,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Kharoshthi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Kharoshthi',
     styles: [
@@ -933,6 +1278,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Khmer': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Khmer',
     styles: [
@@ -946,6 +1296,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Khojki': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Khojki',
     styles: [
@@ -959,6 +1314,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Khudawadi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Khudawadi',
     styles: [
@@ -972,6 +1332,11 @@ const FONT: Fonts = {
   },
   'Noto Sans KR': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans KR',
     styles: [
@@ -985,6 +1350,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Lao': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Lao',
     styles: [
@@ -998,6 +1368,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Lao Looped': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Lao Looped',
     styles: [
@@ -1011,6 +1386,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Lepcha': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Lepcha',
     styles: [
@@ -1024,6 +1404,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Limbu': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Limbu',
     styles: [
@@ -1037,6 +1422,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Linear A': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Linear A',
     styles: [
@@ -1050,6 +1440,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Linear B': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Linear B',
     styles: [
@@ -1063,6 +1458,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Lisu': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Lisu',
     styles: [
@@ -1076,6 +1476,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Lycian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Lycian',
     styles: [
@@ -1089,6 +1494,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Lydian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Lydian',
     styles: [
@@ -1102,6 +1512,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Mahajani': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Mahajani',
     styles: [
@@ -1115,6 +1530,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Malayalam': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Malayalam',
     styles: [
@@ -1128,6 +1548,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Mandaic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Mandaic',
     styles: [
@@ -1141,6 +1566,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Manichaean': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Manichaean',
     styles: [
@@ -1154,6 +1584,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Marchen': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Marchen',
     styles: [
@@ -1167,6 +1602,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Masaram Gondi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Masaram Gondi',
     styles: [
@@ -1180,6 +1620,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Math': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Math',
     styles: [
@@ -1193,6 +1638,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Mayan Numerals': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Mayan Numerals',
     styles: [
@@ -1206,6 +1656,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Medefaidrin': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Medefaidrin',
     styles: [
@@ -1219,6 +1674,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Meetei Mayek': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Meetei Mayek',
     styles: [
@@ -1232,6 +1692,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Mende Kikakui': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Mende Kikakui',
     styles: [
@@ -1245,6 +1710,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Meroitic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Meroitic',
     styles: [
@@ -1258,6 +1728,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Miao': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Miao',
     styles: [
@@ -1271,6 +1746,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Modi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Modi',
     styles: [
@@ -1284,6 +1764,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Mongolian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Mongolian',
     styles: [
@@ -1297,6 +1782,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Mro': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Mro',
     styles: [
@@ -1310,6 +1800,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Multani': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Multani',
     styles: [
@@ -1323,6 +1818,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Myanmar': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Myanmar',
     styles: [
@@ -1336,6 +1836,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Nabataean': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Nabataean',
     styles: [
@@ -1349,6 +1854,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Nag Mundari': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Nag Mundari',
     styles: [
@@ -1362,6 +1872,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Nandinagari': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Nandinagari',
     styles: [
@@ -1375,6 +1890,11 @@ const FONT: Fonts = {
   },
   'Noto Sans New Tai Lue': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans New Tai Lue',
     styles: [
@@ -1388,6 +1908,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Newa': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Newa',
     styles: [
@@ -1401,6 +1926,11 @@ const FONT: Fonts = {
   },
   'Noto Sans NKo': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans NKo',
     styles: [
@@ -1414,6 +1944,11 @@ const FONT: Fonts = {
   },
   'Noto Sans NKo Unjoined': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans NKo Unjoined',
     styles: [
@@ -1427,6 +1962,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Nushu': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Nushu',
     styles: [
@@ -1440,6 +1980,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Ogham': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Ogham',
     styles: [
@@ -1453,6 +1998,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Ol Chiki': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Ol Chiki',
     styles: [
@@ -1466,6 +2016,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Old Hungarian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Old Hungarian',
     styles: [
@@ -1479,6 +2034,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Old Italic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Old Italic',
     styles: [
@@ -1492,6 +2052,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Old North Arabian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Old North Arabian',
     styles: [
@@ -1505,6 +2070,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Old Permic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Old Permic',
     styles: [
@@ -1518,6 +2088,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Old Persian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Old Persian',
     styles: [
@@ -1531,6 +2106,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Old Sogdian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Old Sogdian',
     styles: [
@@ -1544,6 +2124,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Old South Arabian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Old South Arabian',
     styles: [
@@ -1557,6 +2142,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Old Turkic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Old Turkic',
     styles: [
@@ -1570,6 +2160,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Oriya': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Oriya',
     styles: [
@@ -1583,6 +2178,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Osage': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Osage',
     styles: [
@@ -1596,6 +2196,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Osmanya': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Osmanya',
     styles: [
@@ -1609,6 +2214,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Pahawh Hmong': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Pahawh Hmong',
     styles: [
@@ -1622,6 +2232,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Palmyrene': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Palmyrene',
     styles: [
@@ -1635,6 +2250,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Pau Cin Hau': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Pau Cin Hau',
     styles: [
@@ -1648,6 +2268,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Phags Pa': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Phags Pa',
     styles: [
@@ -1661,6 +2286,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Phoenician': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Phoenician',
     styles: [
@@ -1674,6 +2304,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Psalter Pahlavi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Psalter Pahlavi',
     styles: [
@@ -1687,6 +2322,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Rejang': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Rejang',
     styles: [
@@ -1700,6 +2340,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Runic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Runic',
     styles: [
@@ -1713,6 +2358,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Samaritan': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Samaritan',
     styles: [
@@ -1726,6 +2376,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Saurashtra': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Saurashtra',
     styles: [
@@ -1739,6 +2394,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Sharada': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Sharada',
     styles: [
@@ -1752,6 +2412,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Shavian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Shavian',
     styles: [
@@ -1765,6 +2430,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Siddham': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Siddham',
     styles: [
@@ -1778,6 +2448,11 @@ const FONT: Fonts = {
   },
   'Noto Sans SignWriting': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans SignWriting',
     styles: [
@@ -1791,6 +2466,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Sinhala': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Sinhala',
     styles: [
@@ -1804,6 +2484,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Sogdian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Sogdian',
     styles: [
@@ -1817,6 +2502,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Sora Sompeng': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Sora Sompeng',
     styles: [
@@ -1830,6 +2520,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Soyombo': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Soyombo',
     styles: [
@@ -1843,6 +2538,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Sundanese': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Sundanese',
     styles: [
@@ -1856,6 +2556,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Syloti Nagri': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Syloti Nagri',
     styles: [
@@ -1869,6 +2574,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Symbols': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Symbols',
     styles: [
@@ -1882,6 +2592,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Symbols 2': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Symbols 2',
     styles: [
@@ -1895,6 +2610,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Syriac': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Syriac',
     styles: [
@@ -1908,6 +2628,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Syriac Eastern': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Syriac Eastern',
     styles: [
@@ -1921,6 +2646,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Tagalog': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Tagalog',
     styles: [
@@ -1934,6 +2664,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Tagbanwa': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Tagbanwa',
     styles: [
@@ -1947,6 +2682,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Tai Le': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Tai Le',
     styles: [
@@ -1960,6 +2700,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Tai Tham': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Tai Tham',
     styles: [
@@ -1973,6 +2718,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Tai Viet': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Tai Viet',
     styles: [
@@ -1986,6 +2736,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Takri': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Takri',
     styles: [
@@ -1999,6 +2754,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Tamil': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Tamil',
     styles: [
@@ -2012,6 +2772,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Tamil Supplement': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Tamil Supplement',
     styles: [
@@ -2025,6 +2790,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Tangsa': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Tangsa',
     styles: [
@@ -2038,6 +2808,11 @@ const FONT: Fonts = {
   },
   'Noto Sans TC': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans TC',
     styles: [
@@ -2051,6 +2826,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Telugu': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Telugu',
     styles: [
@@ -2064,6 +2844,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Thaana': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Thaana',
     styles: [
@@ -2077,6 +2862,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Thai': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Thai',
     styles: [
@@ -2090,6 +2880,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Thai Looped': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Thai Looped',
     styles: [
@@ -2103,6 +2898,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Tifinagh': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Tifinagh',
     styles: [
@@ -2116,6 +2916,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Tirhuta': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Tirhuta',
     styles: [
@@ -2129,6 +2934,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Ugaritic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Ugaritic',
     styles: [
@@ -2142,6 +2952,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Vai': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Vai',
     styles: [
@@ -2155,6 +2970,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Vithkuqi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Vithkuqi',
     styles: [
@@ -2168,6 +2988,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Wancho': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Wancho',
     styles: [
@@ -2181,6 +3006,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Warang Citi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Warang Citi',
     styles: [
@@ -2194,6 +3024,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Yi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Yi',
     styles: [
@@ -2207,6 +3042,11 @@ const FONT: Fonts = {
   },
   'Noto Sans Zanabazar Square': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Sans Zanabazar Square',
     styles: [
@@ -2220,6 +3060,11 @@ const FONT: Fonts = {
   },
   'Noto Serif': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif',
     styles: [
@@ -2233,6 +3078,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Ahom': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Ahom',
     styles: [
@@ -2246,6 +3096,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Armenian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Armenian',
     styles: [
@@ -2259,6 +3114,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Balinese': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Balinese',
     styles: [
@@ -2272,6 +3132,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Bengali': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Bengali',
     styles: [
@@ -2285,6 +3150,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Devanagari': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Devanagari',
     styles: [
@@ -2298,6 +3168,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Display': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Display',
     styles: [
@@ -2311,6 +3186,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Dogra': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Dogra',
     styles: [
@@ -2324,6 +3204,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Ethiopic': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Ethiopic',
     styles: [
@@ -2337,6 +3222,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Georgian': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Georgian',
     styles: [
@@ -2350,6 +3240,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Grantha': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Grantha',
     styles: [
@@ -2363,6 +3258,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Gujarati': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Gujarati',
     styles: [
@@ -2376,6 +3276,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Gurmukhi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Gurmukhi',
     styles: [
@@ -2389,6 +3294,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Hebrew': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Hebrew',
     styles: [
@@ -2402,6 +3312,11 @@ const FONT: Fonts = {
   },
   'Noto Serif HK': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif HK',
     styles: [
@@ -2415,6 +3330,11 @@ const FONT: Fonts = {
   },
   'Noto Serif JP': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif JP',
     styles: [
@@ -2428,6 +3348,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Kannada': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Kannada',
     styles: [
@@ -2441,6 +3366,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Khitan Small Script': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Khitan Small Script',
     styles: [
@@ -2454,6 +3384,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Khmer': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Khmer',
     styles: [
@@ -2467,6 +3402,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Khojki': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Khojki',
     styles: [
@@ -2480,6 +3420,11 @@ const FONT: Fonts = {
   },
   'Noto Serif KR': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif KR',
     styles: [
@@ -2493,6 +3438,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Lao': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Lao',
     styles: [
@@ -2506,6 +3456,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Makasar': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Makasar',
     styles: [
@@ -2519,6 +3474,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Malayalam': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Malayalam',
     styles: [
@@ -2532,6 +3492,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Myanmar': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Myanmar',
     styles: [
@@ -2545,6 +3510,11 @@ const FONT: Fonts = {
   },
   'Noto Serif NP Hmong': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif NP Hmong',
     styles: [
@@ -2558,6 +3528,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Old Uyghur': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Old Uyghur',
     styles: [
@@ -2571,6 +3546,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Oriya': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Oriya',
     styles: [
@@ -2584,6 +3564,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Ottoman Siyaq': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Ottoman Siyaq',
     styles: [
@@ -2597,6 +3582,11 @@ const FONT: Fonts = {
   },
   'Noto Serif SC': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif SC',
     styles: [
@@ -2610,6 +3600,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Sinhala': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Sinhala',
     styles: [
@@ -2623,6 +3618,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Tamil': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Tamil',
     styles: [
@@ -2636,6 +3636,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Tangut': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Tangut',
     styles: [
@@ -2649,6 +3654,11 @@ const FONT: Fonts = {
   },
   'Noto Serif TC': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif TC',
     styles: [
@@ -2662,6 +3672,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Telugu': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Telugu',
     styles: [
@@ -2675,6 +3690,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Thai': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Thai',
     styles: [
@@ -2688,6 +3708,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Toto': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Toto',
     styles: [
@@ -2701,6 +3726,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Vithkuqi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Vithkuqi',
     styles: [
@@ -2714,6 +3744,11 @@ const FONT: Fonts = {
   },
   'Noto Serif Yezidi': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Serif Yezidi',
     styles: [
@@ -2727,6 +3762,11 @@ const FONT: Fonts = {
   },
   'Noto Traditional Nushu': {
     google: true,
+    lineHeight: {
+      heading: 1.2,
+      body: 1.7,
+      base: 1,
+    },
     test: '',
     family: 'Noto Traditional Nushu',
     styles: [

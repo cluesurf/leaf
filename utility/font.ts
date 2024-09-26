@@ -1,5 +1,5 @@
 import FontFaceObserver from 'fontfaceobserver'
-import { ScriptFontData, ScriptFonts } from '~/constant/script'
+import { ScriptFonts } from '~/constant/script'
 
 export const FONT_OBSERVER_TIMEOUT = 30000
 
@@ -20,11 +20,21 @@ export type GoogleFont = {
   family: string
   test: string
   styles: Array<GoogleFontStyle>
+  lineHeight: {
+    heading: number
+    body: number
+    base: number
+  }
 }
 
 export type BaseFont = {
   family: string
   test: string
+  lineHeight: {
+    heading: number
+    body: number
+    base: number
+  }
 }
 
 export type Font = BaseFont | GoogleFont
@@ -206,7 +216,7 @@ export function getScriptFont(
     throw new Error(`Script \`${script}\` is undefined.`)
   }
   const fontType = type ?? scripts[script].default
-  const fontData =
+  const fontName =
     scripts[script].fonts[fontType] ?? scripts[script].fonts.modern
-  return fontData as ScriptFontData
+  return fontName as string
 }

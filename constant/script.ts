@@ -3,15 +3,7 @@ import { FontName } from './font'
 export type ScriptFonts = {
   default: string
   selection: string
-  fonts: Record<string, ScriptFontData>
-}
-
-export type ScriptFontData = {
-  family: FontName
-  lineHeight: {
-    heading: number
-    body: number
-  }
+  fonts: Record<string, FontName>
 }
 
 export const SCRIPT_NAME = [
@@ -56,612 +48,324 @@ const SCRIPT: Record<ScriptName, ScriptFonts> = {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans',
     },
   },
   cyrillic: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans',
     },
   },
   greek: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans',
     },
   },
   adlam: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Adlam',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Adlam',
     },
   },
   anatolian: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Anatolian Hieroglyphs',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Anatolian Hieroglyphs',
     },
   },
   arabic: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      ancient: {
-        family: 'Qahiri',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
-      modern: {
-        family: 'Noto Kufi Arabic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
-      traditional: {
-        family: 'Mizra',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      ancient: 'Qahiri',
+      modern: 'Noto Kufi Arabic',
+      traditional: 'Mizra',
     },
   },
   armenian: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Armenian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Armenian',
     },
   },
   avestan: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Avestan',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Avestan',
     },
   },
   balinese: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Balinese',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Balinese',
     },
   },
   bamum: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Bamum',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Bamum',
     },
   },
   'bassa-vah': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Bassa Vah',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Bassa Vah',
     },
   },
   batak: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Batak',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Batak',
     },
   },
   bengali: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Bengali',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Bengali',
     },
   },
   bhaiksuki: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Bhaiksuki',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Bhaiksuki',
     },
   },
   brahmi: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Brahmi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Brahmi',
     },
   },
   lontara: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Buginese',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Buginese',
     },
   },
   buginese: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Buginese',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Buginese',
     },
   },
   buhid: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Buhid',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Buhid',
     },
   },
   canadian: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Canadian Aboriginal',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Canadian Aboriginal',
     },
   },
   carian: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Carian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Carian',
     },
   },
   'caucasian-albanian': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Caucasian Albanian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Caucasian Albanian',
     },
   },
   chakma: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Chakma',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Chakma',
     },
   },
   cham: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Cham',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Cham',
     },
   },
   cherokee: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Cherokee',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Cherokee',
     },
   },
   chorasmian: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Chorasmian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Chorasmian',
     },
   },
   coptic: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Coptic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Coptic',
     },
   },
   cuneiform: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Cuneiform',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Cuneiform',
     },
   },
   cypriot: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Cypriot',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Cypriot',
     },
   },
   'cypro-minoan': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Cypro Minoan',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Cypro Minoan',
     },
   },
   deseret: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Deseret',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Deseret',
     },
   },
   devanagari: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Devanagari',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Devanagari',
     },
   },
   duployan: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Duployan',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Duployan',
     },
   },
   egyptian: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Egyptian Hieroglyphs',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Egyptian Hieroglyphs',
     },
   },
   elbasan: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Elbasan',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Elbasan',
     },
   },
   elymaic: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Elymaic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Elymaic',
     },
   },
   ethiopic: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Ethiopic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Ethiopic',
     },
   },
   georgian: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Georgian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Georgian',
     },
   },
   glagolitic: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Glagolitic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Glagolitic',
     },
   },
   gothic: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Gothic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Gothic',
     },
   },
   grantha: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Grantha',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Grantha',
     },
   },
   gujarati: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Gujarati',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Gujarati',
     },
   },
   'gunjala-gondi': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Gunjala Gondi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Gunjala Gondi',
     },
   },
   gurmukhi: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Gurmukhi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Gurmukhi',
     },
   },
   'hanifi-rohingya': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Hanifi Rohingya',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Hanifi Rohingya',
     },
   },
   hanunoo: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Hanunoo',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Hanunoo',
     },
   },
   hatran: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Hatran',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Hatran',
     },
   },
   hebrew: {
@@ -669,13 +373,7 @@ const SCRIPT: Record<ScriptName, ScriptFonts> = {
     selection: 'modern',
     fonts: {
       // ancient: 'Local Hebrew Ancient',
-      modern: {
-        family: 'Noto Sans Hebrew',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Hebrew',
       // traditional: 'Local Hebrew Traditional',
     },
   },
@@ -683,1482 +381,798 @@ const SCRIPT: Record<ScriptName, ScriptFonts> = {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans HK',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans HK',
     },
   },
   'imperial-aramaic': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Imperial Aramaic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Imperial Aramaic',
     },
   },
   'indic-siyaq-numbers': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Indic Siyaq Numbers',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Indic Siyaq Numbers',
     },
   },
   'inscriptional-pahlavi': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Inscriptional Pahlavi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Inscriptional Pahlavi',
     },
   },
   parthian: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Inscriptional Parthian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Inscriptional Parthian',
     },
   },
   'inscriptional-parthian': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Inscriptional Parthian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Inscriptional Parthian',
     },
   },
   javanese: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Javanese',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Javanese',
     },
   },
   japanese: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans JP',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans JP',
     },
   },
   kana: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans JP',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans JP',
     },
   },
   katakana: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans JP',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans JP',
     },
   },
   hiragana: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans JP',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans JP',
     },
   },
   kaithi: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Kaithi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Kaithi',
     },
   },
   kannada: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Kannada',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Kannada',
     },
   },
   kawi: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Kawi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Kawi',
     },
   },
   'kayah-li': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Kayah Li',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Kayah Li',
     },
   },
   kharoshthi: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Kharoshthi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Kharoshthi',
     },
   },
   khmer: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Khmer',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Khmer',
     },
   },
   khojki: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Khojki',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Khojki',
     },
   },
   khudawadi: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Khudawadi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Khudawadi',
     },
   },
   korean: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans KR',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans KR',
     },
   },
   lao: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Lao',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Lao',
     },
   },
   lepcha: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Lepcha',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Lepcha',
     },
   },
   limbu: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Limbu',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Limbu',
     },
   },
   'linear-a': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Linear A',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Linear A',
     },
   },
   'linear-b': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Linear B',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Linear B',
     },
   },
   lisu: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Lisu',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Lisu',
     },
   },
   lycian: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Lycian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Lycian',
     },
   },
   lydian: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Lydian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Lydian',
     },
   },
   mahajani: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Mahajani',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Mahajani',
     },
   },
   malayalam: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Malayalam',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Malayalam',
     },
   },
   mandaic: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Mandaic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Mandaic',
     },
   },
   manichaean: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Manichaean',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Manichaean',
     },
   },
   marchen: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Marchen',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Marchen',
     },
   },
   'masaram-gondi': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Masaram Gondi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Masaram Gondi',
     },
   },
   medefaidrin: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Medefaidrin',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Medefaidrin',
     },
   },
   'meetei-mayek': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Meetei Mayek',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Meetei Mayek',
     },
   },
   'mende-kikakui': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Mende Kikakui',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Mende Kikakui',
     },
   },
   meroitic: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Meroitic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Meroitic',
     },
   },
   miao: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Miao',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Miao',
     },
   },
   modi: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Modi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Modi',
     },
   },
   mongolian: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Mongolian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Mongolian',
     },
   },
   mro: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Mro',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Mro',
     },
   },
   multani: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Multani',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Multani',
     },
   },
   myanmar: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Myanmar',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Myanmar',
     },
   },
   nabataean: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Nabataean',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Nabataean',
     },
   },
   'nag-mundari': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Nag Mundari',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Nag Mundari',
     },
   },
   nandinagari: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Nandinagari',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Nandinagari',
     },
   },
   'new-tai-lue': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans New Tai Lue',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans New Tai Lue',
     },
   },
   newa: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Newa',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Newa',
     },
   },
   'n-ko': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans NKo',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans NKo',
     },
   },
   nushu: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Nushu',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Nushu',
     },
   },
   ogham: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Ogham',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Ogham',
     },
   },
   'ol-chiki': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Ol Chiki',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Ol Chiki',
     },
   },
   'old-hungarian': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Old Hungarian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Old Hungarian',
     },
   },
   'old-italic': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Old Italic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Old Italic',
     },
   },
   'old-north-arabian': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Old North Arabian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Old North Arabian',
     },
   },
   'old-permic': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Old Permic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Old Permic',
     },
   },
   'old-persian': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Old Persian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Old Persian',
     },
   },
   'old-sogdian': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Old Sogdian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Old Sogdian',
     },
   },
   'old-south-arabian': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Old South Arabian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Old South Arabian',
     },
   },
   'old-turkic': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Old Turkic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Old Turkic',
     },
   },
   oriya: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Oriya',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Oriya',
     },
   },
   osage: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Osage',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Osage',
     },
   },
   osmanya: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Osmanya',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Osmanya',
     },
   },
   'pahawh-hmong': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Pahawh Hmong',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Pahawh Hmong',
     },
   },
   palmyrene: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Palmyrene',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Palmyrene',
     },
   },
   'pau-cin-hau': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Pau Cin Hau',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Pau Cin Hau',
     },
   },
   'phags-pa': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Phags Pa',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Phags Pa',
     },
   },
   phoenician: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Phoenician',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Phoenician',
     },
   },
   'psalter-pahlavi': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Psalter Pahlavi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Psalter Pahlavi',
     },
   },
   rejang: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Rejang',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Rejang',
     },
   },
   runic: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Runic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Runic',
     },
   },
   samaritan: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Samaritan',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Samaritan',
     },
   },
   saurashtra: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Saurashtra',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Saurashtra',
     },
   },
   sharada: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Sharada',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Sharada',
     },
   },
   shavian: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Shavian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Shavian',
     },
   },
   siddham: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Siddham',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Siddham',
     },
   },
   sinhala: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Sinhala',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Sinhala',
     },
   },
   sogdian: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Sogdian',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Sogdian',
     },
   },
   'sora-sompeng': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Sora Sompeng',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Sora Sompeng',
     },
   },
   soyombo: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Soyombo',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Soyombo',
     },
   },
   sundanese: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Sundanese',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Sundanese',
     },
   },
   'syloti-nagri': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Syloti Nagri',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Syloti Nagri',
     },
   },
   syriac: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Syriac',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Syriac',
     },
   },
   tagalog: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Tagalog',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Tagalog',
     },
   },
   tagbanwa: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Tagbanwa',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Tagbanwa',
     },
   },
   'tai-le': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Tai Le',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Tai Le',
     },
   },
   'tai-tham': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Tai Tham',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Tai Tham',
     },
   },
   'tai-viet': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Tai Viet',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Tai Viet',
     },
   },
   takri: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Takri',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Takri',
     },
   },
   tamil: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Tamil',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Tamil',
     },
   },
   tangsa: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Tangsa',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Tangsa',
     },
   },
   telugu: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Telugu',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Telugu',
     },
   },
   thaana: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Thaana',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Thaana',
     },
   },
   thai: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Thai',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Thai',
     },
   },
   tifinagh: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Tifinagh',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Tifinagh',
     },
   },
   tirhuta: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Tirhuta',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Tirhuta',
     },
   },
   ugaritic: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Ugaritic',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Ugaritic',
     },
   },
   vai: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Vai',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Vai',
     },
   },
   vithkuqi: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Vithkuqi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Vithkuqi',
     },
   },
   wancho: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Wancho',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Wancho',
     },
   },
   'warang-citi': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Warang Citi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Warang Citi',
     },
   },
   yi: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Yi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Yi',
     },
   },
   'zanabazar-square': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Sans Zanabazar Square',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Zanabazar Square',
     },
   },
   ahom: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Serif Ahom',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Serif Ahom',
     },
   },
   dogra: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Serif Dogra',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Serif Dogra',
     },
   },
   khitan: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Serif Khitan Small Script',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Serif Khitan Small Script',
     },
   },
   makasar: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Serif Makasar',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Serif Makasar',
     },
   },
   'old-uyghur': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Serif Old Uyghur',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Serif Old Uyghur',
     },
   },
   'ottoman-siyaq': {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Serif Ottoman Siyaq',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Serif Ottoman Siyaq',
     },
   },
   tangut: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Serif Tangut',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Serif Tangut',
     },
   },
   tibetan: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Serif Tibetan',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Serif Tibetan',
     },
   },
   toto: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Serif Toto',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Serif Toto',
     },
   },
   yezidi: {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Noto Serif Yezidi',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Serif Yezidi',
     },
   },
   chinese: {
@@ -2166,13 +1180,7 @@ const SCRIPT: Record<ScriptName, ScriptFonts> = {
     selection: 'modern',
     fonts: {
       ancient: 'TWKai, TWKaiExt',
-      modern: {
-        family: 'Noto Sans Chinese',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Noto Sans Chinese',
       traditional: 'IMing',
     },
   },
@@ -2180,13 +1188,7 @@ const SCRIPT: Record<ScriptName, ScriptFonts> = {
     default: 'modern',
     selection: 'modern',
     fonts: {
-      modern: {
-        family: 'Tone Etch',
-        lineHeight: {
-          heading: 1.2,
-          body: 1.7,
-        },
-      },
+      modern: 'Tone Etch',
     },
   },
 }

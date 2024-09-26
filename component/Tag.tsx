@@ -20,10 +20,11 @@ type TagInput = {
 export default function Tag({ children, className, color }: TagInput) {
   return (
     <T
+      leading="heading"
       className={cx(
         className,
         color && TAG_COLOR[color],
-        'relative inline-block text-xs leading-1-2 rounded-large-circle py-2 px-8 h-fit font-normal text-nowrap',
+        'relative inline-block text-xs rounded-large-circle py-2 px-8 h-fit font-normal text-nowrap',
       )}
     >
       {children}

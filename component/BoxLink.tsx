@@ -37,11 +37,11 @@ export default function BoxLink({
         data-tooltip-id={tooltipId}
         data-tooltip-delay-show={1000}
         className={cx(
-          'shadow-xl flex flex-col gap-16 transition-all duration-200 text-left px-16 py-8 bg-gray-100 dark:bg-gray-900 h-full leading-content rounded-sm w-full',
+          'shadow-xl flex flex-col gap-16 transition-all duration-200 text-left px-16 py-8 bg-gray-100 dark:bg-gray-900 h-full rounded-sm w-full',
           className,
         )}
       >
-        <T className="font-bold leading-content inline-block w-full break-all">
+        <T className="font-bold inline-block w-full break-all">
           {call}
         </T>
         {note && <T className="mb-4 inline-block">{note}</T>}
@@ -60,9 +60,7 @@ export default function BoxLink({
       href={`${link}`}
       onClick={handleClick}
     >
-      <T className="font-bold leading-content inline-block w-full break-all">
-        {call}
-      </T>
+      <T className="font-bold inline-block w-full break-all">{call}</T>
       {loading
         ? loading
         : note && <T className="mb-4 inline-block">{note}</T>}

@@ -158,7 +158,8 @@ export function Sup({ className, children, ...props }: SupInput) {
     <T
       {...props}
       tag="sup"
-      className={cx(className, 'leading-base text-sm -top-6')}
+      leading="base"
+      className={cx(className, 'text-sm -top-6')}
     >
       {children}
     </T>
@@ -226,7 +227,6 @@ export function P({
       className={cx(
         className,
         'text-base sm:text-base-large',
-        'leading-content',
         'mb-32 px-16',
         'font-medium',
         align === 'center'
@@ -478,9 +478,10 @@ export function H1({
     <T
       {...props}
       tag="h1"
+      leading="heading"
       className={cx(
         fontSizeClassName,
-        'mb-32 w-full font-bold text-gray-800 dark:text-gray-400 px-16 leading-mid',
+        'mb-32 w-full font-bold text-gray-800 dark:text-gray-400 px-16',
         className,
         align === 'center'
           ? `text-center`
@@ -514,10 +515,11 @@ export function H2({
     <T
       {...props}
       tag="h2"
+      leading="heading"
       className={cx(
         className,
         fontSizeClassName,
-        'font-bold mb-24 border-0 border-b-4 border-solid border-gray-100 pt-8 mx-16 text-gray-700 dark:text-gray-300 leading-mid',
+        'font-bold mb-24 border-0 border-b-4 border-solid border-gray-100 pt-8 mx-16 text-gray-700 dark:text-gray-300',
         align === 'center'
           ? `text-center`
           : align === 'right'
@@ -560,7 +562,7 @@ export function H3({
           : align === 'right'
             ? 'text-right'
             : undefined,
-        'font-bold mb-24 border-0 border-solid border-gray-100 pt-8 mx-16 text-gray-700 dark:text-gray-400 leading-content',
+        'font-bold mb-24 border-0 border-solid border-gray-100 pt-8 mx-16 text-gray-700 dark:text-gray-400',
         border ? `border-b-4` : undefined,
       )}
     >
