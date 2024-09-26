@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import React, {
   CSSProperties,
@@ -12,7 +13,6 @@ import tone from '@termsurf/tone'
 import FontsContext, { FontsContextInput } from '~/context/FontsContext'
 import useSettings from '~/hook/useSettings'
 import { Font, getScriptFont } from '~/utility/font'
-import { FontName } from '~/constant/font'
 
 const DEFAULT_FONT_CONFIG = {}
 
@@ -40,8 +40,15 @@ function checkDocumentFont(text: string) {
   return false //typeof document !== 'undefined' && document.fonts.check(text)
 }
 
-function checkFonts(state: FontsContextInput, fonts: Array<Font>) {
+function checkFonts(
+  state: FontsContextInput,
+  fonts: Array<Font | undefined>,
+) {
   for (const font of fonts) {
+    if (!font) {
+      return false
+    }
+
     if (
       !checkDocumentFont(`16px "${font}"`) &&
       !state.fonts[font.family]
@@ -52,10 +59,12 @@ function checkFonts(state: FontsContextInput, fonts: Array<Font>) {
   return true
 }
 
-function getFontClassNames(fonts: Array<Font>) {
+function getFontClassNames(fonts: Array<Font | undefined>) {
   const classNames: Array<string> = []
   for (const font of fonts) {
-    classNames.push(`font-${font.family.replace(/\s+/g, '')}`)
+    if (font) {
+      classNames.push(`font-${font.family.replace(/\s+/g, '')}`)
+    }
   }
   return classNames
 }
@@ -70,11 +79,11 @@ export function useText(
 
   const fonts = useMemo<Array<Font>>(() => {
     if (Array.isArray(font)) {
-      return font.map(name => fontConfig[name]).filter(x => x)
+      return font.map(name => fontConfig[name])
     }
 
     if (font) {
-      return [font].map(name => fontConfig[name]).filter(x => x)
+      return [font].map(name => fontConfig[name])
     }
 
     if (script && scriptConfig) {
@@ -83,20 +92,23 @@ export function useText(
         getScriptFont(scriptConfig, script),
       )
 
-      return scriptFonts.map(name => fontConfig[name]).filter(x => x)
+      return scriptFonts.map(name => fontConfig[name])
     }
 
-    return ['Noto Sans Mono']
-      .map(name => fontConfig[name])
-      .filter(x => x)
+    return ['Noto Sans Mono'].map(name => fontConfig[name])
   }, [font, script, scriptConfig, fontConfig])
+
+  const fontsKey = fonts
+    .filter(x => x)
+    .map(font => font.family)
+    .join(':')
 
   const checked = checkFonts(state, fonts)
   const [isReady, setIsReady] = useState(checked)
   const [isInvisible, setIsInvisible] = useState(!checked)
   const fontClassName = useMemo(
     () => getFontClassNames(fonts).join(' '),
-    [fonts],
+    [fontsKey],
   )
 
   useEffect(() => {
@@ -111,7 +123,7 @@ export function useText(
       setIsReady(true)
       setIsInvisible(false)
     }
-  }, [state, fonts])
+  }, [state, fontsKey])
 
   return [isReady, fontClassName, isInvisible, fonts[0]?.lineHeight]
 }

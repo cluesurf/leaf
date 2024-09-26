@@ -11,7 +11,9 @@ export default function NotFoundPage({
 
   return (
     <div className="relative mt-64">
-      <H1 className="font-bold text-h1 text-center">Not Found</H1>
+      <H1 className="font-bold text-center uppercase scale-y-80 tracking-wide-015">
+        Not Found
+      </H1>
       <P>
         Sorry but the page you are looking for doesn&apos;t seem to
         exist. More tools below or try searching again.

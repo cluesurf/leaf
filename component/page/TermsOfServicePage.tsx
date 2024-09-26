@@ -14,7 +14,7 @@ export default function TermsOfServicePage({
   return (
     <div className="relative mt-64">
       <div className="py-16">
-        <H1 className="text-center whitespace-pre-line">
+        <H1 className="text-center whitespace-pre-line uppercase scale-y-80 mb-0 tracking-wide-015">
           Terms of Service{'\n'}for{'\n'}
           {title}
         </H1>
