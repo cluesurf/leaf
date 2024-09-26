@@ -42,7 +42,7 @@ function Container({
       backgroundClassName={cx(
         backgroundClassName,
         `fixed top-0 z-1000 ${
-          !drop || forceShadow ? `dark:shadow-3xl-dark shadow-3xl` : ''
+          !drop || forceShadow ? `dark:shadow-3xl-dark shadow-nav` : ''
         }`,
       )}
     >

@@ -96,15 +96,18 @@ function getSizeClassNames(
   switch (size) {
     case 'small':
       return [
-        'text-xs h-24',
+        'text-xs sm:text-xs-large h-24',
         ghost ? 'py-4' : 'py-2',
         ghost ? 'px-4' : 'px-8',
       ].join(' ')
     case 'medium':
-      return ['text-sm h-32 py-4', ghost ? 'px-8' : 'px-12'].join(' ')
+      return [
+        'text-sm sm:text-sm-large h-32 py-4',
+        ghost ? 'px-8' : 'px-12',
+      ].join(' ')
     case 'large':
       return [
-        'font-bold text-base h-48',
+        'font-bold text-base sm:text-base-large h-48',
         ghost ? 'px-16' : 'px-24',
       ].join(' ')
   }

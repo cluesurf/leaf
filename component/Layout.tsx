@@ -173,35 +173,35 @@ export default function Layout({
   return (
     <>
       {navigation?.top}
-      <div className="bg-gray-100 dark:text-gray-200 dark:bg-gray-900 w-full h-full min-w-screen min-h-screen">
-        <ViewportLayout3Section
-          className="!top-48"
-          state={layout}
-          scrollerRef={scrollerRef}
-          middleClassName="bg-white dark:bg-gray-950"
-          left={
-            leftIsHidden ? undefined : (
-              <div className="h-full w-full bg-gray-50 dark:bg-gray-900">
-                {leftContent}
-              </div>
-            )
-          }
-          right={
-            rightIsHidden ? undefined : (
-              <div className="h-full w-full bg-gray-50 dark:bg-gray-900">
-                {right}
-              </div>
-            )
-          }
-          middle={
-            <div className="relative pt-32 min-h-screen-minus-nav flex flex-col justify-between">
-              <main className="relative flex-1">{children}</main>
-              {/* {!hideFooter && <Footer />} */}
+      {/* <div className="bg-gray-50 dark:text-gray-200 dark:bg-gray-900 w-full h-full min-w-screen min-h-screen"> */}
+      <ViewportLayout3Section
+        // className="!top-48"
+        state={layout}
+        scrollerRef={scrollerRef}
+        middleClassName="bg-white dark:bg-gray-950"
+        left={
+          leftIsHidden ? undefined : (
+            <div className="h-full w-full bg-gray-50 dark:bg-gray-900">
+              {leftContent}
             </div>
-          }
-          middleOverlay={middleOverlay}
-        />
-      </div>
+          )
+        }
+        right={
+          rightIsHidden ? undefined : (
+            <div className="h-full w-full bg-gray-50 dark:bg-gray-900">
+              {right}
+            </div>
+          )
+        }
+        middle={
+          <div className="relative pt-32 min-h-screen-minus-nav flex flex-col justify-between">
+            <main className="relative flex-1">{children}</main>
+            {/* {!hideFooter && <Footer />} */}
+          </div>
+        }
+        middleOverlay={middleOverlay}
+      />
+      {/* </div> */}
       {navigation?.bottom}
       {menu && (
         <NavigationOverlay

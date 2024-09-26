@@ -37,14 +37,14 @@ export default function Gloss({
       {literal && (
         <T
           tag="div"
-          className="text-base"
+          className="text-base sm:text-base-large"
         >
           {literal}
         </T>
       )}
       <T
         tag="div"
-        className="text-base text-gray-600 italic"
+        className="text-base sm:text-base-large text-gray-600 italic"
       >
         {english}
       </T>

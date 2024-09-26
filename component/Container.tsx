@@ -12,7 +12,9 @@ export default function Container({
 }) {
   return (
     <html lang="en">
-      <body className={cx(`w-full h-full min-w-screen min-h-screen`)}>
+      <body
+        className={cx(`w-full min-w-screen min-h-screen bg-gray-50`)}
+      >
         <Script id="disable-scroll-restoration">{`window.history.scrollRestoration = "manual"`}</Script>
         {children}
         <div id="overlay" />

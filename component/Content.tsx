@@ -53,7 +53,7 @@ export function Li({ children, className, ...props }: LiInput) {
       tag="li"
       className={cx(
         className,
-        'font-medium text-base relative m-0 ml-24 p-0 list-item mb-8 [&>ul]:pl-24 [&>ol]:pl-24 [&>ul>li]:ml-0 [&>ol>li]:ml-0 text-gray-700 dark:text-gray-400 [&&>p]:inline-block [&&>p]:pointer-events-auto [&&>p]:mb-0 [&&>p]:px-0',
+        'font-medium text-base sm:text-base-large relative m-0 ml-24 p-0 list-item mb-8 [&>ul]:pl-24 [&>ol]:pl-24 [&>ul>li]:ml-0 [&>ol>li]:ml-0 text-gray-700 dark:text-gray-400 [&&>p]:inline-block [&&>p]:pointer-events-auto [&&>p]:mb-0 [&&>p]:px-0',
       )}
     >
       {children}
@@ -103,11 +103,11 @@ export function Code({ children, className, ...props }: CodeInput) {
       tag="code"
       className={cx(
         className,
-        'inline-block bg-inherit text-inherit relative px-8 py-2 font-medium text-base',
+        'inline-block bg-inherit text-inherit relative px-8 py-2 font-medium text-base sm:text-base-large',
       )}
     >
       <span className="bg-gray-100 rounded-sm absolute left-0 right-0 top-0 bottom-0" />
-      <T className="relative font-medium text-base text-gray-700">
+      <T className="relative font-medium text-base sm:text-base-large text-gray-700">
         {children}
       </T>
     </T>
@@ -141,7 +141,7 @@ export function Pre({ children, className, ...props }: PreInput) {
       tag="pre"
       className={cx(
         className,
-        'shadow-normal p-16 block [&>code]:bg-none [&>code]:p-0 bg-gray-100 whitespace-pre w-full mb-48 overflow-auto font-medium text-base',
+        'shadow-normal p-16 block [&>code]:bg-none [&>code]:p-0 bg-gray-100 whitespace-pre w-full mb-48 overflow-auto font-medium text-base sm:text-base-large',
       )}
     >
       {children}
@@ -170,7 +170,7 @@ export function HR({ className }: { className?: string }) {
     <hr
       className={cx(
         className,
-        'relative h-16 bg-gray-100 dark:bg-gray-900 my-16',
+        'relative h-16 bg-gray-50 dark:bg-gray-900',
       )}
     ></hr>
   )
@@ -225,7 +225,7 @@ export function P({
       tag="p"
       className={cx(
         className,
-        'text-base',
+        'text-base sm:text-base-large',
         'leading-content',
         'mb-32 px-16',
         'font-medium',
@@ -254,7 +254,7 @@ export type THInput = React.ComponentPropsWithoutRef<'th'> & {
 
 export function TH({ children, className, ...props }: THInput) {
   const list = [
-    'shadow-thead bg-gray-200 dark:bg-gray-600 border-0 border-r-4 last:border-r-0 border-solid border-gray-300 dark:border-gray-600 text-gray-700 font-bold text-base h-full px-16 py-8',
+    'shadow-thead bg-gray-200 dark:bg-gray-600 border-0 border-r-4 last:border-r-0 border-solid border-gray-300 dark:border-gray-600 text-gray-700 font-bold text-base sm:text-base-large h-full px-16 py-8',
   ]
   return (
     <th
@@ -404,7 +404,7 @@ export function TD({
   ...props
 }: TDInput) {
   const list = [
-    'border-b-0 border-t-0 last:border-r-0 border-l-0 border-r-4 border-solid border-gray-300 dark:border-gray-600 h-full font-medium text-base text-gray-700 bg-inherit',
+    'border-b-0 border-t-0 last:border-r-0 border-l-0 border-r-4 border-solid border-gray-300 dark:border-gray-600 h-full font-medium text-base sm:text-base-large text-gray-700 bg-inherit',
     wrap ? undefined : `whitespace-pre`,
     className,
   ]
@@ -469,7 +469,7 @@ export type H1Input = React.ComponentPropsWithoutRef<'h1'> & {
 
 export function H1({
   className,
-  fontSizeClassName = 'text-h1',
+  fontSizeClassName = 'text-h1 sm:text-h1-large',
   children,
   align = 'center',
   ...props
@@ -504,7 +504,7 @@ export type H2Input = React.ComponentPropsWithoutRef<'h2'> & {
 
 export function H2({
   children,
-  fontSizeClassName = 'text-h2',
+  fontSizeClassName = 'text-h2 sm:text-h2-large',
   className,
   align = 'left',
   contrast = false,
@@ -540,7 +540,7 @@ export type H3Input = React.ComponentPropsWithoutRef<'h3'> & {
 
 export function H3({
   className,
-  fontSizeClassName = 'text-h3',
+  fontSizeClassName = 'text-h3 sm:text-h3-large',
   children,
   link,
   align = 'left',
@@ -577,7 +577,7 @@ export type H4Input = React.ComponentPropsWithoutRef<'h4'> & {
 
 export function H4({
   className,
-  fontSizeClassName = 'text-h4',
+  fontSizeClassName = 'text-h4 sm:text-h4-large',
   children,
   link,
   ...props
@@ -606,7 +606,7 @@ export type H5Input = React.ComponentPropsWithoutRef<'h5'> & {
 
 export function H5({
   className,
-  fontSizeClassName = 'text-h5',
+  fontSizeClassName = 'text-h5 sm:text-h5-large',
   children,
   link,
   ...props
@@ -635,7 +635,7 @@ export type H6Input = React.ComponentPropsWithoutRef<'h6'> & {
 
 export function H6({
   className,
-  fontSizeClassName = 'text-h6',
+  fontSizeClassName = 'text-h6 sm:text-h6-large',
   children,
   link,
   ...props

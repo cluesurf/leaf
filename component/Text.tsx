@@ -60,10 +60,11 @@ export function useText(
 ) {
   const state = useContext(FontsContext)
   const scriptConfig = useSettings('scripts')
+  const fontConfig = useSettings('fonts')
 
   const fonts = useMemo<Array<FontName>>(() => {
     if (Array.isArray(font)) {
-      return font
+      return fontConfig ? font.map(name => fontConfig[])
     }
 
     if (font) {
@@ -85,15 +86,18 @@ export function useText(
   const checked = checkFonts(state, fonts)
   const [isReady, setIsReady] = useState(checked)
   const [isInvisible, setIsInvisible] = useState(!checked)
-  const fontClassName = getFontClassNames(fonts).join(' ')
+  const fontClassName = useMemo(
+    () => getFontClassNames(fonts).join(' '),
+    [fonts],
+  )
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const timer = setTimeout(() => setIsInvisible(false), 500)
 
     return () => clearTimeout(timer)
   }, [])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const checked = checkFonts(state, fonts)
     if (checked) {
       setIsReady(true)
@@ -126,7 +130,8 @@ export default function Text({
   const [isReady, fontClassName, hiding] = useText(font, script)
   const [startedReady] = useState(!hiding)
   const [isRendered, setIsRendered] = useState(!hiding)
-  const [transitionState, setTransitionState] = useState<string>()
+  const [transitionState, setTransitionState] =
+    useState<string>('fade-in')
   const [animated, setAnimated] = useState(false)
 
   useEffect(() => {

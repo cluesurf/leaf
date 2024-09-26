@@ -1,13 +1,13 @@
-import React, {
-  useRef,
-  useState,
-  useLayoutEffect,
-  ReactElement,
-} from 'react'
+import { useSize } from '~/hook/useSize'
 import classNames from 'classnames'
 import chunk from 'lodash/chunk'
 import isEqual from 'lodash/isEqual'
-import { useSize } from '~/hook/useSize'
+import React, {
+  ReactElement,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 
 type Align = 'center' | 'left'
 
@@ -89,12 +89,18 @@ type GridInput = {
   rowClassName?: string
   maxColumns: number
   minWidth: number
+  maxWidth?: number
+  maxRows?: number
   gap: number
   rowGap?: number
   children: React.ReactNode
   align?: Align
   breakpoints?: Array<number>
   stretchLast?: boolean
+  layout?: (
+    length: number,
+    maxColumns: number,
+  ) => Array<number> | undefined
 }
 
 export default function Grid({
@@ -102,12 +108,15 @@ export default function Grid({
   rowClassName,
   maxColumns,
   minWidth,
+  maxWidth,
+  maxRows,
   gap,
   children,
   rowGap,
   align = 'left',
-  breakpoints,
+  breakpoints = [],
   stretchLast = false,
+  layout: layoutFunction,
 }: GridInput) {
   // const [containerWidth, setContainerWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null)
@@ -138,13 +147,21 @@ export default function Grid({
         break
       }
       numColumns -= 1
-      if (breakpoints) {
-        while (!breakpoints.includes(numColumns)) {
+      if (breakpoints?.length) {
+        while (numColumns && !breakpoints.includes(numColumns)) {
           numColumns -= 1
         }
       }
     }
-    const newRows = chunk(elements, numColumns)
+
+    numColumns = Math.max(1, numColumns)
+
+    const layout =
+      layoutFunction && layoutFunction(elements.length, numColumns)
+
+    const newRows = layout
+      ? chunkLayout(layout, elements)
+      : chunk(elements, numColumns)
 
     if (newRows[0]) {
       const firstLength = newRows[0].length
@@ -170,11 +187,16 @@ export default function Grid({
         const lastItemWidth = containerWidth / lastLength - itemGap
         setLastItemWidth(lastItemWidth)
       } else {
-        setLastItemWidth(newItemWidth)
+        setLastItemWidth(
+          maxWidth ? Math.min(maxWidth, newItemWidth) : newItemWidth,
+        )
       }
 
-      setItemWidth(newItemWidth)
+      setItemWidth(
+        maxWidth ? Math.min(maxWidth, newItemWidth) : newItemWidth,
+      )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     containerRef,
     elements,
@@ -182,11 +204,14 @@ export default function Grid({
     containerWidth,
     gap,
     minWidth,
+    maxWidth,
     setItemWidth,
     setRows,
     rows,
-    breakpoints,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    breakpoints.join(':'),
     stretchLast,
+    layoutFunction,
   ])
 
   if (!elements.length) {
@@ -195,78 +220,82 @@ export default function Grid({
 
   let key = 0
 
-  const rowEls = rows.map((row, ri) => {
-    let iWidth = itemWidth
-    if (
-      stretchLast &&
-      ri === rows.length - 1 &&
-      lastItemWidth !== itemWidth
-    ) {
-      iWidth = lastItemWidth
-    }
-
-    const totalGap = gap * (row.length - 1)
-    const gapSegmentCount = row.length * 2 - 2
-    const gapSegment = gapSegmentCount ? totalGap / gapSegmentCount : 0
-    const itemEls: Array<React.ReactElement> = []
-    row.forEach((baseChild, i) => {
-      const child = isNativeHtmlElement(baseChild)
-        ? baseChild
-        : React.cloneElement(baseChild, {
-            rowIndex: ri,
-            columnIndex: i,
-          })
-
-      if (i === 0) {
-        const marginRight = gapSegment
-        itemEls.push(
-          <Item
-            key={`${key}x`}
-            marginRight={marginRight}
-            width={iWidth}
-          >
-            {child}
-          </Item>,
-        )
-      } else if (i === row.length - 1) {
-        const marginLeft = gapSegment
-        itemEls.push(
-          <Item
-            key={`${key}x`}
-            marginLeft={marginLeft}
-            width={iWidth}
-          >
-            {child}
-          </Item>,
-        )
-      } else {
-        const marginRight = gapSegment
-        const marginLeft = gapSegment
-        itemEls.push(
-          <Item
-            key={`${key}x`}
-            marginLeft={marginLeft}
-            marginRight={marginRight}
-            width={iWidth}
-          >
-            {child}
-          </Item>,
-        )
+  const rowEls = (maxRows ? rows.slice(0, maxRows) : rows).map(
+    (row, ri) => {
+      let iWidth = itemWidth
+      if (
+        stretchLast &&
+        ri === rows.length - 1 &&
+        lastItemWidth !== itemWidth
+      ) {
+        iWidth = lastItemWidth
       }
 
-      key += 1
-    })
-    return (
-      <Row
-        align={align}
-        gap={gap}
-        key={ri}
-        className={rowClassName}
-      >
-        {itemEls}
-      </Row>
-    )
-  })
+      const totalGap = gap * (row.length - 1)
+      const gapSegmentCount = row.length * 2 - 2
+      const gapSegment = gapSegmentCount
+        ? totalGap / gapSegmentCount
+        : 0
+      const itemEls: Array<React.ReactElement> = []
+      row.forEach((baseChild, i) => {
+        const child = isNativeHtmlElement(baseChild)
+          ? baseChild
+          : React.cloneElement(baseChild, {
+              rowIndex: ri,
+              columnIndex: i,
+            })
+
+        if (i === 0) {
+          const marginRight = gapSegment
+          itemEls.push(
+            <Item
+              key={`${key}x`}
+              marginRight={marginRight}
+              width={iWidth}
+            >
+              {child}
+            </Item>,
+          )
+        } else if (i === row.length - 1) {
+          const marginLeft = gapSegment
+          itemEls.push(
+            <Item
+              key={`${key}x`}
+              marginLeft={marginLeft}
+              width={iWidth}
+            >
+              {child}
+            </Item>,
+          )
+        } else {
+          const marginRight = gapSegment
+          const marginLeft = gapSegment
+          itemEls.push(
+            <Item
+              key={`${key}x`}
+              marginLeft={marginLeft}
+              marginRight={marginRight}
+              width={iWidth}
+            >
+              {child}
+            </Item>,
+          )
+        }
+
+        key += 1
+      })
+      return (
+        <Row
+          align={align}
+          gap={gap}
+          key={ri}
+          className={rowClassName}
+        >
+          {itemEls}
+        </Row>
+      )
+    },
+  )
 
   return (
     <ContainerWithRef
@@ -284,4 +313,17 @@ function isNativeHtmlElement(element: unknown) {
   return (
     React.isValidElement(element) && typeof element.type === 'string'
   )
+}
+
+function chunkLayout<T>(layout: Array<number>, elements: Array<T>) {
+  const result: Array<Array<T>> = []
+
+  let i = 0
+  layout.forEach(num => {
+    const row = elements.slice(i, i + num)
+    result.push(row)
+    i += num
+  })
+
+  return result
 }

@@ -10,10 +10,14 @@ export default function useFonts(list: Array<FontName> = []) {
 
   useLayoutEffect(() => {
     const fonts: Array<Font> = FONT
-      ? list.map(family => FONT[family])
+      ? list.map(family => FONT[family]).filter(x => x)
       : []
 
     for (const font of fonts) {
+      if (state.fonts[font.family]) {
+        continue
+      }
+
       loadFonts([font])
         .then(() => {
           state.update(f => ({ ...f, [font.family]: true }))

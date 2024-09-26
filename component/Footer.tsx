@@ -32,7 +32,7 @@ function FooterLink({ children, ...props }: FooterLinkProps) {
   return (
     <a
       {...props}
-      className={`hover:opacity-70 text-base transition-all`}
+      className={`hover:opacity-70 text-base sm:text-base-large transition-all`}
     >
       {children}
     </a>
@@ -45,7 +45,7 @@ type UlInput = {
 
 function Ul({ children }: UlInput) {
   return (
-    <ul className="items-center flex flex-wrap gap-16 text-base justify-center list-none">
+    <ul className="items-center flex flex-wrap gap-16 text-base sm:text-base-large justify-center list-none">
       {children}
     </ul>
   )

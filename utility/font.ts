@@ -1,5 +1,5 @@
 import FontFaceObserver from 'fontfaceobserver'
-import { ScriptFonts } from '~/constant/script'
+import { ScriptFontData, ScriptFonts } from '~/constant/script'
 
 export const FONT_OBSERVER_TIMEOUT = 30000
 
@@ -30,8 +30,8 @@ export type BaseFont = {
 export type Font = BaseFont | GoogleFont
 
 export async function loadFonts(fonts: Array<Font>) {
-  const localFonts = fonts.filter(x => !('google' in x))
-  const googleFonts = fonts.filter(x => 'google' in x && x.google)
+  const localFonts = fonts.filter(x => x && !('google' in x))
+  const googleFonts = fonts.filter(x => x && 'google' in x && x.google)
 
   await Promise.all([
     loadLocalFonts(localFonts),
@@ -199,8 +199,14 @@ export function getScriptFont(
   script: string,
   type?: string,
 ) {
+  if (!scripts) {
+    throw new Error('Variable `scripts` is undefined.')
+  }
+  if (!scripts[script]) {
+    throw new Error(`Script \`${script}\` is undefined.`)
+  }
   const fontType = type ?? scripts[script].default
-  const fontName =
+  const fontData =
     scripts[script].fonts[fontType] ?? scripts[script].fonts.modern
-  return fontName
+  return fontData as ScriptFontData
 }

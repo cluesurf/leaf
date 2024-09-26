@@ -10,405 +10,644 @@
   font-family: 'Tone Etch';
 }
 
+.font-NotoColorEmoji {
+  font-family: 'Noto Color Emoji';
+}
 .font-NotoEmoji {
   font-family: 'Noto Emoji';
 }
-
 .font-NotoKufiArabic {
   font-family: 'Noto Kufi Arabic';
 }
-
+.font-NotoMusic {
+  font-family: 'Noto Music';
+}
 .font-NotoNaskhArabic {
   font-family: 'Noto Naskh Arabic';
 }
-
 .font-NotoNastaliqUrdu {
   font-family: 'Noto Nastaliq Urdu';
 }
-
 .font-NotoRashiHebrew {
   font-family: 'Noto Rashi Hebrew';
 }
-
 .font-NotoSans {
-  font-family: 'Noto Sans';
+  font-family: 'Noto Sans', 'Noto Color Emoji', Helvetica, Arial,
+    sans-serif;
 }
-
 .font-NotoSansAdlam {
-  font-family: 'Noto Sans Adlam';
+  font-family: 'Noto Sans Adlam', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansAdlamUnjoined {
-  font-family: 'Noto Sans Adlam Unjoined';
+  font-family: 'Noto Sans Adlam Unjoined', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansAnatolianHieroglyphs {
+  font-family: 'Noto Sans Anatolian Hieroglyphs', Helvetica, Arial,
+    sans-serif;
+}
 .font-NotoSansArabic {
-  font-family: 'Noto Sans Arabic';
+  font-family: 'Noto Sans Arabic', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansArmenian {
-  font-family: 'Noto Sans Armenian';
+  font-family: 'Noto Sans Armenian', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansAvestan {
+  font-family: 'Noto Sans Avestan', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansBalinese {
-  font-family: 'Noto Sans Balinese';
+  font-family: 'Noto Sans Balinese', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansBamum {
-  font-family: 'Noto Sans Bamum';
+  font-family: 'Noto Sans Bamum', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansBassaVah {
-  font-family: 'Noto Sans Bassa Vah';
+  font-family: 'Noto Sans Bassa Vah', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansBatak {
+  font-family: 'Noto Sans Batak', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansBengali {
-  font-family: 'Noto Sans Bengali';
+  font-family: 'Noto Sans Bengali', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansBhaiksuki {
+  font-family: 'Noto Sans Bhaiksuki', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansBrahmi {
+  font-family: 'Noto Sans Brahmi', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansBuginese {
+  font-family: 'Noto Sans Buginese', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansBuhid {
+  font-family: 'Noto Sans Buhid', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansCanadianAboriginal {
-  font-family: 'Noto Sans Canadian Aboriginal';
+  font-family: 'Noto Sans Canadian Aboriginal', Helvetica, Arial,
+    sans-serif;
 }
-
+.font-NotoSansCarian {
+  font-family: 'Noto Sans Carian', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansCaucasianAlbanian {
+  font-family: 'Noto Sans Caucasian Albanian', Helvetica, Arial,
+    sans-serif;
+}
+.font-NotoSansChakma {
+  font-family: 'Noto Sans Chakma', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansCham {
-  font-family: 'Noto Sans Cham';
+  font-family: 'Noto Sans Cham', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansCherokee {
-  font-family: 'Noto Sans Cherokee';
+  font-family: 'Noto Sans Cherokee', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansChorasmian {
+  font-family: 'Noto Sans Chorasmian', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansCoptic {
+  font-family: 'Noto Sans Coptic', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansCuneiform {
+  font-family: 'Noto Sans Cuneiform', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansCypriot {
+  font-family: 'Noto Sans Cypriot', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansCyproMinoan {
+  font-family: 'Noto Sans Cypro Minoan', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansDeseret {
+  font-family: 'Noto Sans Deseret', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansDevanagari {
-  font-family: 'Noto Sans Devanagari';
+  font-family: 'Noto Sans Devanagari', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansDisplay {
-  font-family: 'Noto Sans Display';
+  font-family: 'Noto Sans Display', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansDuployan {
-  font-family: 'Noto Sans Duployan';
+  font-family: 'Noto Sans Duployan', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansEgyptianHieroglyphs {
+  font-family: 'Noto Sans Egyptian Hieroglyphs', Helvetica, Arial,
+    sans-serif;
+}
+.font-NotoSansElbasan {
+  font-family: 'Noto Sans Elbasan', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansElymaic {
+  font-family: 'Noto Sans Elymaic', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansEthiopic {
-  font-family: 'Noto Sans Ethiopic';
+  font-family: 'Noto Sans Ethiopic', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansGeorgian {
-  font-family: 'Noto Sans Georgian';
+  font-family: 'Noto Sans Georgian', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansGlagolitic {
+  font-family: 'Noto Sans Glagolitic', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansGothic {
+  font-family: 'Noto Sans Gothic', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansGrantha {
+  font-family: 'Noto Sans Grantha', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansGujarati {
-  font-family: 'Noto Sans Gujarati';
+  font-family: 'Noto Sans Gujarati', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansGunjalaGondi {
-  font-family: 'Noto Sans Gunjala Gondi';
+  font-family: 'Noto Sans Gunjala Gondi', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansGurmukhi {
-  font-family: 'Noto Sans Gurmukhi';
+  font-family: 'Noto Sans Gurmukhi', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansHanifiRohingya {
-  font-family: 'Noto Sans Hanifi Rohingya';
+  font-family: 'Noto Sans Hanifi Rohingya', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansHanunoo {
+  font-family: 'Noto Sans Hanunoo', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansHatran {
+  font-family: 'Noto Sans Hatran', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansHebrew {
-  font-family: 'Noto Sans Hebrew';
+  font-family: 'Noto Sans Hebrew', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansHk {
-  font-family: 'Noto Sans HK';
+  font-family: 'Noto Sans HK', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansImperialAramaic {
+  font-family: 'Noto Sans Imperial Aramaic', Helvetica, Arial,
+    sans-serif;
+}
+.font-NotoSansIndicSiyaqNumbers {
+  font-family: 'Noto Sans Indic Siyaq Numbers', Helvetica, Arial,
+    sans-serif;
+}
+.font-NotoSansInscriptionalPahlavi {
+  font-family: 'Noto Sans Inscriptional Pahlavi', Helvetica, Arial,
+    sans-serif;
+}
+.font-NotoSansInscriptionalParthian {
+  font-family: 'Noto Sans Inscriptional Parthian', Helvetica, Arial,
+    sans-serif;
+}
 .font-NotoSansJavanese {
-  font-family: 'Noto Sans Javanese';
+  font-family: 'Noto Sans Javanese', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansJp {
-  font-family: 'Noto Sans JP';
+  font-family: 'Noto Sans JP', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansKaithi {
+  font-family: 'Noto Sans Kaithi', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansKannada {
-  font-family: 'Noto Sans Kannada';
+  font-family: 'Noto Sans Kannada', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansKawi {
-  font-family: 'Noto Sans Kawi';
+  font-family: 'Noto Sans Kawi', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansKayahLi {
-  font-family: 'Noto Sans Kayah Li';
+  font-family: 'Noto Sans Kayah Li', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansKharoshthi {
+  font-family: 'Noto Sans Kharoshthi', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansKhmer {
-  font-family: 'Noto Sans Khmer';
+  font-family: 'Noto Sans Khmer', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansKhojki {
+  font-family: 'Noto Sans Khojki', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansKhudawadi {
+  font-family: 'Noto Sans Khudawadi', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansKr {
-  font-family: 'Noto Sans KR';
+  font-family: 'Noto Sans KR', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansLao {
-  font-family: 'Noto Sans Lao';
+  font-family: 'Noto Sans Lao', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansLaoLooped {
-  font-family: 'Noto Sans Lao Looped';
+  font-family: 'Noto Sans Lao Looped', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansLepcha {
+  font-family: 'Noto Sans Lepcha', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansLimbu {
+  font-family: 'Noto Sans Limbu', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansLinearA {
+  font-family: 'Noto Sans Linear A', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansLinearB {
+  font-family: 'Noto Sans Linear B', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansLisu {
-  font-family: 'Noto Sans Lisu';
+  font-family: 'Noto Sans Lisu', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansLycian {
+  font-family: 'Noto Sans Lycian', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansLydian {
+  font-family: 'Noto Sans Lydian', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansMahajani {
+  font-family: 'Noto Sans Mahajani', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansMalayalam {
-  font-family: 'Noto Sans Malayalam';
+  font-family: 'Noto Sans Malayalam', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansMandaic {
+  font-family: 'Noto Sans Mandaic', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansManichaean {
+  font-family: 'Noto Sans Manichaean', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansMarchen {
+  font-family: 'Noto Sans Marchen', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansMasaramGondi {
+  font-family: 'Noto Sans Masaram Gondi', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansMath {
+  font-family: 'Noto Sans Math', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansMayanNumerals {
+  font-family: 'Noto Sans Mayan Numerals', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansMedefaidrin {
-  font-family: 'Noto Sans Medefaidrin';
+  font-family: 'Noto Sans Medefaidrin', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansMeeteiMayek {
-  font-family: 'Noto Sans Meetei Mayek';
+  font-family: 'Noto Sans Meetei Mayek', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansMendeKikakui {
+  font-family: 'Noto Sans Mende Kikakui', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansMeroitic {
+  font-family: 'Noto Sans Meroitic', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansMiao {
+  font-family: 'Noto Sans Miao', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansModi {
+  font-family: 'Noto Sans Modi', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansMongolian {
+  font-family: 'Noto Sans Mongolian', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansMono {
   font-family: 'Noto Sans Mono';
 }
-
 .font-NotoSansMono-fallback {
   font-family: Monaco, Consolas, 'Courier New', Courier, monospace;
   font-weight: bold;
 }
-
+.font-NotoSansMro {
+  font-family: 'Noto Sans Mro', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansMultani {
+  font-family: 'Noto Sans Multani', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansMyanmar {
-  font-family: 'Noto Sans Myanmar';
+  font-family: 'Noto Sans Myanmar', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansNabataean {
+  font-family: 'Noto Sans Nabataean', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansNagMundari {
-  font-family: 'Noto Sans Nag Mundari';
+  font-family: 'Noto Sans Nag Mundari', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansNandinagari {
+  font-family: 'Noto Sans Nandinagari', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansNewTaiLue {
-  font-family: 'Noto Sans New Tai Lue';
+  font-family: 'Noto Sans New Tai Lue', Helvetica, Arial, sans-serif;
 }
-
-.font-NotoSansNkoUnjoined {
-  font-family: 'Noto Sans NKo Unjoined';
+.font-NotoSansNewa {
+  font-family: 'Noto Sans Newa', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansNKo {
+  font-family: 'Noto Sans NKo', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansNKoUnjoined {
+  font-family: 'Noto Sans NKo Unjoined', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansNushu {
+  font-family: 'Noto Sans Nushu', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansOgham {
+  font-family: 'Noto Sans Ogham', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansOlChiki {
-  font-family: 'Noto Sans Ol Chiki';
+  font-family: 'Noto Sans Ol Chiki', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansOldHungarian {
+  font-family: 'Noto Sans Old Hungarian', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansOldItalic {
+  font-family: 'Noto Sans Old Italic', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansOldNorthArabian {
+  font-family: 'Noto Sans Old North Arabian', Helvetica, Arial,
+    sans-serif;
+}
+.font-NotoSansOldPermic {
+  font-family: 'Noto Sans Old Permic', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansOldPersian {
+  font-family: 'Noto Sans Old Persian', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansOldSogdian {
+  font-family: 'Noto Sans Old Sogdian', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansOldSouthArabian {
+  font-family: 'Noto Sans Old South Arabian', Helvetica, Arial,
+    sans-serif;
+}
+.font-NotoSansOldTurkic {
+  font-family: 'Noto Sans Old Turkic', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansOriya {
-  font-family: 'Noto Sans Oriya';
+  font-family: 'Noto Sans Oriya', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansOsage {
+  font-family: 'Noto Sans Osage', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansOsmanya {
+  font-family: 'Noto Sans Osmanya', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansPahawhHmong {
+  font-family: 'Noto Sans Pahawh Hmong', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansPalmyrene {
+  font-family: 'Noto Sans Palmyrene', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansPauCinHau {
+  font-family: 'Noto Sans Pau Cin Hau', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansPhagsPa {
+  font-family: 'Noto Sans Phags Pa', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansPhoenician {
+  font-family: 'Noto Sans Phoenician', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansPsalterPahlavi {
+  font-family: 'Noto Sans Psalter Pahlavi', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansRejang {
+  font-family: 'Noto Sans Rejang', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansRunic {
+  font-family: 'Noto Sans Runic', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansSamaritan {
+  font-family: 'Noto Sans Samaritan', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansSaurashtra {
+  font-family: 'Noto Sans Saurashtra', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansChinese {
+  font-family: 'Noto Sans SC', 'Noto Sans TC', Helvetica, Arial,
+    sans-serif;
+}
 .font-NotoSansSC {
-  font-family: 'Noto Sans SC';
+  font-family: 'Noto Sans SC', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansSharada {
+  font-family: 'Noto Sans Sharada', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansShavian {
+  font-family: 'Noto Sans Shavian', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansSiddham {
+  font-family: 'Noto Sans Siddham', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansSignWriting {
+  font-family: 'Noto Sans SignWriting', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansSinhala {
-  font-family: 'Noto Sans Sinhala';
+  font-family: 'Noto Sans Sinhala', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansSogdian {
+  font-family: 'Noto Sans Sogdian', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansSoraSompeng {
-  font-family: 'Noto Sans Sora Sompeng';
+  font-family: 'Noto Sans Sora Sompeng', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansSoyombo {
+  font-family: 'Noto Sans Soyombo', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansSundanese {
-  font-family: 'Noto Sans Sundanese';
+  font-family: 'Noto Sans Sundanese', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansSylotiNagri {
+  font-family: 'Noto Sans Syloti Nagri', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansSymbols {
-  font-family: 'Noto Sans Symbols';
+  font-family: 'Noto Sans Symbols', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansSymbols_2 {
+  font-family: 'Noto Sans Symbols 2', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansSyriac {
-  font-family: 'Noto Sans Syriac';
+  font-family: 'Noto Sans Syriac', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansSyriacEastern {
-  font-family: 'Noto Sans Syriac Eastern';
+  font-family: 'Noto Sans Syriac Eastern', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansTagalog {
+  font-family: 'Noto Sans Tagalog', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansTagbanwa {
+  font-family: 'Noto Sans Tagbanwa', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansTaiLe {
+  font-family: 'Noto Sans Tai Le', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansTaiTham {
-  font-family: 'Noto Sans Tai Tham';
+  font-family: 'Noto Sans Tai Tham', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansTaiViet {
+  font-family: 'Noto Sans Tai Viet', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansTakri {
+  font-family: 'Noto Sans Takri', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansTamil {
-  font-family: 'Noto Sans Tamil';
+  font-family: 'Noto Sans Tamil', 'Noto Sans Tamil Supplement',
+    Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansTangsa {
-  font-family: 'Noto Sans Tangsa';
+  font-family: 'Noto Sans Tangsa', Helvetica, Arial, sans-serif;
 }
-
-.font-NotoSansTc {
-  font-family: 'Noto Sans TC';
+.font-NotoSansTC {
+  font-family: 'Noto Sans TC', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansTelugu {
-  font-family: 'Noto Sans Telugu';
+  font-family: 'Noto Sans Telugu', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansThaana {
-  font-family: 'Noto Sans Thaana';
+  font-family: 'Noto Sans Thaana', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansThai {
-  font-family: 'Noto Sans Thai';
+  font-family: 'Noto Sans Thai', Helvetica, Arial, sans-serif;
 }
-
 .font-NotoSansThaiLooped {
-  font-family: 'Noto Sans Thai Looped';
+  font-family: 'Noto Sans Thai Looped', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansTifinagh {
+  font-family: 'Noto Sans Tifinagh', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansTirhuta {
+  font-family: 'Noto Sans Tirhuta', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansUgaritic {
+  font-family: 'Noto Sans Ugaritic', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansVai {
+  font-family: 'Noto Sans Vai', Helvetica, Arial, sans-serif;
+}
 .font-NotoSansVithkuqi {
-  font-family: 'Noto Sans Vithkuqi';
+  font-family: 'Noto Sans Vithkuqi', Helvetica, Arial, sans-serif;
 }
-
+.font-NotoSansWancho {
+  font-family: 'Noto Sans Wancho', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansWarangCiti {
+  font-family: 'Noto Sans Warang Citi', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansYi {
+  font-family: 'Noto Sans Yi', Helvetica, Arial, sans-serif;
+}
+.font-NotoSansZanabazarSquare {
+  font-family: 'Noto Sans Zanabazar Square', Helvetica, Arial,
+    sans-serif;
+}
 .font-NotoSerif {
   font-family: 'Noto Serif';
 }
-
+.font-NotoSerifAhom {
+  font-family: 'Noto Serif Ahom';
+}
 .font-NotoSerifArmenian {
   font-family: 'Noto Serif Armenian';
 }
-
+.font-NotoSerifBalinese {
+  font-family: 'Noto Serif Balinese';
+}
 .font-NotoSerifBengali {
   font-family: 'Noto Serif Bengali';
 }
-
 .font-NotoSerifDevanagari {
   font-family: 'Noto Serif Devanagari';
 }
-
 .font-NotoSerifDisplay {
   font-family: 'Noto Serif Display';
 }
-
+.font-NotoSerifDogra {
+  font-family: 'Noto Serif Dogra';
+}
 .font-NotoSerifEthiopic {
   font-family: 'Noto Serif Ethiopic';
 }
-
 .font-NotoSerifGeorgian {
   font-family: 'Noto Serif Georgian';
 }
-
+.font-NotoSerifGrantha {
+  font-family: 'Noto Serif Grantha';
+}
 .font-NotoSerifGujarati {
   font-family: 'Noto Serif Gujarati';
 }
-
 .font-NotoSerifGurmukhi {
   font-family: 'Noto Serif Gurmukhi';
 }
-
 .font-NotoSerifHebrew {
   font-family: 'Noto Serif Hebrew';
 }
-
 .font-NotoSerifHk {
   font-family: 'Noto Serif HK';
 }
-
+.font-NotoSerifJp {
+  font-family: 'Noto Serif JP';
+}
 .font-NotoSerifKannada {
   font-family: 'Noto Serif Kannada';
 }
-
-.font-NotoSerifKhmer {
-  font-family: 'Noto Serif Khmer';
-}
-
-.font-NotoSerifKhojki {
-  font-family: 'Noto Serif Khojki';
-}
-
-.font-NotoSerifLao {
-  font-family: 'Noto Serif Lao';
-}
-
-.font-NotoSerifMalayalam {
-  font-family: 'Noto Serif Malayalam';
-}
-
-.font-NotoSerifMyanmar {
-  font-family: 'Noto Serif Myanmar';
-}
-
-.font-NotoSerifNpHmong {
-  font-family: 'Noto Serif NP Hmong';
-}
-
-.font-NotoSerifOriya {
-  font-family: 'Noto Serif Oriya';
-}
-
-.font-NotoSerifSinhala {
-  font-family: 'Noto Serif Sinhala';
-}
-
-.font-NotoSerifTamil {
-  font-family: 'Noto Serif Tamil';
-}
-
-.font-NotoSerifTelugu {
-  font-family: 'Noto Serif Telugu';
-}
-
-.font-NotoSerifThai {
-  font-family: 'Noto Serif Thai';
-}
-
-.font-NotoSerifTibetan {
-  font-family: 'Noto Serif Tibetan';
-}
-
-.font-NotoSerifToto {
-  font-family: 'Noto Serif Toto';
-}
-
-.font-NotoSerifVithkuqi {
-  font-family: 'Noto Serif Vithkuqi';
-}
-
-.font-NotoSerifYezidi {
-  font-family: 'Noto Serif Yezidi';
-}
-
-.font-NotoTraditionalNushu {
-  font-family: 'Noto Traditional Nushu';
-}
-
-.font-NotoSansSignWriting {
-  font-family: 'Noto Sans SignWriting';
-}
-
-.font-NotoSansMayanNumerals {
-  font-family: 'Noto Sans Mayan Numerals';
-}
-
-.font-NotoMusic {
-  font-family: 'Noto Music';
-}
-
 .font-NotoSerifKhitanSmallScript {
   font-family: 'Noto Serif Khitan Small Script';
 }
-
-.font-NotoSansAnatolianHieroglyphs {
-  font-family: 'Noto Sans Anatolian Hieroglyphs';
+.font-NotoSerifKhmer {
+  font-family: 'Noto Serif Khmer';
 }
-
-.font-NotoSansCyproMinoan {
-  font-family: 'Noto Sans Cypro Minoan';
+.font-NotoSerifKhojki {
+  font-family: 'Noto Serif Khojki';
 }
-
-.font-NotoSansCuneiform {
-  font-family: 'Noto Sans Cuneiform';
+.font-NotoSerifKr {
+  font-family: 'Noto Serif KR';
+}
+.font-NotoSerifLao {
+  font-family: 'Noto Serif Lao';
+}
+.font-NotoSerifMakasar {
+  font-family: 'Noto Serif Makasar';
+}
+.font-NotoSerifMalayalam {
+  font-family: 'Noto Serif Malayalam';
+}
+.font-NotoSerifMyanmar {
+  font-family: 'Noto Serif Myanmar';
+}
+.font-NotoSerifNpHmong {
+  font-family: 'Noto Serif NP Hmong';
+}
+.font-NotoSerifOldUyghur {
+  font-family: 'Noto Serif Old Uyghur';
+}
+.font-NotoSerifOriya {
+  font-family: 'Noto Serif Oriya';
+}
+.font-NotoSerifOttomanSiyaq {
+  font-family: 'Noto Serif Ottoman Siyaq';
+}
+.font-NotoSerifSc {
+  font-family: 'Noto Serif SC';
+}
+.font-NotoSerifSinhala {
+  font-family: 'Noto Serif Sinhala';
+}
+.font-NotoSerifTamil {
+  font-family: 'Noto Serif Tamil';
+}
+.font-NotoSerifTangut {
+  font-family: 'Noto Serif Tangut';
+}
+.font-NotoSerifTc {
+  font-family: 'Noto Serif TC';
+}
+.font-NotoSerifTelugu {
+  font-family: 'Noto Serif Telugu';
+}
+.font-NotoSerifThai {
+  font-family: 'Noto Serif Thai';
+}
+.font-NotoSerifTibetan {
+  font-family: 'Noto Serif Tibetan';
+}
+.font-NotoSerifToto {
+  font-family: 'Noto Serif Toto';
+}
+.font-NotoSerifVithkuqi {
+  font-family: 'Noto Serif Vithkuqi';
+}
+.font-NotoSerifYezidi {
+  font-family: 'Noto Serif Yezidi';
+}
+.font-NotoTraditionalNushu {
+  font-family: 'Noto Traditional Nushu';
 }
 
 body {

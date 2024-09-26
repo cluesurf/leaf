@@ -29,22 +29,18 @@ export function ViewportLayout3Section({
   rightClassName,
   state,
   middleOverlay,
-  scrollerRef,
 }: ViewportLayout3SectionInput) {
   return (
     <div
-      className={cx(
-        `absolute top-0 left-0 right-0 bottom-0`,
-        className,
-      )}
+      className={cx(`w-full relative min-h-screen`, className)}
       style={{ ...state.container }}
     >
       <div
-        className="overflow-hidden"
         style={{ ...state.grid }}
+        className="relative min-h-screen"
       >
         <div
-          className={leftClassName}
+          className={cx(leftClassName, `top-0 sticky`)}
           style={{
             height: '100%',
             ...state.left,
@@ -52,14 +48,11 @@ export function ViewportLayout3Section({
         >
           {left}
         </div>
-        <div
-          className={['z-2000 relative h-full flex flex-1'].join(' ')}
-        >
+        <div className={['z-2000 relative flex flex-1'].join(' ')}>
           <div
-            ref={scrollerRef}
             className={cx(
               'max-w-888',
-              middleOverlay ? 'overflow-y-hidden' : 'overflow-y-auto',
+              // middleOverlay ? 'overflow-y-hidden' : 'overflow-y-auto',
               middleClassName,
             )}
             style={{
@@ -83,7 +76,7 @@ export function ViewportLayout3Section({
           )}
         </div>
         <div
-          className={rightClassName}
+          className={cx(rightClassName, `top-0 sticky`)}
           style={{
             height: '100%',
             ...state.right,
