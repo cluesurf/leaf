@@ -157,7 +157,7 @@ export default function Text({
   const [transitionState, setTransitionState] =
     useState<string>('fade-in')
   const [animated, setAnimated] = useState(false)
-  const lineHeight = lineHeights?.[leading] ?? 1.7
+  const lineHeight = lineHeights?.[leading]
 
   useEffect(() => {
     if (startedReady) {
@@ -178,7 +178,7 @@ export default function Text({
   const actualStyles = {
     ...style,
     fontSize: size,
-    lineHeight: lineHeight,
+    lineHeight,
   }
 
   const Tag = tag as keyof JSX.IntrinsicElements
@@ -211,7 +211,9 @@ export default function Text({
         className,
         animated ? `transition-opacity` : undefined,
         hiding ? `opacity-0` : `opacity-1`,
-        isReady ? fontClassName : `${fontClassName}-fallback`,
+        isReady || startedReady
+          ? fontClassName
+          : `${fontClassName}-fallback`,
       )}
     >
       {text}

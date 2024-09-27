@@ -84,7 +84,7 @@ const SCRIPT: Record<ScriptName, ScriptFonts> = {
     selection: 'modern',
     fonts: {
       ancient: 'Qahiri',
-      modern: 'Noto Kufi Arabic',
+      modern: 'Noto Sans Arabic',
       traditional: 'Mizra',
     },
   },
@@ -298,7 +298,7 @@ const SCRIPT: Record<ScriptName, ScriptFonts> = {
       modern: 'Noto Sans Elymaic',
     },
   },
-  ethiopic: {
+  geez: {
     default: 'modern',
     selection: 'modern',
     fonts: {
@@ -685,7 +685,7 @@ const SCRIPT: Record<ScriptName, ScriptFonts> = {
       modern: 'Noto Sans Multani',
     },
   },
-  myanmar: {
+  burmese: {
     default: 'modern',
     selection: 'modern',
     fonts: {
@@ -1187,7 +1187,7 @@ const SCRIPT: Record<ScriptName, ScriptFonts> = {
     selection: 'modern',
     fonts: {
       ancient: 'TWKai, TWKaiExt',
-      modern: 'Noto Sans Chinese',
+      modern: 'Noto Sans SC',
       traditional: 'IMing',
     },
   },

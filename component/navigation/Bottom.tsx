@@ -42,7 +42,7 @@ function Container({
       state={layout}
       backgroundClassName={cx(
         backgroundClassName,
-        `bg-white dark:bg-gray-900 fixed bottom-0 z-1000 ${
+        `bg-white w-full dark:bg-gray-900 fixed bottom-0 z-1000 ${
           !drop || forceShadow ? `dark:shadow-3xl-dark shadow-nav` : ''
         }`,
       )}

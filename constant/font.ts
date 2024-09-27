@@ -793,8 +793,8 @@ const FONT: Fonts = {
   'Noto Sans Egyptian Hieroglyphs': {
     google: true,
     lineHeight: {
-      heading: 1.2,
-      body: 1.7,
+      heading: 1,
+      body: 1.2,
       base: 1,
     },
     test: '',
