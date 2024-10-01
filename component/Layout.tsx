@@ -6,7 +6,7 @@ import React, {
 } from 'react'
 import { useNavigation } from '~/hook/useNavigation'
 import { NavigationContext } from '~/component/navigation'
-import cx from 'classnames'
+import clsx from 'clsx'
 import GearIcon from '~/component/icon/Gear'
 import { useViewportLayout3Section } from '~/hook/useViewportLayout'
 import { ViewportLayout3Section } from '~/component/ViewportGrid'
@@ -81,13 +81,13 @@ export default function Layout({
   // TODO: intercom
   // const messageButton = contactLink && (
   //   <span
-  //     className={cx(
+  //     className={clsx(
   //       'block pointer-events-auto',
   //       messageButtonContainerClassName,
   //     )}
   //   >
   //     <a
-  //       className={cx(
+  //       className={clsx(
   //         '[&_svg]:hover:fill-violet-500 cursor-pointer block p-12 w-48 h-48 transition-all bg-white dark:bg-gray-600 rounded-large-circle',
   //       )}
   //       target="_blank"
@@ -121,7 +121,7 @@ export default function Layout({
       middle={
         !middleOverlay && (
           <div
-            className={cx(
+            className={clsx(
               'relative flex w-full justify-between items-center',
             )}
           >

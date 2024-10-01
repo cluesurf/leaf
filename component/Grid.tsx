@@ -1,5 +1,5 @@
 import { useSize } from '~/hook/useSize'
-import classNames from 'classnames'
+import clsx from 'clsx'
 import chunk from 'lodash/chunk'
 import isEqual from 'lodash/isEqual'
 import React, {
@@ -25,7 +25,7 @@ export function Container(
   return (
     <div
       ref={ref}
-      className={classNames('flex flex-shrink flex-col', className)}
+      className={clsx('flex flex-shrink flex-col', className)}
       style={{
         justifyContent: align,
         rowGap: gap,
@@ -46,7 +46,7 @@ export function Row({
 }: ContainerInput) {
   return (
     <div
-      className={classNames(`flex items-stretch`, className)}
+      className={clsx(`flex items-stretch`, className)}
       style={{
         justifyContent: align,
         rowGap: gap,

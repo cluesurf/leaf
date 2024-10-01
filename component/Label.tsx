@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import cx from 'classnames'
+import clsx from 'clsx'
 import { InputColor } from './Input'
 import { useText } from './Text'
 
@@ -41,7 +41,7 @@ export default function Label({
   return (
     <label
       htmlFor={htmlFor}
-      className={cx(
+      className={clsx(
         className,
         colorClass,
         'flex font-bold text-xs py-4 px-16 items-center justify-between',

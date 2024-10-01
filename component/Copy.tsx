@@ -1,5 +1,5 @@
 import React, { MouseEvent, useState } from 'react'
-import cx from 'classnames'
+import clsx from 'clsx'
 import { IconButton } from './Button'
 import CopyIcon from './icon/Copy'
 import CheckIcon from './icon/Check'
@@ -71,7 +71,7 @@ Copy.Area = function Area({
           {!showCopy ? (
             <IconButton disabled={isAnimating}>
               <span
-                className={cx(
+                className={clsx(
                   'inline-block',
                   'w-24',
                   'h-24',
@@ -84,7 +84,7 @@ Copy.Area = function Area({
           ) : (
             <IconButton disabled={isAnimating}>
               <span
-                className={cx(
+                className={clsx(
                   'inline-block',
                   'w-24',
                   'h-24',
@@ -150,7 +150,12 @@ export default function Copy({ text }: { text?: any }) {
       {!showCopy ? (
         <IconButton disabled={isAnimating}>
           <span
-            className={cx('inline-block', 'w-24', 'h-24', 'opacity-50')}
+            className={clsx(
+              'inline-block',
+              'w-24',
+              'h-24',
+              'opacity-50',
+            )}
           >
             <CheckIcon />
           </span>
@@ -161,7 +166,12 @@ export default function Copy({ text }: { text?: any }) {
           disabled={isAnimating}
         >
           <span
-            className={cx('inline-block', 'w-24', 'h-24', 'opacity-50')}
+            className={clsx(
+              'inline-block',
+              'w-24',
+              'h-24',
+              'opacity-50',
+            )}
           >
             <CopyIcon />
           </span>

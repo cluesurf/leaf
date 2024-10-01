@@ -1,4 +1,4 @@
-import cx from 'classnames'
+import clsx from 'clsx'
 import TriangleDownIcon from './icon/TriangleDown'
 import React, { ChangeEvent, ForwardedRef } from 'react'
 import { INPUT_COLOR, InputColor, getRoundedClass } from './Input'
@@ -67,7 +67,7 @@ function NativeSelect<T extends string = string>(
 
   return (
     <div
-      className={cx(
+      className={clsx(
         className,
         rounded,
         size === 'small' ? 'h-32' : 'h-48',
@@ -77,7 +77,7 @@ function NativeSelect<T extends string = string>(
       )}
     >
       <div
-        className={cx(
+        className={clsx(
           size === 'small' ? `text-sm` : undefined,
           'absolute cursor-pointer left-0 right-0 top-0 bottom-0',
         )}
@@ -86,7 +86,7 @@ function NativeSelect<T extends string = string>(
           {...props}
           ref={ref}
           onChange={handleChange}
-          className={cx(
+          className={clsx(
             size === 'small' ? 'text-sm h-32' : 'h-48',
             'appearance-none bg-transparent px-12 leading-content w-full',
             'overflow-hidden whitespace-nowrap text-ellipsis',
@@ -97,13 +97,13 @@ function NativeSelect<T extends string = string>(
         </select>
         {!noArrow && (
           <div
-            className={cx(
+            className={clsx(
               size === 'small' ? 'w-16' : 'w-24',
               'absolute p-8 right-16 top-0 bottom-0 pointer-events-none',
             )}
           >
             <span
-              className={cx(
+              className={clsx(
                 size === 'small' ? 'w-16 h-16' : 'w-24 h-24',
                 'inline-block absolute',
               )}

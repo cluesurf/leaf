@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import cx from 'classnames'
+import clsx from 'clsx'
 import { useText } from './Text'
 import composeRefs from '@seznam/compose-react-refs'
 
@@ -104,7 +104,7 @@ function Input(
 
   return (
     <div
-      className={cx(
+      className={clsx(
         className,
         size === 'small' ? 'px-16 h-32' : 'px-16 h-48',
         'relative w-full items-center justify-center flex',
@@ -124,7 +124,7 @@ function Input(
           setAnimated(true)
           setTransitionState('fade-in')
         }}
-        className={cx(
+        className={clsx(
           textColorClass,
           animated ? `transition-opacity` : undefined,
           hiding ? `opacity-0` : `opacity-1`,

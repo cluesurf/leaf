@@ -65,7 +65,7 @@ const FONT: Fonts = {
     google: true,
     lineHeight: {
       heading: 1.2,
-      body: 1.7,
+      body: 1.2,
       base: 1,
     },
     family: 'Noto Sans SC',
@@ -2827,8 +2827,8 @@ const FONT: Fonts = {
   'Noto Sans Telugu': {
     google: true,
     lineHeight: {
-      heading: 1.2,
-      body: 1.7,
+      heading: 1.1,
+      body: 1.4,
       base: 1,
     },
     test: '',

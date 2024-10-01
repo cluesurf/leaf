@@ -1,5 +1,5 @@
 import React, { HTMLProps, useEffect, useRef } from 'react'
-import cx from 'classnames'
+import clsx from 'clsx'
 import T from './Text'
 
 export type BlockQuoteInput =
@@ -16,7 +16,7 @@ export function BlockQuote({
     <T
       {...props}
       tag="blockquote"
-      className={cx(className, 'mt-16 mb-24 w-full p-16')}
+      className={clsx(className, 'mt-16 mb-24 w-full p-16')}
     >
       {children}
     </T>
@@ -36,7 +36,7 @@ export function Ul({ children, className, ...props }: UlInput) {
   return (
     <ul
       {...props}
-      className={cx(className, list.join(' '))}
+      className={clsx(className, list.join(' '))}
     >
       {children}
     </ul>
@@ -51,7 +51,7 @@ export function Li({ children, className, ...props }: LiInput) {
   return (
     <T
       tag="li"
-      className={cx(
+      className={clsx(
         className,
         'font-medium text-base sm:text-base-large relative m-0 ml-24 p-0 list-item mb-8 [&>ul]:pl-24 [&>ol]:pl-24 [&>ul>li]:ml-0 [&>ol>li]:ml-0 text-gray-700 dark:text-gray-400 [&&>p]:inline-block [&&>p]:pointer-events-auto [&&>p]:mb-0 [&&>p]:px-0',
       )}
@@ -85,7 +85,7 @@ export function Em({ children, className, ...props }: EmInput) {
     <T
       {...props}
       tag="em"
-      className={cx(className, 'italic')}
+      className={clsx(className, 'italic')}
     >
       {children}
     </T>
@@ -101,7 +101,7 @@ export function Code({ children, className, ...props }: CodeInput) {
     <T
       {...props}
       tag="code"
-      className={cx(
+      className={clsx(
         className,
         'inline-block bg-inherit text-inherit relative px-8 py-2 font-medium text-base sm:text-base-large',
       )}
@@ -123,7 +123,7 @@ export function Strong({ children, className, ...props }: StrongInput) {
     <T
       {...props}
       tag="strong"
-      className={cx(className, 'font-bold')}
+      className={clsx(className, 'font-bold')}
     >
       {children}
     </T>
@@ -139,7 +139,7 @@ export function Pre({ children, className, ...props }: PreInput) {
     <T
       {...props}
       tag="pre"
-      className={cx(
+      className={clsx(
         className,
         'shadow-normal p-16 block [&>code]:bg-none [&>code]:p-0 bg-gray-100 whitespace-pre w-full mb-48 overflow-auto font-medium text-base sm:text-base-large',
       )}
@@ -159,7 +159,7 @@ export function Sup({ className, children, ...props }: SupInput) {
       {...props}
       tag="sup"
       leading="base"
-      className={cx(className, 'text-sm -top-6')}
+      className={clsx(className, 'text-sm -top-6')}
     >
       {children}
     </T>
@@ -169,7 +169,7 @@ export function Sup({ className, children, ...props }: SupInput) {
 export function HR({ className }: { className?: string }) {
   return (
     <hr
-      className={cx(
+      className={clsx(
         className,
         'relative h-16 bg-gray-50 dark:bg-gray-900',
       )}
@@ -224,7 +224,7 @@ export function P({
     <T
       {...props}
       tag="p"
-      className={cx(
+      className={clsx(
         className,
         'text-base sm:text-base-large',
         'mb-32 px-16',
@@ -259,7 +259,7 @@ export function TH({ children, className, ...props }: THInput) {
   return (
     <th
       {...props}
-      className={cx(className, list.join(' '))}
+      className={clsx(className, list.join(' '))}
     >
       <T>{children}</T>
     </th>
@@ -325,7 +325,7 @@ export function TBody({ className, children, ...props }: TBodyInput) {
   return (
     <tbody
       {...props}
-      className={cx(
+      className={clsx(
         className,
         `h-full [&>tr:nth-child(odd)]:bg-gray-50 [&>tr:nth-child(even)]:bg-gray-200 [&>tr:nth-child(odd)]:dark:bg-gray-900 [&>tr]:dark:text-gray-300 [&>tr:nth-child(even)]:dark:bg-gray-800`,
       )}
@@ -343,7 +343,7 @@ export function THead({ className, children, ...props }: TBodyInput) {
   return (
     <thead
       {...props}
-      className={cx(className)}
+      className={clsx(className)}
     >
       {children}
     </thead>
@@ -380,7 +380,7 @@ export function TR({ className, children, ...props }: TRInput) {
   return (
     <tr
       {...props}
-      className={cx(
+      className={clsx(
         className,
         `h-full border-r-0 last-child:border-r-0 border-0 border-solid border-gray-300 dark:border-gray-600 dark:text-gray-300`,
       )}
@@ -479,7 +479,7 @@ export function H1({
       {...props}
       tag="h1"
       leading="heading"
-      className={cx(
+      className={clsx(
         fontSizeClassName,
         'mb-32 w-full font-bold text-gray-800 dark:text-gray-400 px-16',
         className,
@@ -516,7 +516,7 @@ export function H2({
       {...props}
       tag="h2"
       leading="heading"
-      className={cx(
+      className={clsx(
         className,
         fontSizeClassName,
         'font-bold mb-24 border-0 border-b-4 border-solid border-gray-100 pt-8 mx-16 text-gray-700 dark:text-gray-300',
@@ -554,7 +554,7 @@ export function H3({
       {...props}
       tag="h3"
       id={link}
-      className={cx(
+      className={clsx(
         className,
         fontSizeClassName,
         align === 'center'
@@ -589,7 +589,7 @@ export function H4({
       {...props}
       tag="h4"
       id={link}
-      className={cx(
+      className={clsx(
         className,
         fontSizeClassName,
         'font-bold mb-16 px-16 text-gray-950 dark:text-gray-400',
@@ -618,7 +618,7 @@ export function H5({
       {...props}
       tag="h5"
       id={link}
-      className={cx(
+      className={clsx(
         fontSizeClassName,
         className,
         'font-bold w-full mb-16 px-16 text-gray-950 dark:text-gray-400',
@@ -647,7 +647,7 @@ export function H6({
       {...props}
       tag="h6"
       id={link}
-      className={cx(
+      className={clsx(
         fontSizeClassName,
         className,
         'font-bold w-full mb-16 px-16 text-gray-950 dark:text-gray-400',

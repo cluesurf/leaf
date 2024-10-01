@@ -1,5 +1,5 @@
 import React from 'react'
-import cx from 'classnames'
+import clsx from 'clsx'
 
 export type MessageIconInput = {
   colorClassName?: string
@@ -10,7 +10,7 @@ export default function MessageIcon({
 }: MessageIconInput) {
   return (
     <svg
-      className={cx(
+      className={clsx(
         colorClassName,
         'transform-gpu scale-x-[-1] transition-all',
       )}

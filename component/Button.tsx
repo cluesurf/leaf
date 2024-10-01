@@ -4,7 +4,7 @@ import React, {
   DetailedHTMLProps,
   HTMLProps,
 } from 'react'
-import cx from 'classnames'
+import clsx from 'clsx'
 import { useDarkMode } from '~/hook/useDarkMode'
 import T from './Text'
 
@@ -138,7 +138,7 @@ export function Button({
 
   return (
     <button
-      className={cx(
+      className={clsx(
         className,
         sizeClassName,
         colorClassName,
@@ -172,7 +172,7 @@ export function IconButton({
 }: ButtonInput) {
   return (
     <button
-      className={cx(
+      className={clsx(
         className,
         'flex',
         'items-center',
@@ -219,7 +219,7 @@ export function LabelButton({
   return (
     <T
       tag="label"
-      className={cx(
+      className={clsx(
         className,
         colorClassName,
         sizeClassName,
@@ -290,7 +290,7 @@ export function LinkButton({
       title={title}
       scroll={false}
       target={target}
-      className={cx(
+      className={clsx(
         colorClassName,
         className,
         sizeClassName,

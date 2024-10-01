@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import * as Tabs from '@radix-ui/react-tabs'
-import cx from 'classnames'
+import clsx from 'clsx'
 
 export function TabsRoot({
   className,
@@ -50,7 +50,7 @@ export function TabsRoot({
       onValueChange={handleChange}
       {...props}
       value={newValue}
-      className={cx(className)}
+      className={clsx(className)}
     />
   )
 }
@@ -59,7 +59,7 @@ export function TabsList({ className, ...props }: Tabs.TabsListProps) {
   return (
     <Tabs.List
       {...props}
-      className={cx(
+      className={clsx(
         className,
         'p-12',
         'bg-gray-100',
@@ -97,7 +97,7 @@ export function TabsContent({
   return (
     <Tabs.Content
       {...props}
-      className={cx(className)}
+      className={clsx(className)}
     />
   )
 }

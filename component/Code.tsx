@@ -1,5 +1,5 @@
 import { common, createStarryNight } from '@wooorm/starry-night'
-import cx from 'classnames'
+import clsx from 'clsx'
 import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import React, { useEffect, useState } from 'react'
 import { Fragment, jsx, jsxs } from 'react/jsx-runtime'
@@ -58,7 +58,7 @@ export default function Code({
 
   return (
     <pre
-      className={cx(
+      className={clsx(
         preClassName,
         `code`,
         `code-vibe-${vibe}`,
@@ -66,7 +66,7 @@ export default function Code({
         `code-tint-${tint}`,
       )}
     >
-      <code className={cx(`block relative p-16`, className)}>
+      <code className={clsx(`block relative p-16`, className)}>
         {code}
       </code>
     </pre>

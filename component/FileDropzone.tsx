@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
-import cx from 'classnames'
+import clsx from 'clsx'
 import {
   INPUT_COLOR,
   INPUT_WAITING,
@@ -74,7 +74,7 @@ export default function FileDropzone({
 
   return (
     <div
-      className={cx(
+      className={clsx(
         className,
         roundedClassName,
         colorClass,
@@ -85,11 +85,11 @@ export default function FileDropzone({
     >
       <input {...getInputProps()} />
       <div
-        className={cx(
+        className={clsx(
           'transition-all duration-200',
           'absolute top-0 bottom-0 right-0 left-0 border-4',
           isDragActive || simulateDragging
-            ? cx(borderClassName, roundedClassName, `border-dashed`)
+            ? clsx(borderClassName, roundedClassName, `border-dashed`)
             : undefined,
         )}
       />

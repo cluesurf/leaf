@@ -1,6 +1,6 @@
 'use client'
 
-import cx from 'classnames'
+import clsx from 'clsx'
 import React, { useState } from 'react'
 import Button from '~/component/Button'
 import {
@@ -555,7 +555,7 @@ function FontLink({
 }) {
   return (
     <div
-      className={cx(
+      className={clsx(
         className,
         'shadow-small1 hover:shadow-small2 flex flex-col gap-16 bg-gray-50 [&_span]:hover:text-violet-600 [&_span]:transition-colors transition-all duration-200 text-left p-16 pb-32 h-full rounded-sm w-full [&_i]:hover:text-violet-400',
       )}
@@ -580,7 +580,7 @@ function FontLink({
               font={font}
               tag="i"
               size={fontSize}
-              className={cx(
+              className={clsx(
                 'transition-colors block !leading-1-2',
                 weight && `font-${weight}`,
               )}

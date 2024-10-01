@@ -1,4 +1,4 @@
-import cx from 'classnames'
+import clsx from 'clsx'
 import T from './Text'
 import React, { useState } from 'react'
 import Dots from './Dots'
@@ -26,7 +26,7 @@ export default function BoxLink({
   const handleClick = () => {
     // setLoading(
     //   <Dots
-    //     className={cx(isDark ? undefined : 'invert', 'opacity-70')}
+    //     className={clsx(isDark ? undefined : 'invert', 'opacity-70')}
     //   />,
     // )
   }
@@ -36,7 +36,7 @@ export default function BoxLink({
       <span
         data-tooltip-id={tooltipId}
         data-tooltip-delay-show={1000}
-        className={cx(
+        className={clsx(
           'shadow-xl flex flex-col gap-16 transition-all duration-200 text-left px-16 py-8 bg-gray-100 dark:bg-gray-900 h-full rounded-sm w-full',
           className,
         )}
@@ -53,7 +53,7 @@ export default function BoxLink({
     <Link
       data-tooltip-id={tooltipId}
       data-tooltip-delay-show={1000}
-      className={cx(
+      className={clsx(
         'shadow-xl flex gap-16 hover:shadow-medium transition-all duration-200 text-left px-16 py-8 bg-gray-100 dark:bg-gray-900 h-full leading-content items-center rounded-sm w-full',
         className,
       )}

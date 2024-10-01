@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import cx from 'classnames'
+import clsx from 'clsx'
 import {
   NavigationBindingInput,
   NavigationInput,
@@ -40,7 +40,7 @@ function Container({
     <ViewportLayoutFill
       className={`h-72 appearance-none flex justify-between items-center w-full pointer-events-none`}
       state={layout}
-      backgroundClassName={cx(
+      backgroundClassName={clsx(
         backgroundClassName,
         `bg-white w-full dark:bg-gray-900 fixed bottom-0 z-1000 ${
           !drop || forceShadow ? `dark:shadow-3xl-dark shadow-nav` : ''

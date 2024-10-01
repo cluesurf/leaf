@@ -1,5 +1,5 @@
 import React from 'react'
-import cx from 'classnames'
+import clsx from 'clsx'
 
 export type InputColor = 'purple' | 'blue' | 'base'
 
@@ -31,7 +31,7 @@ export default function Value({
 
   return (
     <div
-      className={cx(
+      className={clsx(
         className,
         'relative w-full px-16',
         rounded,

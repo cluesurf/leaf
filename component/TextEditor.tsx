@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react'
-import cx from 'classnames'
+import clsx from 'clsx'
 
 import { TextEditorInput, TextEditorTheme } from './TextEditor.types'
 import { Mode, useDarkMode } from '~/hook/useDarkMode'
@@ -38,7 +38,7 @@ export default function TextEditor({
       fallback={
         <div
           style={style}
-          className={cx(className, THEME[theme][mode])}
+          className={clsx(className, THEME[theme][mode])}
         />
       }
     >

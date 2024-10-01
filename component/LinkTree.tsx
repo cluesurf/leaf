@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import cx from 'classnames'
+import clsx from 'clsx'
 
 export type LinkTreeInput = {
   form?: 'head' | 'link'
@@ -58,7 +58,7 @@ export function LinkTreeLink({
       <Link
         href={link}
         ref={ref}
-        className={cx(
+        className={clsx(
           lead ? 'text-violet-400' : undefined,
           `block text-xs font-bold hover:bg-gray-200 hover:text-violet-400 dark:hover:bg-gray-800 transition-all duration-200 px-16 py-8 first:pt-16`,
         )}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import KaTeX from 'katex'
-import cx from 'classnames'
+import clsx from 'clsx'
 
 // https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.css
 
@@ -44,7 +44,7 @@ const InternalBlockMath = ({
 }: InternalBlockMathInput) => {
   return (
     <div
-      className={cx('py-16', className)}
+      className={clsx('py-16', className)}
       role="math"
       dangerouslySetInnerHTML={{ __html: html }}
     />
@@ -84,7 +84,7 @@ const InternalInlineMath = ({
   return (
     <span
       role="math"
-      className={cx(`katex-inline`, className)}
+      className={clsx(`katex-inline`, className)}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   )

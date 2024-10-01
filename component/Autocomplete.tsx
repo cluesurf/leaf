@@ -15,7 +15,7 @@ import CloseIcon from './icon/Close'
 import { useSize } from '~/hook/useSize'
 import TriangleDownIcon from './icon/TriangleDown'
 import List from '@lancejpollard/react-virtualized/dist/commonjs/List'
-import cx from 'classnames'
+import clsx from 'clsx'
 
 export type ItemViewInput = {
   isActive?: boolean
@@ -195,7 +195,7 @@ export default function Autocomplete({
                 <Input
                   size={size}
                   color={color}
-                  className={cx(className)}
+                  className={clsx(className)}
                   labelled={labelled}
                   inputRef={inputRef}
                   bottomed={open}
@@ -342,7 +342,7 @@ function Menu({
     if (showScrollingPlaceholder && isScrolling) {
       return (
         <div
-          // className={cx(styles.row, styles.isScrollingPlaceholder)}
+          // className={clsx(styles.row, styles.isScrollingPlaceholder)}
           key={key}
           style={style}
         >

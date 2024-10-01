@@ -4,7 +4,7 @@ import {
   ViewportLayoutFillStateInput,
   ViewportLayoutSplitStateInput,
 } from '~/hook/useViewportLayout'
-import cx from 'classnames'
+import clsx from 'clsx'
 
 export type ViewportLayout3SectionInput = {
   className?: string
@@ -32,7 +32,7 @@ export function ViewportLayout3Section({
 }: ViewportLayout3SectionInput) {
   return (
     <div
-      className={cx(`w-full relative min-h-screen`, className)}
+      className={clsx(`w-full relative min-h-screen`, className)}
       style={{ ...state.container }}
     >
       <div
@@ -40,7 +40,7 @@ export function ViewportLayout3Section({
         className="relative min-h-screen"
       >
         <div
-          className={cx(leftClassName, `top-0 sticky`)}
+          className={clsx(leftClassName, `top-0 sticky`)}
           style={{
             height: '100%',
             ...state.left,
@@ -50,7 +50,7 @@ export function ViewportLayout3Section({
         </div>
         <div className={['z-2000 relative flex flex-1'].join(' ')}>
           <div
-            className={cx(
+            className={clsx(
               'max-w-888',
               // middleOverlay ? 'overflow-y-hidden' : 'overflow-y-auto',
               middleClassName,
@@ -63,7 +63,7 @@ export function ViewportLayout3Section({
           </div>
           {middleOverlay && (
             <div
-              className={cx(
+              className={clsx(
                 'max-w-888',
                 'absolute left-0 z-1000 right-0 top-0 bottom-0',
               )}
@@ -76,7 +76,7 @@ export function ViewportLayout3Section({
           )}
         </div>
         <div
-          className={cx(rightClassName, `top-0 sticky`)}
+          className={clsx(rightClassName, `top-0 sticky`)}
           style={{
             height: '100%',
             ...state.right,

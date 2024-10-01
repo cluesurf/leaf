@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useState } from 'react'
-import cx from 'classnames'
+import clsx from 'clsx'
 import { color } from '@uiw/codemirror-extensions-color'
 import CodeMirror, {
   EditorView,
@@ -190,7 +190,7 @@ export default function TextEditor({
 
   return (
     <CodeMirror
-      className={cx('min-h-0 [&_div]:leading-content', className)}
+      className={clsx('min-h-0 [&_div]:leading-content', className)}
       role="code"
       style={style}
       value={value}

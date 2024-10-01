@@ -1,4 +1,4 @@
-import cx from 'classnames'
+import clsx from 'clsx'
 import React, { ChangeEvent, useEffect, useRef } from 'react'
 import { getRoundedClass } from './Input'
 
@@ -52,7 +52,7 @@ export default function TextArea({
       autoCorrect="off"
       spellCheck={spellCheck === false ? false : undefined}
       onChange={onChange}
-      className={cx(
+      className={clsx(
         className,
         rounded,
         'resize-none p-16 bg-gray-50 h-20vh w-full',

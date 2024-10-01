@@ -1,5 +1,5 @@
 import * as RadixToast from '@radix-ui/react-toast'
-import cx from 'classnames'
+import clsx from 'clsx'
 import { createContext, useCallback, useContext, useState } from 'react'
 import { NavigationContext } from './navigation'
 
@@ -98,7 +98,7 @@ export default function Toast() {
     <RadixToast.Provider swipeDirection="right">
       <RadixToast.Root
         duration={duration}
-        className={cx(
+        className={clsx(
           COLOR[color],
           'transform shadow-3xl rounded-sm z-10000',
           `p-16`,
@@ -116,7 +116,7 @@ export default function Toast() {
         <RadixToast.Description>{content}</RadixToast.Description>
       </RadixToast.Root>
       <RadixToast.Viewport
-        className={cx(
+        className={clsx(
           'fixed right-0 bottom-0',
           `p-16`,
           navigationContext.bottomIsVisible && `pb-64`,

@@ -1,4 +1,4 @@
-import cx from 'classnames'
+import clsx from 'clsx'
 import { InputColor } from './Input'
 import React, { ChangeEvent } from 'react'
 
@@ -50,20 +50,20 @@ export default function RangeInput({
       max={max}
       step={step}
       onChange={handleChange}
-      className={cx(
+      className={clsx(
         inputBackgroundClassName,
         className,
         '[&::-webkit-slider-runnable-track]:relative',
         size === 'small'
           ? `[&::-webkit-slider-thumb]:w-12 [&::-webkit-slider-thumb]:-mt-4 [&::-webkit-slider-thumb]:h-12`
           : size === 'medium'
-          ? `[&::-webkit-slider-thumb]:w-18 [&::-webkit-slider-thumb]:-mt-6 [&::-webkit-slider-thumb]:h-18`
-          : `[&::-webkit-slider-thumb]:w-24 [&::-webkit-slider-thumb]:-mt-8 [&::-webkit-slider-thumb]:h-24`,
+            ? `[&::-webkit-slider-thumb]:w-18 [&::-webkit-slider-thumb]:-mt-6 [&::-webkit-slider-thumb]:h-18`
+            : `[&::-webkit-slider-thumb]:w-24 [&::-webkit-slider-thumb]:-mt-8 [&::-webkit-slider-thumb]:h-24`,
         size === 'small'
           ? `[&::-webkit-slider-runnable-track]:w-4 [&::-webkit-slider-runnable-track]:h-4`
           : size === 'medium'
-          ? `[&::-webkit-slider-runnable-track]:w-6 [&::-webkit-slider-runnable-track]:h-6`
-          : `[&::-webkit-slider-runnable-track]:w-10 [&::-webkit-slider-runnable-track]:h-10`,
+            ? `[&::-webkit-slider-runnable-track]:w-6 [&::-webkit-slider-runnable-track]:h-6`
+            : `[&::-webkit-slider-runnable-track]:w-10 [&::-webkit-slider-runnable-track]:h-10`,
         `[&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full`,
         'w-full h-8 rounded-large-circle appearance-none cursor-pointer',
       )}

@@ -1,5 +1,5 @@
 import React from 'react'
-import cx from 'classnames'
+import clsx from 'clsx'
 
 export type FieldInput = React.ComponentPropsWithoutRef<'div'> & {
   children: React.ReactNode
@@ -14,7 +14,7 @@ export default function Field({
   return (
     <div
       {...props}
-      className={cx(className, 'relative flex flex-col')}
+      className={clsx(className, 'relative flex flex-col')}
     >
       {children}
     </div>

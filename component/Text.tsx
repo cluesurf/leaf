@@ -8,7 +8,7 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import cx from 'classnames'
+import clsx from 'clsx'
 import tone from '@termsurf/tone'
 import FontsContext, { FontsContextInput } from '~/context/FontsContext'
 import useSettings from '~/hook/useSettings'
@@ -183,14 +183,25 @@ export default function Text({
 
   const Tag = tag as keyof JSX.IntrinsicElements
 
+  useEffect(() => {
+    let timer
+    if (transitionState === 'fade-out') {
+      setAnimated(true)
+      timer = setTimeout(() => setTransitionState('fade-in'), 300)
+    }
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [transitionState])
+
   if (transitionState === 'fade-out') {
     return (
       <Tag
         {...props}
         style={actualStyles}
-        className={cx(
+        className={clsx(
           className,
-          `${fontClassName}-fallback`,
+          `${fontClassName}-fallback fade-out`,
           'opacity-0 transition-opacity',
         )}
         onTransitionEnd={() => {
@@ -207,7 +218,7 @@ export default function Text({
     <Tag
       {...props}
       style={actualStyles}
-      className={cx(
+      className={clsx(
         className,
         animated ? `transition-opacity` : undefined,
         hiding ? `opacity-0` : `opacity-1`,
