@@ -1,13 +1,7 @@
 import { useSize } from '~/hook/useSize'
 import clsx from 'clsx'
 import chunk from 'lodash/chunk'
-import isEqual from 'lodash/isEqual'
-import React, {
-  ReactElement,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
+import React, { ReactElement, useMemo, useRef } from 'react'
 
 type Align = 'center' | 'left'
 
@@ -120,20 +114,17 @@ export default function Grid({
 }: GridInput) {
   // const [containerWidth, setContainerWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null)
-  const [itemWidth, setItemWidth] = useState(0)
-  const [lastItemWidth, setLastItemWidth] = useState(0)
-  const [rows, setRows] = useState<Array<Array<ReactElement<any>>>>([])
   const { width: containerWidth = 1 } = useSize(containerRef)
 
   const elements = React.Children.toArray(children).filter(child => {
     return React.isValidElement(child)
   }) as Array<ReactElement<any>>
 
-  useLayoutEffect(() => {
+  const { rows, lastItemWidth, itemWidth } = useMemo(() => {
     const width = containerWidth ?? 1
 
     if (width <= 1) {
-      return
+      return { rows: [], lastItemWidth: 0, itemWidth: 0 }
     }
 
     let numColumns = Math.min(maxColumns, elements.length)
@@ -173,9 +164,12 @@ export default function Grid({
         const itemGap = totalGap / numColumnsForLayout
         newItemWidth = width / numColumnsForLayout - itemGap
       }
-      if (!isEqual(rows, newRows)) {
-        setRows(newRows)
-      }
+
+      // if (!isEqual(rows, newRows)) {
+      //   setRows(newRows)
+      // }
+
+      let lastItemWidth
 
       if (
         stretchLast &&
@@ -184,17 +178,20 @@ export default function Grid({
       ) {
         const totalGap = gap * (lastLength - 1)
         const itemGap = totalGap / lastLength
-        const lastItemWidth = containerWidth / lastLength - itemGap
-        setLastItemWidth(lastItemWidth)
+        lastItemWidth = containerWidth / lastLength - itemGap
       } else {
-        setLastItemWidth(
-          maxWidth ? Math.min(maxWidth, newItemWidth) : newItemWidth,
-        )
+        lastItemWidth = maxWidth
+          ? Math.min(maxWidth, newItemWidth)
+          : newItemWidth
       }
 
-      setItemWidth(
-        maxWidth ? Math.min(maxWidth, newItemWidth) : newItemWidth,
-      )
+      const itemWidth = maxWidth
+        ? Math.min(maxWidth, newItemWidth)
+        : newItemWidth
+
+      return { rows: newRows, itemWidth, lastItemWidth }
+    } else {
+      return { rows: [], itemWidth: 0, lastItemWidth: 0 }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -205,9 +202,6 @@ export default function Grid({
     gap,
     minWidth,
     maxWidth,
-    setItemWidth,
-    setRows,
-    rows,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     breakpoints.join(':'),
     stretchLast,

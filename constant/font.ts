@@ -343,8 +343,8 @@ const FONT: Fonts = {
   'Noto Sans Avestan': {
     google: true,
     lineHeight: {
-      heading: 1.2,
-      body: 1.7,
+      heading: 1.1,
+      body: 1.4,
       base: 1,
     },
     test: '',
@@ -667,8 +667,8 @@ const FONT: Fonts = {
   'Noto Sans Cuneiform': {
     google: true,
     lineHeight: {
-      heading: 1.2,
-      body: 1.7,
+      heading: 1.1,
+      body: 1.4,
       base: 1,
     },
     test: '',
@@ -865,8 +865,8 @@ const FONT: Fonts = {
   'Noto Sans Georgian': {
     google: true,
     lineHeight: {
-      heading: 1.2,
-      body: 1.7,
+      heading: 1.1,
+      body: 1.4,
       base: 1,
     },
     test: '',
@@ -901,8 +901,8 @@ const FONT: Fonts = {
   'Noto Sans Gothic': {
     google: true,
     lineHeight: {
-      heading: 1.2,
-      body: 1.7,
+      heading: 1.1,
+      body: 1.4,
       base: 1,
     },
     test: '',
@@ -1333,8 +1333,8 @@ const FONT: Fonts = {
   'Noto Sans KR': {
     google: true,
     lineHeight: {
-      heading: 1.2,
-      body: 1.7,
+      heading: 1.1,
+      body: 1.4,
       base: 1,
     },
     test: '',
@@ -1549,8 +1549,8 @@ const FONT: Fonts = {
   'Noto Sans Mandaic': {
     google: true,
     lineHeight: {
-      heading: 1.2,
-      body: 1.7,
+      heading: 1.1,
+      body: 1.4,
       base: 1,
     },
     test: '',
@@ -1765,8 +1765,8 @@ const FONT: Fonts = {
   'Noto Sans Mongolian': {
     google: true,
     lineHeight: {
-      heading: 1.2,
-      body: 1.7,
+      heading: 1.1,
+      body: 1.4,
       base: 1,
     },
     test: '',
@@ -3223,8 +3223,8 @@ const FONT: Fonts = {
   'Noto Serif Georgian': {
     google: true,
     lineHeight: {
-      heading: 1.2,
-      body: 1.7,
+      heading: 1.1,
+      body: 1.4,
       base: 1,
     },
     test: '',
@@ -3421,8 +3421,8 @@ const FONT: Fonts = {
   'Noto Serif KR': {
     google: true,
     lineHeight: {
-      heading: 1.2,
-      body: 1.7,
+      heading: 1.1,
+      body: 1.4,
       base: 1,
     },
     test: '',

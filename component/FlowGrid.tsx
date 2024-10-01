@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { useResizeObserver } from 'usehooks-ts'
+import { useDebounceCallback, useResizeObserver } from 'usehooks-ts'
 
 type ItemElement<T> = { style?: CSSProperties; record: T }
 
@@ -23,15 +23,17 @@ function FlowGridItem({
   onResize: (width: number, index: number) => void
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const { width } = useResizeObserver({
+  const { width = 0 } = useResizeObserver({
     ref,
   })
 
+  const debouncedResize = useDebounceCallback(onResize, 16)
+
   useLayoutEffect(() => {
     if (width) {
-      onResize(width, index)
+      debouncedResize(width, index)
     }
-  }, [width, onResize, index])
+  }, [debouncedResize, width, index])
 
   return (
     <div
@@ -123,12 +125,16 @@ export default function FlowGrid<T>({
           if (moreWidth) {
             if (totalWidth + gap + moreWidth > containerWidth) {
               items.pop()
+              const lastWidth = itemWidths[i - 1]
+              totalWidth -= lastWidth
             }
 
             items.push({
               style: { marginLeft: gap },
               record: more,
             })
+
+            totalWidth += moreWidth
           }
           break
         } else {
@@ -161,7 +167,11 @@ export default function FlowGrid<T>({
   return (
     <div
       ref={containerRef}
-      className={clsx(className, 'whitespace-nowrap')}
+      className={clsx(
+        className,
+        !isMeasured && 'opacity-0',
+        'whitespace-nowrap',
+      )}
     >
       {visibleItems.map((item, index) => (
         <FlowGridItem
