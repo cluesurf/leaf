@@ -7,6 +7,9 @@ export interface Settings {
   fonts?: Fonts
   scripts?: ScriptFonts
   mimeTypes?: MimeTypes
+  loaded: boolean
 }
 
-export const SettingsContext = createContext<Settings>({})
+export const SettingsContext = createContext<Settings>({
+  loaded: false,
+})

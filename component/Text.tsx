@@ -1,5 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+import FontsContext, { FontsContextInput } from '~/context/FontsContext'
+import useSettings from '~/hook/useSettings'
+import { Font, getScriptFont } from '~/utility/font'
+import tone from '@termsurf/tone'
+import clsx from 'clsx'
 import React, {
   CSSProperties,
   useContext,
@@ -8,11 +13,6 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import clsx from 'clsx'
-import tone from '@termsurf/tone'
-import FontsContext, { FontsContextInput } from '~/context/FontsContext'
-import useSettings from '~/hook/useSettings'
-import { Font, getScriptFont } from '~/utility/font'
 
 const DEFAULT_FONT_CONFIG = {}
 
@@ -98,10 +98,7 @@ export function useText(
     return ['Noto Sans Mono'].map(name => fontConfig[name])
   }, [font, script, scriptConfig, fontConfig])
 
-  const fontsKey = fonts
-    .filter(x => x)
-    .map(font => font.family)
-    .join(':')
+  const fontsKey = fonts.map(font => font?.family).join(':')
 
   const checked = checkFonts(state, fonts)
   const [isReady, setIsReady] = useState(checked)
@@ -117,13 +114,21 @@ export function useText(
     return () => clearTimeout(timer)
   }, [])
 
-  useEffect(() => {
-    const checked = checkFonts(state, fonts)
+  useLayoutEffect(() => {
+    let timer
+
     if (checked) {
-      setIsReady(true)
+      if (!isInvisible) {
+        timer = setTimeout(() => setIsReady(true), 500)
+      } else {
+        setIsReady(true)
+      }
+
       setIsInvisible(false)
     }
-  }, [state, fontsKey])
+
+    return () => clearTimeout(timer)
+  }, [state, fontsKey, checked, isInvisible])
 
   return [isReady, fontClassName, isInvisible, fonts[0]?.lineHeight]
 }
@@ -152,26 +157,23 @@ export default function Text({
     font,
     script,
   )
-  const [startedReady] = useState(!hiding)
   const [isRendered, setIsRendered] = useState(!hiding)
   const [transitionState, setTransitionState] =
-    useState<string>('fade-in')
+    useState<string>('start')
   const [animated, setAnimated] = useState(false)
   const lineHeight = lineHeights?.[leading]
 
-  useEffect(() => {
-    if (startedReady) {
-      setTransitionState('fade-in')
-    } else if (isReady) {
+  useLayoutEffect(() => {
+    if (isReady) {
       if (!isRendered) {
         setTransitionState('fade-in')
       } else {
         setTransitionState('fade-out')
       }
     }
-  }, [isReady, startedReady])
+  }, [isReady, hiding])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setIsRendered(!hiding)
   }, [hiding, isReady])
 
@@ -202,12 +204,30 @@ export default function Text({
         className={clsx(
           className,
           `${fontClassName}-fallback fade-out`,
-          'opacity-0 transition-opacity',
+          'opacity-0',
+          animated && `transition-opacity duration-300`,
         )}
         onTransitionEnd={() => {
           setAnimated(true)
           setTransitionState('fade-in')
         }}
+      >
+        {text}
+      </Tag>
+    )
+  }
+
+  if (transitionState === 'fade-in') {
+    return (
+      <Tag
+        {...props}
+        style={actualStyles}
+        className={clsx(
+          className,
+          animated && `transition-opacity duration-500`,
+          `opacity-1`,
+          fontClassName,
+        )}
       >
         {text}
       </Tag>
@@ -220,11 +240,8 @@ export default function Text({
       style={actualStyles}
       className={clsx(
         className,
-        animated ? `transition-opacity` : undefined,
         hiding ? `opacity-0` : `opacity-1`,
-        isReady || startedReady
-          ? fontClassName
-          : `${fontClassName}-fallback`,
+        `${fontClassName}-fallback`,
       )}
     >
       {text}

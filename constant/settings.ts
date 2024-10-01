@@ -1,5 +1,4 @@
-export const SCRIPT = async () =>
-  (await import('~/constant/script')).default
+import SCRIPT from '~/constant/script'
+import FONT from '~/constant/font'
 
-export const FONT = async () =>
-  (await import('~/constant/font')).default
+export { SCRIPT, FONT }

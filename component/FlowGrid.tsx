@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { useDebounceCallback, useResizeObserver } from 'usehooks-ts'
+import { useResizeObserver } from 'usehooks-ts'
 
 type ItemElement<T> = { style?: CSSProperties; record: T }
 
@@ -20,26 +20,24 @@ function FlowGridItem({
   children: React.ReactNode
   style?: CSSProperties
   index: number
-  onResize: (width: number, index: number) => void
+  onResize?: (width: number, index: number) => void
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const { width = 0 } = useResizeObserver({
     ref,
   })
 
-  const debouncedResize = useDebounceCallback(onResize, 16)
-
   useLayoutEffect(() => {
     if (width) {
-      debouncedResize(width, index)
+      onResize?.(width, index)
     }
-  }, [debouncedResize, width, index])
+  }, [onResize, width, index])
 
   return (
     <div
-      ref={ref} // Capture ref to measure width
       className="inline-block h-full"
       style={style}
+      ref={ref} // Capture ref to measure width
     >
       {children}
     </div>
@@ -69,6 +67,7 @@ export default function FlowGrid<T>({
   const [itemWidths, setItemWidths] = useState<Record<number, number>>(
     {},
   )
+  // const widthsRef = useRef<Array<number>>([])
   const { width: containerWidth } = useResizeObserver({
     ref: containerRef,
   })
@@ -97,7 +96,11 @@ export default function FlowGrid<T>({
 
   const visibleItems = useMemo<Array<ItemElement<T>>>(() => {
     if (!isMeasured || !containerWidth) {
-      return records.map(record => ({ record }))
+      const items = records.map(record => ({ record }))
+      if (more) {
+        // items.push({ record: more })
+      }
+      return items
     }
 
     const items: Array<ItemElement<T>> = []
@@ -123,10 +126,10 @@ export default function FlowGrid<T>({
       } else {
         if (totalWidth + gap + width > containerWidth) {
           if (moreWidth) {
-            if (totalWidth + gap + moreWidth > containerWidth) {
+            while (totalWidth + gap + moreWidth > containerWidth) {
               items.pop()
               const lastWidth = itemWidths[i - 1]
-              totalWidth -= lastWidth
+              totalWidth -= gap + lastWidth
             }
 
             items.push({
@@ -134,7 +137,7 @@ export default function FlowGrid<T>({
               record: more,
             })
 
-            totalWidth += moreWidth
+            totalWidth += gap + moreWidth
           }
           break
         } else {
@@ -162,7 +165,7 @@ export default function FlowGrid<T>({
     }
 
     return items
-  }, [containerWidth, records, isMeasured, itemWidths, gap])
+  }, [containerWidth, records, more, isMeasured, itemWidths, gap])
 
   return (
     <div
@@ -170,33 +173,53 @@ export default function FlowGrid<T>({
       className={clsx(
         className,
         !isMeasured && 'opacity-0',
-        'whitespace-nowrap',
+        'relative w-full',
       )}
     >
-      {visibleItems.map((item, index) => (
-        <FlowGridItem
-          key={index}
-          style={item.style}
-          index={index}
-          onResize={handleResize}
-        >
-          <ItemRenderer
-            record={item.record}
-            index={index}
-          />
-        </FlowGridItem>
-      ))}
-      {!isMeasured && more && (
-        <FlowGridItem
-          index={-1}
-          onResize={handleResize}
-        >
-          <ItemRenderer
-            record={more}
+      <div className="whitespace-nowrap overflow-hidden opacity-0 absolute">
+        {more && (
+          <FlowGridItem
             index={-1}
-          />
-        </FlowGridItem>
-      )}
+            onResize={handleResize}
+          >
+            <ItemRenderer
+              record={more}
+              index={-1}
+            />
+          </FlowGridItem>
+        )}
+        {records.map((item, index) => (
+          <FlowGridItem
+            key={index}
+            index={index}
+            onResize={handleResize}
+          >
+            <ItemRenderer
+              record={item}
+              index={index}
+            />
+          </FlowGridItem>
+        ))}
+      </div>
+      <div
+        className={clsx(
+          'whitespace-nowrap transition-opacity',
+          isMeasured ? 'opacity-1' : 'opacity-0',
+        )}
+      >
+        {visibleItems.map((item, index) => (
+          <FlowGridItem
+            key={index}
+            style={item.style}
+            index={index}
+          >
+            <ItemRenderer
+              record={item.record}
+              index={index}
+            />
+          </FlowGridItem>
+        ))}
+      </div>
     </div>
   )
 }
