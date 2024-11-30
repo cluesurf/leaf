@@ -11,6 +11,7 @@ import {
 } from 'react'
 import { get, set } from '~/utility/storage'
 import { useSearchParams } from './useSearchParams'
+import omit from 'lodash/omit'
 
 export type Base = Record<string, any>
 
@@ -34,17 +35,22 @@ export function usePageSettings<S = Base, C = Base>() {
   return useContext(PageSettingsContext) as PageSettingsContext<S, C>
 }
 
-function updateQueryParams(stored: Base, queryMap: QueryMap) {
+function updateQueryParams(
+  stored: Base,
+  queryResolvers: QueryResolvers,
+) {
   const query: Array<string> = []
   let hasKey = false
   for (const name in stored) {
     hasKey = true
     const transform =
-      queryMap[name]?.to ?? ((val?: any | null) => String(val))
+      queryResolvers[name]?.to ?? ((val?: any | null) => String(val))
     if (stored[name] != null) {
       const value = transform(stored[name])
       if (value != null) {
-        query.push(`${queryMap[name]?.key ?? kebabCase(name)}=${value}`)
+        query.push(
+          `${queryResolvers[name]?.key ?? kebabCase(name)}=${value}`,
+        )
       }
     }
   }
@@ -62,15 +68,15 @@ function updateQueryParams(stored: Base, queryMap: QueryMap) {
 
 function getQueryParams(
   base: Base,
-  queryMap: QueryMap,
+  queryResolvers: QueryResolvers,
   query: URLSearchParams,
 ) {
   const queried: Record<string, string> = {}
   for (const name in base) {
     const transform =
-      queryMap[name]?.from ?? ((val?: string | null) => val)
+      queryResolvers[name]?.from ?? ((val?: string | null) => val)
     const value = transform(
-      query.get(queryMap[name]?.key ?? kebabCase(name)),
+      query.get(queryResolvers[name]?.key ?? kebabCase(name)),
     )
     if (value) {
       queried[name] = value
@@ -79,23 +85,37 @@ function getQueryParams(
   return queried
 }
 
-export type QueryMap = Record<
+export type QueryResolvers = Record<
   string,
   {
     key?: string
+    store?: boolean
+    default?: string
     to?: (val?: any | null) => string | undefined
     from?: (val?: string | null) => any
   }
 >
 
-export const QueryFunction = {
-  Boolean: {
+export const QueryResolver: QueryResolvers = {
+  boolean: {
     from: (val?: string | null) => val === 'yes',
     to: (val?: boolean | null) => (val === true ? 'yes' : 'no'),
   },
-  Integer: {
+  integer: {
     from: (val?: string | null) => parseInt(String(val ?? 0), 10),
-    to: (val?: number | null) => String(val),
+    to: (val?: number | null) => (val ? String(val) : undefined),
+  },
+  decimal: {
+    from: (val?: string | null) => parseFloat(String(val ?? 0)),
+    to: (val?: number | null) => (val ? String(val) : undefined),
+  },
+  array: {
+    from: (val?: string | null) => parseInt(String(val ?? 0), 10),
+    to: (val?: Array<string> | null) => val?.join(','),
+  },
+  text: {
+    from: (val?: string | null) => val?.replace(/\s+/g, '+'),
+    to: (val?: string | null) => val?.replace(/\+/g, ' '),
   },
 }
 
@@ -103,7 +123,7 @@ export type PageSettingsInput = {
   path: string
   base?: Base
   cached?: Base
-  queryMap?: QueryMap
+  queryResolvers?: QueryResolvers
 }
 
 export function PageSettings({
@@ -111,21 +131,36 @@ export function PageSettings({
   base,
   cached: c = {},
   children,
-  queryMap = {},
+  queryResolvers = {},
 }: {
   children: React.ReactNode
 } & PageSettingsInput) {
   const [stored, _setStored] = useState<Base>({})
   const query = useSearchParams()
-  const [cached, setCached] = useState<Base>(c)
+  const [cached, _setCached] = useState<Base>(c)
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     const stored = get(path)
-    const queried = getQueryParams(base ?? {}, queryMap, query)
-    const next = defaults({}, queried, stored, base) as Base
-    updateQueryParams(next, queryMap)
-    _setStored(next)
+    const queried = getQueryParams(base ?? {}, queryResolvers, query)
+    const queryResolversKeys = Object.keys(queryResolvers)
+    const omittedQueryResolversKeys = queryResolversKeys.filter(
+      key => queryResolvers[key].store !== true,
+    )
+    const omittedQueried = omit(queried, omittedQueryResolversKeys)
+    const storedQueried = omit(
+      queried,
+      queryResolversKeys.filter(
+        key => queryResolvers[key].store === true,
+      ),
+    )
+    const nextQueried = defaults({}, queried, stored, base) as Base
+    const nextStored = defaults({}, storedQueried, stored, base) as Base
+    updateQueryParams(nextQueried, queryResolvers)
+    _setStored(nextStored)
+    if (omittedQueryResolversKeys.length) {
+      _setCached(c => ({ ...c, omittedQueried }))
+    }
     setIsLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -134,10 +169,19 @@ export function PageSettings({
     (stored: Base) => {
       set(path, stored)
       const next = defaults({}, stored, base)
-      updateQueryParams(next, queryMap)
+      updateQueryParams(next, queryResolvers)
       _setStored(stored)
     },
-    [path, base, queryMap],
+    [path, base, queryResolvers],
+  )
+
+  const setCached = useCallback(
+    (cached: Base) => {
+      const next = defaults({}, cached, stored, base)
+      updateQueryParams(next, queryResolvers)
+      _setCached(next)
+    },
+    [path, base, stored, queryResolvers],
   )
 
   return (

@@ -7,7 +7,11 @@ import { Storage } from '~/component/provider/Storage'
 import { MDXProvider } from '@mdx-js/react'
 import InteractionProvider from '~/hook/useInteractionManager'
 import { ToastProvider } from '../Toast'
-import { Base, PageSettings, QueryMap } from '~/hook/usePageSettings'
+import {
+  Base,
+  PageSettings,
+  QueryResolvers,
+} from '~/hook/usePageSettings'
 import { Provider as ReduxProvider } from 'react-redux'
 import { Store, UnknownAction } from 'redux'
 
@@ -20,7 +24,7 @@ export default function Provider({
   settings,
   base,
   cached,
-  queryMap,
+  queryResolvers,
 }: {
   store: Store<any, UnknownAction, unknown>
   settings?: SettingsInput
@@ -28,7 +32,7 @@ export default function Provider({
   children: React.ReactNode
   base?: Base
   cached?: Base
-  queryMap?: QueryMap
+  queryResolvers?: QueryResolvers
 }) {
   return (
     <ReduxProvider store={store}>
@@ -43,7 +47,7 @@ export default function Provider({
                       path={path}
                       base={base}
                       cached={cached}
-                      queryMap={queryMap}
+                      queryResolvers={queryResolvers}
                     >
                       {children}
                     </PageSettings>
