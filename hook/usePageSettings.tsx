@@ -35,22 +35,26 @@ export function usePageSettings<S = Base, C = Base>() {
   return useContext(PageSettingsContext) as PageSettingsContext<S, C>
 }
 
-function updateQueryParams(
-  stored: Base,
-  queryResolvers: QueryResolvers,
-) {
+function updateQueryParams(base: Base, queryResolvers: QueryResolvers) {
   const query: Array<string> = []
+
   let hasKey = false
-  for (const name in stored) {
+  for (const name in base) {
     hasKey = true
-    const transform =
-      queryResolvers[name]?.to ?? ((val?: any | null) => String(val))
-    if (stored[name] != null) {
-      const value = transform(stored[name])
+
+    const resolver = queryResolvers[name]!
+
+    if (base[name] != null) {
+      const value = resolver.to(base[name])
       if (value != null) {
-        query.push(
-          `${queryResolvers[name]?.key ?? kebabCase(name)}=${value}`,
-        )
+        // If no default is defined,
+        // or the default is not the current value,
+        // then make it visible in the query param.
+        if (!('default' in resolver) || resolver.default !== value) {
+          query.push(
+            `${queryResolvers[name]?.key ?? kebabCase(name)}=${value}`,
+          )
+        }
       }
     }
   }
@@ -72,16 +76,23 @@ function getQueryParams(
   query: URLSearchParams,
 ) {
   const queried: Record<string, string> = {}
+
   for (const name in base) {
-    const transform =
-      queryResolvers[name]?.from ?? ((val?: string | null) => val)
-    const value = transform(
-      query.get(queryResolvers[name]?.key ?? kebabCase(name)),
-    )
-    if (value) {
-      queried[name] = value
+    const resolver = queryResolvers[name]
+
+    if (resolver) {
+      const value = resolver.from(
+        query.get(queryResolvers[name]?.key ?? kebabCase(name)),
+      )
+
+      if (value != null) {
+        if (!('default' in resolver) || resolver.default !== value) {
+          queried[name] = value
+        }
+      }
     }
   }
+
   return queried
 }
 
@@ -90,9 +101,9 @@ export type QueryResolvers = Record<
   {
     key?: string
     store?: boolean
-    default?: string
-    to?: (val?: any | null) => string | undefined
-    from?: (val?: string | null) => any
+    default?: any
+    to: (val?: any | null) => string | undefined
+    from: (val?: string | null) => any
   }
 >
 
@@ -159,7 +170,7 @@ export function PageSettings({
     updateQueryParams(nextQueried, queryResolvers)
     _setStored(nextStored)
     if (omittedQueryResolversKeys.length) {
-      _setCached(c => ({ ...c, omittedQueried }))
+      _setCached(c => ({ ...c, ...omittedQueried }))
     }
     setIsLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
