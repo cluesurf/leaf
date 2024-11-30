@@ -1,4 +1,5 @@
 import React, {
+  RefObject,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -25,8 +26,8 @@ const SVG: React.FC<SVGInput> = ({
   ...props
 }) => {
   const [aspectRatio, setAspectRatio] = useState<number>(1)
-  const ref = useRef<HTMLDivElement>(null)
-  const svgRef = useRef<SVGGElement>(null)
+  const ref = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>
+  const svgRef = useRef<SVGGElement>(null) as RefObject<SVGGElement>
   const [svgBBox, setSvgBBox] = useState<DOMRect>()
 
   const { width: divWidth = 0, height: divHeight = 0 } =

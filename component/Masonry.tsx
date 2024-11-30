@@ -145,7 +145,7 @@ export default function Masonry({
         const newEl = React.cloneElement(item.element, {
           key: i,
           ref: handleSizeReady(i),
-        })
+        } as React.Attributes)
         columns[0].push(newEl)
         i++
       }

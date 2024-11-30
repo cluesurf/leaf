@@ -8,7 +8,7 @@ import clsx from 'clsx'
 
 export type ViewportLayout3SectionInput = {
   className?: string
-  scrollerRef?: RefObject<HTMLDivElement>
+  scrollerRef?: RefObject<HTMLDivElement | null>
   middleClassName?: string
   left: React.ReactNode
   leftClassName?: string

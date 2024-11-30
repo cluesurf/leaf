@@ -51,13 +51,15 @@ import XTwitterIcon from '~/component/icon/XTwitter'
 import Gloss from '~/component/Gloss'
 import List from '~/component/List'
 import Switch from '~/component/Switch'
-import Environment from '~/component/Environment'
+import Environment from './Environment'
 import { FONT, SCRIPT } from '~/constant/settings'
 import useFonts from '~/hook/useFonts'
 import Loading from '~/component/Loading'
 import FileDropzone from '~/component/FileDropzone'
 import Dots from '~/component/Dots'
 import SettingsOverlay from '~/component/SettingsOverlay'
+import useScripts from '~/hook/useScripts'
+import store from './redux'
 
 const FONT_LIST = [
   'Noto Sans Mono',
@@ -65,7 +67,7 @@ const FONT_LIST = [
   'Noto Serif Tibetan',
 ]
 
-const NECESSARY_FONT_LIST = ['Noto Sans Mono', 'Tone Etch']
+const NECESSARY_FONT_LIST = ['Noto Sans Mono' /*, 'Tone Etch']*/]
 
 const BUTTON_COLORS = [
   'purple',
@@ -75,6 +77,63 @@ const BUTTON_COLORS = [
   'contrast',
 ] as const
 const BUTTON_SIZES = ['small', 'medium', 'large'] as const
+
+const filteredScripts = [
+  {
+    slug: 'latin',
+    script: 'latin',
+    name: 'Latin',
+    symbol: 'A',
+  },
+  {
+    slug: 'chinese',
+    script: 'chinese',
+    name: 'Chinese',
+    symbol: '大',
+  },
+  {
+    slug: 'arabic',
+    script: 'arabic',
+    name: 'Arabic',
+    symbol: 'ح',
+  },
+  {
+    slug: 'devanagari',
+    script: 'devanagari',
+    name: 'Devanagari',
+    symbol: 'ॐ',
+  },
+  {
+    slug: 'hebrew',
+    script: 'hebrew',
+    name: 'Hebrew',
+    symbol: 'א',
+  },
+  {
+    slug: 'tibetan',
+    script: 'tibetan',
+    name: 'Tibetan',
+    symbol: 'ཀ',
+  },
+  {
+    slug: 'tamil',
+    script: 'tamil',
+    name: 'Tamil',
+    symbol: 'க',
+  },
+  {
+    slug: 'greek',
+    script: 'greek',
+    name: 'Greek',
+    symbol: 'Π',
+  },
+  {
+    slug: 'telugu',
+    script: 'telugu',
+    name: 'Telugu',
+    symbol: 'జ',
+  },
+]
 
 function ControlledInput(props: any) {
   const [value, setValue] = useState('')
@@ -109,6 +168,7 @@ export default function Page() {
   return (
     <Environment
       // configuration={configuration}
+      store={store}
       settings={{ fonts: FONT, scripts: SCRIPT }}
     >
       <Content />
@@ -118,6 +178,7 @@ export default function Page() {
 
 function Content() {
   useFonts(NECESSARY_FONT_LIST)
+  useScripts(filteredScripts.map(s => s.slug))
 
   useFonts(FONT_LIST)
 
@@ -130,7 +191,20 @@ function Content() {
       </P>
       <H2>Font</H2>
       <div className="p-16 flex flex-col gap-16">
-        {/* <Text
+        <Grid
+          minWidth={160}
+          gap={16}
+          maxColumns={4}
+          align="center"
+        >
+          {filteredScripts.map(script => (
+            <ScriptLink
+              key={script.slug}
+              {...script}
+            />
+          ))}
+        </Grid>
+        {/* <Textext
           tag="div"
           size={24}
         >
@@ -591,5 +665,76 @@ function FontLink({
         </Grid>
       )}
     </div>
+  )
+}
+
+function ScriptLink({
+  className,
+  slug,
+  name,
+  script,
+  symbol,
+  disabled = false,
+  weight,
+}: {
+  className?: string
+  slug: string
+  name: string
+  script?: string
+  disabled?: boolean
+  symbol?: string
+  weight?: string
+}) {
+  if (disabled) {
+    return (
+      <div
+        className={clsx(
+          className,
+          'overflow-hidden shadow-small1 flex flex-col bg-gray-100 text-left p-16 h-full rounded-sm w-full',
+        )}
+      >
+        {symbol && (
+          <Text
+            script={script}
+            tag="i"
+            className={clsx(
+              weight && `font-${weight}`,
+              'block text-mega sm:text-mega-large text-gray-800 h-156',
+            )}
+          >
+            {symbol}
+          </Text>
+        )}
+        <Text className="block font-semibold lowercase text-base sm:text-base-large text-gray-500">
+          {name}
+        </Text>
+      </div>
+    )
+  }
+
+  return (
+    <Link
+      href={`/scripts/${slug}`}
+      className={clsx(
+        className,
+        'overflow-hidden text-center shadow-small1 hover:shadow-small2 flex flex-col bg-gray-50 [&>div]:hover:text-violet-600 [&>div]:transition-colors transition-all duration-200 p-16 h-full rounded-sm [&_span]:hover:text-violet-600 [&_i]:hover:text-violet-600',
+      )}
+    >
+      {symbol && (
+        <Text
+          script={script}
+          tag="i"
+          className={clsx(
+            weight && `font-${weight}`,
+            'block text-mega sm:text-mega-large text-gray-800 transition-colors h-156',
+          )}
+        >
+          {symbol}
+        </Text>
+      )}
+      <Text className="block font-semibold lowercase text-lg sm:text-lg-large text-gray-500 transition-colors">
+        {name}
+      </Text>
+    </Link>
   )
 }

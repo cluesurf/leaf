@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useCallback, useMemo, useState } from 'react'
 import StorageContext from '~/context/StorageContext'
 import * as storage from '~/utility/storage'

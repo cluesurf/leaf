@@ -2,6 +2,7 @@ import { VariableSizeList as List } from 'react-window'
 import React, {
   CSSProperties,
   ReactNode,
+  RefObject,
   useLayoutEffect,
   useRef,
   useState,
@@ -37,7 +38,9 @@ export default function VirtualizedGrid({
   breakpoints = [],
 }: GridInput) {
   // const [containerWidth, setContainerWidth] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(
+    null,
+  ) as RefObject<HTMLDivElement>
   const [itemWidth, setItemWidth] = useState(0)
   const [rows, setRows] = useState<Array<Array<ReactNode>>>([])
   const { width: containerWidth = 16, height: containerHeight = 16 } =

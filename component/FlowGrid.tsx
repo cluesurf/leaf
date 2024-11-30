@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import React, {
   CSSProperties,
+  RefObject,
   useCallback,
   useLayoutEffect,
   useMemo,
@@ -22,7 +23,7 @@ function FlowGridItem({
   index: number
   onResize?: (width: number, index: number) => void
 }) {
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>
   const { width = 0 } = useResizeObserver({
     ref,
   })
@@ -63,7 +64,9 @@ export default function FlowGrid<T>({
     index: number
   }) => React.ReactNode
 }) {
-  const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(
+    null,
+  ) as RefObject<HTMLDivElement>
   const [itemWidths, setItemWidths] = useState<Record<number, number>>(
     {},
   )

@@ -1,3 +1,5 @@
+'use client'
+
 import React, {
   RefObject,
   useContext,
@@ -27,7 +29,7 @@ export type LayoutInput = {
   left?: React.ReactNode
   menu?: React.ReactNode
   configuration?: React.ReactNode
-  scrollerRef?: RefObject<HTMLDivElement>
+  scrollerRef?: RefObject<HTMLDivElement | null>
 }
 
 export default function Layout({

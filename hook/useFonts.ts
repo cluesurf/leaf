@@ -4,9 +4,11 @@ import FontsContext from '~/context/FontsContext'
 import { Font, loadFonts } from '~/utility/font'
 import useSettings from './useSettings'
 
+const DEFAULT_FONT = {}
+
 export default function useFonts(list: Array<FontName> = []) {
   const state = useContext(FontsContext)
-  const FONT = useSettings('fonts')
+  const FONT = useSettings('fonts') ?? DEFAULT_FONT
 
   useLayoutEffect(() => {
     const fonts: Array<Font> = FONT

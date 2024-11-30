@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useEffect, useState } from 'react'
 import {
   SettingsContext,
@@ -6,7 +8,9 @@ import {
 
 export type Setting = keyof SettingsType
 
-export type SettingsInput = Record<string, () => Promise<any>>
+export type SettingsInput = Record<string, any>
+
+const DEFAULT_SETTINGS = {}
 
 export default function Settings({
   value,
@@ -15,8 +19,14 @@ export default function Settings({
   value?: any
   children: React.ReactNode
 }) {
+  const [state, setState] = useState(value ?? DEFAULT_SETTINGS)
+
+  useEffect(() => {
+    setState(value ?? DEFAULT_SETTINGS)
+  }, [value])
+
   return (
-    <SettingsContext.Provider value={value}>
+    <SettingsContext.Provider value={state}>
       {children}
     </SettingsContext.Provider>
   )

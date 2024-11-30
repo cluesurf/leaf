@@ -1,3 +1,5 @@
+'use client'
+
 import * as RadixToast from '@radix-ui/react-toast'
 import clsx from 'clsx'
 import { createContext, useCallback, useContext, useState } from 'react'

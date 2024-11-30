@@ -52,6 +52,7 @@ export type InputInput = Omit<
   after?: React.ReactNode
   color?: InputColor
   font?: string | Array<string>
+  script?: string
 }
 
 function Input(
@@ -67,30 +68,41 @@ function Input(
     color = 'base',
     size = 'small',
     font = 'Noto Sans Mono',
+    script,
     ...props
   }: InputInput,
   passedRef?: ForwardedRef<HTMLInputElement>,
 ) {
   const { value, onChange, ...rest } = props
   const ref = useRef<HTMLInputElement>(null)
-  const [isReady, fontClassName, hiding] = useText(font)
-  const [isRendered, setIsRendered] = useState(!hiding)
-  const [transitionState, setTransitionState] = useState<string>()
-  const [animated, setAnimated] = useState(false)
+  const {
+    lineHeights,
+    handleTransitionOutEnd,
+    fontClassName,
+    transitionState,
+  } = useText(font, script)
+  const lineHeight = lineHeights?.body
 
-  useLayoutEffect(() => {
-    if (isReady) {
-      if (!isRendered) {
-        setTransitionState('fade-in')
-      } else {
-        setTransitionState('fade-out')
-      }
-    }
-  }, [isReady])
-
-  useLayoutEffect(() => {
-    setIsRendered(!hiding)
-  }, [hiding, isReady])
+  let inputClassName: string | undefined = undefined
+  let transitionEnd
+  switch (transitionState) {
+    case 'base:hidden':
+      inputClassName = `opacity-0 ${fontClassName}-fallback`
+      break
+    case 'base:visible':
+      inputClassName = `opacity-1 transition-opacity duration-300 ${fontClassName}-fallback`
+      break
+    case 'base:exit':
+      inputClassName = `opacity-0 transition-opacity duration-300 ${fontClassName}-fallback`
+      transitionEnd = handleTransitionOutEnd
+      break
+    case 'head:enter':
+      inputClassName = `opacity-1 transition-opacity duration-500 ${fontClassName}`
+      break
+    case 'head:visible':
+      inputClassName = `opacity-1 transition-opacity duration-300 ${fontClassName}`
+      break
+  }
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     onChange?.(e)
@@ -120,15 +132,11 @@ function Input(
         onChange={handleChange}
         autoComplete={autoComplete}
         spellCheck={spellCheck}
-        onTransitionEnd={() => {
-          setAnimated(true)
-          setTransitionState('fade-in')
-        }}
+        onTransitionEnd={transitionEnd}
+        style={{ lineHeight }}
         className={clsx(
           textColorClass,
-          animated ? `transition-opacity` : undefined,
-          hiding ? `opacity-0` : `opacity-1`,
-          isReady ? fontClassName : `${fontClassName}-fallback`,
+          inputClassName,
           `text-base sm:text-base-large`,
           size === 'small' ? 'h-32' : 'h-48',
           'bg-transparent block w-full py-8',

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { RefObject, useEffect, useRef } from 'react'
 import { useOnClickOutside } from 'usehooks-ts'
 import SwipeListener from 'swipe-listener'
 
@@ -9,7 +9,7 @@ export default function SettingsOverlay({
   onHide?: () => void
   children: React.ReactNode
 }) {
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>
 
   const handleClickOutside = () => {
     onHide?.()

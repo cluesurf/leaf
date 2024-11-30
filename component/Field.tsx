@@ -6,6 +6,7 @@ export type FieldInput = React.ComponentPropsWithoutRef<'div'> & {
   className?: string
 }
 
+// TODO: Field is passing props down to native element from Grid
 export default function Field({
   children,
   className,

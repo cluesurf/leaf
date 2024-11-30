@@ -1,3 +1,5 @@
+'use client'
+
 import React, { HTMLProps, useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import T from './Text'

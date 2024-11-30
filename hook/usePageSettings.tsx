@@ -1,3 +1,5 @@
+'use client'
+
 import kebabCase from 'lodash/kebabCase'
 import defaults from 'lodash/defaults'
 import {

@@ -18,6 +18,7 @@ export type NativeSelectInput<T extends string> = Omit<
   color?: InputColor
   noArrow?: boolean
   font?: string | Array<string>
+  script?: string
 }
 
 function NativeSelect<T extends string = string>(
@@ -32,12 +33,38 @@ function NativeSelect<T extends string = string>(
     noArrow,
     size = 'small',
     font = 'Noto Sans Mono',
+    script,
     ...props
   }: NativeSelectInput<T>,
   ref: ForwardedRef<HTMLSelectElement>,
 ) {
-  const [isStarting, isFontReady, hasFontWaited, fontClassName] =
-    useText(font)
+  const {
+    lineHeights,
+    handleTransitionOutEnd,
+    fontClassName,
+    transitionState,
+  } = useText(font, script)
+  const lineHeight = lineHeights?.body
+  let inputClassName: string | undefined = undefined
+  let transitionEnd
+  switch (transitionState) {
+    case 'base:hidden':
+      inputClassName = `opacity-0 ${fontClassName}-fallback`
+      break
+    case 'base:visible':
+      inputClassName = `opacity-1 transition-opacity duration-300 ${fontClassName}-fallback`
+      break
+    case 'base:exit':
+      inputClassName = `opacity-0 transition-opacity duration-300 ${fontClassName}-fallback`
+      transitionEnd = handleTransitionOutEnd
+      break
+    case 'head:enter':
+      inputClassName = `opacity-1 transition-opacity duration-500 ${fontClassName}`
+      break
+    case 'head:visible':
+      inputClassName = `opacity-1 transition-opacity duration-300 ${fontClassName}`
+      break
+  }
 
   const handleChange = (event: ChangeEvent) => {
     const value = (event.target as HTMLSelectElement).value
@@ -50,20 +77,7 @@ function NativeSelect<T extends string = string>(
   }
 
   const rounded = getRoundedClass(topped, bottomed)
-  const waitingColorClass = color && INPUT_COLOR[color]
-
-  let backgroundColorClass
-  let textColorClass
-
-  if (isStarting || (isFontReady && hasFontWaited)) {
-    backgroundColorClass = waitingColorClass
-    textColorClass = `text-gray-950 ${fontClassName} placeholder:text-gray-500 placeholder:italic`
-  } else if (hasFontWaited) {
-    backgroundColorClass = waitingColorClass
-    textColorClass = `text-transparent placeholder:text-transparent`
-  } else {
-    textColorClass = `text-transparent placeholder:text-transparent`
-  }
+  let textColorClass = `placeholder:italic`
 
   return (
     <div
@@ -72,7 +86,6 @@ function NativeSelect<T extends string = string>(
         rounded,
         size === 'small' ? 'h-32' : 'h-48',
         'relative w-full min-w-128',
-        backgroundColorClass,
         textColorClass,
       )}
     >
@@ -85,11 +98,13 @@ function NativeSelect<T extends string = string>(
         <select
           {...props}
           ref={ref}
+          onTransitionEnd={transitionEnd}
           onChange={handleChange}
           className={clsx(
             size === 'small' ? 'text-sm h-32' : 'h-48',
             'appearance-none bg-transparent px-12 leading-content w-full',
             'overflow-hidden whitespace-nowrap text-ellipsis',
+            inputClassName,
             'pr-24',
           )}
         >
