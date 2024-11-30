@@ -12,6 +12,7 @@ import {
 import { get, set } from '~/utility/storage'
 import { useSearchParams } from './useSearchParams'
 import omit from 'lodash/omit'
+import pick from 'lodash/pick'
 
 export type Base = Record<string, any>
 
@@ -115,11 +116,13 @@ export const QueryResolver: QueryResolvers = {
     to: (val?: boolean | null) => (val === true ? 'yes' : 'no'),
   },
   integer: {
-    from: (val?: string | null) => parseInt(String(val ?? 0), 10),
+    from: (val?: string | null) =>
+      val != null ? parseInt(String(val), 10) : undefined,
     to: (val?: number | null) => (val ? String(val) : undefined),
   },
   decimal: {
-    from: (val?: string | null) => parseFloat(String(val ?? 0)),
+    from: (val?: string | null) =>
+      val != null ? parseFloat(String(val)) : undefined,
     to: (val?: number | null) => (val ? String(val) : undefined),
   },
   array: {
@@ -160,7 +163,7 @@ export function PageSettings({
     const omittedQueryResolversKeys = queryResolversKeys.filter(
       key => queryResolvers[key].store !== true,
     )
-    const omittedQueried = omit(queried, omittedQueryResolversKeys)
+    const omittedQueried = pick(queried, omittedQueryResolversKeys)
     const storedQueried = omit(
       queried,
       queryResolversKeys.filter(
