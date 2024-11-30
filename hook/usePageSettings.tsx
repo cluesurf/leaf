@@ -76,24 +76,21 @@ function updateQueryParams(base: Base, queryResolvers: QueryResolvers) {
 }
 
 function getQueryParams(
-  base: Base,
   queryResolvers: QueryResolvers,
   query: URLSearchParams,
 ) {
   const queried: Record<string, string> = {}
 
-  for (const name in base) {
-    const resolver = queryResolvers[name]
+  for (const name in queryResolvers) {
+    const resolver = queryResolvers[name]!
 
-    if (resolver) {
-      const value = resolver.from(
-        query.get(queryResolvers[name]?.key ?? kebabCase(name)),
-      )
+    const value = resolver.from(
+      query.get(queryResolvers[name]?.key ?? kebabCase(name)),
+    )
 
-      if (value != null) {
-        if (!('default' in resolver) || resolver.default !== value) {
-          queried[name] = value
-        }
+    if (value != null) {
+      if (!('default' in resolver) || resolver.default !== value) {
+        queried[name] = value
       }
     }
   }
@@ -158,7 +155,7 @@ export function PageSettings({
 
   useEffect(() => {
     const stored = get(path)
-    const queried = getQueryParams(base ?? {}, queryResolvers, query)
+    const queried = getQueryParams(queryResolvers, query)
     const queryResolversKeys = Object.keys(queryResolvers)
     const omittedQueryResolversKeys = queryResolversKeys.filter(
       key => queryResolvers[key].store !== true,
