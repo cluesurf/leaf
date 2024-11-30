@@ -32,8 +32,6 @@ export default function Environment({
     }
   }, [initializers])
 
-  console.log('STORE', store)
-
   return (
     <LeafEnvironment
       store={store}

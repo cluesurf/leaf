@@ -30,7 +30,6 @@ export default function Provider({
   cached?: Base
   queryMap?: QueryMap
 }) {
-  console.log('LEAF STORE', store)
   return (
     <ReduxProvider store={store}>
       <Settings value={settings}>
