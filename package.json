@@ -1,6 +1,6 @@
 {
   "name": "@termsurf/leaf",
-  "version": "0.4.14",
+  "version": "0.4.16",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",

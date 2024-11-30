@@ -123,7 +123,7 @@ export const QueryResolver: QueryResolvers = {
     to: (val?: number | null) => (val ? String(val) : undefined),
   },
   array: {
-    from: (val?: string | null) => parseInt(String(val ?? 0), 10),
+    from: (val?: string | null) => val?.split(','),
     to: (val?: Array<string> | null) => val?.join(','),
   },
   text: {
