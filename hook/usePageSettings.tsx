@@ -50,7 +50,10 @@ function updateQueryParams(base: Base, queryResolvers: QueryResolvers) {
         // If no default is defined,
         // or the default is not the current value,
         // then make it visible in the query param.
-        if (!('default' in resolver) || resolver.default !== value) {
+        if (
+          !('default' in resolver) ||
+          resolver.default !== base[name]
+        ) {
           query.push(
             `${queryResolvers[name]?.key ?? kebabCase(name)}=${value}`,
           )
@@ -67,6 +70,8 @@ function updateQueryParams(base: Base, queryResolvers: QueryResolvers) {
       '',
       `${window.location.pathname}?${query.join('&')}`,
     )
+  } else if (window.location.search) {
+    window.history.replaceState({}, '', window.location.pathname)
   }
 }
 
