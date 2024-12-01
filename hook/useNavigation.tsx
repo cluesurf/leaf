@@ -4,6 +4,7 @@ import MenuIcon from '~/component/icon/Menu'
 import TriangleUpIcon from '~/component/icon/TriangleUp'
 import NavigationTop from '~/component/navigation/Top'
 import NavigationBottom from '~/component/navigation/Bottom'
+import clsx from 'clsx'
 
 export function useNavigation({
   onMenuOpen,
@@ -92,7 +93,10 @@ export function useNavigation({
     bottom: (
       <NavigationBottom
         {...navigation.bottom}
-        backgroundClassName={`${bottomNavigationClassName} px-4 bg-gray-500 !dark:bg-gray-950 pointer-events-none`}
+        backgroundClassName={clsx(
+          bottomNavigationClassName,
+          `px-4 bg-gray-50 !dark:bg-gray-950 !z-3000`,
+        )}
       />
     ),
   }

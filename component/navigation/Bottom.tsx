@@ -38,12 +38,14 @@ function Container({
   const layout = useViewportLayoutFill()
   return (
     <ViewportLayoutFill
-      className={`h-72 appearance-none flex justify-between items-center w-full pointer-events-none`}
+      className={`appearance-none w-full`}
       state={layout}
       backgroundClassName={clsx(
         backgroundClassName,
-        `bg-white w-full dark:bg-gray-900 fixed bottom-0 z-1000 ${
-          !drop || forceShadow ? `dark:shadow-3xl-dark shadow-nav` : ''
+        `bg-gray-50 w-full dark:bg-gray-900 fixed bottom-0 z-1000 ${
+          !drop || forceShadow
+            ? `dark:shadow-3xl-dark shadow-metal-bottom`
+            : ''
         }`,
       )}
     >

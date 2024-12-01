@@ -1,56 +1,53 @@
 'use client'
 
-import React, {
-  RefObject,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
-import { useNavigation } from '~/hook/useNavigation'
-import { NavigationContext } from '~/component/navigation'
+import React, { RefObject, useState } from 'react'
 import clsx from 'clsx'
-import GearIcon from '~/component/icon/Gear'
 import { useViewportLayout3Section } from '~/hook/useViewportLayout'
 import { ViewportLayout3Section } from '~/component/ViewportGrid'
-import MessageIcon from '~/component/icon/Message'
-import Loading from '~/component/Loading'
-import NavigationOverlay from './navigation/Overlay'
 import useFonts from '~/hook/useFonts'
 import { FontName } from '~/constant/font'
 import HomeIcon from './icon/Home'
 
+export type LayoutSideState = {
+  left?: 'missing' | 'present'
+  right?: 'missing' | 'present'
+}
+
 export type LayoutInput = {
   fonts?: Array<FontName>
   children: React.ReactNode
-  logo?: React.ReactNode
-  up?: string
-  top?: React.ReactNode
   right?: React.ReactNode
   left?: React.ReactNode
-  menu?: React.ReactNode
-  configuration?: React.ReactNode
+  topRight?: React.ReactNode
+  bottomRight?: React.ReactNode
+  topLeft?: React.ReactNode
+  bottomLeft?: React.ReactNode
+  bottomCenter?: React.ReactNode
+  showBottomCenterIf?: LayoutSideState
+  topCenter?: React.ReactNode
+  showTopCenterIf?: LayoutSideState
   scrollerRef?: RefObject<HTMLDivElement | null>
 }
 
 export default function Layout({
   children,
   scrollerRef,
-  up,
-  top: topContent,
   left: leftContent,
   right: rightContent,
-  menu: menuContent,
-  configuration: configurationContent,
-  logo = <HomeIcon />,
+  topRight: topRightContent,
+  bottomRight: bottomRightContent,
+  topLeft: topLeftContent,
+  bottomLeft: bottomLeftContent,
+  bottomCenter: bottomCenterContent,
+  showBottomCenterIf,
+  topCenter: topCenterContent,
+  showTopCenterIf,
   fonts = ['Noto Sans Mono'],
 }: LayoutInput) {
   useFonts(fonts)
 
   const [menu, setMenu] = useState<React.ReactNode>()
-  const [configuration, setConfiguration] = useState<React.ReactNode>()
-  const navigationContext = useContext(NavigationContext)
   const layout = useViewportLayout3Section()
-  const [middleOverlay, setMiddleOverlay] = useState<React.ReactNode>()
 
   const right = rightContent ?? (
     <div className="h-full w-full overflow-y-auto pb-64">
@@ -58,129 +55,97 @@ export default function Layout({
     </div>
   )
 
-  const onOpenConfiguration = () => {
-    // setConfiguration(configurationContent)
-    setMiddleOverlay(configurationContent)
-  }
-
   const leftIsHidden = layout.width < 804
   const rightIsHidden = layout.width < 1056
 
-  const bottomNavigationClassName = rightIsHidden
-    ? configurationContent
-      ? layout.width === 0
-        ? `hidden`
-        : `!z-3000 bg-white !dark:bg-gray-950 h-48`
-      : `!z-3000 !bg-transparent !shadow-none`
-    : `!z-3000 !bg-transparent !shadow-none`
+  let showBottomCenter = true
 
-  // const messageButtonContainerClassName = rightIsHidden
-  //   ? configurationContent
-  //     ? undefined
-  //     : `p-12 [&>a]:shadow-xl [&>a]:hover:shadow-medium`
-  //   : `p-12 [&>a]:shadow-xl [&>a]:hover:shadow-medium`
+  if (showBottomCenterIf?.right) {
+    if (showBottomCenterIf.right === 'missing') {
+      if (!rightIsHidden) {
+        showBottomCenter = false
+      }
+    } else if (showBottomCenterIf.right === 'present') {
+      if (rightIsHidden) {
+        showBottomCenter = false
+      }
+    }
+  }
 
-  // TODO: intercom
-  // const messageButton = contactLink && (
-  //   <span
-  //     className={clsx(
-  //       'block pointer-events-auto',
-  //       messageButtonContainerClassName,
-  //     )}
-  //   >
-  //     <a
-  //       className={clsx(
-  //         '[&_svg]:hover:fill-violet-500 cursor-pointer block p-12 w-48 h-48 transition-all bg-white dark:bg-gray-600 rounded-large-circle',
-  //       )}
-  //       target="_blank"
-  //       rel="nofollow"
-  //       href={contactLink}
-  //     >
-  //       <span className="inline-block w-24 h-24">
-  //         <MessageIcon />
-  //       </span>
-  //     </a>
-  //   </span>
-  // )
+  if (showBottomCenterIf?.left) {
+    if (showBottomCenterIf.left === 'missing') {
+      if (!leftIsHidden) {
+        showBottomCenter = false
+      }
+    } else if (showBottomCenterIf.left === 'present') {
+      if (leftIsHidden) {
+        showBottomCenter = false
+      }
+    }
+  }
 
-  // const handleOpenMessage = () => {
+  let showTopCenter = true
 
-  // }
+  if (showTopCenterIf?.right) {
+    if (showTopCenterIf.right === 'missing') {
+      if (!rightIsHidden) {
+        showTopCenter = false
+      }
+    } else if (showTopCenterIf.right === 'present') {
+      if (rightIsHidden) {
+        showTopCenter = false
+      }
+    }
+  }
+
+  if (showTopCenterIf?.left) {
+    if (showTopCenterIf.left === 'missing') {
+      if (!leftIsHidden) {
+        showTopCenter = false
+      }
+    } else if (showTopCenterIf.left === 'present') {
+      if (leftIsHidden) {
+        showTopCenter = false
+      }
+    }
+  }
 
   const bottom = (
     <ViewportLayout3Section
       state={layout}
-      left={
-        leftIsHidden ? undefined : <div className="h-full w-full" />
-      }
-      right={
-        rightIsHidden ? undefined : (
-          <div className="relative h-full w-full flex items-center justify-end">
-            {/* {messageButton} */}
-          </div>
-        )
-      }
-      middle={
-        !middleOverlay && (
-          <div
-            className={clsx(
-              'relative flex w-full justify-between items-center',
-            )}
-          >
-            <div className="w-48 h-48" />
-            {rightIsHidden && configurationContent ? (
-              <span
-                className="block p-12 [&_path]:hover:fill-violet-500 [&_path]:transition-all cursor-pointer w-48 h-48 transition-all pointer-events-auto"
-                onClick={onOpenConfiguration}
-              >
-                <span className="inline-block w-24 h-24">
-                  <GearIcon />
-                </span>
-              </span>
-            ) : (
-              <div />
-            )}
-            {/* {rightIsHidden ? messageButton : <div />} */}
-          </div>
-        )
-      }
+      left={leftIsHidden ? undefined : bottomLeftContent}
+      right={rightIsHidden ? undefined : bottomRightContent}
+      middle={showBottomCenter ? bottomCenterContent : undefined}
     />
   )
 
-  const handleMenuOpen = () => {
-    setMenu(
-      <div className="p-16 bg-white dark:bg-gray-950 h-full w-full">
-        {menuContent}
-      </div>,
-    )
-  }
+  const top = (
+    <ViewportLayout3Section
+      state={layout}
+      left={leftIsHidden ? undefined : topLeftContent}
+      right={rightIsHidden ? undefined : topRightContent}
+      middle={showTopCenter ? topCenterContent : undefined}
+    />
+  )
 
-  const navigation = useNavigation({
-    bottom,
-    up,
-    top: topContent,
-    logo,
-    onMenuOpen: handleMenuOpen,
-    bottomNavigationClassName,
-  })
+  // const showNavigationTop = Boolean(showTopCenter)
+  // const showNavigationBottom = Boolean(showBottomCenter)
 
-  const showNavigationTop = Boolean(navigation?.top)
-  const showNavigationBottom = Boolean(configuration && rightIsHidden)
-
-  useEffect(() => {
-    navigationContext.setTopIsVisible(showNavigationTop)
-    navigationContext.setBottomIsVisible(showNavigationBottom)
-  }, [showNavigationTop, showNavigationBottom, navigationContext])
+  // useEffect(() => {
+  //   navigationContext.setTopIsVisible(showNavigationTop)
+  //   navigationContext.setBottomIsVisible(showNavigationBottom)
+  // }, [showNavigationTop, showNavigationBottom, navigationContext])
 
   return (
     <>
-      {navigation?.top}
-      {/* <div className="bg-gray-50 dark:text-gray-200 dark:bg-gray-900 w-full h-full min-w-screen min-h-screen"> */}
+      <div className="px-4 bg-gray-50 !dark:bg-gray-950 !z-3000 w-full dark:bg-gray-900 fixed top-0 dark:shadow-3xl-dark shadow-metal">
+        {top}
+      </div>
       <ViewportLayout3Section
-        // className="!top-48"
         state={layout}
         scrollerRef={scrollerRef}
         middleClassName="bg-white dark:bg-gray-950"
+        minHeightClass="min-h-screen"
         left={
           leftIsHidden ? undefined : (
             <div className="h-full w-full bg-gray-50 dark:bg-gray-900">
@@ -196,25 +161,14 @@ export default function Layout({
           )
         }
         middle={
-          <div className="relative pt-32 min-h-screen-minus-nav flex flex-col justify-between">
-            <main className="flex flex-col relative flex-1">
-              {children}
-            </main>
-            {/* {!hideFooter && <Footer />} */}
-          </div>
+          <main className="flex flex-col relative flex-1">
+            {children}
+          </main>
         }
-        middleOverlay={middleOverlay}
       />
-      {/* </div> */}
-      {navigation?.bottom}
-      {menu && (
-        <NavigationOverlay
-          onClose={() => setMenu(undefined)}
-          triggerPosition="top"
-        >
-          {menu}
-        </NavigationOverlay>
-      )}
+      <div className="px-4 bg-gray-50 !dark:bg-gray-950 !z-3000 w-full dark:bg-gray-900 fixed bottom-0 dark:shadow-3xl-dark shadow-metal-bottom">
+        {bottom}
+      </div>
     </>
   )
 }

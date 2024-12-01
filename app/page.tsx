@@ -173,6 +173,49 @@ export default function Page() {
       // configuration={configuration}
       store={store}
       settings={{ fonts: FONT, scripts: SCRIPT }}
+      topRight={
+        <div className="flex justify-end w-full p-8">
+          <span className="block w-32 h-32">
+            <GearIcon />
+          </span>
+        </div>
+      }
+      topLeft={
+        <div className="flex w-full p-8">
+          <span className="block w-32 h-32">
+            <GearIcon />
+          </span>
+        </div>
+      }
+      // topCenter={
+      //   <div className="flex justify-between w-full p-8">
+      //     <span className="block w-48 h-48"></span>
+      //     <Button
+      //       color="purple"
+      //       size="large"
+      //     >
+      //       Back
+      //     </Button>
+      //     <span className="block w-48 h-48">
+      //       <GearIcon />
+      //     </span>
+      //   </div>
+      // }
+      showBottomCenterIf={{ right: 'missing' }}
+      bottomCenter={
+        <div className="flex justify-between w-full p-8">
+          <span className="block w-48 h-48"></span>
+          <Button
+            color="purple"
+            size="large"
+          >
+            Next
+          </Button>
+          <span className="block w-48 h-48">
+            <GearIcon />
+          </span>
+        </div>
+      }
     >
       <Content />
     </Environment>

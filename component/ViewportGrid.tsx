@@ -17,6 +17,7 @@ export type ViewportLayout3SectionInput = {
   rightClassName?: string
   state: ViewportLayout3SectionStateInput
   middleOverlay?: React.ReactNode
+  minHeightClass?: string
 }
 
 export function ViewportLayout3Section({
@@ -29,15 +30,16 @@ export function ViewportLayout3Section({
   rightClassName,
   state,
   middleOverlay,
+  minHeightClass,
 }: ViewportLayout3SectionInput) {
   return (
     <div
-      className={clsx(`w-full relative min-h-screen`, className)}
+      className={clsx(`w-full relative`, minHeightClass, className)}
       style={{ ...state.container }}
     >
       <div
         style={{ ...state.grid }}
-        className="relative min-h-screen"
+        className={clsx('relative', minHeightClass)}
       >
         <div
           className={clsx(leftClassName, `top-0 sticky`)}

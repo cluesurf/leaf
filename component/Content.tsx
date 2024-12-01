@@ -521,7 +521,7 @@ export function H2({
       className={clsx(
         className,
         fontSizeClassName,
-        'mb-24 pt-8 mx-16 text-gray-700 dark:text-gray-300',
+        'pt-8 mb-8 mx-16 uppercase w-full scale-y-80 tracking-wide-015 text-gray-700 dark:text-gray-300',
         align === 'center'
           ? `text-center`
           : align === 'right'
@@ -564,7 +564,7 @@ export function H3({
           : align === 'right'
             ? 'text-right'
             : undefined,
-        'mb-8 uppercase w-full scale-y-80 tracking-wide-015 pt-8 mx-16 text-gray-900 dark:text-gray-400',
+        'mb-8 uppercase w-full scale-y-80 font-bold tracking-wide-015 pt-8 mx-16 text-gray-900 dark:text-gray-400',
         border ? `border-b-4` : undefined,
       )}
     >
