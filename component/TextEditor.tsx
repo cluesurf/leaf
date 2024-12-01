@@ -7,7 +7,7 @@ import { Mode, useDarkMode } from '~/hook/useDarkMode'
 const TextEditorInternal = lazy(() => import('./TextEditorInternal'))
 
 const THEME: Record<TextEditorTheme, Record<Mode, string>> = {
-  base: {
+  gray: {
     dark: `bg-violet-950`,
     light: `bg-violet-50`,
   },
@@ -27,7 +27,7 @@ export default function TextEditor({
   language,
   onChange,
   height,
-  theme = 'purple',
+  theme = 'gray',
   className,
   readOnly,
   style,

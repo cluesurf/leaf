@@ -73,4 +73,4 @@ export type TextEditorLanguage =
   | 'vbscript'
   | 'verilog'
 
-export type TextEditorTheme = 'purple' | 'blue' | 'base'
+export type TextEditorTheme = 'purple' | 'blue' | 'gray'

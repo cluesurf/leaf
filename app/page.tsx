@@ -62,6 +62,7 @@ import useScripts from '~/hook/useScripts'
 import store from './redux'
 import TextEditor from '~/component/TextEditor'
 import TextInput from '~/component/TextInput'
+import { useFittedText } from '~/hook/useFittedText'
 
 const FONT_LIST = [
   'Noto Sans Mono',
@@ -189,7 +190,10 @@ function Content() {
   return (
     <>
       <H1 className="mt-64">Leaf</H1>
-      <div className="p-16">
+      <div className="flex flex-col gap-16 p-16">
+        <div className="px-64">
+          <FitText text="བཀྲ་ཤིས་བདེ་ལེགས།" />
+        </div>
         <Grid
           minWidth={120}
           maxColumns={4}
@@ -795,5 +799,47 @@ function ScriptLink({
         {name}
       </Text>
     </Link>
+  )
+}
+
+interface FitTextProps {
+  text: string
+  fontFamily?: string
+  fontWeight?: string | number
+}
+
+const FitText: React.FC<FitTextProps> = ({
+  text,
+  fontFamily = 'Arial',
+  fontWeight = 'normal',
+}) => {
+  const { fontSize, ref, isFitting } = useFittedText({
+    minFontSize: 32,
+    maxFontSize: 192,
+    fontFamily,
+    fontWeight,
+    mode: 'multi-line',
+    maxHeight: 320, // Optional
+    onFitComplete: size => console.log(`Final font size: ${size}px`),
+  })
+
+  return (
+    <div>
+      <div
+        ref={ref}
+        style={{
+          fontSize,
+          fontFamily,
+          fontWeight,
+          textAlign: 'center',
+          width: '100%',
+          height: '100%',
+          opacity: isFitting ? 0 : 1,
+          transition: 'opacity 0.3s ease',
+        }}
+      >
+        {text}
+      </div>
+    </div>
   )
 }

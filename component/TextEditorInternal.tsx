@@ -84,6 +84,7 @@ import {
   TextEditorLanguage,
   TextEditorTheme,
 } from './TextEditor.types'
+import { grayTheme } from '~/constant/codemirror/gray'
 
 export const TEXT_EDITOR_LANGUAGE: Record<
   TextEditorLanguage,
@@ -156,7 +157,7 @@ export const TEXT_EDITOR_THEME: Record<
 > = {
   purple: purpleTheme,
   blue: blueTheme,
-  base: purpleTheme,
+  gray: grayTheme,
 }
 
 export default function TextEditor({
