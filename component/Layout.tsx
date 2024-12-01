@@ -148,14 +148,14 @@ export default function Layout({
         minHeightClass="min-h-screen"
         left={
           leftIsHidden ? undefined : (
-            <div className="h-full w-full bg-gray-50 dark:bg-gray-900">
+            <div className="h-full w-full bg-gray-100 dark:bg-gray-900">
               {leftContent}
             </div>
           )
         }
         right={
           rightIsHidden ? undefined : (
-            <div className="h-full w-full bg-gray-50 dark:bg-gray-900">
+            <div className="h-full w-full bg-gray-100 dark:bg-gray-900">
               {right}
             </div>
           )

@@ -61,6 +61,7 @@ export type ButtonInput = {
   bold?: boolean
   variant?: 1 | 2
   font?: string | Array<string>
+  width?: number
 } & Omit<
   DetailedHTMLProps<
     ButtonHTMLAttributes<HTMLButtonElement>,
@@ -125,6 +126,7 @@ export function Button({
   font,
   bold,
   variant = 1,
+  width,
   ...props
 }: ButtonInput) {
   const isDark = useDarkMode() === 'dark'
@@ -138,16 +140,18 @@ export function Button({
 
   return (
     <button
+      style={{ width }}
       className={clsx(
         className,
         sizeClassName,
         colorClassName,
         'flex',
+        `min-w-1`,
         bold ? 'font-bold' : undefined,
         'items-center',
         'gap-8',
         touching ? undefined : 'rounded-sm',
-        'text-center',
+        'text-center justify-center',
         fill ? 'w-full' : 'w-fit',
         'transition-color',
         'cursor-pointer',
@@ -156,7 +160,12 @@ export function Button({
       )}
       {...props}
     >
-      <T font={font}>{children}</T>
+      <T
+        className="text-ellipsis overflow-hidden whitespace-nowrap"
+        font={font}
+      >
+        {children}
+      </T>
     </button>
   )
 }
@@ -227,7 +236,7 @@ export function LabelButton({
         'items-center',
         'gap-8',
         touching ? undefined : 'rounded-sm',
-        'text-center',
+        'text-center justify-center',
         fill ? 'w-full' : 'w-fit',
         'transition-colors transition-color',
         'duration-200',
@@ -257,6 +266,7 @@ export type LinkButtonInput = {
   target?: '_blank'
   font?: string | Array<string>
   variant?: 1 | 1
+  width?: number
 } & LinkProps
 
 export function LinkButton({
@@ -273,6 +283,7 @@ export function LinkButton({
   ghost,
   target,
   font,
+  width,
   ...props
 }: LinkButtonInput) {
   const sizeClassName = getSizeClassNames(size, ghost)
@@ -286,6 +297,7 @@ export function LinkButton({
 
   return (
     <Link
+      style={{ width }}
       {...props}
       title={title}
       scroll={false}
@@ -295,7 +307,8 @@ export function LinkButton({
         className,
         sizeClassName,
         'flex',
-        'items-center',
+        `min-w-1`,
+        'items-center justify-center',
         'gap-8',
         touching ? undefined : 'rounded-sm',
         'text-center',
@@ -307,7 +320,7 @@ export function LinkButton({
       )}
     >
       <T
-        className="-top-1"
+        className="-top-1 text-ellipsis overflow-hidden whitespace-nowrap"
         font={font}
       >
         {children}
