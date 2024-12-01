@@ -17,9 +17,9 @@ export const INPUT_COLOR: Record<InputColor, string> = {
   purple:
     '[&::-webkit-slider-thumb]:bg-violet-400 [&::-webkit-slider-thumb]:dark:bg-violet-700 [&::-webkit-slider-runnable-track]:bg-violet-200 [&::-webkit-slider-runnable-track]:dark:bg-violet-900',
   blue: '[&::-webkit-slider-thumb]:bg-blue-400 [&::-webkit-slider-thumb]:dark:bg-blue-700 [&::-webkit-slider-runnable-track]:bg-blue-200 [&::-webkit-slider-runnable-track]:dark:bg-blue-900',
-  base: '[&::-webkit-slider-thumb]:bg-gray-600 [&::-webkit-slider-thumb]:dark:bg-gray-400 [&::-webkit-slider-runnable-track]:bg-gray-300 [&::-webkit-slider-runnable-track]:dark:bg-gray-900',
-  base2:
-    '[&::-webkit-slider-thumb]:bg-gray-400 [&::-webkit-slider-thumb]:dark:bg-gray-700 [&::-webkit-slider-runnable-track]:bg-gray-200 [&::-webkit-slider-runnable-track]:dark:bg-gray-900',
+  neutral:
+    '[&::-webkit-slider-thumb]:bg-gray-600 [&::-webkit-slider-thumb]:dark:bg-gray-400 [&::-webkit-slider-runnable-track]:bg-gray-300 [&::-webkit-slider-runnable-track]:dark:bg-gray-900',
+  base: '[&::-webkit-slider-thumb]:bg-gray-400 [&::-webkit-slider-thumb]:dark:bg-gray-700 [&::-webkit-slider-runnable-track]:bg-gray-200 [&::-webkit-slider-runnable-track]:dark:bg-gray-900',
   green:
     '[&::-webkit-slider-thumb]:bg-emerald-400 [&::-webkit-slider-thumb]:dark:bg-emerald-700 [&::-webkit-slider-runnable-track]:bg-green-200 [&::-webkit-slider-runnable-track]:dark:bg-green-900',
   red: '[&::-webkit-slider-thumb]:bg-rose-400 [&::-webkit-slider-thumb]:dark:bg-rose-700 [&::-webkit-slider-runnable-track]:bg-rose-200 [&::-webkit-slider-runnable-track]:dark:bg-rose-900',

@@ -19,8 +19,8 @@ export const LABEL_COLOR: Record<LabelColor, string> = {
   'dark-green': 'bg-emerald-300',
   red: 'bg-rose-200 dark:bg-rose-800 dark:text-rose-200',
   'dark-red': 'bg-rose-300',
-  base: 'bg-gray-200 dark:bg-gray-800 dark:text-gray-400',
-  base2: 'bg-gray-200 dark:bg-gray-700 dark:text-gray-400',
+  neutral: 'bg-gray-200 dark:bg-gray-800 dark:text-gray-400',
+  base: 'bg-white dark:bg-gray-700 dark:text-gray-400',
 }
 
 export default function Label({
