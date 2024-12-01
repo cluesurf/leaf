@@ -29,12 +29,14 @@ export default function Label({
   htmlFor,
   color,
   bottomless,
+  disabled,
 }: {
   children: React.ReactNode
   className?: string
   htmlFor?: string
   color?: LabelColor
   bottomless?: boolean
+  disabled?: boolean
 }) {
   const colorClass = color && LABEL_COLOR[color]
 
@@ -44,7 +46,8 @@ export default function Label({
       className={clsx(
         className,
         colorClass,
-        'flex font-bold text-xs py-4 px-16 items-center justify-between',
+        disabled ? `text-gray-300` : `text-gray-600`,
+        'lowercase flex text-xs py-4 px-16 items-center justify-between',
         bottomless ? `rounded-sm` : 'rounded-t-sm',
       )}
     >

@@ -239,6 +239,7 @@ export default function Text({
   const lineHeight = lineHeights?.[leading]
 
   const actualStyles = {
+    fontWeight: bold ? 'bold' : undefined,
     ...style,
     fontSize: size,
     lineHeight,

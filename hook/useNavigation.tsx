@@ -85,14 +85,14 @@ export function useNavigation({
   return {
     top: (
       <NavigationTop
-        backgroundClassName="px-4 bg-gray-50 dark:bg-gray-950 !z-3000"
+        backgroundClassName="px-4 bg-white dark:bg-gray-950 !z-3000"
         {...navigation.top}
       />
     ),
     bottom: (
       <NavigationBottom
         {...navigation.bottom}
-        backgroundClassName={`${bottomNavigationClassName} !dark:bg-gray-950 pointer-events-none`}
+        backgroundClassName={`${bottomNavigationClassName} px-4 bg-gray-500 !dark:bg-gray-950 pointer-events-none`}
       />
     ),
   }

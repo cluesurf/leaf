@@ -197,7 +197,9 @@ export default function Layout({
         }
         middle={
           <div className="relative pt-32 min-h-screen-minus-nav flex flex-col justify-between">
-            <main className="relative flex-1">{children}</main>
+            <main className="flex flex-col relative flex-1">
+              {children}
+            </main>
             {/* {!hideFooter && <Footer />} */}
           </div>
         }

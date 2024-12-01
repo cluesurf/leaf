@@ -10,6 +10,7 @@ export default function Environment({
   settings,
   store,
   path,
+  base,
   cached,
   queryResolvers,
   ...layout
@@ -27,6 +28,7 @@ export default function Environment({
       store={store}
       settings={settings}
       path={path}
+      base={base}
       cached={cached}
       queryResolvers={queryResolvers}
     >

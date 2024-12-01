@@ -29,7 +29,7 @@ export type ButtonColor = keyof typeof COLOR
 
 export const TEXT_COLOR: Record<string, string> = {
   purple: 'text-gray-100',
-  green: 'text-gray-800',
+  green: 'text-gray-100',
   red: 'text-gray-100',
   blue: 'text-gray-100',
   black: 'text-gray-100',

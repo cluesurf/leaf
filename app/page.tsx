@@ -60,6 +60,8 @@ import Dots from '~/component/Dots'
 import SettingsOverlay from '~/component/SettingsOverlay'
 import useScripts from '~/hook/useScripts'
 import store from './redux'
+import TextEditor from '~/component/TextEditor'
+import TextInput from '~/component/TextInput'
 
 const FONT_LIST = [
   'Noto Sans Mono',
@@ -179,17 +181,74 @@ export default function Page() {
 function Content() {
   useFonts(NECESSARY_FONT_LIST)
   useScripts(filteredScripts.map(s => s.slug))
+  const [a, setA] = useState<string | undefined>('')
+  const [b, setB] = useState<string | undefined>('')
 
   useFonts(FONT_LIST)
 
   return (
     <>
       <H1 className="mt-64">Leaf</H1>
+      <div className="p-16">
+        <Grid
+          minWidth={120}
+          maxColumns={4}
+          gap={16}
+        >
+          <Field>
+            <Label>title</Label>
+            <TextInput
+              size="large"
+              className="!bg-gray-100"
+              placeholder="Guide title"
+              value={a}
+              onChange={setA}
+            />
+          </Field>
+          <Field>
+            <Label disabled>path</Label>
+            <TextInput
+              disabled
+              size="large"
+              before={<Text>/</Text>}
+              value={b}
+              onChange={setB}
+            />
+          </Field>
+          <Field>
+            <Label>title</Label>
+            <TextInput
+              size="large"
+              className="!bg-gray-100"
+              placeholder="Guide title"
+              value={a}
+              onChange={setA}
+            />
+          </Field>
+          <Field>
+            <Label disabled>path</Label>
+            <TextInput
+              disabled
+              size="large"
+              before={<Text>/</Text>}
+              value={b}
+              onChange={setB}
+            />
+          </Field>
+        </Grid>
+      </div>
+      <Field className="h-full p-16">
+        <TextEditor
+          height="100%"
+          className="h-256 w-full"
+          language="markdown"
+        />
+      </Field>
       <P>
         Welcome to TermSurf&apos;s Leaf UI kit. Here is an overview of
         the components. Click into each one to see variations.
       </P>
-      <H2>Font</H2>
+      <H3>Font</H3>
       <div className="p-16 flex flex-col gap-16">
         <Grid
           minWidth={160}

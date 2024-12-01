@@ -45,7 +45,7 @@ function updateQueryParams(base: Base, queryResolvers: QueryResolvers) {
 
     const resolver = queryResolvers[name]!
 
-    if (base[name] != null) {
+    if (resolver && base[name] != null) {
       const value = resolver.to(base[name])
       if (value != null) {
         // If no default is defined,

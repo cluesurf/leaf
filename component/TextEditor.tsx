@@ -38,7 +38,7 @@ export default function TextEditor({
       fallback={
         <div
           style={style}
-          className={clsx(className, THEME[theme][mode])}
+          className={clsx(className, `rounded-sm`, THEME[theme][mode])}
         />
       }
     >

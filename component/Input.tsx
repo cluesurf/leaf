@@ -65,6 +65,7 @@ function Input(
     spellCheck = false,
     before,
     after,
+    disabled,
     color = 'base',
     size = 'small',
     font = 'Noto Sans Mono',
@@ -110,8 +111,6 @@ function Input(
 
   const rounded = getRoundedClass(labelled, bottomed)
 
-  let textColorClass = `placeholder:italic`
-
   const backgroundColorClass = color && INPUT_COLOR[color]
 
   return (
@@ -122,7 +121,10 @@ function Input(
         'relative w-full items-center justify-center flex',
         size === 'small' ? 'text-sm' : undefined,
         rounded,
-        backgroundColorClass,
+        // backgroundColorClass,
+        disabled
+          ? `bg-gray-200 text-gray-400 select-none`
+          : `bg-gray-100 text-gray-950`,
       )}
     >
       {before}
@@ -134,9 +136,12 @@ function Input(
         spellCheck={spellCheck}
         onTransitionEnd={transitionEnd}
         style={{ lineHeight }}
+        disabled={disabled}
         className={clsx(
-          textColorClass,
           inputClassName,
+          disabled && `select-none`,
+          `placeholder:text-gray-300`,
+          `font-bold`,
           `text-base sm:text-base-large`,
           size === 'small' ? 'h-32' : 'h-48',
           'bg-transparent block w-full py-8',

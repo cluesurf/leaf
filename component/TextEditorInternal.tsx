@@ -4,6 +4,7 @@ import { color } from '@uiw/codemirror-extensions-color'
 import CodeMirror, {
   EditorView,
   Extension,
+  keymap,
 } from '@uiw/react-codemirror'
 import { stex } from '@codemirror/legacy-modes/mode/stex'
 import {
@@ -13,6 +14,9 @@ import {
   StreamLanguage,
 } from '@codemirror/language'
 // https://discuss.codemirror.net/t/custom-language-with-syntax-highlighting/6786/4
+import { defaultKeymap } from '@codemirror/commands'
+import { javascript } from '@codemirror/lang-javascript'
+
 import { cppLanguage } from '@codemirror/lang-cpp'
 import { htmlLanguage } from '@codemirror/lang-html'
 import { javaLanguage } from '@codemirror/lang-java'
@@ -167,7 +171,9 @@ export default function TextEditor({
   style,
 }: TextEditorInput) {
   const extension = language && TEXT_EDITOR_LANGUAGE[language]
-  const extensions: Array<LanguageSupport | Extension> = []
+  const extensions: Array<LanguageSupport | Extension> = [
+    keymap.of(defaultKeymap),
+  ]
   const [editor, setEditor] = useState<EditorView>()
   const themeMode = useDarkMode()
 
@@ -190,7 +196,10 @@ export default function TextEditor({
 
   return (
     <CodeMirror
-      className={clsx('min-h-0 [&_div]:leading-content', className)}
+      className={clsx(
+        'min-h-0 rounded-sm overflow-hidden [&_div]:leading-content',
+        className,
+      )}
       role="code"
       style={style}
       value={value}
