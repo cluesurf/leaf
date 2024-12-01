@@ -6,17 +6,9 @@ export type FieldInput = React.ComponentPropsWithoutRef<'div'> & {
   className?: string
 }
 
-// TODO: Field is passing props down to native element from Grid
-export default function Field({
-  children,
-  className,
-  ...props
-}: FieldInput) {
+export default function Field({ children, className }: FieldInput) {
   return (
-    <div
-      {...props}
-      className={clsx(className, 'relative flex flex-col')}
-    >
+    <div className={clsx(className, 'relative flex flex-col')}>
       {children}
     </div>
   )

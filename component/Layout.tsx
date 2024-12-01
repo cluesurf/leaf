@@ -1,20 +1,17 @@
 'use client'
 
-import React, { RefObject, useState } from 'react'
-import clsx from 'clsx'
+import React, { RefObject, useEffect, useLayoutEffect } from 'react'
 import { useViewportLayout3Section } from '~/hook/useViewportLayout'
 import { ViewportLayout3Section } from '~/component/ViewportGrid'
-import useFonts from '~/hook/useFonts'
-import { FontName } from '~/constant/font'
-import HomeIcon from './icon/Home'
 
 export type LayoutSideState = {
   left?: 'missing' | 'present'
   right?: 'missing' | 'present'
 }
 
+export type LayoutState = 'right' | 'left' | 'center'
+
 export type LayoutInput = {
-  fonts?: Array<FontName>
   children: React.ReactNode
   right?: React.ReactNode
   left?: React.ReactNode
@@ -27,6 +24,7 @@ export type LayoutInput = {
   topCenter?: React.ReactNode
   showTopCenterIf?: LayoutSideState
   scrollerRef?: RefObject<HTMLDivElement | null>
+  onShift?: (state: LayoutState) => void
 }
 
 export default function Layout({
@@ -42,11 +40,8 @@ export default function Layout({
   showBottomCenterIf,
   topCenter: topCenterContent,
   showTopCenterIf,
-  fonts = ['Noto Sans Mono'],
+  onShift,
 }: LayoutInput) {
-  useFonts(fonts)
-
-  const [menu, setMenu] = useState<React.ReactNode>()
   const layout = useViewportLayout3Section()
 
   const right = rightContent ?? (
@@ -128,13 +123,15 @@ export default function Layout({
     />
   )
 
-  // const showNavigationTop = Boolean(showTopCenter)
-  // const showNavigationBottom = Boolean(showBottomCenter)
-
-  // useEffect(() => {
-  //   navigationContext.setTopIsVisible(showNavigationTop)
-  //   navigationContext.setBottomIsVisible(showNavigationBottom)
-  // }, [showNavigationTop, showNavigationBottom, navigationContext])
+  useLayoutEffect(() => {
+    if (leftIsHidden) {
+      onShift?.('center')
+    } else if (rightIsHidden) {
+      onShift?.('left')
+    } else {
+      onShift?.('right')
+    }
+  }, [leftIsHidden, rightIsHidden])
 
   return (
     <>

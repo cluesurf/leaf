@@ -256,7 +256,7 @@ export type THInput = React.ComponentPropsWithoutRef<'th'> & {
 
 export function TH({ children, className, ...props }: THInput) {
   const list = [
-    'shadow-thead bg-gray-200 dark:bg-gray-600 border-0 border-r-4 last:border-r-0 border-solid border-gray-300 dark:border-gray-600 text-gray-700 font-bold text-base sm:text-base-large h-full px-16 py-8',
+    'shadow-thead bg-gray-100 dark:bg-gray-600 border-0 border-r-4 last:border-r-0 border-solid border-gray-200 dark:border-gray-600 text-gray-700 font-bold text-base sm:text-base-large h-full px-16 py-8',
   ]
   return (
     <th
@@ -329,7 +329,7 @@ export function TBody({ className, children, ...props }: TBodyInput) {
       {...props}
       className={clsx(
         className,
-        `h-full [&>tr:nth-child(odd)]:bg-gray-50 [&>tr:nth-child(even)]:bg-gray-200 [&>tr:nth-child(odd)]:dark:bg-gray-900 [&>tr]:dark:text-gray-300 [&>tr:nth-child(even)]:dark:bg-gray-800`,
+        `h-full [&>tr:nth-child(odd)]:bg-gray-50 [&>tr:nth-child(even)]:bg-gray-100 [&>tr:nth-child(odd)]:dark:bg-gray-900 [&>tr]:dark:text-gray-300 [&>tr:nth-child(even)]:dark:bg-gray-800`,
       )}
     >
       {children}
@@ -406,7 +406,7 @@ export function TD({
   ...props
 }: TDInput) {
   const list = [
-    'border-b-0 border-t-0 last:border-r-0 border-l-0 border-r-4 border-solid border-gray-300 dark:border-gray-600 h-full font-medium text-base sm:text-base-large text-gray-700 bg-inherit',
+    'border-b-0 border-t-0 last:border-r-0 border-l-0 border-r-4 border-solid border-gray-200 dark:border-gray-600 h-full font-medium text-base sm:text-base-large text-gray-700 bg-inherit',
     wrap ? undefined : `whitespace-pre`,
     className,
   ]
@@ -521,7 +521,7 @@ export function H2({
       className={clsx(
         className,
         fontSizeClassName,
-        'pt-8 mb-8 mx-16 uppercase w-full scale-y-80 tracking-wide-015 text-gray-700 dark:text-gray-300',
+        'pt-8 mb-8 mx-16 font-semibold uppercase w-full scale-y-80 tracking-narrow-05 text-gray-700 dark:text-gray-300',
         align === 'center'
           ? `text-center`
           : align === 'right'
@@ -564,7 +564,7 @@ export function H3({
           : align === 'right'
             ? 'text-right'
             : undefined,
-        'mb-8 uppercase w-full scale-y-80 font-bold tracking-wide-015 pt-8 mx-16 text-gray-900 dark:text-gray-400',
+        'mb-8 uppercase w-full scale-y-80 font-semibold tracking-wide-015 pt-8 mx-16 text-gray-900 dark:text-gray-400',
         border ? `border-b-4` : undefined,
       )}
     >
@@ -594,7 +594,7 @@ export function H4({
       className={clsx(
         className,
         fontSizeClassName,
-        'font-bold mb-16 px-16 text-gray-950 dark:text-gray-400',
+        'font-semibold mb-16 px-16 text-gray-950 dark:text-gray-400',
       )}
     >
       {children}
@@ -623,7 +623,7 @@ export function H5({
       className={clsx(
         fontSizeClassName,
         className,
-        'font-bold w-full mb-16 px-16 text-gray-950 dark:text-gray-400',
+        'font-semibold w-full mb-16 px-16 text-gray-950 dark:text-gray-400',
       )}
     >
       {children}
@@ -652,7 +652,7 @@ export function H6({
       className={clsx(
         fontSizeClassName,
         className,
-        'font-bold w-full mb-16 px-16 text-gray-950 dark:text-gray-400',
+        'font-semibold w-full mb-16 px-16 text-gray-950 dark:text-gray-400',
       )}
     >
       {children}

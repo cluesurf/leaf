@@ -136,6 +136,10 @@ export const createTheme = ({
     }
   }
 
+  themeOptions['&.cm-editor.cm-focused'] = {
+    'box-shadow': `inset 0 0 0 calc(3px) rgb(191, 219, 254)`,
+  }
+
   themeOptions['.cm-foldGutter'] = {
     display: 'none !important',
   }

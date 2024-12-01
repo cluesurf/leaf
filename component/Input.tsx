@@ -48,8 +48,8 @@ export type InputInput = Omit<
   labelled?: boolean
   bottomed?: boolean
   inputRef?: React.MutableRefObject<HTMLInputElement | null>
-  before?: React.ReactNode
-  after?: React.ReactNode
+  before?: string
+  after?: string
   color?: InputColor
   font?: string | Array<string>
   script?: string
@@ -114,42 +114,36 @@ function Input(
   const backgroundColorClass = color && INPUT_COLOR[color]
 
   return (
-    <div
+    <input
+      ref={composeRefs(ref, inputRef, passedRef)}
+      value={value == null ? '' : value}
+      onChange={handleChange}
+      autoComplete={autoComplete}
+      spellCheck={spellCheck}
+      onTransitionEnd={transitionEnd}
+      style={{ lineHeight }}
+      disabled={disabled}
       className={clsx(
         className,
         size === 'small' ? 'px-16 h-32' : 'px-16 h-48',
-        'relative w-full items-center justify-center flex',
+        'relative w-full',
         size === 'small' ? 'text-sm' : undefined,
         rounded,
         // backgroundColorClass,
         disabled
           ? `bg-gray-200 text-gray-400 select-none`
           : `bg-gray-100 text-gray-950`,
+        inputClassName,
+        disabled && `select-none`,
+        `placeholder:text-gray-300`,
+        `font-bold`,
+        `focus-visible:ring focus-visible:ring-offset-0 focus-visible:ring-inset focus-visible:ring-blue-200`,
+        `text-base sm:text-base-large`,
+        size === 'small' ? 'h-32' : 'h-48',
+        'block py-8',
       )}
-    >
-      {before}
-      <input
-        ref={composeRefs(ref, inputRef, passedRef)}
-        value={value == null ? '' : value}
-        onChange={handleChange}
-        autoComplete={autoComplete}
-        spellCheck={spellCheck}
-        onTransitionEnd={transitionEnd}
-        style={{ lineHeight }}
-        disabled={disabled}
-        className={clsx(
-          inputClassName,
-          disabled && `select-none`,
-          `placeholder:text-gray-300`,
-          `font-bold`,
-          `text-base sm:text-base-large`,
-          size === 'small' ? 'h-32' : 'h-48',
-          'bg-transparent block w-full py-8',
-        )}
-        {...rest}
-      />
-      {after}
-    </div>
+      {...rest}
+    />
   )
 }
 

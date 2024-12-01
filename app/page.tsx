@@ -63,6 +63,7 @@ import store from './redux'
 import TextEditor from '~/component/TextEditor'
 import TextInput from '~/component/TextInput'
 import { useFittedText } from '~/hook/useFittedText'
+import PencilIcon from '~/component/icon/Pencil'
 
 const FONT_LIST = [
   'Noto Sans Mono',
@@ -363,6 +364,23 @@ function Content() {
         ))}
         {BUTTON_SIZES.map(size => (
           <div
+            key={size}
+            className="flex justify-center gap-16"
+          >
+            {BUTTON_COLORS.map(color => (
+              <Button
+                key={color}
+                size={size}
+                color={color}
+                disabled
+              >
+                Button
+              </Button>
+            ))}
+          </div>
+        ))}
+        {BUTTON_SIZES.map(size => (
+          <div
             key={`ghost-${size}`}
             className="flex justify-center gap-16"
           >
@@ -413,6 +431,7 @@ function Content() {
             <DownloadIcon key="DownloadIcon" />,
             <ExpandIcon key="ExpandIcon" />,
             <GearIcon key="GearIcon" />,
+            <PencilIcon key="PencilIcon" />,
             <GitHubIcon key="GitHubIcon" />,
             <MenuIcon key="MenuIcon" />,
             <MessageIcon key="MessageIcon" />,

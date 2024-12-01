@@ -9,6 +9,7 @@ const DEFAULT_FONT = {}
 export default function useFonts(list: Array<FontName> = []) {
   const state = useContext(FontsContext)
   const FONT = useSettings('fonts') ?? DEFAULT_FONT
+  const string = list.join(':')
 
   useLayoutEffect(() => {
     const fonts: Array<Font> = FONT
@@ -30,5 +31,5 @@ export default function useFonts(list: Array<FontName> = []) {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [list.join(':'), FONT])
+  }, [string, FONT])
 }

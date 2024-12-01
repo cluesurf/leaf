@@ -1,15 +1,22 @@
+import clsx from 'clsx'
 import React from 'react'
 
 export type MenuIconInput = {
   colorClassName?: string
+  hoverable?: boolean
 }
 
 export default function MenuIcon({
-  colorClassName = 'color-gray-800 dark:color-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  hoverable,
 }: MenuIconInput) {
   return (
     <svg
-      className={colorClassName}
+      className={clsx(
+        colorClassName,
+        hoverable && `hover:fill-violet-600`,
+        `transition-colors`,
+      )}
       width="100%"
       height="100%"
       viewBox="0 0 256 256"

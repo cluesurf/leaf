@@ -199,6 +199,7 @@ export default function TextEditor({
     <CodeMirror
       className={clsx(
         'min-h-0 rounded-sm overflow-hidden [&_div]:leading-content',
+        `focus:ring focus:ring-offset-0 focus:ring-inset focus:ring-blue-200`,
         className,
       )}
       role="code"

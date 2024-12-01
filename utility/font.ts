@@ -215,8 +215,8 @@ export function getScriptFont(
   if (!scripts[script]) {
     throw new Error(`Script \`${script}\` is undefined.`)
   }
-  const fontType = type ?? scripts[script].default
+  const fontType = type ?? scripts[script]?.default
   const fontName =
-    scripts[script].fonts[fontType] ?? scripts[script].fonts.modern
+    scripts[script]?.fonts[fontType] ?? scripts[script]?.fonts?.modern
   return fontName as string
 }

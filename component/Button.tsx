@@ -8,21 +8,17 @@ import clsx from 'clsx'
 import { useDarkMode } from '~/hook/useDarkMode'
 import T from './Text'
 
+const FOCUS_CLASS_NAME = `focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-blue-300`
+
 export const COLOR: Record<string, string> = {
-  purple:
-    'bg-violet-500 text-gray-100 dark:bg-violet-900 dark:text-violet-200 hover:opacity-70',
-  green:
-    'bg-emerald-500 text-gray-100 dark:bg-emerald-900 dark:text-emerald-200 hover:opacity-70',
-  red: 'bg-rose-500 text-gray-100 dark:bg-rose-900 dark:text-rose-200 hover:opacity-70',
-  blue: 'bg-blue-500 dark:bg-blue-900 dark:text-blue-200 hover:opacity-70',
-  black:
-    'bg-gray-800 text-gray-100 dark:bg-gray-200 bg-gray-700 hover:opacity-70 hover:dark:bg-gray-300',
-  black2:
-    'bg-gray-800 text-gray-100 dark:bg-gray-200 bg-gray-700 hover:opacity-70 hover:dark:bg-gray-300',
-  white:
-    'bg-gray-100 dark:bg-gray-800 dark:text-gray-200 hover:opacity-70 hover:dark:bg-gray-700',
-  white2:
-    'bg-gray-200 dark:bg-gray-700 dark:text-gray-200 hover:opacity-70 hover:dark:bg-gray-600',
+  purple: `bg-violet-500 text-gray-100 dark:bg-violet-900 dark:text-violet-200 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME}`,
+  green: `bg-emerald-500 text-gray-100 dark:bg-emerald-900 dark:text-emerald-200 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME}`,
+  red: `bg-rose-500 text-gray-100 dark:bg-rose-900 dark:text-rose-200 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME}`,
+  blue: `bg-blue-500 dark:bg-blue-900 dark:text-blue-200 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME}`,
+  black: `bg-gray-800 text-gray-100 dark:bg-gray-200 bg-gray-700 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME} hover:dark:bg-gray-300`,
+  black2: `bg-gray-800 text-gray-100 dark:bg-gray-200 bg-gray-700 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME} hover:dark:bg-gray-300`,
+  white: `bg-gray-100 dark:bg-gray-800 dark:text-gray-200 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME} hover:dark:bg-gray-700`,
+  white2: `bg-gray-200 dark:bg-gray-700 dark:text-gray-200 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME} hover:dark:bg-gray-600`,
 }
 
 export type ButtonColor = keyof typeof COLOR
@@ -38,15 +34,15 @@ export const TEXT_COLOR: Record<string, string> = {
 
 export const GHOST_COLOR: Record<string, string> = {
   purple:
-    'border-4 border-solid dark:border-violet-900 border-violet-400 dark:border-violet-900 text-violet-400 hover:opacity-70',
+    'border-4 border-solid dark:border-violet-900 border-violet-400 dark:border-violet-900 text-violet-400 hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed',
   green:
-    'border-4 border-solid dark:border-emerald-900 border-emerald-400 dark:border-emerald-900 text-emerald-400 hover:opacity-70',
-  blue: 'border-4 border-solid dark:border-blue-900 border-blue-400 dark:border-blue-900 text-blue-400 hover:opacity-70',
-  red: 'border-4 border-solid border-rose-700 text-rose-700 hover:opacity-70',
+    'border-4 border-solid dark:border-emerald-900 border-emerald-400 dark:border-emerald-900 text-emerald-400 hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed',
+  blue: 'border-4 border-solid dark:border-blue-900 border-blue-400 dark:border-blue-900 text-blue-400 hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed',
+  red: 'border-4 border-solid border-rose-700 text-rose-700 hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed',
   black:
-    'border-4 border-solid border-gray-800 text-gray-800 hover:opacity-70',
+    'border-4 border-solid border-gray-800 text-gray-800 hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed',
   white:
-    'border-4 border-solid border-gray-400 text-gray-400 hover:opacity-70',
+    'border-4 border-solid border-gray-400 text-gray-400 hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed',
 }
 
 export type ButtonInput = {
@@ -97,13 +93,13 @@ function getSizeClassNames(
   switch (size) {
     case 'small':
       return [
-        'text-xs sm:text-xs-large h-24',
+        'font-bold text-xs sm:text-xs-large h-24',
         ghost ? 'py-4' : 'py-2',
         ghost ? 'px-4' : 'px-8',
       ].join(' ')
     case 'medium':
       return [
-        'text-sm sm:text-sm-large h-32 py-4',
+        'font-bold text-sm sm:text-sm-large h-32 py-4',
         ghost ? 'px-8' : 'px-12',
       ].join(' ')
     case 'large':
@@ -156,6 +152,7 @@ export function Button({
         'transition-color',
         'cursor-pointer',
         'duration-200',
+        `shadow-small1 hover:shadow-small2`,
         align === 'right' ? 'justify-end' : undefined,
       )}
       {...props}
@@ -308,6 +305,7 @@ export function LinkButton({
         sizeClassName,
         'flex',
         `min-w-1`,
+        `shadow-small1 hover:shadow-small2`,
         'items-center justify-center',
         'gap-8',
         touching ? undefined : 'rounded-sm',

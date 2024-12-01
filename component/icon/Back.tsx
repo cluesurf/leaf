@@ -1,15 +1,22 @@
+import clsx from 'clsx'
 import React from 'react'
 
 export type BackIconInput = {
   colorClassName?: string
+  hoverable?: boolean
 }
 
 export default function BackIcon({
   colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  hoverable,
 }: BackIconInput) {
   return (
     <svg
-      className={colorClassName}
+      className={clsx(
+        colorClassName,
+        hoverable && `hover:fill-violet-600`,
+        `transition-colors`,
+      )}
       version="1.1"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
