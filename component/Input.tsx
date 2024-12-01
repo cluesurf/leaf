@@ -18,14 +18,15 @@ export type InputColor =
   | 'base'
   | 'green'
   | 'red'
-  | 'base2'
+  | 'neutral'
 
 export const INPUT_COLOR: Record<InputColor, string> = {
   purple:
     'bg-violet-100 text-violet-700 [&>input]:placeholder:text-violet-400 dark:bg-violet-950 dark:text-violet-300',
   blue: 'bg-blue-100 text-blue-700 [&>input]:placeholder:text-blue-300 dark:bg-blue-950 dark:text-blue-300',
-  base: 'bg-gray-50 text-gray-800 [&>input]:placeholder:text-gray-400 dark:bg-gray-900 dark:text-gray-300',
-  base2: 'bg-white dark:bg-gray-800 dark:text-gray-300',
+  neutral:
+    'bg-gray-100 text-gray-950 [&>input]:placeholder:text-gray-300 dark:bg-gray-900 dark:text-gray-300',
+  base: 'bg-white [&>input]:placeholder:text-gray-100 dark:bg-gray-800 dark:text-gray-300',
   green:
     'bg-emerald-100 text-emerald-700 [&>input]:placeholder:text-emerald-400 dark:bg-emerald-950 dark:text-emerald-300',
   red: 'bg-rose-100 text-rose-700 [&>input]:placeholder:text-rose-300 dark:bg-rose-950 dark:text-rose-300',
@@ -34,8 +35,8 @@ export const INPUT_COLOR: Record<InputColor, string> = {
 export const INPUT_WAITING: Record<InputColor, string> = {
   purple: 'font-loading-base-input',
   blue: 'font-loading-base-input',
+  neutral: 'font-loading-base-input',
   base: 'font-loading-base-input',
-  base2: 'font-loading-base-input',
   green: 'font-loading-base-input',
   red: 'font-loading-base-input',
 }
@@ -66,7 +67,7 @@ function Input(
     before,
     after,
     disabled,
-    color = 'base',
+    color = 'neutral',
     size = 'small',
     font = 'Noto Sans Mono',
     script,
@@ -129,15 +130,13 @@ function Input(
         'relative w-full',
         size === 'small' ? 'text-sm' : undefined,
         rounded,
-        // backgroundColorClass,
-        disabled
-          ? `bg-gray-200 text-gray-400 select-none`
-          : `bg-gray-100 text-gray-950`,
+        disabled && `!bg-gray-200 !text-gray-400 !select-none`,
+        backgroundColorClass,
         inputClassName,
         disabled && `select-none`,
-        `placeholder:text-gray-300`,
         `font-bold`,
         `focus-visible:ring focus-visible:ring-offset-0 focus-visible:ring-inset focus-visible:ring-blue-200`,
+        `shadow-small1`,
         `text-base sm:text-base-large`,
         size === 'small' ? 'h-32' : 'h-48',
         'block py-8',

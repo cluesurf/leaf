@@ -149,7 +149,7 @@ export function Button({
         touching ? undefined : 'rounded-sm',
         'text-center justify-center',
         fill ? 'w-full' : 'w-fit',
-        'transition-color',
+        'transition-all',
         'cursor-pointer',
         'duration-200',
         `shadow-small1 hover:shadow-small2`,
@@ -186,7 +186,7 @@ export function IconButton({
         'w-fit',
         'cursor-pointer',
         // fill ? C.flexAll : undefined,
-        'transition-colors transition-color',
+        'transition-all',
         'duration-200',
       )}
       {...props}
@@ -235,7 +235,7 @@ export function LabelButton({
         touching ? undefined : 'rounded-sm',
         'text-center justify-center',
         fill ? 'w-full' : 'w-fit',
-        'transition-colors transition-color',
+        'transition-all',
         'duration-200',
         align === 'right' ? 'justify-end' : undefined,
       )}
@@ -312,7 +312,7 @@ export function LinkButton({
         'text-center',
         fill ? 'w-full' : 'w-fit',
         // fill ? C.flexAll : undefined,
-        'transition-colors transition-color',
+        'transition-all',
         'duration-200',
         align === 'right' ? 'justify-end' : undefined,
       )}

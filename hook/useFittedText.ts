@@ -22,7 +22,7 @@ const canvas =
     ? undefined
     : document.createElement('canvas')
 
-export const useFittedText = ({
+const useFittedText = ({
   minFontSize = 16,
   maxFontSize = 128,
   fontFamily = 'inherit',
@@ -252,3 +252,5 @@ export const useFittedText = ({
     isFitting,
   } as const
 }
+
+export default useFittedText

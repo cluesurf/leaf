@@ -62,8 +62,9 @@ import useScripts from '~/hook/useScripts'
 import store from './redux'
 import TextEditor from '~/component/TextEditor'
 import TextInput from '~/component/TextInput'
-import { useFittedText } from '~/hook/useFittedText'
+import useFittedText from '~/hook/useFittedText'
 import PencilIcon from '~/component/icon/Pencil'
+import NativeSelect from '~/component/NativeSelect'
 
 const FONT_LIST = [
   'Noto Sans Mono',
@@ -174,6 +175,17 @@ export default function Page() {
       // configuration={configuration}
       store={store}
       settings={{ fonts: FONT, scripts: SCRIPT }}
+      right={
+        <div className="mt-64">
+          <NativeSelect
+            size="large"
+            color="base"
+          >
+            <option>noun</option>
+            <option>verb</option>
+          </NativeSelect>
+        </div>
+      }
       topRight={
         <div className="flex justify-end w-full p-8">
           <span className="block w-32 h-32">
@@ -243,6 +255,13 @@ function Content() {
           maxColumns={4}
           gap={16}
         >
+          <Field>
+            <Label>role</Label>
+            <NativeSelect size="large">
+              <option>noun</option>
+              <option>verb</option>
+            </NativeSelect>
+          </Field>
           <Field>
             <Label>title</Label>
             <TextInput

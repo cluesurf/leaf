@@ -29,7 +29,7 @@ function NativeSelect<T extends string = string>(
     onChangePossiblyUndefined,
     topped,
     bottomed,
-    color,
+    color = 'neutral',
     noArrow,
     size = 'small',
     font = 'Noto Sans Mono',
@@ -77,7 +77,7 @@ function NativeSelect<T extends string = string>(
   }
 
   const rounded = getRoundedClass(topped, bottomed)
-  let textColorClass = `placeholder:italic`
+  const backgroundColorClass = color && INPUT_COLOR[color]
 
   return (
     <div
@@ -86,12 +86,13 @@ function NativeSelect<T extends string = string>(
         rounded,
         size === 'small' ? 'h-32' : 'h-48',
         'relative w-full min-w-128',
-        textColorClass,
+        backgroundColorClass,
+        `shadow-small1`,
       )}
     >
       <div
         className={clsx(
-          size === 'small' ? `text-sm` : undefined,
+          // size === 'small' ? `text-sm` : undefined,
           'absolute cursor-pointer left-0 right-0 top-0 bottom-0',
         )}
       >
@@ -102,8 +103,9 @@ function NativeSelect<T extends string = string>(
           onChange={handleChange}
           className={clsx(
             size === 'small' ? 'text-sm h-32' : 'h-48',
-            'appearance-none bg-transparent px-12 leading-content w-full',
+            'appearance-none bg-transparent px-16 leading-content w-full',
             'overflow-hidden whitespace-nowrap text-ellipsis',
+            `focus-visible:ring focus-visible:ring-offset-0 focus-visible:ring-inset focus-visible:ring-blue-200`,
             inputClassName,
             'pr-24',
           )}
@@ -114,13 +116,13 @@ function NativeSelect<T extends string = string>(
           <div
             className={clsx(
               size === 'small' ? 'w-16' : 'w-24',
-              'absolute p-8 right-16 top-0 bottom-0 pointer-events-none',
+              'absolute right-8 top-0 bottom-0 pointer-events-none flex items-center',
             )}
           >
             <span
               className={clsx(
-                size === 'small' ? 'w-16 h-16' : 'w-24 h-24',
-                'inline-block absolute',
+                size === 'small' ? 'w-16 h-16' : 'w-20 h-20',
+                'block',
               )}
             >
               <TriangleDownIcon />
