@@ -7,42 +7,34 @@ import React, {
 import clsx from 'clsx'
 import { useDarkMode } from '~/hook/useDarkMode'
 import T from './Text'
+import COLORS from '~/utility/colors'
 
 const FOCUS_CLASS_NAME = `focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-blue-300`
 
-export const COLOR: Record<string, string> = {
-  purple: `bg-violet-500 text-gray-100 dark:bg-violet-900 dark:text-violet-200 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME}`,
-  green: `bg-emerald-500 text-gray-100 dark:bg-emerald-900 dark:text-emerald-200 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME}`,
-  red: `bg-rose-500 text-gray-100 dark:bg-rose-900 dark:text-rose-200 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME}`,
-  blue: `bg-blue-500 dark:bg-blue-900 dark:text-blue-200 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME}`,
-  black: `bg-gray-800 text-gray-100 dark:bg-gray-200 bg-gray-700 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME} hover:dark:bg-gray-300`,
-  black2: `bg-gray-800 text-gray-100 dark:bg-gray-200 bg-gray-700 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME} hover:dark:bg-gray-300`,
-  white: `bg-gray-100 dark:bg-gray-800 dark:text-gray-200 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME} hover:dark:bg-gray-700`,
-  white2: `bg-gray-200 dark:bg-gray-700 dark:text-gray-200 hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_CLASS_NAME} hover:dark:bg-gray-600`,
+export const COLOR: Record<ButtonColor, string> = {
+  purple: `${COLORS.button.purple} ${FOCUS_CLASS_NAME}`,
+  green: `${COLORS.button.green} ${FOCUS_CLASS_NAME}`,
+  red: `${COLORS.button.red} ${FOCUS_CLASS_NAME}`,
+  blue: `${COLORS.button.blue} ${FOCUS_CLASS_NAME}`,
+  base: `${COLORS.button.base} ${FOCUS_CLASS_NAME}`,
+  neutral: `${COLORS.button.neutral} ${FOCUS_CLASS_NAME}`,
 }
 
-export type ButtonColor = keyof typeof COLOR
+export type ButtonColor =
+  | 'purple'
+  | 'green'
+  | 'red'
+  | 'blue'
+  | 'base'
+  | 'neutral'
 
-export const TEXT_COLOR: Record<string, string> = {
-  purple: 'text-gray-100',
-  green: 'text-gray-100',
-  red: 'text-gray-100',
-  blue: 'text-gray-100',
-  black: 'text-gray-100',
-  white: 'text-gray-800',
-}
-
-export const GHOST_COLOR: Record<string, string> = {
-  purple:
-    'border-4 border-solid dark:border-violet-900 border-violet-400 dark:border-violet-900 text-violet-400 hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed',
-  green:
-    'border-4 border-solid dark:border-emerald-900 border-emerald-400 dark:border-emerald-900 text-emerald-400 hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed',
-  blue: 'border-4 border-solid dark:border-blue-900 border-blue-400 dark:border-blue-900 text-blue-400 hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed',
-  red: 'border-4 border-solid border-rose-700 text-rose-700 hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed',
-  black:
-    'border-4 border-solid border-gray-800 text-gray-800 hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed',
-  white:
-    'border-4 border-solid border-gray-400 text-gray-400 hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed',
+export const GHOST_COLOR: Record<ButtonColor, string> = {
+  purple: `${COLORS.border.purple} ${FOCUS_CLASS_NAME}`,
+  green: `${COLORS.border.green} ${FOCUS_CLASS_NAME}`,
+  red: `${COLORS.border.red} ${FOCUS_CLASS_NAME}`,
+  blue: `${COLORS.border.blue} ${FOCUS_CLASS_NAME}`,
+  base: `${COLORS.border.base} ${FOCUS_CLASS_NAME}`,
+  neutral: `${COLORS.border.neutral} ${FOCUS_CLASS_NAME}`,
 }
 
 export type ButtonInput = {
@@ -51,11 +43,10 @@ export type ButtonInput = {
   touching?: boolean
   children: React.ReactNode
   fill?: boolean
-  align?: 'left' | 'right'
-  color?: 'purple' | 'blue' | 'red' | 'contrast' | 'green'
+  align?: 'left' | 'right' | 'center'
+  color?: ButtonColor
   ghost?: boolean
   bold?: boolean
-  variant?: 1 | 2
   font?: string | Array<string>
   width?: number
 } & Omit<
@@ -66,23 +57,8 @@ export type ButtonInput = {
   'value' | 'size'
 >
 
-function getColorClassName(
-  color: string,
-  isDark: boolean,
-  ghost?: boolean,
-  variant?: 1 | 2,
-) {
-  const name =
-    color === 'contrast'
-      ? isDark
-        ? `white${variant === 1 ? '' : variant}`
-        : `black${variant === 1 ? '' : variant}`
-      : color
-  const colorClassName = COLOR[name]
-  const textColorClassName = TEXT_COLOR[name]
-  const className = ghost
-    ? GHOST_COLOR[name]
-    : `${colorClassName} ${textColorClassName}`
+function getColorClassName(color: string, ghost?: boolean) {
+  const className = ghost ? GHOST_COLOR[color] : COLOR[color]
   return className
 }
 
@@ -117,21 +93,14 @@ export function Button({
   fill,
   className,
   align,
-  color = 'contrast',
+  color = 'base',
   ghost,
   font,
   bold,
-  variant = 1,
   width,
   ...props
 }: ButtonInput) {
-  const isDark = useDarkMode() === 'dark'
-  const colorClassName = getColorClassName(
-    color,
-    isDark,
-    ghost,
-    variant,
-  )
+  const colorClassName = getColorClassName(color, ghost)
   const sizeClassName = getSizeClassNames(size, ghost)
 
   return (
@@ -201,8 +170,8 @@ export type LabelButtonInput = {
   children: React.ReactNode
   touching?: boolean
   fill?: boolean
-  align?: 'left' | 'right'
-  color?: 'purple' | 'green' | 'red' | 'contrast'
+  align?: 'left' | 'right' | 'center'
+  color?: ButtonColor
   ghost?: boolean
   font?: string | Array<string>
 } & Omit<HTMLProps<HTMLLabelElement>, 'size' | 'value'>
@@ -214,14 +183,13 @@ export function LabelButton({
   className,
   fill,
   align,
-  color = 'contrast',
+  color = 'base',
   ghost,
   font,
   ...props
 }: LabelButtonInput) {
   const sizeClassName = getSizeClassNames(size, ghost)
-  const isDark = useDarkMode() === 'dark'
-  const colorClassName = getColorClassName(color, isDark, ghost)
+  const colorClassName = getColorClassName(color, ghost)
   return (
     <T
       tag="label"
@@ -255,10 +223,10 @@ export type LinkButtonInput = {
   touching?: boolean
   fill?: boolean
   title?: string
-  align?: 'left' | 'right'
+  align?: 'left' | 'right' | 'center'
   shadow?: boolean
   className?: string
-  color?: 'purple' | 'green' | 'red' | 'contrast'
+  color?: ButtonColor
   ghost?: boolean
   target?: '_blank'
   font?: string | Array<string>
@@ -268,7 +236,6 @@ export type LinkButtonInput = {
 
 export function LinkButton({
   children,
-  variant = 1,
   size = 'medium',
   touching,
   fill,
@@ -276,7 +243,7 @@ export function LinkButton({
   shadow,
   align = 'left',
   className,
-  color = 'contrast',
+  color = 'base',
   ghost,
   target,
   font,
@@ -284,13 +251,7 @@ export function LinkButton({
   ...props
 }: LinkButtonInput) {
   const sizeClassName = getSizeClassNames(size, ghost)
-  const isDark = useDarkMode() === 'dark'
-  const colorClassName = getColorClassName(
-    color,
-    isDark,
-    ghost,
-    variant,
-  )
+  const colorClassName = getColorClassName(color, ghost)
 
   return (
     <Link

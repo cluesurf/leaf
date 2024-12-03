@@ -7,7 +7,7 @@ export type XTwitterIconInput = {
 }
 
 export default function XTwitterIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
   hoverable,
 }: XTwitterIconInput) {
   return (

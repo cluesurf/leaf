@@ -5,7 +5,7 @@ export type CloseIconInput = {
 }
 
 export default function CloseIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
 }: CloseIconInput) {
   return (
     <svg

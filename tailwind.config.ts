@@ -1,8 +1,11 @@
 import type { Config } from 'tailwindcss'
+import plugin from 'tailwindcss/plugin'
+import COLORS from './utility/colors'
 
 const config: Config = {
   content: [
     './component/**/*.{js,ts,jsx,tsx,mdx}',
+    './utility/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './hook/**/*.{js,ts,jsx,tsx,mdx}',
   ],
@@ -320,6 +323,7 @@ const config: Config = {
         nav: `rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px`,
         normal: `rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px`,
         thead: `inset 0px -4px 0px rgba(229, 231, 235, 1)`,
+        'thead-dark': `inset 0px -4px 0px rgba(3, 7, 18, 1)`,
         xl: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
         small: `rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px`,
         tiny: '0px 5px 2px -2px rgba(0, 0, 0, 0.2)',
@@ -408,6 +412,14 @@ const config: Config = {
       },
     },
   },
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
+  darkMode: 'media',
+  safelist: [...COLORS.used],
   plugins: [require('tailwindcss-radix')()],
 }
+
 export default config
+
+console.log(COLORS.used)

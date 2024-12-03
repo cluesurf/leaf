@@ -22,14 +22,14 @@ export type InputColor =
 
 export const INPUT_COLOR: Record<InputColor, string> = {
   purple:
-    'bg-violet-100 text-violet-700 [&>input]:placeholder:text-violet-400 dark:bg-violet-950 dark:text-violet-300',
-  blue: 'bg-blue-100 text-blue-700 [&>input]:placeholder:text-blue-300 dark:bg-blue-950 dark:text-blue-300',
+    'bg-violet-100 text-violet-700 placeholder:text-violet-500 dark:bg-violet-950 dark:text-violet-300',
+  blue: 'bg-blue-100 text-blue-700 placeholder:text-blue-400 dark:bg-blue-950 dark:text-blue-300',
   neutral:
-    'bg-gray-100 text-gray-950 [&>input]:placeholder:text-gray-300 dark:bg-gray-900 dark:text-gray-300',
-  base: 'bg-white [&>input]:placeholder:text-gray-100 dark:bg-gray-800 dark:text-gray-300',
+    'disabled:bg-gray-200 disabled:text-gray-400 dark:disabled:bg-gray-600 dark:disabled:text-gray-500 bg-gray-100 text-gray-950 placeholder:text-gray-600 dark:bg-gray-900 dark:text-gray-300',
+  base: 'bg-white placeholder:text-gray-100 dark:bg-gray-950 placeholder:text-gray-700 dark:text-gray-300',
   green:
-    'bg-emerald-100 text-emerald-700 [&>input]:placeholder:text-emerald-400 dark:bg-emerald-950 dark:text-emerald-300',
-  red: 'bg-rose-100 text-rose-700 [&>input]:placeholder:text-rose-300 dark:bg-rose-950 dark:text-rose-300',
+    'bg-emerald-100 text-emerald-700 placeholder:text-emerald-400 dark:bg-emerald-950 dark:text-emerald-300',
+  red: 'bg-rose-100 text-rose-700 placeholder:text-rose-300 dark:bg-rose-950 dark:text-rose-300',
 }
 
 export const INPUT_WAITING: Record<InputColor, string> = {
@@ -130,12 +130,12 @@ function Input(
         'relative w-full',
         size === 'small' ? 'text-sm' : undefined,
         rounded,
-        disabled && `!bg-gray-200 !text-gray-400 !select-none`,
+        disabled && `!select-none`,
         backgroundColorClass,
         inputClassName,
         disabled && `select-none`,
-        `font-bold`,
-        `focus-visible:ring focus-visible:ring-offset-0 focus-visible:ring-inset focus-visible:ring-blue-200`,
+        `font-semibold`,
+        `focus-visible:ring dark:focus-visible:ring-opacity-30 focus-visible:ring-offset-0 focus-visible:ring-inset focus-visible:ring-blue-200 dark:focus-visible:ring-blue-600`,
         `shadow-small1`,
         `text-base sm:text-base-large`,
         size === 'small' ? 'h-32' : 'h-48',

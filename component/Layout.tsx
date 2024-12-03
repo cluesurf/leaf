@@ -135,7 +135,7 @@ export default function Layout({
 
   return (
     <>
-      <div className="px-4 bg-gray-50 !dark:bg-gray-950 !z-3000 w-full dark:bg-gray-900 fixed top-0 dark:shadow-3xl-dark shadow-metal">
+      <div className="px-4 bg-gray-50 dark:bg-gray-950 !z-3000 w-full fixed top-0 dark:shadow-3xl-dark shadow-metal">
         {top}
       </div>
       <ViewportLayout3Section
@@ -163,7 +163,7 @@ export default function Layout({
           </main>
         }
       />
-      <div className="px-4 bg-gray-50 !dark:bg-gray-950 !z-3000 w-full dark:bg-gray-900 fixed bottom-0 dark:shadow-3xl-dark shadow-metal-bottom">
+      <div className="px-4 bg-gray-50 dark:bg-gray-950 !z-3000 w-full fixed bottom-0 dark:shadow-3xl-dark shadow-metal-bottom">
         {bottom}
       </div>
     </>

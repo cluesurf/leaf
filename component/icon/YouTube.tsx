@@ -5,7 +5,7 @@ export type YouTubeIconInput = {
 }
 
 export default function YouTubeIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
 }: YouTubeIconInput) {
   return (
     <svg

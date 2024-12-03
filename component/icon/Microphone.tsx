@@ -5,7 +5,7 @@ export type MicrophoneIconInput = {
 }
 
 export default function MicrophoneIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
 }: MicrophoneIconInput) {
   return (
     <svg

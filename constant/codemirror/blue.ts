@@ -10,7 +10,7 @@ import { createTheme, CreateThemeOptions } from './theme'
 export const defaultLightSettings: CreateThemeOptions['settings'] = {
   background: 'rgb(239, 246, 255)',
   foreground: 'rgb(100, 116, 139)',
-  foregroundFontWeight: 'bold',
+  foregroundFontWeight: 'semibold',
   caret: 'rgb(37, 99, 235)',
   selection: 'rgb(96, 165, 250)',
   selectionMatch: 'rgb(191, 219, 254)',
@@ -24,7 +24,7 @@ export const defaultLightSettings: CreateThemeOptions['settings'] = {
 export const defaultDarkSettings: CreateThemeOptions['settings'] = {
   background: 'rgb(23, 37, 84)',
   foreground: 'rgb(147, 197, 253)',
-  foregroundFontWeight: 'bold',
+  foregroundFontWeight: 'semibold',
   caret: 'rgb(37, 99, 235)',
   selection: 'rgb(59, 130, 246)',
   selectionMatch: 'rgb(37, 99, 235)',
@@ -65,18 +65,18 @@ export const blueTheme = (options?: Partial<CreateThemeOptions>) => {
       {
         tag: t.string,
         color: defaultStyles.string,
-        fontWeight: 'bold',
+        fontWeight: 'semibold',
       },
       { tag: t.meta, color: 'rgb(148, 163, 184)' },
       {
         tag: [t.keyword, t.operator, t.tagName],
         color: '#ff79c6',
-        fontWeight: 'bold',
+        fontWeight: 'semibold',
       },
       {
         tag: [t.function(t.propertyName), t.propertyName],
         color: defaultStyles.variableName,
-        fontWeight: 'bold',
+        fontWeight: 'semibold',
       },
       {
         tag: [
@@ -86,14 +86,18 @@ export const blueTheme = (options?: Partial<CreateThemeOptions>) => {
           t.attributeName,
         ],
         color: defaultStyles.variableName,
-        fontWeight: 'bold',
+        fontWeight: 'semibold',
       },
       { tag: t.atom, color: defaultStyles.string },
-      { tag: t.null, color: 'rgb(239, 68, 68)', fontWeight: 'bold' },
+      {
+        tag: t.null,
+        color: 'rgb(239, 68, 68)',
+        fontWeight: 'semibold',
+      },
       {
         tag: [t.number, t.bool],
         color: 'rgb(16, 185, 129)',
-        fontWeight: 'bold',
+        fontWeight: 'semibold',
       },
       {
         tag: [t.punctuation, t.bracket],

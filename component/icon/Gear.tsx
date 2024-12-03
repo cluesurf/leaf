@@ -7,7 +7,7 @@ export type GearIconInput = {
 }
 
 export default function GearIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
   hoverable,
 }: GearIconInput) {
   const className = clsx(

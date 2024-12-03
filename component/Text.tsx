@@ -66,10 +66,10 @@ export type TInput = {
   value?: string
   font?: string | Array<string>
   script?: string | Array<string>
-  theme?: 'base'
   style?: CSSProperties
   background?: 'light' | 'medium' | 'heavy'
   bold?: boolean
+  semibold?: boolean
   size?: number
   tag?: keyof JSX.IntrinsicElements
   leading?: 'heading' | 'body' | 'base'
@@ -215,11 +215,11 @@ export default function Text({
   font,
   script,
   processor,
-  theme = 'base',
   background = 'light',
   style = {},
   size,
   bold,
+  semibold,
   tag = 'span',
   leading = 'body',
   ...props
@@ -237,7 +237,7 @@ export default function Text({
   const lineHeight = lineHeights?.[leading]
 
   const actualStyles = {
-    fontWeight: bold ? 'bold' : undefined,
+    fontWeight: bold ? 'bold' : semibold ? 'semibold' : undefined,
     ...style,
     fontSize: size,
     lineHeight,

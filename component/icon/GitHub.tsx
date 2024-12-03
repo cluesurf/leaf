@@ -5,7 +5,7 @@ export type GitHubIconInput = {
 }
 
 export default function GitHubIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
 }: GitHubIconInput) {
   return (
     <svg

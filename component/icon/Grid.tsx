@@ -7,7 +7,7 @@ export type GridIconInput = {
 }
 
 export default function GridIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
   hoverable,
 }: GridIconInput) {
   return (
@@ -18,7 +18,7 @@ export default function GridIcon({
       xmlns="http://www.w3.org/2000/svg"
       className={clsx(
         colorClassName,
-        hoverable && `hover:fill-violet-600`,
+        hoverable && `fine:hover:fill-violet-600`,
         `transition-colors`,
       )}
     >

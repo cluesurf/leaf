@@ -12,6 +12,7 @@ import {
   H6,
   P,
   Table,
+  TableScroller,
   TBody,
   TD,
   TH,
@@ -79,7 +80,7 @@ const BUTTON_COLORS = [
   'green',
   'blue',
   'red',
-  'contrast',
+  'base',
 ] as const
 const BUTTON_SIZES = ['small', 'medium', 'large'] as const
 
@@ -176,7 +177,7 @@ export default function Page() {
       store={store}
       settings={{ fonts: FONT, scripts: SCRIPT }}
       right={
-        <div className="mt-64">
+        <div className="mt-64 dark:bg-gray-900 h-full">
           <NativeSelect
             size="large"
             color="base"
@@ -189,7 +190,7 @@ export default function Page() {
       topRight={
         <div className="flex justify-end w-full p-8">
           <span className="block w-32 h-32">
-            <GearIcon />
+            <GearIcon colorClassName="fill-gray-900 dark:fill-gray-50" />
           </span>
         </div>
       }
@@ -266,7 +267,6 @@ function Content() {
             <Label>title</Label>
             <TextInput
               size="large"
-              className="!bg-gray-100"
               placeholder="Guide title"
               value={a}
               onChange={setA}
@@ -277,8 +277,8 @@ function Content() {
             <TextInput
               disabled
               size="large"
-              before={<Text>/</Text>}
-              value={b}
+              // before={<Text>/</Text>}
+              value={'b'}
               onChange={setB}
             />
           </Field>
@@ -286,7 +286,7 @@ function Content() {
             <Label>title</Label>
             <TextInput
               size="large"
-              className="!bg-gray-100"
+              color="base"
               placeholder="Guide title"
               value={a}
               onChange={setA}
@@ -593,7 +593,7 @@ function Content() {
         <H6>H6</H6>
       </div>
       <H2>Table</H2>
-      <div>
+      <TableScroller>
         <Table>
           <THead>
             <TR>
@@ -620,7 +620,7 @@ function Content() {
             </TR>
           </TBody>
         </Table>
-      </div>
+      </TableScroller>
       <H2>Switch</H2>
       <div className="p-16">
         <div className="flex justify-center gap-16">

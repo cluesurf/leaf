@@ -238,7 +238,7 @@ export function P({
             : undefined,
         type === 'secondary'
           ? 'text-gray-500 dark:text-gray-600'
-          : 'text-gray-700 dark:text-gray-400',
+          : 'text-gray-700 dark:text-gray-400 dark:font-medium',
       )}
     >
       {children}
@@ -256,7 +256,7 @@ export type THInput = React.ComponentPropsWithoutRef<'th'> & {
 
 export function TH({ children, className, ...props }: THInput) {
   const list = [
-    'shadow-thead bg-gray-100 dark:bg-gray-600 border-0 border-r-4 last:border-r-0 border-solid border-gray-200 dark:border-gray-600 text-gray-700 font-bold text-base sm:text-base-large h-full px-16 py-8',
+    'shadow-thead dark:shadow-thead-dark bg-gray-100 dark:bg-gray-900 border-0 border-r-4 last:border-r-0 border-solid border-gray-200 dark:border-gray-950 text-gray-700 dark:text-gray-300 font-bold text-base sm:text-base-large h-full px-16 py-8',
   ]
   return (
     <th
@@ -367,11 +367,11 @@ export function TableScroller({
   borderless = false,
   framed = false,
 }: TableScrollerInput) {
-  const list = [
-    'shadow-normal mb-48 mt-16 max-h-screen w-full overflow-x-auto sticky-table-header',
-  ]
-
-  return <div className={list.join(' ')}>{children}</div>
+  return (
+    <div className="shadow-normal mb-48 mt-16 mx-16 max-h-screen overflow-x-auto sticky-table-header">
+      {children}
+    </div>
+  )
 }
 
 export type TRInput = React.ComponentPropsWithoutRef<'tr'> & {
@@ -384,7 +384,7 @@ export function TR({ className, children, ...props }: TRInput) {
       {...props}
       className={clsx(
         className,
-        `h-full border-r-0 last-child:border-r-0 border-0 border-solid border-gray-300 dark:border-gray-600 dark:text-gray-300`,
+        `h-full border-r-0 last-child:border-r-0 border-0 border-solid border-gray-300 dark:border-gray-950 dark:text-gray-300`,
       )}
     >
       {children}
@@ -406,7 +406,7 @@ export function TD({
   ...props
 }: TDInput) {
   const list = [
-    'border-b-0 border-t-0 last:border-r-0 border-l-0 border-r-4 border-solid border-gray-200 dark:border-gray-600 h-full font-medium text-base sm:text-base-large text-gray-700 bg-inherit',
+    'border-b-0 border-t-0 last:border-r-0 border-l-0 border-r-4 border-solid border-gray-200 dark:border-gray-950 h-full font-medium text-base sm:text-base-large text-gray-700 dark:text-gray-400 bg-inherit',
     wrap ? undefined : `whitespace-pre`,
     className,
   ]
@@ -521,7 +521,7 @@ export function H2({
       className={clsx(
         className,
         fontSizeClassName,
-        'pt-8 mb-8 mt-16 px-16 font-semibold uppercase w-full scale-y-80 tracking-narrow-05 text-gray-700 dark:text-gray-300',
+        'pt-8 mb-8 mt-16 px-16 font-semibold uppercase w-full scale-y-80 tracking-narrow-05 text-gray-700 dark:text-gray-400',
         align === 'center'
           ? `text-center`
           : align === 'right'

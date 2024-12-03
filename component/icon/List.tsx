@@ -5,7 +5,7 @@ export type ListIconInput = {
 }
 
 export default function ListIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
 }: ListIconInput) {
   return (
     <svg

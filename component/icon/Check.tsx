@@ -5,7 +5,7 @@ export type CheckIconInput = {
 }
 
 export default function CheckIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
 }: CheckIconInput) {
   return (
     <svg

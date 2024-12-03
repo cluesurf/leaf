@@ -6,7 +6,7 @@ export type MessageIconInput = {
 }
 
 export default function MessageIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
 }: MessageIconInput) {
   return (
     <svg

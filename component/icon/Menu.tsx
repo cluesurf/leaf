@@ -7,7 +7,7 @@ export type MenuIconInput = {
 }
 
 export default function MenuIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
   hoverable,
 }: MenuIconInput) {
   return (

@@ -5,7 +5,7 @@ export type LinkIconInput = {
 }
 
 export default function LinkIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
 }: LinkIconInput) {
   return (
     <svg

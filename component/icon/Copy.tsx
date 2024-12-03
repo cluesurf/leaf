@@ -5,7 +5,7 @@ export type CopyIconInput = {
 }
 
 export default function CopyIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
 }: CopyIconInput) {
   return (
     <svg

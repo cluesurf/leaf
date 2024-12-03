@@ -5,7 +5,7 @@ export type AlertIconInput = {
 }
 
 export default function AlertIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
 }: AlertIconInput) {
   return (
     <svg

@@ -7,7 +7,7 @@ export type TriangleDownIconInput = {
 }
 
 export default function TriangleDownIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-400',
+  colorClassName = 'fill-gray-800 dark:fill-gray-500',
   hoverable,
 }: TriangleDownIconInput) {
   return (
