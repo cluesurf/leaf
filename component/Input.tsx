@@ -25,8 +25,8 @@ export const INPUT_COLOR: Record<InputColor, string> = {
     'bg-violet-100 text-violet-700 placeholder:text-violet-500 dark:bg-violet-950 dark:text-violet-300',
   blue: 'bg-blue-100 text-blue-700 placeholder:text-blue-400 dark:bg-blue-950 dark:text-blue-300',
   neutral:
-    'disabled:bg-gray-200 disabled:text-gray-400 dark:disabled:bg-gray-600 dark:disabled:text-gray-500 bg-gray-100 text-gray-950 placeholder:text-gray-600 dark:bg-gray-900 dark:text-gray-300',
-  base: 'bg-white placeholder:text-gray-100 dark:bg-gray-950 placeholder:text-gray-700 dark:text-gray-300',
+    'disabled:bg-zinc-200 disabled:text-zinc-400 dark:disabled:bg-zinc-600 dark:disabled:text-zinc-500 bg-zinc-100 text-zinc-950 placeholder:text-zinc-600 dark:bg-zinc-900 dark:text-zinc-300',
+  base: 'bg-white placeholder:text-zinc-100 dark:bg-zinc-950 placeholder:text-zinc-700 dark:text-zinc-300',
   green:
     'bg-emerald-100 text-emerald-700 placeholder:text-emerald-400 dark:bg-emerald-950 dark:text-emerald-300',
   red: 'bg-rose-100 text-rose-700 placeholder:text-rose-300 dark:bg-rose-950 dark:text-rose-300',

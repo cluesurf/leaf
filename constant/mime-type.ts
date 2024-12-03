@@ -4453,7 +4453,7 @@ const MIME_TYPE: MimeTypes = {
     extensions: ['.pbm'],
   },
   pgm: {
-    mime: 'image/x-portable-graymap',
+    mime: 'image/x-portable-zincmap',
     extensions: ['.pgm'],
   },
   ppm: {

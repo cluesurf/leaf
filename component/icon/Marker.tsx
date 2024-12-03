@@ -5,7 +5,7 @@ export type MarkerIconInput = {
 }
 
 export default function MarkerIcon({
-  colorClassName = 'color-gray-800 dark:color-gray-400',
+  colorClassName = 'color-zinc-800 dark:color-zinc-400',
 }: MarkerIconInput) {
   return (
     <svg

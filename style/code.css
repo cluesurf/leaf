@@ -72,8 +72,8 @@
   );
 }
 
-.code-vibe-formal.code-tint-gray,
-.code-vibe-formal.code-tint-gray * {
+.code-vibe-formal.code-tint-zinc,
+.code-vibe-formal.code-tint-zinc * {
   color: rgb(75, 85, 99);
 
   --color-prettylights-syntax-comment: rgb(156, 163, 175);
@@ -745,7 +745,7 @@
 
 /* calm */
 
-.code-vibe-calm.code-tint-gray {
+.code-vibe-calm.code-tint-zinc {
   background: rgb(249, 250, 251);
 }
 
@@ -839,7 +839,7 @@
 
 /* pleasant */
 
-.code-vibe-pleasant.code-tint-gray {
+.code-vibe-pleasant.code-tint-zinc {
   background: rgb(249, 250, 251);
 }
 
@@ -933,7 +933,7 @@
 
 /* contemporary */
 
-.code-vibe-contemporary.code-tint-gray {
+.code-vibe-contemporary.code-tint-zinc {
   background: rgb(249, 250, 251);
 }
 
@@ -1027,7 +1027,7 @@
 
 /* book */
 
-.code-vibe-book.code-tint-gray {
+.code-vibe-book.code-tint-zinc {
   background: rgb(249, 250, 251);
 }
 

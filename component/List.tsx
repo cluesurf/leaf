@@ -26,7 +26,7 @@ export function Item({
   children: React.ReactNode
 }) {
   return href ? (
-    <li className="font-medium list-none block even:bg-gray-100 bg-gray-200 font-NotoSansMono hover:opacity-70 transition-all text-lg">
+    <li className="font-medium list-none block even:bg-zinc-100 bg-zinc-200 font-NotoSansMono hover:opacity-70 transition-all text-lg">
       <Link
         className="flex w-full items-center justify-between p-16 no-underline"
         href={href}
@@ -39,7 +39,7 @@ export function Item({
       </Link>
     </li>
   ) : (
-    <li className="font-medium list-none block even:bg-gray-100 bg-gray-200 p-16 font-NotoSansMono text-lg">
+    <li className="font-medium list-none block even:bg-zinc-100 bg-zinc-200 p-16 font-NotoSansMono text-lg">
       {children}
     </li>
   )

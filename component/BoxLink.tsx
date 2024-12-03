@@ -37,7 +37,7 @@ export default function BoxLink({
         data-tooltip-id={tooltipId}
         data-tooltip-delay-show={1000}
         className={clsx(
-          'shadow-xl flex flex-col gap-16 transition-all duration-200 text-left px-16 py-8 bg-gray-100 dark:bg-gray-900 h-full rounded-sm w-full',
+          'shadow-xl flex flex-col gap-16 transition-all duration-200 text-left px-16 py-8 bg-zinc-100 dark:bg-zinc-900 h-full rounded-sm w-full',
           className,
         )}
       >
@@ -54,7 +54,7 @@ export default function BoxLink({
       data-tooltip-id={tooltipId}
       data-tooltip-delay-show={1000}
       className={clsx(
-        'shadow-xl flex gap-16 hover:shadow-medium transition-all duration-200 text-left px-16 py-8 bg-gray-100 dark:bg-gray-900 h-full leading-content items-center rounded-sm w-full',
+        'shadow-xl flex gap-16 hover:shadow-medium transition-all duration-200 text-left px-16 py-8 bg-zinc-100 dark:bg-zinc-900 h-full leading-content items-center rounded-sm w-full',
         className,
       )}
       href={`${link}`}

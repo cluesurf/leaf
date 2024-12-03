@@ -403,7 +403,7 @@ function Menu({
 
   return (
     <div
-      className="w-full absolute bg-gray-50 z-200 shadow-medium rounded-b-sm"
+      className="w-full absolute bg-zinc-50 z-200 shadow-medium rounded-b-sm"
       ref={ref}
     >
       <List

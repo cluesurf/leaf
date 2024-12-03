@@ -5,11 +5,10 @@ import React, {
   HTMLProps,
 } from 'react'
 import clsx from 'clsx'
-import { useDarkMode } from '~/hook/useDarkMode'
 import T from './Text'
 import COLORS from '~/utility/colors'
 
-const FOCUS_CLASS_NAME = `focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-blue-300`
+const FOCUS_CLASS_NAME = `focus-visible:ring focus-visible:ring-offset-0 focus-visible:ring-blue-300`
 
 export const COLOR: Record<ButtonColor, string> = {
   purple: `${COLORS.button.purple} ${FOCUS_CLASS_NAME}`,

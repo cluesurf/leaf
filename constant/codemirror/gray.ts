@@ -6,43 +6,44 @@
  */
 import { tags as t } from '@lezer/highlight'
 import { createTheme, CreateThemeOptions } from './theme'
+import COLORS from '~/utility/colors'
 
 export const defaultLightSettings: CreateThemeOptions['settings'] = {
-  background: 'rgb(243, 244, 246)',
+  background: COLORS.tailwind.zinc100,
   foreground: 'rgb(100, 116, 139)',
   foregroundFontWeight: 'semibold',
-  caret: 'rgb(75, 85, 99)',
-  selection: 'rgb(156, 163, 175)',
-  selectionMatch: 'rgb(229, 231, 235)',
+  caret: COLORS.tailwind.zinc600,
+  selection: COLORS.tailwind.zinc400,
+  selectionMatch: COLORS.tailwind.zinc200,
   gutterBackground: 'transparent',
   gutterForeground: 'transparent',
   gutterBorder: 'transparent',
-  lineHighlight: 'rgb(229, 231, 235)',
-  selectionBackground: 'rgba(156, 163, 175, 0.5)',
+  lineHighlight: COLORS.tailwind.zinc200,
+  selectionBackground: COLORS.tailwind.zinc400Half,
 }
 
 export const defaultDarkSettings: CreateThemeOptions['settings'] = {
-  background: 'rgb(17, 24, 39)',
-  foreground: 'rgb(209, 213, 219)',
+  background: COLORS.tailwind.zinc900,
+  foreground: COLORS.tailwind.zinc300,
   foregroundFontWeight: 'semibold',
-  caret: 'rgb(75, 85, 99)',
-  selection: 'rgb(107, 114, 128)',
-  selectionMatch: 'rgb(75, 85, 99)',
+  caret: COLORS.tailwind.zinc600,
+  selection: COLORS.tailwind.zinc500,
+  selectionMatch: COLORS.tailwind.zinc600,
   gutterBackground: 'transparent',
   gutterForeground: 'transparent',
   gutterBorder: 'transparent',
-  lineHighlight: 'rgb(31, 41, 55)',
-  selectionBackground: 'rgba(107, 114, 128, 0.5)',
+  lineHighlight: COLORS.tailwind.zinc800,
+  selectionBackground: COLORS.tailwind.zinc500Half,
 }
 
 const lightStyles = {
-  string: 'rgb(75, 85, 99)',
-  variableName: 'rgb(30, 41, 59)',
+  string: COLORS.tailwind.zinc600,
+  variableName: COLORS.tailwind.zinc800,
 }
 
 const darkStyles = {
-  string: 'rgb(229, 231, 235)',
-  variableName: 'rgb(203, 213, 225)',
+  string: COLORS.tailwind.zinc200,
+  variableName: COLORS.tailwind.zinc300,
 }
 
 export const grayTheme = (options?: Partial<CreateThemeOptions>) => {

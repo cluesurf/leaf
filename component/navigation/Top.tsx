@@ -29,7 +29,7 @@ type ContainerInput = {
 }
 
 function Container({
-  backgroundClassName = `bg-white dark:bg-gray-900`,
+  backgroundClassName = `bg-white dark:bg-zinc-900`,
   forceShadow,
   children,
   drop,

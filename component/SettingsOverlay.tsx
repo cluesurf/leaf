@@ -62,7 +62,7 @@ export default function SettingsOverlay({
       ref={ref}
       className="absolute shadow-3xl animate-fade-in-medium top-128 bottom-48 left-0 right-0"
     >
-      <div className="absolute bg-white dark:bg-gray-950 top-0 bottom-0 left-0 right-0"></div>
+      <div className="absolute bg-white dark:bg-zinc-950 top-0 bottom-0 left-0 right-0"></div>
       <div className="h-full w-full overflow-y-auto pb-128">
         {children}
       </div>

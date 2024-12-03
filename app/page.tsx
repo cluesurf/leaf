@@ -177,7 +177,7 @@ export default function Page() {
       store={store}
       settings={{ fonts: FONT, scripts: SCRIPT }}
       right={
-        <div className="mt-64 dark:bg-gray-900 h-full">
+        <div className="mt-64 dark:bg-zinc-900 h-full">
           <NativeSelect
             size="large"
             color="base"
@@ -190,7 +190,7 @@ export default function Page() {
       topRight={
         <div className="flex justify-end w-full p-8">
           <span className="block w-32 h-32">
-            <GearIcon colorClassName="fill-gray-900 dark:fill-gray-50" />
+            <GearIcon colorClassName="fill-zinc-900 dark:fill-zinc-50" />
           </span>
         </div>
       }
@@ -249,7 +249,10 @@ function Content() {
       <H1 className="mt-64">Leaf</H1>
       <div className="flex flex-col gap-16 p-16">
         <div className="px-64">
-          <FitText text="བཀྲ་ཤིས་བདེ་ལེགས།" />
+          <FitText
+            text="བཀྲ་ཤིས་བདེ་ལེགས།"
+            fontFamily="Noto Serif Tibetan"
+          />
         </div>
         <Grid
           minWidth={120}
@@ -257,7 +260,7 @@ function Content() {
           gap={16}
         >
           <Field>
-            <Label>role</Label>
+            <Label>roje</Label>
             <NativeSelect size="large">
               <option>noun</option>
               <option>verb</option>
@@ -429,7 +432,7 @@ function Content() {
       <H2>Loading</H2>
 
       <div className="p-16">
-        <div className="bg-gray-800 w-64 h-32 flex justify-center items-center rounded-sm">
+        <div className="bg-zinc-800 w-64 h-32 flex justify-center items-center rounded-sm">
           <Dots />
         </div>
       </div>
@@ -471,7 +474,7 @@ function Content() {
               key={i}
               className="flex justify-center"
             >
-              <span className="inline-block w-48 h-48 rounded-full bg-gray-200 p-8">
+              <span className="inline-block w-48 h-48 rounded-full bg-zinc-200 p-8">
                 {icon}
               </span>
             </div>
@@ -775,7 +778,7 @@ function FontLink({
     <div
       className={clsx(
         className,
-        'shadow-small1 hover:shadow-small2 flex flex-col gap-16 bg-gray-50 [&_span]:hover:text-violet-600 [&_span]:transition-colors transition-all duration-200 text-left p-16 pb-32 h-full rounded-sm w-full [&_i]:hover:text-violet-400',
+        'shadow-small1 hover:shadow-small2 flex flex-col gap-16 bg-zinc-50 [&_span]:hover:text-violet-600 [&_span]:transition-colors transition-all duration-200 text-left p-16 pb-32 h-full rounded-sm w-full [&_i]:hover:text-violet-400',
       )}
     >
       <Text className="lowercase block font-semibold text-h4 transition-colors">
@@ -784,7 +787,7 @@ function FontLink({
       {sample && (
         <Grid
           // script={script}
-          className="text-h1 text-gray-800"
+          className="text-h1 text-zinc-800"
           minWidth={48}
           gap={8}
           rowGap={24}
@@ -834,7 +837,7 @@ function ScriptLink({
       <div
         className={clsx(
           className,
-          'overflow-hidden shadow-small1 flex flex-col bg-gray-100 text-left p-16 h-full rounded-sm w-full',
+          'overflow-hidden shadow-small1 flex flex-col bg-zinc-100 text-left p-16 h-full rounded-sm w-full',
         )}
       >
         {symbol && (
@@ -843,13 +846,13 @@ function ScriptLink({
             tag="i"
             className={clsx(
               weight && `font-${weight}`,
-              'block text-mega sm:text-mega-large text-gray-800 h-156',
+              'block text-mega sm:text-mega-large text-zinc-800 h-156',
             )}
           >
             {symbol}
           </Text>
         )}
-        <Text className="block font-semibold lowercase text-base sm:text-base-large text-gray-500">
+        <Text className="block font-semibold lowercase text-base sm:text-base-large text-zinc-500">
           {name}
         </Text>
       </div>
@@ -861,7 +864,7 @@ function ScriptLink({
       href={`/scripts/${slug}`}
       className={clsx(
         className,
-        'overflow-hidden text-center shadow-small1 hover:shadow-small2 flex flex-col bg-gray-50 [&>div]:hover:text-violet-600 [&>div]:transition-colors transition-all duration-200 p-16 h-full rounded-sm [&_span]:hover:text-violet-600 [&_i]:hover:text-violet-600',
+        'overflow-hidden text-center shadow-small1 hover:shadow-small2 flex flex-col bg-zinc-50 [&>div]:hover:text-violet-600 [&>div]:transition-colors transition-all duration-200 p-16 h-full rounded-sm [&_span]:hover:text-violet-600 [&_i]:hover:text-violet-600',
       )}
     >
       {symbol && (
@@ -870,13 +873,13 @@ function ScriptLink({
           tag="i"
           className={clsx(
             weight && `font-${weight}`,
-            'block text-mega sm:text-mega-large text-gray-800 transition-colors h-156',
+            'block text-mega sm:text-mega-large text-zinc-800 transition-colors h-156',
           )}
         >
           {symbol}
         </Text>
       )}
-      <Text className="block font-semibold lowercase text-lg sm:text-lg-large text-gray-500 transition-colors">
+      <Text className="block font-semibold lowercase text-lg sm:text-lg-large text-zinc-500 transition-colors">
         {name}
       </Text>
     </Link>
@@ -894,12 +897,13 @@ const FitText: React.FC<FitTextProps> = ({
   fontFamily = 'Arial',
   fontWeight = 'normal',
 }) => {
-  const { fontSize, ref, isFitting } = useFittedText({
+  const { fontSize, ref, isFitting, isMultiLine } = useFittedText({
     minFontSize: 32,
-    maxFontSize: 192,
+    maxFontSize: 132,
+    multiLineFontSizeThreshold: 64,
     fontFamily,
     fontWeight,
-    mode: 'multi-line',
+    mode: 'adaptive',
     maxHeight: 320, // Optional
     onFitComplete: size => console.log(`Final font size: ${size}px`),
   })
@@ -914,12 +918,18 @@ const FitText: React.FC<FitTextProps> = ({
           fontWeight,
           textAlign: 'center',
           width: '100%',
+          // whiteSpace: isMultiLine ? 'normal' : 'nowrap',
           height: '100%',
           opacity: isFitting ? 0 : 1,
-          transition: 'opacity 0.3s ease',
         }}
       >
-        {text}
+        <Text
+          leading="heading"
+          script="tibetan"
+          className="block"
+        >
+          {text}
+        </Text>
       </div>
     </div>
   )

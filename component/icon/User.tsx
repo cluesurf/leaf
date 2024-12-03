@@ -7,7 +7,7 @@ export type UserIconInput = {
 }
 
 export default function UserIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-500',
+  colorClassName = 'fill-zinc-800 dark:fill-zinc-500',
   hoverable,
 }: UserIconInput) {
   const className = clsx(

@@ -31,9 +31,9 @@ export default function Label({
       className={clsx(
         className,
         disabled
-          ? `text-gray-300 dark:text-gray-700`
-          : `text-gray-600 dark:text-gray-400`,
-        'lowercase flex text-xs py-4 pr-16 items-center justify-between',
+          ? `text-zinc-300 dark:text-zinc-700`
+          : `text-zinc-600 dark:text-zinc-400`,
+        'lowercase flex text-xs py-2 pr-16 items-center justify-between',
         bottomless ? `rounded-sm` : 'rounded-t-sm',
       )}
     >

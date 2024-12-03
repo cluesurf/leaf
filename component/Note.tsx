@@ -17,10 +17,10 @@ const COLOR_BG: Record<string, string> = {
 }
 
 const COLOR_FG: Record<string, string> = {
-  error: 'text-gray-50',
-  info: 'text-gray-50',
-  try: 'text-gray-900',
-  warn: 'text-gray-900',
+  error: 'text-zinc-50',
+  info: 'text-zinc-50',
+  try: 'text-zinc-900',
+  warn: 'text-zinc-900',
 }
 
 const ICON: Record<string, FC> = {

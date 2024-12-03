@@ -6,7 +6,7 @@ export type InputColor = 'purple' | 'blue' | 'base'
 export const INPUT_COLOR: Record<InputColor, string> = {
   purple: 'bg-violet-50',
   blue: 'bg-blue-50',
-  base: 'bg-gray-50',
+  base: 'bg-zinc-50',
 }
 
 export type ValueInput = React.ComponentPropsWithoutRef<'div'> & {

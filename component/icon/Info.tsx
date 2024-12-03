@@ -5,7 +5,7 @@ export type InfoIconInput = {
 }
 
 export default function InfoIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-500',
+  colorClassName = 'fill-zinc-800 dark:fill-zinc-500',
 }: InfoIconInput) {
   return (
     <svg

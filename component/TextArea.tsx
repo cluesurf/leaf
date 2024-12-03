@@ -55,7 +55,7 @@ export default function TextArea({
       className={clsx(
         className,
         rounded,
-        'resize-none p-16 bg-gray-50 h-20vh w-full',
+        'resize-none p-16 bg-zinc-50 h-20vh w-full',
         loading ? 'opacity-50' : undefined,
       )}
       value={value}

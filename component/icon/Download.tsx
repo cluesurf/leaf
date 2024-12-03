@@ -5,7 +5,7 @@ export type DownloadIconInput = {
 }
 
 export default function DownloadIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-100',
+  colorClassName = 'fill-zinc-800 dark:fill-zinc-100',
 }: DownloadIconInput) {
   return (
     <svg

@@ -135,24 +135,24 @@ export default function Layout({
 
   return (
     <>
-      <div className="px-4 bg-gray-50 dark:bg-gray-950 !z-3000 w-full fixed top-0 dark:shadow-3xl-dark shadow-metal">
+      <div className="px-4 bg-zinc-50 dark:bg-zinc-950 !z-3000 w-full fixed top-0 dark:shadow-3xl-dark shadow-metal dark:shadow-metal-dark">
         {top}
       </div>
       <ViewportLayout3Section
         state={layout}
         scrollerRef={scrollerRef}
-        middleClassName="bg-white dark:bg-gray-950"
+        middleClassName="bg-white dark:bg-black"
         minHeightClass="min-h-screen"
         left={
           leftIsHidden ? undefined : (
-            <div className="h-full w-full bg-gray-100 dark:bg-gray-900">
+            <div className="h-full w-full bg-zinc-100 dark:bg-zinc-900">
               {leftContent}
             </div>
           )
         }
         right={
           rightIsHidden ? undefined : (
-            <div className="h-full w-full bg-gray-100 dark:bg-gray-900">
+            <div className="h-full w-full bg-zinc-100 dark:bg-zinc-900">
               {right}
             </div>
           )
@@ -163,7 +163,7 @@ export default function Layout({
           </main>
         }
       />
-      <div className="px-4 bg-gray-50 dark:bg-gray-950 !z-3000 w-full fixed bottom-0 dark:shadow-3xl-dark shadow-metal-bottom">
+      <div className="px-4 bg-zinc-50 dark:bg-zinc-950 !z-3000 w-full fixed bottom-0 dark:shadow-3xl-dark shadow-metal-bottom dark:shadow-metal-bottom-dark">
         {bottom}
       </div>
     </>

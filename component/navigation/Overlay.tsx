@@ -14,7 +14,7 @@ export default function NavigationOverlay({
 }: NavigationOverlayInput) {
   return (
     <div
-      className={`bg-gray-100 dark:bg-gray-700 overflow-auto fixed w-full z-4000 ${
+      className={`bg-zinc-100 dark:bg-zinc-700 overflow-auto fixed w-full z-4000 ${
         triggerPosition === 'bottom'
           ? 'top-0 bottom-0'
           : 'top-0 bottom-0'
@@ -22,7 +22,7 @@ export default function NavigationOverlay({
     >
       <div
         onClick={onClose}
-        className="p-12 absolute right-0 top-0 cursor-pointer z-4200 [&_path]:hover:fill-violet-500 [&_path]:transition-all"
+        className="p-12 absolute right-0 top-0 cursor-pointer z-4200 [&_path]:fine:hover:fill-violet-500 [&_path]:transition-all"
       >
         <span className="inline-block w-24 h-24">
           <CloseIcon />

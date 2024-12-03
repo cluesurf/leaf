@@ -39,7 +39,7 @@ export function useNavigation({
         form: 'action',
         trigger: (
           <div
-            className="flex [&_path]:stroke-gray-500 items-center cursor-pointer justify-center p-12 w-48 h-48 [&_path]:hover:stroke-violet-500 [&_path]:transition-all transition-all"
+            className="flex [&_path]:stroke-zinc-500 items-center cursor-pointer justify-center p-12 w-48 h-48 [&_path]:hover:stroke-violet-500 [&_path]:transition-all transition-all"
             onClick={onMenuOpen}
           >
             <span className="inline-block w-24 h-24">
@@ -86,7 +86,7 @@ export function useNavigation({
   return {
     top: (
       <NavigationTop
-        backgroundClassName="px-4 bg-gray-50 dark:bg-gray-950 !z-3000"
+        backgroundClassName="px-4 bg-zinc-50 dark:bg-zinc-950 !z-3000"
         {...navigation.top}
       />
     ),
@@ -95,7 +95,7 @@ export function useNavigation({
         {...navigation.bottom}
         backgroundClassName={clsx(
           bottomNavigationClassName,
-          `px-4 bg-gray-50 !dark:bg-gray-950 !z-3000`,
+          `px-4 bg-zinc-50 !dark:bg-zinc-950 !z-3000`,
         )}
       />
     ),

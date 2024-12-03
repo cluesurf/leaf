@@ -14,7 +14,7 @@ export default function Tooltip({
     <ReactTooltip
       id={id}
       place={place}
-      className="will-change-transform-opacity bg-gray-50 rounded-sm p-16"
+      className="will-change-transform-opacity bg-zinc-50 rounded-sm p-16"
     >
       {children}
     </ReactTooltip>

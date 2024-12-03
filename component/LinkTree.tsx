@@ -60,7 +60,7 @@ export function LinkTreeLink({
         ref={ref}
         className={clsx(
           lead ? 'text-violet-400' : undefined,
-          `block text-xs font-bold hover:bg-gray-200 hover:text-violet-400 dark:hover:bg-gray-800 transition-all duration-200 px-16 py-8 first:pt-16`,
+          `block text-xs font-bold hover:bg-zinc-200 hover:text-violet-400 dark:hover:bg-zinc-800 transition-all duration-200 px-16 py-8 first:pt-16`,
         )}
       >
         <span

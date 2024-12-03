@@ -8,8 +8,8 @@ const TextEditorInternal = lazy(() => import('./TextEditorInternal'))
 
 const THEME: Record<TextEditorTheme, Record<Mode, string>> = {
   gray: {
-    dark: `bg-gray-950`,
-    light: `bg-gray-100`,
+    dark: `bg-zinc-950`,
+    light: `bg-zinc-100`,
   },
   purple: {
     dark: `bg-violet-950`,

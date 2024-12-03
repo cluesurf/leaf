@@ -78,7 +78,7 @@ export default function FileDropzone({
         className,
         roundedClassName,
         colorClass,
-        `text-gray-950`,
+        `text-zinc-950`,
         'p-16 transition-all duration-200 relative cursor-pointer hover:opacity-70',
       )}
       {...getRootProps()}

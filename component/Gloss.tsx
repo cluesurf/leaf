@@ -44,7 +44,7 @@ export default function Gloss({
       )}
       <T
         tag="div"
-        className="text-base sm:text-base-large text-gray-600 italic"
+        className="text-base sm:text-base-large text-zinc-600 italic"
       >
         {english}
       </T>

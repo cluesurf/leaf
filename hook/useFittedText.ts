@@ -3,24 +3,20 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 interface UseFitTextOptions {
   minFontSize?: number
   maxFontSize?: number
-  resolution?: number
   fontFamily?: string
   fontWeight?: string | number
-  onFitComplete?: (fontSize: number) => void
-  mode?: 'single-line' | 'multi-line'
+  onFitComplete?: (fontSize: number, isMultiLine: boolean) => void
+  mode?: 'single-line' | 'multi-line' | 'adaptive'
   maxHeight?: number
+  multiLineFontSizeThreshold?: number
 }
 
 interface UseFitTextReturn {
   fontSize: number
   ref: React.MutableRefObject<HTMLDivElement | null>
   isFitting: boolean
+  isMultiLine: boolean
 }
-
-const canvas =
-  typeof window === 'undefined'
-    ? undefined
-    : document.createElement('canvas')
 
 const useFittedText = ({
   minFontSize = 16,
@@ -28,229 +24,149 @@ const useFittedText = ({
   fontFamily = 'inherit',
   fontWeight = 'normal',
   onFitComplete,
-  mode = 'single-line',
+  mode = 'adaptive',
   maxHeight,
+  multiLineFontSizeThreshold = 32,
 }: UseFitTextOptions = {}): UseFitTextReturn => {
   const [fontSize, setFontSize] = useState(maxFontSize)
-  const [isFitting, setIsFitting] = useState(true)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const previousBestFit = useRef<number | null>(null)
+  const [isFitting, setIsFitting] = useState(false)
+  const [isMultiLine, setIsMultiLine] = useState(false)
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const measureRef = useRef<HTMLDivElement | null>(null)
 
-  const getLineMetrics = useCallback(
-    (text: string, fontSize: number, maxWidth: number) => {
-      if (!canvas)
-        return { lines: 1, maxLineWidth: 0, height: fontSize }
+  const measure = useCallback(
+    (size: number, singleLine: boolean) => {
+      const container = containerRef.current
+      const parent = container?.parentElement
+      if (!container || !parent) return false
 
-      const context = canvas.getContext('2d')
-      if (!context)
-        return { lines: 1, maxLineWidth: 0, height: fontSize }
+      // Create or get measurement div
+      if (!measureRef.current) {
+        measureRef.current = document.createElement('div')
+        document.body.appendChild(measureRef.current)
+      }
+      const measure = measureRef.current
 
-      context.font = `${fontWeight} ${fontSize}px ${fontFamily}`
-      const lineHeight = fontSize * 1.2
-      const words = text.trim().split(/\s+/)
+      // Copy styles that affect size
+      const computedStyle = window.getComputedStyle(container)
+      measure.style.cssText = `
+      position: absolute !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      contain: layout paint !important;
+      font-family: ${computedStyle.fontFamily};
+      font-weight: ${computedStyle.fontWeight};
+      letter-spacing: ${computedStyle.letterSpacing};
+      text-transform: ${computedStyle.textTransform};
+      padding: ${computedStyle.padding};
+      width: ${singleLine ? 'auto' : `${parent.clientWidth}px`};
+      white-space: ${singleLine ? 'nowrap' : 'normal'};
+      font-size: ${size}px;
+    `
+      measure.textContent = container.textContent
 
-      if (words.length === 0)
-        return { lines: 1, maxLineWidth: 0, height: lineHeight }
-
-      let lines = 1
-      let currentLine = words[0]
-      let maxLineWidth = context.measureText(currentLine).width
-
-      for (let i = 1; i < words.length; i++) {
-        const word = words[i]
-        const testLine = `${currentLine} ${word}`
-        const testWidth = context.measureText(testLine).width
-
-        if (testWidth <= maxWidth) {
-          currentLine = testLine
-          maxLineWidth = Math.max(maxLineWidth, testWidth)
-        } else {
-          lines++
-          currentLine = word
-          maxLineWidth = Math.max(
-            maxLineWidth,
-            context.measureText(word).width,
-          )
-        }
+      // For single line, just check if the content width fits
+      if (singleLine) {
+        return measure.scrollWidth <= parent.clientWidth
       }
 
-      return {
-        lines,
-        maxLineWidth,
-        height: lines * lineHeight,
-      }
-    },
-    [fontFamily, fontWeight],
-  )
-
-  const measureText = useCallback(
-    (
-      text: string,
-      fontSize: number,
-    ): { width: number; height: number } => {
-      if (!canvas) return { width: 0, height: 0 }
-
-      const context = canvas.getContext('2d')
-      if (!context) return { width: 0, height: 0 }
-
-      context.font = `${fontWeight} ${fontSize}px ${fontFamily}`
-
-      if (mode === 'single-line') {
-        const metrics = context.measureText(text)
-        return { width: metrics.width, height: fontSize }
-      }
-
-      const containerWidth = containerRef.current?.clientWidth || 0
-      if (containerWidth === 0) return { width: 0, height: 0 }
-
-      const { maxLineWidth, height } = getLineMetrics(
-        text,
-        fontSize,
-        containerWidth,
+      // For multiline, check both width and height
+      return (
+        measure.scrollWidth <= parent.clientWidth &&
+        measure.scrollHeight <= (maxHeight || parent.clientHeight)
       )
-
-      return {
-        width: maxLineWidth,
-        height,
-      }
     },
-    [fontFamily, fontWeight, mode, getLineMetrics],
+    [maxHeight],
   )
 
-  const findFittingFontSize = useCallback(() => {
+  const fitText = useCallback(() => {
     const container = containerRef.current
-    if (!container) return
+    if (!container?.parentElement || !container.textContent?.trim())
+      return
 
-    const text = container.textContent || ''
-    if (!text.trim()) return
+    // Binary search for single-line if not in multi-line mode
+    if (mode !== 'multi-line') {
+      let low = minFontSize
+      let high = maxFontSize
+      let bestSize = minFontSize
 
-    const containerWidth = container.clientWidth
-    const containerHeight = maxHeight || container.clientHeight
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2)
+        if (measure(mid, true)) {
+          bestSize = mid
+          low = mid + 1 // Try bigger
+        } else {
+          high = mid - 1 // Try smaller
+        }
+      }
 
-    // Start with previous best fit if available
-    let low = minFontSize
-    let high = previousBestFit.current || maxFontSize
-    let bestFit = minFontSize
-
-    // If previous best fit doesn't work, expand search range
-    if (previousBestFit.current) {
-      const prevMetrics = measureText(text, previousBestFit.current)
+      // If we found a good single-line size, use it
       if (
-        prevMetrics.width > containerWidth ||
-        prevMetrics.height > containerHeight
-      ) {
-        high = previousBestFit.current
-      } else {
-        low = previousBestFit.current
-        high = maxFontSize
-      }
-    }
-
-    // Binary search with dynamic adjustments
-    while (low <= high) {
-      const mid = Math.floor(low + (high - low) / 2)
-      const { width, height } = measureText(text, mid)
-
-      const fits =
+        bestSize >= multiLineFontSizeThreshold ||
         mode === 'single-line'
-          ? width <= containerWidth
-          : width <= containerWidth && height <= containerHeight
+      ) {
+        container.style.fontSize = `${bestSize}px`
+        container.style.whiteSpace = 'nowrap'
+        setFontSize(bestSize)
+        setIsMultiLine(false)
+        return
+      }
+    }
 
-      if (fits) {
-        bestFit = mid
-        // Be more aggressive growing when we're far from maxFontSize
-        const growthFactor = Math.max(
-          1,
-          Math.floor((maxFontSize - mid) / 10),
-        )
-        low = mid + growthFactor
+    // If we get here, try multi-line
+    let low = minFontSize
+    let high = maxFontSize
+    let bestSize = minFontSize
+
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2)
+      if (measure(mid, false)) {
+        bestSize = mid
+        low = mid + 1 // Try bigger
       } else {
-        // Be more conservative shrinking when we're close to minFontSize
-        const shrinkFactor = Math.max(
-          1,
-          Math.floor((mid - minFontSize) / 10),
-        )
-        high = mid - shrinkFactor
+        high = mid - 1 // Try smaller
       }
     }
 
-    // Final validation and adjustment
-    const finalMetrics = measureText(text, bestFit)
-    if (
-      finalMetrics.width > containerWidth ||
-      finalMetrics.height > containerHeight
-    ) {
-      while (bestFit > minFontSize) {
-        bestFit--
-        const metrics = measureText(text, bestFit)
-        if (
-          metrics.width <= containerWidth &&
-          metrics.height <= containerHeight
-        ) {
-          break
-        }
-      }
-    } else {
-      while (bestFit < maxFontSize) {
-        const nextSize = bestFit + 1
-        const metrics = measureText(text, nextSize)
-        if (
-          metrics.width > containerWidth ||
-          metrics.height > containerHeight
-        ) {
-          break
-        }
-        bestFit = nextSize
-      }
-    }
-
-    previousBestFit.current = bestFit
-    setFontSize(bestFit)
-    setIsFitting(false)
-    onFitComplete?.(bestFit)
+    container.style.fontSize = `${bestSize}px`
+    container.style.whiteSpace = 'normal'
+    setFontSize(bestSize)
+    setIsMultiLine(true)
   }, [
+    measure,
     minFontSize,
     maxFontSize,
-    measureText,
-    onFitComplete,
     mode,
-    maxHeight,
+    multiLineFontSizeThreshold,
   ])
 
   useEffect(() => {
     const container = containerRef.current
-    if (!container) return
+    if (!container?.parentElement) return
 
-    const resizeObserver = new ResizeObserver(() => {
-      setIsFitting(true)
-      findFittingFontSize()
-    })
+    const resizeObserver = new ResizeObserver(fitText)
+    const mutationObserver = new MutationObserver(fitText)
 
-    const mutationObserver = new MutationObserver(() => {
-      setIsFitting(true)
-      findFittingFontSize()
-    })
-
-    resizeObserver.observe(container)
+    resizeObserver.observe(container.parentElement)
     mutationObserver.observe(container, {
       childList: true,
       characterData: true,
       subtree: true,
     })
 
-    findFittingFontSize()
+    fitText()
 
     return () => {
       resizeObserver.disconnect()
       mutationObserver.disconnect()
+      if (measureRef.current) {
+        measureRef.current.remove()
+        measureRef.current = null
+      }
     }
-  }, [findFittingFontSize])
+  }, [fitText])
 
-  return {
-    fontSize,
-    ref: containerRef,
-    isFitting,
-  } as const
+  return { fontSize, ref: containerRef, isFitting, isMultiLine }
 }
 
 export default useFittedText

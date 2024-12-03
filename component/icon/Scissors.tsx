@@ -5,7 +5,7 @@ export type ScissorsIconInput = {
 }
 
 export default function ScissorsIcon({
-  colorClassName = 'fill-gray-800 dark:fill-gray-100',
+  colorClassName = 'fill-zinc-800 dark:fill-zinc-100',
 }: ScissorsIconInput) {
   return (
     <svg

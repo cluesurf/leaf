@@ -82,10 +82,10 @@ export function ToastProvider({
 }
 
 const COLOR: Record<string, string> = {
-  green: 'bg-emerald-500 text-slate-50',
-  red: 'bg-rose-400 text-slate-50',
-  base: 'bg-gray-600 text-slate-50',
-  blue: 'bg-blue-400 text-slate-50',
+  green: 'bg-emerald-500 text-zinc-50',
+  red: 'bg-rose-400 text-zinc-50',
+  base: 'bg-zinc-600 text-zinc-50',
+  blue: 'bg-blue-400 text-zinc-50',
 }
 
 export function useToast() {

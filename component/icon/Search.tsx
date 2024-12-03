@@ -5,7 +5,7 @@ export type SearchIconInput = {
 }
 
 export default function SearchIcon({
-  colorClassName = 'stroke-gray-800 dark:stroke-gray-400',
+  colorClassName = 'stroke-zinc-800 dark:stroke-zinc-400',
 }: SearchIconInput) {
   return (
     <svg

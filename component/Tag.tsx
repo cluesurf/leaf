@@ -6,7 +6,7 @@ export const TAG_COLOR = {
   blue: 'bg-blue-500 text-white dark:bg-blue-800 dark:text-blue-200',
   green:
     'bg-emerald-500 text-white dark:bg-emerald-800 dark:text-emerald-200',
-  gray: 'bg-gray-500 text-white dark:bg-gray-800 dark:text-gray-200',
+  gray: 'bg-zinc-500 text-white dark:bg-zinc-800 dark:text-zinc-200',
 }
 
 export type TagColor = keyof typeof TAG_COLOR

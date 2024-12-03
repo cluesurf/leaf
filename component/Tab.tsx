@@ -62,8 +62,8 @@ export function TabsList({ className, ...props }: Tabs.TabsListProps) {
       className={clsx(
         className,
         'p-12',
-        'bg-gray-100',
-        'dark:bg-gray-700',
+        'bg-zinc-100',
+        'dark:bg-zinc-700',
         'inline-block',
         'rounded-sm',
       )}

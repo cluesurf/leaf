@@ -42,7 +42,7 @@ function Container({
       state={layout}
       backgroundClassName={clsx(
         backgroundClassName,
-        `bg-gray-50 w-full dark:bg-gray-900 fixed bottom-0 z-1000 ${
+        `bg-zinc-50 w-full dark:bg-zinc-900 fixed bottom-0 z-1000 ${
           !drop || forceShadow
             ? `dark:shadow-3xl-dark shadow-metal-bottom`
             : ''

@@ -28,7 +28,7 @@ export default function Switch({
         id={id}
         className={clsx(
           size === 'small' ? 'w-48 h-20' : 'w-64 h-32',
-          'bg-gray-200 dark:bg-gray-700 transition-all rounded-large-circle relative radix-state-checked:bg-emerald-400 dark:radix-state-checked:bg-emerald-700',
+          'bg-zinc-200 dark:bg-zinc-700 transition-all rounded-large-circle relative radix-state-checked:bg-emerald-400 dark:radix-state-checked:bg-emerald-700',
         )}
       >
         <RadixSwitch.Thumb
@@ -36,7 +36,7 @@ export default function Switch({
             size === 'small'
               ? `w-14 h-14 radix-state-checked:translate-x-30 translate-x-4`
               : `w-24 h-24 radix-state-checked:translate-x-36 translate-x-4`,
-            'radix-state-checked:transform block bg-white dark:bg-gray-400 radix-state-checked:bg-white rounded-large-circle transition-all duration-100 transform will-change-transform',
+            'radix-state-checked:transform block bg-white dark:bg-zinc-400 radix-state-checked:bg-white rounded-large-circle transition-all duration-100 transform will-change-transform',
           )}
         />
       </RadixSwitch.Root>

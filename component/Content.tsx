@@ -55,7 +55,7 @@ export function Li({ children, className, ...props }: LiInput) {
       tag="li"
       className={clsx(
         className,
-        'font-medium text-base sm:text-base-large relative m-0 ml-24 p-0 list-item mb-8 [&>ul]:pl-24 [&>ol]:pl-24 [&>ul>li]:ml-0 [&>ol>li]:ml-0 text-gray-700 dark:text-gray-400 [&&>p]:inline-block [&&>p]:pointer-events-auto [&&>p]:mb-0 [&&>p]:px-0',
+        'font-medium text-base sm:text-base-large relative m-0 ml-24 p-0 list-item mb-8 [&>ul]:pl-24 [&>ol]:pl-24 [&>ul>li]:ml-0 [&>ol>li]:ml-0 text-zinc-700 dark:text-zinc-400 [&&>p]:inline-block [&&>p]:pointer-events-auto [&&>p]:mb-0 [&&>p]:px-0',
       )}
     >
       {children}
@@ -108,8 +108,8 @@ export function Code({ children, className, ...props }: CodeInput) {
         'inline-block bg-inherit text-inherit relative px-8 py-2 font-medium text-base sm:text-base-large',
       )}
     >
-      <span className="bg-gray-100 rounded-sm absolute left-0 right-0 top-0 bottom-0" />
-      <T className="relative font-medium text-base sm:text-base-large text-gray-700">
+      <span className="bg-zinc-100 rounded-sm absolute left-0 right-0 top-0 bottom-0" />
+      <T className="relative font-medium text-base sm:text-base-large text-zinc-700">
         {children}
       </T>
     </T>
@@ -143,7 +143,7 @@ export function Pre({ children, className, ...props }: PreInput) {
       tag="pre"
       className={clsx(
         className,
-        'shadow-normal p-16 block [&>code]:bg-none [&>code]:p-0 bg-gray-100 whitespace-pre w-full mb-48 overflow-auto font-medium text-base sm:text-base-large',
+        'shadow-normal p-16 block [&>code]:bg-none [&>code]:p-0 bg-zinc-100 whitespace-pre w-full mb-48 overflow-auto font-medium text-base sm:text-base-large',
       )}
     >
       {children}
@@ -173,7 +173,7 @@ export function HR({ className }: { className?: string }) {
     <hr
       className={clsx(
         className,
-        'relative h-16 bg-gray-50 dark:bg-gray-900',
+        'relative h-16 bg-zinc-50 dark:bg-zinc-900',
       )}
     ></hr>
   )
@@ -237,8 +237,8 @@ export function P({
             ? 'text-right'
             : undefined,
         type === 'secondary'
-          ? 'text-gray-500 dark:text-gray-600'
-          : 'text-gray-700 dark:text-gray-400 dark:font-medium',
+          ? 'text-zinc-500 dark:text-zinc-600'
+          : 'text-zinc-700 dark:text-zinc-400 dark:font-medium',
       )}
     >
       {children}
@@ -256,7 +256,7 @@ export type THInput = React.ComponentPropsWithoutRef<'th'> & {
 
 export function TH({ children, className, ...props }: THInput) {
   const list = [
-    'shadow-thead dark:shadow-thead-dark bg-gray-100 dark:bg-gray-900 border-0 border-r-4 last:border-r-0 border-solid border-gray-200 dark:border-gray-950 text-gray-700 dark:text-gray-300 font-bold text-base sm:text-base-large h-full px-16 py-8',
+    'shadow-thead dark:shadow-thead-dark bg-zinc-100 dark:bg-zinc-900 border-0 border-r-4 last:border-r-0 border-solid border-zinc-200 dark:border-zinc-950 text-zinc-700 dark:text-zinc-300 font-bold text-base sm:text-base-large h-full px-16 py-8',
   ]
   return (
     <th
@@ -329,7 +329,7 @@ export function TBody({ className, children, ...props }: TBodyInput) {
       {...props}
       className={clsx(
         className,
-        `h-full [&>tr:nth-child(odd)]:bg-gray-50 [&>tr:nth-child(even)]:bg-gray-100 [&>tr:nth-child(odd)]:dark:bg-gray-900 [&>tr]:dark:text-gray-300 [&>tr:nth-child(even)]:dark:bg-gray-800`,
+        `h-full [&>tr:nth-child(odd)]:bg-zinc-50 [&>tr:nth-child(even)]:bg-zinc-100 [&>tr:nth-child(odd)]:dark:bg-zinc-900 [&>tr]:dark:text-zinc-300 [&>tr:nth-child(even)]:dark:bg-zinc-800`,
       )}
     >
       {children}
@@ -384,7 +384,7 @@ export function TR({ className, children, ...props }: TRInput) {
       {...props}
       className={clsx(
         className,
-        `h-full border-r-0 last-child:border-r-0 border-0 border-solid border-gray-300 dark:border-gray-950 dark:text-gray-300`,
+        `h-full border-r-0 last-child:border-r-0 border-0 border-solid border-zinc-300 dark:border-zinc-950 dark:text-zinc-300`,
       )}
     >
       {children}
@@ -406,7 +406,7 @@ export function TD({
   ...props
 }: TDInput) {
   const list = [
-    'border-b-0 border-t-0 last:border-r-0 border-l-0 border-r-4 border-solid border-gray-200 dark:border-gray-950 h-full font-medium text-base sm:text-base-large text-gray-700 dark:text-gray-400 bg-inherit',
+    'border-b-0 border-t-0 last:border-r-0 border-l-0 border-r-4 border-solid border-zinc-200 dark:border-zinc-950 h-full font-medium text-base sm:text-base-large text-zinc-700 dark:text-zinc-400 bg-inherit',
     wrap ? undefined : `whitespace-pre`,
     className,
   ]
@@ -483,7 +483,7 @@ export function H1({
       leading="heading"
       className={clsx(
         fontSizeClassName,
-        'uppercase w-full scale-y-80 tracking-wide-015 font-bold text-gray-800 dark:text-gray-400 px-16',
+        'uppercase w-full scale-y-80 tracking-wide-015 font-bold text-zinc-800 dark:text-zinc-400 px-16',
         className,
         align === 'center'
           ? `text-center`
@@ -521,7 +521,7 @@ export function H2({
       className={clsx(
         className,
         fontSizeClassName,
-        'pt-8 mb-8 mt-16 px-16 font-semibold uppercase w-full scale-y-80 tracking-narrow-05 text-gray-700 dark:text-gray-400',
+        'pt-8 mb-8 mt-16 px-16 font-semibold uppercase w-full scale-y-80 tracking-narrow-05 text-zinc-700 dark:text-zinc-400',
         align === 'center'
           ? `text-center`
           : align === 'right'
@@ -564,7 +564,7 @@ export function H3({
           : align === 'right'
             ? 'text-right'
             : undefined,
-        'mb-8 mt-16 uppercase w-full scale-y-80 font-semibold tracking-wide-015 pt-8 px-16 text-gray-900 dark:text-gray-400',
+        'mb-8 mt-16 uppercase w-full scale-y-80 font-semibold tracking-wide-015 pt-8 px-16 text-zinc-900 dark:text-zinc-400',
         border ? `border-b-4` : undefined,
       )}
     >
@@ -594,7 +594,7 @@ export function H4({
       className={clsx(
         className,
         fontSizeClassName,
-        'font-semibold mb-16 px-16 text-gray-950 dark:text-gray-400',
+        'font-semibold mb-16 px-16 text-zinc-950 dark:text-zinc-400',
       )}
     >
       {children}
@@ -623,7 +623,7 @@ export function H5({
       className={clsx(
         fontSizeClassName,
         className,
-        'font-semibold w-full mb-16 px-16 text-gray-950 dark:text-gray-400',
+        'font-semibold w-full mb-16 px-16 text-zinc-950 dark:text-zinc-400',
       )}
     >
       {children}
@@ -652,7 +652,7 @@ export function H6({
       className={clsx(
         fontSizeClassName,
         className,
-        'font-semibold w-full mb-16 px-16 text-gray-950 dark:text-gray-400',
+        'font-semibold w-full mb-16 px-16 text-zinc-950 dark:text-zinc-400',
       )}
     >
       {children}

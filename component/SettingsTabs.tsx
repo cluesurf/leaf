@@ -22,13 +22,13 @@ export default function SettingsTabs({
         aria-label="Settings"
       >
         <Tabs.Trigger
-          className="px-16 py-8 flex-1 text-center bg-gray-50 radix-state-active:bg-gray-200"
+          className="px-16 py-8 flex-1 text-center bg-zinc-50 radix-state-active:bg-zinc-200"
           value="formTab"
         >
           <T>Form</T>
         </Tabs.Trigger>
         <Tabs.Trigger
-          className="px-16 py-8 flex-1 text-center bg-gray-50 radix-state-active:bg-gray-200"
+          className="px-16 py-8 flex-1 text-center bg-zinc-50 radix-state-active:bg-zinc-200"
           value="codeTab"
         >
           <T>Code</T>
