@@ -1,6 +1,6 @@
 {
   "name": "@termsurf/leaf",
-  "version": "0.5.14",
+  "version": "0.5.20",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -10,6 +10,7 @@
     "host": "pnpm make && cd host && npm publish --access=public"
   },
   "dependencies": {
+    "@codemirror/basic-setup": "^0.20.0",
     "@codemirror/commands": "^6.7.1",
     "@codemirror/highlight": "^0.19.8",
     "@codemirror/lang-cpp": "^6.0.2",

@@ -483,7 +483,7 @@ export function H1({
       leading="heading"
       className={clsx(
         fontSizeClassName,
-        'mb-8 uppercase w-full scale-y-80 tracking-wide-015 font-bold text-gray-800 dark:text-gray-400 px-16',
+        'uppercase w-full scale-y-80 tracking-wide-015 font-bold text-gray-800 dark:text-gray-400 px-16',
         className,
         align === 'center'
           ? `text-center`
@@ -521,7 +521,7 @@ export function H2({
       className={clsx(
         className,
         fontSizeClassName,
-        'pt-8 mb-8 mx-16 font-semibold uppercase w-full scale-y-80 tracking-narrow-05 text-gray-700 dark:text-gray-300',
+        'pt-8 mb-8 mt-16 px-16 font-semibold uppercase w-full scale-y-80 tracking-narrow-05 text-gray-700 dark:text-gray-300',
         align === 'center'
           ? `text-center`
           : align === 'right'
@@ -548,7 +548,7 @@ export function H3({
   children,
   link,
   align = 'left',
-  border = true,
+  border = false,
   ...props
 }: H3Input) {
   return (
@@ -564,7 +564,7 @@ export function H3({
           : align === 'right'
             ? 'text-right'
             : undefined,
-        'mb-8 uppercase w-full scale-y-80 font-semibold tracking-wide-015 pt-8 mx-16 text-gray-900 dark:text-gray-400',
+        'mb-8 mt-16 uppercase w-full scale-y-80 font-semibold tracking-wide-015 pt-8 px-16 text-gray-900 dark:text-gray-400',
         border ? `border-b-4` : undefined,
       )}
     >

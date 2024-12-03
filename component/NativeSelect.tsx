@@ -87,7 +87,7 @@ function NativeSelect<T extends string = string>(
         size === 'small' ? 'h-32' : 'h-48',
         'relative w-full min-w-128',
         backgroundColorClass,
-        `shadow-small1`,
+        `shadow-small1 font-bold`,
       )}
     >
       <div

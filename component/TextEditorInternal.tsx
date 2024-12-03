@@ -16,6 +16,8 @@ import {
 // https://discuss.codemirror.net/t/custom-language-with-syntax-highlighting/6786/4
 import { defaultKeymap } from '@codemirror/commands'
 import { javascript } from '@codemirror/lang-javascript'
+import { history, historyKeymap } from '@codemirror/commands'
+import { indentOnInput } from '@codemirror/language'
 
 import { cppLanguage } from '@codemirror/lang-cpp'
 import { htmlLanguage } from '@codemirror/lang-html'
@@ -85,6 +87,13 @@ import {
   TextEditorTheme,
 } from './TextEditor.types'
 import { grayTheme } from '~/constant/codemirror/gray'
+
+const basicSetup = [
+  history(),
+  keymap.of(defaultKeymap),
+  keymap.of(historyKeymap),
+  indentOnInput(),
+]
 
 export const TEXT_EDITOR_LANGUAGE: Record<
   TextEditorLanguage,
@@ -179,7 +188,7 @@ export default function TextEditor({
   const themeMode = useDarkMode()
 
   if (extension) {
-    extensions.push(color, extension)
+    extensions.push(color, ...basicSetup, extension)
   }
 
   useEffect(() => {
