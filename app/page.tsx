@@ -899,8 +899,8 @@ const FitText: React.FC<FitTextProps> = ({
 }) => {
   const { fontSize, ref, isFitting, isMultiLine } = useFittedText({
     minFontSize: 32,
-    maxFontSize: 132,
-    multiLineFontSizeThreshold: 64,
+    maxFontSize: 80,
+    multiLineFontSizeThreshold: 48,
     fontFamily,
     fontWeight,
     mode: 'adaptive',

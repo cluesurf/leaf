@@ -206,7 +206,7 @@ export default function FlowGrid<T>({
       </div>
       <div
         className={clsx(
-          'whitespace-nowrap transition-opacity',
+          'whitespace-nowrap transition',
           isMeasured ? 'opacity-1' : 'opacity-0',
         )}
       >

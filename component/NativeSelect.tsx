@@ -52,17 +52,17 @@ function NativeSelect<T extends string = string>(
       inputClassName = `opacity-0 ${fontClassName}-fallback`
       break
     case 'base:visible':
-      inputClassName = `opacity-1 transition-opacity duration-300 ${fontClassName}-fallback`
+      inputClassName = `opacity-1 transition duration-300 ${fontClassName}-fallback`
       break
     case 'base:exit':
-      inputClassName = `opacity-0 transition-opacity duration-300 ${fontClassName}-fallback`
+      inputClassName = `opacity-0 transition duration-300 ${fontClassName}-fallback`
       transitionEnd = handleTransitionOutEnd
       break
     case 'head:enter':
-      inputClassName = `opacity-1 transition-opacity duration-500 ${fontClassName}`
+      inputClassName = `opacity-1 transition duration-500 ${fontClassName}`
       break
     case 'head:visible':
-      inputClassName = `opacity-1 transition-opacity duration-300 ${fontClassName}`
+      inputClassName = `opacity-1 transition duration-300 ${fontClassName}`
       break
   }
 

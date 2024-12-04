@@ -253,7 +253,7 @@ export default function Text({
           style={actualStyles}
           className={clsx(
             className,
-            // animated && `transition-opacity duration-500`,
+            // animated && `transition duration-500`,
             `opacity-0`,
             `${fontClassName}-fallback`,
           )}
@@ -268,8 +268,8 @@ export default function Text({
           style={actualStyles}
           className={clsx(
             className,
-            // animated && `transition-opacity duration-500`,
-            `opacity-1 transition-opacity duration-300`,
+            // animated && `transition duration-500`,
+            `opacity-1 transition duration-300`,
             `${fontClassName}-fallback`,
           )}
         >
@@ -284,7 +284,7 @@ export default function Text({
           onTransitionEnd={handleTransitionOutEnd}
           className={clsx(
             className,
-            `transition-opacity duration-300`,
+            `transition duration-300`,
             `opacity-0`,
             `${fontClassName}-fallback`,
           )}
@@ -299,7 +299,7 @@ export default function Text({
           style={actualStyles}
           className={clsx(
             className,
-            `transition-opacity duration-500`,
+            `transition duration-500`,
             `opacity-1`,
             fontClassName,
           )}
@@ -314,7 +314,7 @@ export default function Text({
           style={actualStyles}
           className={clsx(
             className,
-            `opacity-1 transition-opacity duration-300`,
+            `opacity-1 transition duration-300`,
             fontClassName,
           )}
         >

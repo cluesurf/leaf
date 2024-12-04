@@ -439,7 +439,7 @@ export function A({ children, href, rel, target, ...props }: AInput) {
     'hover:opacity-70',
     'active:text-blue-500',
     'active:hover:opacity-70',
-    'transition-opacity',
+    'transition',
     'duration-200',
     // X.borderBottomDotted,
     // X.borderColorviolet,

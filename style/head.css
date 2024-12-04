@@ -449,7 +449,7 @@ body {
 }
 
 ::selection {
-  background-color: #a7f3d0;
+  background-color: rgba(167, 243, 208, 0.8);
   color: rgb(24, 24, 27);
 }
 
@@ -1058,14 +1058,9 @@ time {
   }
 }
 
-::selection,
-.light-selection *::selection {
-  background-color: #a7f3d0;
-}
-
 @media (prefers-color-scheme: dark) {
   ::selection {
-    background-color: rgb(4, 120, 87);
+    background-color: rgba(4, 120, 87, 0.8);
   }
 
   * {
