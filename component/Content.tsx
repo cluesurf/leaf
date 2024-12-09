@@ -232,15 +232,15 @@ export function P({
         className,
         'text-base sm:text-base-large',
         'mb-32 px-16 sm:px-32',
-        'font-medium',
         align === 'center'
           ? `text-center`
           : align === 'right'
             ? 'text-right'
             : undefined,
+        'dark:font-medium',
         type === 'secondary'
-          ? 'text-zinc-500 dark:text-zinc-500 dark:font-medium'
-          : 'text-zinc-700 dark:text-zinc-300 dark:font-medium',
+          ? 'text-zinc-500 dark:text-zinc-500'
+          : 'text-zinc-700 dark:text-zinc-300',
       )}
     >
       {children}

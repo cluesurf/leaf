@@ -20,7 +20,7 @@ import React, {
 const DEFAULT_FONT_CONFIG = {}
 
 const processors = {
-  tone: (text: string) => tone.make(text),
+  tone: (text: string) => tone(text),
 }
 
 let _checkIsWaiting
