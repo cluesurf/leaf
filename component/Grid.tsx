@@ -78,7 +78,7 @@ export function Item({
   )
 }
 
-type GridInput = {
+export type GridInput = {
   className?: string
   rowClassName?: string
   maxColumns: number

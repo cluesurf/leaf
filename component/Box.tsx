@@ -5,18 +5,11 @@ type SpacingType = string | number
 type FlexType = 1 | 'auto' | 'initial' | 'none' | string | number
 type Overflow = 'auto' | 'hidden' | 'visible' | 'scroll'
 type Position = 'static' | 'fixed' | 'absolute' | 'relative' | 'sticky'
-type Opacity = number
-type Rounded =
-  | 'none'
-  | 'sm'
-  | 'md'
-  | 'lg'
-  | 'xl'
-  | '2xl'
-  | '3xl'
-  | 'full'
+type Opacity = 0 | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100
+type Rounded = 'none' | 'base' | 'circle'
+type Transition = 'colors' | 'opacity' | 'all' | 'base'
 
-interface BoxProps {
+export type BoxProps = {
   children: React.ReactNode
   // Display & Layout
   display?:
@@ -29,6 +22,7 @@ interface BoxProps {
     | 'hidden'
   position?: Position
   zIndex?: number | 'auto'
+  layout?: 'vertical' | 'horizontal'
 
   // Flexbox
   direction?: 'row' | 'row-reverse' | 'col' | 'col-reverse'
@@ -37,33 +31,34 @@ interface BoxProps {
   flex?: FlexType
   wrap?: 'wrap' | 'nowrap' | 'wrap-reverse'
   gap?: SpacingType
+  transition?: Transition
 
   // Spacing
-  p?: SpacingType
-  px?: SpacingType
-  py?: SpacingType
-  pt?: SpacingType
-  pr?: SpacingType
-  pb?: SpacingType
-  pl?: SpacingType
-  m?: SpacingType
-  mx?: SpacingType
-  my?: SpacingType
-  mt?: SpacingType
-  mr?: SpacingType
-  mb?: SpacingType
-  ml?: SpacingType
+  padding?: SpacingType
+  paddingX?: SpacingType
+  paddingY?: SpacingType
+  paddingTop?: SpacingType
+  paddingRight?: SpacingType
+  paddingBottom?: SpacingType
+  paddingLeft?: SpacingType
+  margin?: SpacingType
+  marginX?: SpacingType
+  marginY?: SpacingType
+  marginTop?: SpacingType
+  marginRight?: SpacingType
+  marginBottom?: SpacingType
+  marginLeft?: SpacingType
 
   // Sizing
-  w?: SpacingType
-  h?: SpacingType
-  minW?: SpacingType
-  minH?: SpacingType
-  maxW?: SpacingType
-  maxH?: SpacingType
+  width?: SpacingType
+  height?: SpacingType
+  minWidth?: SpacingType
+  minHeight?: SpacingType
+  maxWidth?: SpacingType
+  maxHeight?: SpacingType
 
   // Visual
-  bg?: string
+  background?: string
   opacity?: Opacity
   rounded?: Rounded
   shadow?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'none'
@@ -78,6 +73,8 @@ interface BoxProps {
   // Interactivity
   cursor?: 'pointer' | 'default' | 'not-allowed' | 'wait' | 'text'
 
+  print?: 'hidden'
+
   // Misc
   className?: string
   style?: CSSProperties
@@ -86,6 +83,7 @@ interface BoxProps {
 const Box: React.FC<BoxProps> = ({
   children,
   display,
+  print,
   position,
   zIndex,
   direction,
@@ -94,27 +92,27 @@ const Box: React.FC<BoxProps> = ({
   flex,
   wrap,
   gap,
-  p,
-  px,
-  py,
-  pt,
-  pr,
-  pb,
-  pl,
-  m,
-  mx,
-  my,
-  mt,
-  mr,
-  mb,
-  ml,
-  w,
-  h,
-  minW,
-  minH,
-  maxW,
-  maxH,
-  bg,
+  padding,
+  paddingX,
+  paddingY,
+  paddingTop,
+  paddingRight,
+  paddingBottom,
+  paddingLeft,
+  margin,
+  marginX,
+  marginY,
+  marginTop,
+  marginRight,
+  marginBottom,
+  marginLeft,
+  width,
+  height,
+  minWidth,
+  minHeight,
+  maxWidth,
+  maxHeight,
+  background,
   opacity,
   rounded,
   shadow,
@@ -126,14 +124,22 @@ const Box: React.FC<BoxProps> = ({
   cursor,
   className,
   style,
+  transition,
+  layout,
 }) => {
+  const actualLayout =
+    layout === 'vertical'
+      ? 'flex flex-col'
+      : layout === 'horizontal'
+        ? 'flex'
+        : undefined
   const numericStyle: CSSProperties = {
-    width: typeof w === 'number' ? w : undefined,
-    height: typeof h === 'number' ? h : undefined,
-    minWidth: typeof minW === 'number' ? minW : undefined,
-    minHeight: typeof minH === 'number' ? minH : undefined,
-    maxWidth: typeof maxW === 'number' ? maxW : undefined,
-    maxHeight: typeof maxH === 'number' ? maxH : undefined,
+    width: typeof width === 'number' ? width : undefined,
+    height: typeof height === 'number' ? height : undefined,
+    minWidth: typeof minWidth === 'number' ? minWidth : undefined,
+    minHeight: typeof minHeight === 'number' ? minHeight : undefined,
+    maxWidth: typeof maxWidth === 'number' ? maxWidth : undefined,
+    maxHeight: typeof maxHeight === 'number' ? maxHeight : undefined,
     zIndex: zIndex !== undefined ? zIndex : undefined,
     ...style,
   }
@@ -145,6 +151,8 @@ const Box: React.FC<BoxProps> = ({
         // Display & Layout
         display && `${display}`,
         position && `${position}`,
+        actualLayout,
+        print && `print:hidden`,
 
         // Flexbox
         direction && `flex-${direction}`,
@@ -153,38 +161,45 @@ const Box: React.FC<BoxProps> = ({
         flex !== undefined && `flex-${flex}`,
         wrap && `flex-${wrap}`,
         gap !== undefined && `gap-${gap}`,
+        transition !== undefined
+          ? transition === 'base'
+            ? 'transition'
+            : `transition-${transition}`
+          : undefined,
 
         // Spacing
-        p !== undefined && `p-${p}`,
-        px !== undefined && `px-${px}`,
-        py !== undefined && `py-${py}`,
-        pt !== undefined && `pt-${pt}`,
-        pr !== undefined && `pr-${pr}`,
-        pb !== undefined && `pb-${pb}`,
-        pl !== undefined && `pl-${pl}`,
-        m !== undefined && `m-${m}`,
-        mx !== undefined && `mx-${mx}`,
-        my !== undefined && `my-${my}`,
-        mt !== undefined && `mt-${mt}`,
-        mr !== undefined && `mr-${mr}`,
-        mb !== undefined && `mb-${mb}`,
-        ml !== undefined && `ml-${ml}`,
+        padding !== undefined && `p-${padding}`,
+        paddingX !== undefined && `px-${paddingX}`,
+        paddingY !== undefined && `py-${paddingY}`,
+        paddingTop !== undefined && `pt-${paddingTop}`,
+        paddingRight !== undefined && `pr-${paddingRight}`,
+        paddingBottom !== undefined && `pb-${paddingBottom}`,
+        paddingLeft !== undefined && `pl-${paddingLeft}`,
+        margin !== undefined && `m-${margin}`,
+        marginX !== undefined && `mx-${marginX}`,
+        marginY !== undefined && `my-${marginY}`,
+        marginTop !== undefined && `mt-${marginTop}`,
+        marginRight !== undefined && `mr-${marginRight}`,
+        marginBottom !== undefined && `mb-${marginBottom}`,
+        marginLeft !== undefined && `ml-${marginLeft}`,
 
         // Sizing
-        typeof w === 'string' && `w-${w}`,
-        typeof h === 'string' && `h-${h}`,
-        typeof minW === 'string' && `min-w-${minW}`,
-        typeof minH === 'string' && `min-h-${minH}`,
-        typeof maxW === 'string' && `max-w-${maxW}`,
-        typeof maxH === 'string' && `max-h-${maxH}`,
+        typeof width === 'string' && `w-${width}`,
+        typeof height === 'string' && `h-${height}`,
+        typeof minWidth === 'string' && `min-w-${minWidth}`,
+        typeof minHeight === 'string' && `min-h-${minHeight}`,
+        typeof maxWidth === 'string' && `max-w-${maxWidth}`,
+        typeof maxHeight === 'string' && `max-h-${maxHeight}`,
 
         // Visual
-        bg && `bg-${bg}`,
+        background && `bg-${background}`,
         opacity !== undefined && `opacity-${opacity}`,
         rounded && `rounded-${rounded}`,
         shadow && `shadow-${shadow}`,
         border &&
-          (typeof border === 'string' ? `border-${border}` : 'border'),
+          (typeof border === 'string'
+            ? `border-0 border-${border}`
+            : 'border'),
         borderColor && `border-${borderColor}`,
 
         // Overflow

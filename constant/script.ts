@@ -109,6 +109,13 @@ const SCRIPT: Record<ScriptName, ScriptFonts> = {
       modern: 'Noto Sans Mono',
     },
   },
+  emoji: {
+    default: 'modern',
+    selection: 'modern',
+    fonts: {
+      modern: 'Noto Emoji',
+    },
+  },
   balinese: {
     default: 'modern',
     selection: 'modern',

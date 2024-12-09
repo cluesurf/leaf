@@ -3,6 +3,7 @@
 import React, { HTMLProps, useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import T from './Text'
+import Link from 'next/link'
 
 export type BlockQuoteInput =
   React.ComponentPropsWithoutRef<'blockquote'> & {
@@ -32,8 +33,9 @@ export type UlInput = React.ComponentPropsWithoutRef<'ul'> & {
 export function Ul({ children, className, ...props }: UlInput) {
   const list = [
     "list-['*_'] list-inside relative m-0 p-0",
-    'w-full ml-4',
+    'sm:ml-16 ml-0',
     'mb-32 [&>li>ul]:mb-0 [&>li>ol]:mb-0',
+    'sm:mr-32 mr-16 [&>li>ul]:mr-0 [&>li>ol]:mr-0',
   ]
   return (
     <ul
@@ -70,10 +72,10 @@ export type OlInput = React.ComponentPropsWithoutRef<'ol'> & {
 export function Ol({ children }: OlInput) {
   const list = [
     'relative list-decimal',
-    'mt-4 ml-8',
-    'w-full',
+    'mt-4 sm:ml-16 ml-0',
     'list-inside',
     'mb-32 [&>li>ul]:mb-0 [&>li>ol]:mb-0',
+    'sm:mr-32 mr-16 [&>li>ul]:mr-0 [&>li>ol]:mr-0',
   ]
   return <ol className={list.join(' ')}>{children}</ol>
 }
@@ -108,7 +110,7 @@ export function Code({ children, className, ...props }: CodeInput) {
         'inline-block bg-inherit text-inherit relative px-8 py-2 font-medium text-base sm:text-base-large',
       )}
     >
-      <span className="bg-zinc-100 rounded-sm absolute left-0 right-0 top-0 bottom-0" />
+      <span className="bg-zinc-100 dark:bg-zinc-800 rounded-sm absolute left-0 right-0 top-0 bottom-0" />
       <T className="relative font-medium text-base sm:text-base-large text-zinc-700">
         {children}
       </T>
@@ -229,7 +231,7 @@ export function P({
       className={clsx(
         className,
         'text-base sm:text-base-large',
-        'mb-32 px-16',
+        'mb-32 px-16 sm:px-32',
         'font-medium',
         align === 'center'
           ? `text-center`
@@ -237,8 +239,8 @@ export function P({
             ? 'text-right'
             : undefined,
         type === 'secondary'
-          ? 'text-zinc-500 dark:text-zinc-600'
-          : 'text-zinc-700 dark:text-zinc-400 dark:font-medium',
+          ? 'text-zinc-500 dark:text-zinc-500 dark:font-medium'
+          : 'text-zinc-700 dark:text-zinc-300 dark:font-medium',
       )}
     >
       {children}
@@ -268,11 +270,11 @@ export function TH({ children, className, ...props }: THInput) {
   )
 }
 
-export type TableInput = {
+export type TableInput = React.ComponentPropsWithoutRef<'table'> & {
   children?: React.ReactNode
 }
 
-export function Table({ children }: TableInput) {
+export function Table({ children, className, ...props }: TableInput) {
   const ref = useRef<HTMLTableElement>(null)
 
   useEffect(() => {
@@ -311,8 +313,12 @@ export function Table({ children }: TableInput) {
 
   return (
     <table
+      {...props}
       ref={ref}
-      className="border-collapse h-1 overflow-y-auto w-full table-fixed-header no-scrollbar"
+      className={clsx(
+        className,
+        'border-collapse h-1 overflow-y-auto w-full table-fixed-header no-scrollbar',
+      )}
     >
       {children}
     </table>
@@ -427,7 +433,7 @@ export function TD({
 
 export type AInput = {
   children?: React.ReactNode
-  href?: string
+  href: string
   rel?: string
   target?: string
 } & HTMLProps<HTMLAnchorElement>
@@ -436,6 +442,8 @@ export function A({ children, href, rel, target, ...props }: AInput) {
   const list = [
     'cursor-pointer',
     'text-violet-400',
+    'print:text-zinc-700 dark:print:text-zinc-300',
+    'print:active:text-zinc-700 dark:print:active:text-zinc-300',
     'hover:opacity-70',
     'active:text-blue-500',
     'active:hover:opacity-70',
@@ -448,6 +456,18 @@ export function A({ children, href, rel, target, ...props }: AInput) {
 
   if (props.className) {
     list.push(...(props.className.split(/\s+/) as Array<string>))
+  }
+
+  if (href.startsWith('/')) {
+    return (
+      <Link
+        href={href}
+        target={target}
+        className={list.join(' ')}
+      >
+        <T>{children}</T>
+      </Link>
+    )
   }
 
   return (
@@ -483,7 +503,7 @@ export function H1({
       leading="heading"
       className={clsx(
         fontSizeClassName,
-        'uppercase w-full scale-y-80 tracking-wide-015 font-bold text-zinc-800 dark:text-zinc-400 px-16',
+        'uppercase w-full scale-y-80 tracking-wide-015 font-bold text-zinc-800 dark:text-zinc-300 px-16 sm:px-32',
         className,
         align === 'center'
           ? `text-center`
@@ -521,7 +541,7 @@ export function H2({
       className={clsx(
         className,
         fontSizeClassName,
-        'pt-8 mb-8 mt-16 px-16 font-semibold uppercase w-full scale-y-80 tracking-narrow-05 text-zinc-700 dark:text-zinc-400',
+        'pt-8 mb-8 mt-16 px-16 sm:px-32 font-semibold uppercase w-full scale-y-80 tracking-narrow-05 text-zinc-700 dark:text-zinc-300',
         align === 'center'
           ? `text-center`
           : align === 'right'
@@ -564,7 +584,7 @@ export function H3({
           : align === 'right'
             ? 'text-right'
             : undefined,
-        'mb-8 mt-16 uppercase w-full scale-y-80 font-semibold tracking-wide-015 pt-8 px-16 text-zinc-900 dark:text-zinc-400',
+        'mb-8 mt-16 uppercase w-full scale-y-80 font-semibold tracking-wide-015 pt-8 px-16 sm:px-32 text-zinc-900 dark:text-zinc-300',
         border ? `border-b-4` : undefined,
       )}
     >
@@ -594,7 +614,7 @@ export function H4({
       className={clsx(
         className,
         fontSizeClassName,
-        'font-semibold mb-16 px-16 text-zinc-950 dark:text-zinc-400',
+        'font-semibold mb-16 px-16 sm:px-32 text-zinc-950 dark:text-zinc-300',
       )}
     >
       {children}
@@ -623,7 +643,7 @@ export function H5({
       className={clsx(
         fontSizeClassName,
         className,
-        'font-semibold w-full mb-16 px-16 text-zinc-950 dark:text-zinc-400',
+        'font-semibold w-full mb-16 px-16 sm:px-32 text-zinc-950 dark:text-zinc-300',
       )}
     >
       {children}
@@ -652,7 +672,7 @@ export function H6({
       className={clsx(
         fontSizeClassName,
         className,
-        'font-semibold w-full mb-16 px-16 text-zinc-950 dark:text-zinc-400',
+        'font-semibold w-full mb-16 px-16 sm:px-32 text-zinc-950 dark:text-zinc-300',
       )}
     >
       {children}

@@ -1,7 +1,7 @@
 import Container from '~/component/Container'
 import MicrosoftClarity from '~/component/script/Clarity'
 import GA from '~/component/script/GA'
-import { ViewportDimensions } from '~/hook/useViewportDimensions'
+import { Viewport } from '~/hook/useViewport'
 import Script from 'next/script'
 
 export default function Client({
@@ -10,7 +10,7 @@ export default function Client({
   children: React.ReactNode
 }) {
   return (
-    <ViewportDimensions>
+    <Viewport>
       <Container>
         <MicrosoftClarity />
         <GA />
@@ -18,6 +18,6 @@ export default function Client({
         {children}
         {/* <Analytics /> */}
       </Container>
-    </ViewportDimensions>
+    </Viewport>
   )
 }

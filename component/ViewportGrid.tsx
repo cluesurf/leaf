@@ -1,4 +1,4 @@
-import React, { RefObject } from 'react'
+import React, { RefObject, useContext } from 'react'
 import {
   ViewportLayout3SectionStateInput,
   ViewportLayoutFillStateInput,
@@ -53,7 +53,7 @@ export function ViewportLayout3Section({
         <div className={['z-2000 relative flex flex-1'].join(' ')}>
           <div
             className={clsx(
-              'max-w-888',
+              'max-w-888 print:max-w-full',
               // middleOverlay ? 'overflow-y-hidden' : 'overflow-y-auto',
               middleClassName,
             )}
@@ -66,7 +66,7 @@ export function ViewportLayout3Section({
           {middleOverlay && (
             <div
               className={clsx(
-                'max-w-888',
+                'max-w-888 print:max-w-full',
                 'absolute left-0 z-1000 right-0 top-0 bottom-0',
               )}
               style={{
@@ -169,7 +169,12 @@ export function ViewportLayoutBase({
   return (
     <div className={['flex justify-center'].join(' ')}>
       <div
-        className={[className, 'max-w-888', 'w-full', 'p-16'].join(' ')}
+        className={[
+          className,
+          'max-w-888 print:max-w-full',
+          'w-full',
+          'p-16',
+        ].join(' ')}
       >
         {children}
       </div>

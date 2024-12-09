@@ -10,6 +10,7 @@ import {
   H4,
   H5,
   H6,
+  Li,
   P,
   Table,
   TableScroller,
@@ -18,6 +19,7 @@ import {
   TH,
   THead,
   TR,
+  Ul,
 } from '~/component/Content'
 import HomeIcon from '~/component/icon/Home'
 import AlertIcon from '~/component/icon/Alert'
@@ -247,6 +249,13 @@ function Content() {
   return (
     <>
       <H1 className="mt-64">Leaf</H1>
+      <P>Paragraph</P>
+      <Ul>
+        <Li>
+          Hello world Hello world Hello world Hello world Hello world{' '}
+          Hello world Hello world{' '}
+        </Li>
+      </Ul>
       <div className="flex flex-col gap-16 p-16">
         <div className="px-64">
           <FitText
@@ -254,6 +263,7 @@ function Content() {
             fontFamily="Noto Serif Tibetan"
           />
         </div>
+        <P type="secondary">Hello world</P>
         <Grid
           minWidth={120}
           maxColumns={4}

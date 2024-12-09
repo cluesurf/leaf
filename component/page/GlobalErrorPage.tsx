@@ -13,9 +13,7 @@ export default function GlobalErrorPage({
 
   return (
     <div className="relative mt-64">
-      <H1 className="font-bold text-center uppercase scale-y-80 tracking-wide-015">
-        Error
-      </H1>
+      <H1>Error</H1>
       <P>Something went wrong!</P>
       <P className="whitespace-pre-wrap">{error.digest}</P>
       <div className="flex justify-center">

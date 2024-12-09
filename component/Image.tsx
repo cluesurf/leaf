@@ -9,6 +9,7 @@ export type ImageInput = {
   preview: string
   src: string
   w: number
+  fill?: boolean
 }
 
 export default function Image({
@@ -18,10 +19,12 @@ export default function Image({
   h,
   alt = '',
   onClick,
+  fill,
 }: ImageInput) {
   return (
     <NextImage
       onClick={onClick}
+      fill={fill}
       style={{
         borderRadius: 4,
         lineHeight: '1.7',
@@ -36,6 +39,7 @@ export default function Image({
       width={w}
       height={h}
       src={src}
+      unoptimized
     />
   )
 }

@@ -67,7 +67,6 @@ export type TInput = {
   font?: string | Array<string>
   script?: string | Array<string>
   style?: CSSProperties
-  background?: 'light' | 'medium' | 'heavy'
   bold?: boolean
   semibold?: boolean
   size?: number
@@ -215,7 +214,6 @@ export default function Text({
   font,
   script,
   processor,
-  background = 'light',
   style = {},
   size,
   bold,

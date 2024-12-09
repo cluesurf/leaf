@@ -3,6 +3,7 @@
 import React, { RefObject, useEffect, useLayoutEffect } from 'react'
 import { useViewportLayout3Section } from '~/hook/useViewportLayout'
 import { ViewportLayout3Section } from '~/component/ViewportGrid'
+import clsx from 'clsx'
 
 export type LayoutSideState = {
   left?: 'missing' | 'present'
@@ -167,5 +168,24 @@ export default function Layout({
         {bottom}
       </div>
     </>
+  )
+}
+
+const COLOR = {
+  red: 'bg-rose-400 dark:bg-rose-900',
+  base: 'bg-zinc-100 dark:bg-zinc-900',
+}
+
+Layout.Side = ({
+  color = 'base',
+  children,
+}: {
+  color?: keyof typeof COLOR
+  children?: React.ReactNode
+}) => {
+  return (
+    <div className={clsx('h-full w-full', COLOR[color])}>
+      {children}
+    </div>
   )
 }

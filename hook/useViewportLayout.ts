@@ -1,5 +1,5 @@
 import React, { CSSProperties, useContext } from 'react'
-import { ViewportDimensionsContext } from './useViewportDimensions'
+import { ViewportContext } from './useViewport'
 
 export type ViewportLayout3SectionStateInput = {
   container: CSSProperties
@@ -11,7 +11,30 @@ export type ViewportLayout3SectionStateInput = {
 }
 
 export function useViewportLayout3Section(): ViewportLayout3SectionStateInput {
-  const { width } = useContext(ViewportDimensionsContext)
+  const { width, print } = useContext(ViewportContext)
+
+  if (print) {
+    return {
+      width,
+      container: {
+        display: 'flex',
+        justifyContent: 'center',
+      },
+      grid: {
+        display: 'flex',
+        width: '100%',
+      },
+      middle: {
+        width: '100%',
+      },
+      left: {
+        display: 'none',
+      },
+      right: {
+        display: 'none',
+      },
+    }
+  }
 
   if (width >= 1536) {
     return {
@@ -197,7 +220,27 @@ export type ViewportLayoutSplitStateInput = {
 }
 
 export function useViewportLayoutSplit(): ViewportLayoutSplitStateInput {
-  const { width } = useContext(ViewportDimensionsContext)
+  const { width, print } = useContext(ViewportContext)
+
+  if (print) {
+    return {
+      width,
+      container: {
+        display: 'flex',
+        justifyContent: 'center',
+      },
+      grid: {
+        display: 'flex',
+        width: '100%',
+      },
+      left: {
+        width: '100%',
+      },
+      right: {
+        width: '100%',
+      },
+    }
+  }
 
   if (width >= 1536) {
     return {
@@ -275,7 +318,7 @@ export type ViewportLayoutFillStateInput = {
 }
 
 export function useViewportLayoutFill(): ViewportLayoutFillStateInput {
-  const { width } = useContext(ViewportDimensionsContext)
+  const { width } = useContext(ViewportContext)
 
   if (width >= 1536) {
     return {

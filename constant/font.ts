@@ -46,7 +46,7 @@ const FONT: Fonts = {
   'Noto Sans Mono': {
     google: true,
     lineHeight: {
-      heading: 1.2,
+      heading: 1.5,
       body: 1.7,
       base: 1,
     },
@@ -55,6 +55,9 @@ const FONT: Fonts = {
     styles: [
       {
         weight: 400,
+      },
+      {
+        weight: 600,
       },
       {
         weight: 700,

@@ -50,6 +50,10 @@ const COLORS = {
     blue900: 'rgb(30, 58, 138)',
     blue950: 'rgb(23, 37, 84)',
   },
+  constrast: {
+    base: '',
+    baseDark: '',
+  },
   focus: {
     heavy:
       'focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-blue-300',
@@ -88,6 +92,9 @@ const COLORS = {
       'border-4 border-solid border-zinc-400 text-zinc-400 hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed',
   },
 }
+
+COLORS.constrast.base = COLORS.tailwind.zinc800
+COLORS.constrast.baseDark = COLORS.tailwind.zinc300
 
 export default COLORS
 

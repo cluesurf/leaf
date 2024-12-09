@@ -107,6 +107,7 @@ export function Button({
       style={{ width }}
       className={clsx(
         className,
+        'print:hidden',
         sizeClassName,
         colorClassName,
         'flex',
@@ -260,6 +261,7 @@ export function LinkButton({
       scroll={false}
       target={target}
       className={clsx(
+        'print:hidden',
         colorClassName,
         className,
         sizeClassName,

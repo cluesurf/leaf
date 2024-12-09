@@ -18,9 +18,7 @@ export default function ErrorPage({
 
   return (
     <div className="relative mt-64">
-      <H1 className="font-bold text-center uppercase scale-y-80 tracking-wide-015">
-        Error
-      </H1>
+      <H1>Error</H1>
       <P>Something went wrong!</P>
       {error.stack && (
         <P className="whitespace-pre overflow-x-auto">{error.stack}</P>
