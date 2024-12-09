@@ -2,6 +2,7 @@
 
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { onlyText } from 'react-children-utilities'
 import FontsContext, { FontsContextInput } from '~/context/FontsContext'
 import useSettings from '~/hook/useSettings'
 import { Font, getScriptFont } from '~/utility/font'
@@ -223,7 +224,7 @@ export default function Text({
   ...props
 }: TInput) {
   const text = processor
-    ? processors[processor](value!)
+    ? processors[processor](onlyText((value ?? children)!))
     : (value ?? children)!
 
   const {

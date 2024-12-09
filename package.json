@@ -1,6 +1,6 @@
 {
   "name": "@termsurf/leaf",
-  "version": "0.5.68",
+  "version": "0.5.74",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -80,6 +80,7 @@
     "next": "15.0.2",
     "postcss-import": "^16.1.0",
     "prettier": "^3.3.3",
+    "react-children-utilities": "^2.10.0",
     "react-dropzone": "^14.2.3",
     "react-hotkeys-hook": "^4.5.0",
     "react-intl": "^6.6.8",
