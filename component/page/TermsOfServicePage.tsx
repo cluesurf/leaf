@@ -27,7 +27,7 @@ export default function TermsOfServicePage({
           &quot;User,&quot; and our website hereinafter referred to as
           the &quot;Website,&quot; which is an integral component of the
           digital platform array managed and operated under the aegis of
-          TermSurf, herein after referred to as the &quot;Company.&quot;
+          ClueSurf, herein after referred to as the &quot;Company.&quot;
         </P>
         <P>
           This Agreement comprehensively delineates the terms and
@@ -419,7 +419,7 @@ export default function TermsOfServicePage({
           If you have any questions regarding these Terms, the practices
           of the Website, or your dealings with the Website, you may
           contact the Company via email at{' '}
-          <A href="mailto:base@term.surf">base@term.surf</A>.
+          <A href="mailto:base@clue.surf">base@clue.surf</A>.
         </P>
         <H3>User Support</H3>
         <P>

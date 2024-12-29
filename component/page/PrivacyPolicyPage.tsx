@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage({
           &quot;Website,&quot; which constitutes an integral component
           of the suite of digital platforms (hereinafter referred to as
           the &quot;Digital Platform Network&quot;) operated and managed
-          by TermSurf, herein referred to as the &quot;Company.&quot;
+          by ClueSurf, herein referred to as the &quot;Company.&quot;
         </P>
         <P>
           The purpose of this Policy is to delineate the protocols and
@@ -103,12 +103,12 @@ export default function PrivacyPolicyPage({
           preferences and needs, providing a more personalized and
           effective user experience.
         </P>
-        <H3>Data Sharing with TermSurf</H3>
+        <H3>Data Sharing with ClueSurf</H3>
         <H4>Inter-Platform Data Exchange</H4>
         <P>
-          In the context of the TermSurf digital platform network, user
+          In the context of the ClueSurf digital platform network, user
           data collected by our website may be shared with, or accessed
-          from, <A href="https://term.surf">TermSurf</A>. This
+          from, <A href="https://clue.surf">ClueSurf</A>. This
           integration facilitates a unified service experience across
           all affiliated platforms.
         </P>
@@ -121,7 +121,7 @@ export default function PrivacyPolicyPage({
         <H3>Service Enhancement through Data Integration</H3>
         <H4>Utilization of Shared Information</H4>
         <P>
-          The collaborative use of shared information with TermSurf
+          The collaborative use of shared information with ClueSurf
           contributes to the enhancement of service offerings, the
           development of new features, and the improvement of the
           overall user experience across the network.
@@ -484,7 +484,7 @@ export default function PrivacyPolicyPage({
           regarding this Privacy Policy or the data practices of the
           Company, contact can be made directly through the provided
           email address:{' '}
-          <A href="mailto:base@term.surf">base@term.surf</A>.
+          <A href="mailto:base@clue.surf">base@clue.surf</A>.
         </P>
         <H3>Commitment to Address Concerns</H3>
         <P>

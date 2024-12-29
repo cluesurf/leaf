@@ -7,7 +7,7 @@
 
 <h3 align='center'>leaf</h3>
 <p align='center'>
-  TermSurf UI Kit
+  ClueSurf UI Kit
 </p>
 
 <br/>
@@ -16,7 +16,7 @@
 
 ## Introduction
 
-This is the UI kit used in TermSurf products. If you are working on one of the open source TermSurf websites, we are using this UI library internally. Add any components you need here, if necessary, so they can be shared across the TermSurf apps.
+This is the UI kit used in ClueSurf products. If you are working on one of the open source ClueSurf websites, we are using this UI library internally. Add any components you need here, if necessary, so they can be shared across the ClueSurf apps.
 
 ## Tools
 
@@ -25,7 +25,7 @@ This is the UI kit used in TermSurf products. If you are working on one of the o
 ## Usage
 
 ```bash
-pnpm add @termsurf/leaf
+pnpm add @cluesurf/leaf
 ```
 
 ```tsx
@@ -41,7 +41,7 @@ pnpm dev
 
 ## License
 
-Copyright 2024 <a href='https://term.surf'>TermSurf</a>
+Copyright 2024 <a href='https://clue.surf'>ClueSurf</a>
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may
 not use this file except in compliance with the License. You may obtain
@@ -55,11 +55,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-## TermSurf
+## ClueSurf
 
-This is being developed by the folks at [TermSurf](https://term.surf), a
+This is being developed by the folks at [ClueSurf](https://clue.surf), a
 California-based project for helping humanity master information and
-computation. Find us on [Twitter](https://twitter.com/termsurf),
-[LinkedIn](https://www.linkedin.com/company/termsurf), and
-[Facebook](https://www.facebook.com/termsurf). Check out our other
-[GitHub projects](https://github.com/termsurf) as well!
+computation. Find us on [Twitter](https://twitter.com/cluesurf),
+[LinkedIn](https://www.linkedin.com/company/cluesurf), and
+[Facebook](https://www.facebook.com/cluesurf). Check out our other
+[GitHub projects](https://github.com/cluesurf) as well!

@@ -6,7 +6,7 @@ import { onlyText } from 'react-children-utilities'
 import FontsContext, { FontsContextInput } from '~/context/FontsContext'
 import useSettings from '~/hook/useSettings'
 import { Font, getScriptFont } from '~/utility/font'
-import tone from '@termsurf/tone'
+import tone from '@cluesurf/tone'
 import clsx from 'clsx'
 import React, {
   CSSProperties,

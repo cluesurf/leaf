@@ -1,6 +1,6 @@
 {
-  "name": "@termsurf/leaf",
-  "version": "0.5.74",
+  "name": "@cluesurf/leaf",
+  "version": "0.1.0",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -49,7 +49,7 @@
     "@replit/codemirror-lang-csharp": "^6.2.0",
     "@saucelabs/storybook-variants": "^0.2.0",
     "@seznam/compose-react-refs": "^1.0.6",
-    "@termsurf/tone": "^3.3.4",
+    "@cluesurf/tone": "^3.3.4",
     "@types/fontfaceobserver": "^2.1.3",
     "@types/js-cookie": "^3.0.6",
     "@types/js-yaml": "^4.0.9",

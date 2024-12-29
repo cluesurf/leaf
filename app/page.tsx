@@ -325,7 +325,7 @@ function Content() {
         />
       </Field>
       <P>
-        Welcome to TermSurf&apos;s Leaf UI kit. Here is an overview of
+        Welcome to ClueSurf&apos;s Leaf UI kit. Here is an overview of
         the components. Click into each one to see variations.
       </P>
       <H3>Font</H3>
