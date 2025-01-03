@@ -10,6 +10,7 @@
     "host": "pnpm make && cd host && npm publish --access=public"
   },
   "dependencies": {
+    "@cluesurf/tone": "^1.0.2",
     "@codemirror/basic-setup": "^0.20.0",
     "@codemirror/commands": "^6.7.1",
     "@codemirror/highlight": "^0.19.8",

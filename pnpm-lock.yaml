@@ -12,6 +12,9 @@ importers:
 
   .:
     dependencies:
+      '@cluesurf/tone':
+        specifier: ^1.0.2
+        version: 1.0.2
       '@codemirror/basic-setup':
         specifier: ^0.20.0
         version: 0.20.0
@@ -353,6 +356,9 @@ packages:
   '@babel/runtime@7.25.4':
     resolution: {integrity: sha512-DSgLeL/FNcpXuzav5wfYvHCGvynXkJbn3Zvc3823AEe9nPwW9IK4UoCSS5yGymmQzN0pCPvivtgS6/8U2kkm1w==}
     engines: {node: '>=6.9.0'}
+
+  '@cluesurf/tone@1.0.2':
+    resolution: {integrity: sha512-GHL2MSfE46Yi05qzoXcHRiAG5MWS7dDolAESjQpMAjfBI7mfx3tLRF7rW3CJvCUHIWLpohAOHs2/ho1pNm+TAw==}
 
   '@codemirror/autocomplete@0.20.3':
     resolution: {integrity: sha512-lYB+NPGP+LEzAudkWhLfMxhTrxtLILGl938w+RcFrGdrIc54A+UgmCoz+McE3IYRFp4xyQcL4uFJwo+93YdgHw==}
@@ -696,6 +702,9 @@ packages:
     peerDependencies:
       react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
       react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
+
+  '@lancejpollard/script-tree@1.1.4':
+    resolution: {integrity: sha512-5GzlAzmL/yBw6sc7+XngzOqeli72ce+jFpJv+DRN3huwqLYdZQfD1ymCDu/O5Z4XZYA5uNk9ES9rd+rlmu9B5A==}
 
   '@lezer/common@0.15.12':
     resolution: {integrity: sha512-edfwCxNLnzq5pBA/yaIhwJ3U3Kz8VAUOTRg0hhxaizaI1N+qxV7EXDv/kLCkLeq2RzSFvxexlaj5Mzfn2kY0Ig==}
@@ -3748,6 +3757,10 @@ snapshots:
     dependencies:
       regenerator-runtime: 0.14.1
 
+  '@cluesurf/tone@1.0.2':
+    dependencies:
+      '@lancejpollard/script-tree': 1.1.4
+
   '@codemirror/autocomplete@0.20.3':
     dependencies:
       '@codemirror/language': 0.20.2
@@ -4258,6 +4271,8 @@ snapshots:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
       react-lifecycles-compat: 3.0.4
+
+  '@lancejpollard/script-tree@1.1.4': {}
 
   '@lezer/common@0.15.12': {}
 
