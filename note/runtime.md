@@ -106,17 +106,17 @@ Walk the compiled tree synchronously, dispatching each node:
 
 ```
 call → look up handler by code, run handler(bind) → value
-path → resolve segments against host → value
+read → resolve segments against host → value
 view → render component, recurse into children → element
 fork → eval test, eval the chosen arm → value
-walk → for each item in list, push iterator host, eval hook → list of values
-loop → numeric range, push counter host, eval hook → list of values
+walk → dispatch on `case` (test / list / size / form), push
+       iterator host per step, eval hook → list of values
 literal → return the literal value
 ```
 
 The walker pushes/pops host frames as it enters iteration
-nodes (`walk`, `loop`) and let-bindings (`bind` calls). Lookup
-goes from the innermost host outward.
+nodes (any `walk` variant) and let-bindings (`bind` calls).
+Lookup goes from the innermost host outward.
 
 ### Memoization
 
@@ -158,8 +158,9 @@ Pushed before user evaluation starts:
 
 Added by:
 
-- **Iterators** — `walk` / `loop` push `item` (or the named
-  iterator) and `index` for the duration of the body.
+- **Iterators** — any `walk` variant (`test` / `list` / `size`
+  / `form`) pushes `item` (or the named iterator) and `index`
+  for the duration of the body.
 - **Let-bindings** — the `bind(names: { foo: <expr> }, then:
   <body>)` flow pushes each name into host before evaluating
   `then`.
@@ -170,8 +171,8 @@ type.
 
 ## Real-time partial recompilation
 
-The editor calls `book.bindPatch(prev, patch)` instead of
-re-running `book.bind`. The runtime supports this via three
+The editor calls `calm.bindPatch(prev, patch)` instead of
+re-running `calm.bind`. The runtime supports this via three
 caches:
 
 1. **Compile cache.** Keyed by node `id` + content hash. The
@@ -188,8 +189,8 @@ A patch:
 ```typescript
 type TreePatch =
   | { form: 'set';     node_mark: string; arg: string; value: unknown }
-  | { form: 'replace'; node_mark: string; new_node: EditableNode }
-  | { form: 'insert';  parent_mark: string; arg: string; index: number; new_node: EditableNode }
+  | { form: 'replace'; node_mark: string; new_node: MakeNode }
+  | { form: 'insert';  parent_mark: string; arg: string; index: number; new_node: MakeNode }
   | { form: 'remove';  node_mark: string }
   | { form: 'move';    node_mark: string; new_parent_id: string; new_index: number }
 ```
@@ -255,17 +256,19 @@ exceptions:
 - Recursion cap exceeded.
 
 These are caught by the evaluator, attached to the responsible
-node `id`, and added to `BindResult.errors`. The rest of the
-tree continues; the failed node's evaluated value is `null`.
+node `mark`, and added to `BindResult.errors`. The rest of
+the tree continues; the failed node's evaluated value is
+`null`.
 
-The `attempt` node wraps a subtree in a try/catch — if its
-`flow` throws, `catch` runs instead. Hosts use this to
-gracefully handle expected failure cases inside user-authored
-trees.
+There is no `attempt` / try-catch node in calm. Calm is a
+templating / rendering engine, not an effect runtime — code
+errors are surfaced as typed validation results, not caught
+and recovered in-tree. Hosts that need recovery handle it at
+the call boundary, not inside the authored Fold.
 
 ## Determinism
 
-Two runs of `book.bind(tree, host)` with the same `host` and
+Two runs of `calm.bind(tree, host)` with the same `host` and
 the same `tree` always produce the same `output` (modulo
 async lookups whose backing data changed). This is essential
 for caching, testing, and reproducibility of authored
@@ -275,17 +278,17 @@ Sources of nondeterminism the runtime explicitly bounds:
 
 - **`now` / `today`** — engine-bound, snapshot at bind start;
   same value across the whole bind.
-- **Random** — no `random` flow exists in the standard catalog.
+- **Random** — no `random` flow exists in the base catalog.
 - **Order of async resolution** — handlers are called
   concurrently inside a batch but results are stored by node
   `id`, so order of completion doesn't affect output.
 
 ## Concurrency
 
-A `Book` instance is single-threaded inside its synchronous
+A `Calm` instance is single-threaded inside its synchronous
 evaluation. Multiple `bind` calls run sequentially. For
 parallel rendering of independent documents, hosts spin up
-multiple `Book` instances (cheap; the registry is shared via a
+multiple `Calm` instances (cheap; the registry is shared via a
 read-only catalog).
 
 The async pre-resolution stage IS concurrent inside its batch
@@ -297,8 +300,8 @@ the boundary; the synchronous evaluator never sees parallelism.
 For an editor running at 60fps with 16ms frames, the runtime
 aims for:
 
-- **Cold `book.bind` of a 10,000-node document**: under 200ms.
-- **Hot `book.bindPatch` of a single-node edit**: under 5ms.
+- **Cold `calm.bind` of a 10,000-node document**: under 200ms.
+- **Hot `calm.bindPatch` of a single-node edit**: under 5ms.
 - **Memory** per cached tree: linear in node count, ~200 bytes
   per node.
 

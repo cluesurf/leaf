@@ -1,17 +1,17 @@
 # Goals
 
-The why and what of `@cluesurf/book`. This is a **goals** doc,
+The why and what of `@cluesurf/calm`. This is a **goals** doc,
 not a design doc — it articulates the destination so design
 choices later can be evaluated against it.
 
-## What `book` is, in one sentence
+## What `calm` is, in one sentence
 
 A JSON-only mini-language and runtime for **untrusted users to
 author rich, executable documents**, sandboxed by construction:
 the only things they can do are call functions the host
 explicitly registered.
 
-## What `book` is, expanded
+## What `calm` is, expanded
 
 The goal is a **complete runtime environment for sandboxed,
 simple code** — the kind of code that real applications need
@@ -36,7 +36,7 @@ All of it through the same primitives, the same registry, the
 same editor, the same runtime. **One mini-language; many
 shapes of use.**
 
-What book deliberately is NOT:
+What calm deliberately is NOT:
 
 - Not a general-purpose programming language.
 - Not a JavaScript replacement.
@@ -48,15 +48,15 @@ The "complete environment" is everything an end-user needs to
 build rich content inside a host app, with zero host-code
 exposure.
 
-## What `book` consolidates
+## What `calm` consolidates
 
-`book` unifies three concepts that have lived as separate
+`calm` unifies three concepts that have lived as separate
 systems and packages until now:
 
 1. **Schema DSL** — the `Form` / `Hash` / `List` / `Mesh`
    builder language that describes data shapes. Currently lives
-   in a sibling package; **eventually copied into book** so
-   the schema language and the runtime ship as one. Book becomes
+   in a sibling package; **eventually copied into calm** so
+   the schema language and the runtime ship as one. Base becomes
    the home for the DSL, not just a consumer.
 
 2. **Query filter trees** — the find / test constraint trees
@@ -75,7 +75,7 @@ Three systems collapse into one, around two primitives.
 
 ## The two base primitives
 
-Everything in book reduces to one of two things:
+Everything in calm reduces to one of two things:
 
 ### `Form` — data model schemas
 
@@ -145,7 +145,7 @@ that, the AST becomes self-explanatory.
 Author (untrusted)              Host (trusted)
 ┌────────────────────┐          ┌────────────────────┐
 │ writes a JSON tree │  ──────► │ runs that tree     │
-│ in a browser editor│          │ via book runtime   │
+│ in a browser editor│          │ via calm runtime   │
 └────────────────────┘          └────────────────────┘
                                          │
                                          ▼
@@ -156,7 +156,7 @@ Author (untrusted)              Host (trusted)
                                 └────────────────────┘
 ```
 
-Host installs `@cluesurf/book`, registers the flows they want
+Host installs `@cluesurf/calm`, registers the flows they want
 their users to be able to call, and exposes an editor. Users
 compose documents from those flows. Nothing they write can
 escape into Node, the browser, the session, the network — only
@@ -173,7 +173,7 @@ customers, end users). Embedding MDX-style authoring in a SaaS
 product means either trusting every author or sandboxing
 JavaScript — neither is great.
 
-`book` solves this by being **JSON-only**. There is no string
+`calm` solves this by being **JSON-only**. There is no string
 of code anywhere. There is no `eval`. There is no path from
 author input to host execution other than dispatching to a
 registered flow. The sandbox is the format, not a layer added
@@ -188,7 +188,7 @@ shape: a custom block editor, a custom JSON config, a
 proprietary template language. Each one re-solves storage,
 parsing, validation, rendering, editing, and security.
 
-`book` is meant to be **the standard shape** for that document.
+`calm` is meant to be **the standard shape** for that document.
 One JSON AST. One runtime spec. One schema language for flows.
 Different products plug in different flow catalogs.
 
@@ -200,7 +200,7 @@ loops, computed fields, async data, validations, custom
 components — you outgrow the template engine and add
 JavaScript, which means losing the sandbox.
 
-`book` is the missing middle: **expressive enough to handle
+`calm` is the missing middle: **expressive enough to handle
 real documents, restrictive enough to stay safe**. The author
 gets `if`, `walk`, `bind`, polymorphic dispatch, async data
 fetching, and component embedding — all expressed as JSON,
@@ -210,7 +210,7 @@ all dispatching through the host's registered flow catalog.
 
 Constraints (data validation rules) are also JSON trees of
 function calls. Building a separate engine for validation is
-duplication. `book` is the **one runtime** that evaluates both
+duplication. `calm` is the **one runtime** that evaluates both
 documents and validations — same AST, same registry, same
 editor.
 
@@ -227,14 +227,14 @@ a registered flow call.
 The spec — the AST shape, the dispatch rules, the standard flow
 catalog — is independent of implementation language. Anyone can
 write a Rust or Python or Swift runtime that consumes the same
-trees. `@cluesurf/book` is the **reference TypeScript runtime**,
+trees. `@cluesurf/calm` is the **reference TypeScript runtime**,
 not the only valid one.
 
 ### Must be small enough to internalize
 
 The whole AST has four reserved keys (`form`, `name`, `base`,
 `case`) plus snake_case user data. Nine verbs in the standard
-catalog. Six methods on the `Book` class. A new developer
+catalog. Six methods on the `Base` class. A new developer
 should be able to read the spec in an afternoon and have the
 mental model. Nothing more, nothing less.
 
@@ -243,7 +243,7 @@ mental model. Nothing more, nothing less.
 Conditionals, iteration, let-bindings, polymorphic dispatch,
 recursion (via let), async data fetching, error
 collection, internationalization, and component embedding all
-have first-class support in the standard catalog. If a real
+have first-class support in the base catalog. If a real
 document needs it, the engine has it.
 
 ### Must be schema-driven
@@ -280,11 +280,12 @@ Every node has at most these four reserved keys:
 - **`name`** — the function name (when `form='call'`) or
   element name (when `form='view'`).
 - **`base`** — optional. The resource / shape being acted on.
-  In `is(equal: { ... })`, the base is `equal`. The verb-noun
-  pairing.
-- **`case`** — optional. A discriminated sub-variant of the
-  base. In `is(ipa: { case: 'broad' })`, the case narrows
-  `ipa` to `broad`.
+  In `{ name: 'is', base: 'equal', this: ..., that: ... }`,
+  the base is `equal`.
+- **`case`** — optional. The variant being operated on,
+  parallel to `base` (not parsed from any dotted form). In
+  `{ name: 'is', base: 'ipa', case: 'broad', text: ... }`,
+  the case is `broad`.
 
 Everything else is **snake_case user data**, free of those
 reserved keys. Author-defined args sit at the top level
@@ -317,7 +318,7 @@ What the runtime evaluates:
 ```json
 {
   "form": "call",
-  "code": "is.ipa.broad",
+  "code": 3,
   "bind": {
     "text": "fəˈnɛtɪk"
   }
@@ -362,16 +363,16 @@ TypeScript types and Zod parsers without the host writing them.
 
 A flow with no implementation is a **specification stub** —
 the spec tells you what it should do; some host needs to
-register the actual function. This lets the standard catalog
+register the actual function. This lets the base catalog
 ship as schemas-only, with reference implementations layered
 on top.
 
-## The `Book` class
+## The `Base` class
 
 The host's API surface:
 
 ```typescript
-class Book {
+class Calm {
   flows: Flow[]
 
   // Register a flow implementation (overloaded).
@@ -388,7 +389,7 @@ class Book {
   card(card: Card): void
 
   // Compile + execute an editable tree.
-  bind(tree: EditableNode): unknown
+  bind(tree: MakeNode): unknown
 }
 ```
 
@@ -399,7 +400,7 @@ metaphor:
 - **`card`** — a single file (also a module at its level). One
   source file's worth of related flows.
 - **`deck`** — a module / package. A published collection of
-  cards. `@cluesurf/book-linguistics` would be a deck.
+  cards. `@cluesurf/calm-linguistics` would be a deck.
 - **`bind`** — bring a tree to life. Compile + run.
 - **`call`** — invoke one flow directly, when you have its code
   id and don't need the whole compile cycle.
@@ -408,15 +409,15 @@ metaphor:
 card is many flows.
 
 A host typically does:
-1. `new Book()`.
-2. `book.deck(...)` for any standard packages they want.
-3. `book.flow(...)` for any custom flows specific to their app.
-4. `book.bind(treeFromUser)` whenever a user-authored document
+1. `new Calm()`.
+2. `calm.deck(...)` for any standard packages they want.
+3. `calm.flow(...)` for any custom flows specific to their app.
+4. `calm.bind(treeFromUser)` whenever a user-authored document
    needs to render.
 
 ## Goal: standardized seed catalog
 
-`@cluesurf/book` ships with a standard flow catalog covering
+`@cluesurf/calm` ships with a standard flow catalog covering
 nine verbs:
 
 - `is` — boolean predicates
@@ -453,14 +454,14 @@ end-users — not engineers. They build documents visually:
   flow catalog.
 - Save as a JSON tree that any compatible runtime can render.
 
-The output is a `book` document. The same document renders in
+The output is a `calm` document. The same document renders in
 the host's app, a sibling product, an export-to-PDF flow, an
-RSS-style snippet — anywhere a `book` runtime exists.
+RSS-style snippet — anywhere a `calm` runtime exists.
 
 ## Goal: portable across products
 
 The same document tree should render in:
-- The originating host's app (via that host's `Book`).
+- The originating host's app (via that host's `Base`).
 - Other apps that registered overlapping flows.
 - Static export pipelines (HTML, PDF, EPUB).
 - Headless rendering (server-side).
@@ -489,7 +490,7 @@ A constraint reads almost like English without translation.
 
 ## Goal: function-registry dispatch pattern
 
-`book` follows a verb-first function-registry pattern:
+`calm` follows a verb-first function-registry pattern:
 
 - Verb-first directory shape: `code/<verb>/<base>/<case>/`.
 - Single object input per call.
@@ -497,7 +498,7 @@ A constraint reads almost like English without translation.
 - Schema-driven codegen — TypeScript types, Zod parsers, JSON
   Schema, editor widgets all derived from one source.
 
-| design point | book |
+| design point | calm |
 |---|---|
 | directory shape | `code/<verb>/<base>/<case>/` |
 | call shape | `is(ipa: { text, case: 'broad' })` |
@@ -514,7 +515,7 @@ and safe.
 
 ### Not a general-purpose programming language
 
-`book` is for documents. It has the dynamism documents need —
+`calm` is for documents. It has the dynamism documents need —
 conditionals, loops, computed fields, polymorphic dispatch —
 and stops there. It is not Turing-complete by design (recursion
 via `bind` has a depth cap), and it has no I/O outside what the
@@ -524,8 +525,8 @@ host explicitly registers.
 
 The runtime never loads strings of source. It never `eval`s.
 It never imports anything dynamically. The set of executable
-flows is fixed at the moment the host calls `book.deck(...)` /
-`book.flow(...)`.
+flows is fixed at the moment the host calls `calm.deck(...)` /
+`calm.flow(...)`.
 
 ### Not a host for arbitrary user side effects
 
@@ -541,15 +542,15 @@ which the host implemented and audited.
 
 ### Not bound to TypeScript or the browser
 
-The spec is language-agnostic. `@cluesurf/book` is one runtime;
+The spec is language-agnostic. `@cluesurf/calm` is one runtime;
 others can exist. The spec is the contract; the runtime is an
 implementation.
 
 ### Not a replacement for build-time codegen
 
-`book` is for runtime, user-authored content. Schemas, types,
+`calm` is for runtime, user-authored content. Schemas, types,
 and pre-published content still go through the existing build-
-time codegen pipelines (form-DSL, `pnpm make:form`). `book`
+time codegen pipelines (form-DSL, `pnpm make:form`). `calm`
 plugs in alongside them, not in their place.
 
 ## Goal: real-time validation
@@ -631,7 +632,7 @@ the same code path.
 
 ## Goal: first-class TypeScript type export
 
-Book is not just a runtime. It's also a **type generator**.
+Calm is not just a runtime. It's also a **type generator**.
 
 Every flow's `take` schema and `like` return-type annotation
 compile to TypeScript types. Every `Form` schema compiles to
@@ -673,8 +674,8 @@ not stringly-typed argument names.
 
 ### Three flavors of consumer
 
-- **Host code** writes regular TypeScript. `import { Book }
-  from '@cluesurf/book'` and use it; types flow through.
+- **Host code** writes regular TypeScript. `import { Base }
+  from '@cluesurf/calm'` and use it; types flow through.
 
 - **Editor UI** consumes the same types via a JSON Schema
   representation generated alongside, so it can render typed
@@ -695,7 +696,7 @@ language being authored by end users, the typed surface is
 also a security property: arguments that don't match the flow's
 input type can't even be authored, much less executed.
 
-This is why `form` is being absorbed into `book` rather than
+This is why `form` is being absorbed into `calm` rather than
 left as a sibling package: the type generator and the runtime
 share so many concerns (schema parsing, type inference, codegen
 output) that splitting them is constant friction. Bundle them
@@ -802,51 +803,51 @@ always feel laggy no matter how clever the runtime is.
 
 | stage | host |
 |---|---|
-| **0 — spec** | This doc + AST + Flow + Book class definitions written down. |
-| **1 — runtime** | `@cluesurf/book` reference TypeScript runtime: editable→compiled compiler, registry, `bind` evaluator. |
+| **0 — spec** | This doc + AST + Flow + Base class definitions written down. |
+| **1 — runtime** | `@cluesurf/calm` reference TypeScript runtime: editable→compiled compiler, registry, `bind` evaluator. |
 | **2 — seed catalog** | Standard flow catalog from constraint-call-api-verbs ported in, schemas + reference impls. |
 | **3 — editor primitives** | A small UI kit that renders an editable AST — chip rows, input widgets per base/case, validation feedback. |
-| **4 — host integrations** | First production use: `mesh/site/word.surf` registers domain flows, ships a guide builder using book. |
+| **4 — host integrations** | First production use: `mesh/site/word.surf` registers domain flows, ships a guide builder using calm. |
 | **5 — multi-runtime** | Spec frozen enough for a second-language runtime (likely Rust or WASM) to parse and evaluate the same trees. |
 | **6 — public API** | External hosts can build on top. Public docs site, plugin authoring guide. |
 
 ## Lineage and connections
 
-### Inspiration: Seed
+### Inspiration: Fold
 
-Book inherits a lot of its modeling vocabulary and design
+Calm inherits a lot of its modeling vocabulary and design
 intuition from **Seed**, the reactive programming and data
 modeling language at <https://github.com/cluesurf/seed>. Seed
 is the long-term work: a full language with a runtime,
 reactivity, and a rich type system. It still has a long way to
 go.
 
-Book is the **near-term, more focused** sibling:
+Calm is the **near-term, more focused** sibling:
 
 - Seed: a general-purpose reactive programming language.
-- Book: a **rendering / templating language** with the same
+- Calm: a **rendering / templating language** with the same
   data-modeling discipline, scoped tight enough to ship and to
   hand to end-users.
 
-Where Seed is the ambitious foundation, Book is the practical
+Where Seed is the ambitious foundation, Calm is the practical
 runtime that lands now and keeps a clean migration path to
 Seed-shaped concepts later. The deck/card/flow vocabulary, the
 type-instance discipline (Form/Cast, Flow/Call), the form-DSL
 roots — all from Seed's design tradition.
 
-Eventually some of book's runtime concerns may absorb into
-Seed when Seed is ready. For now, book stands on its own as a
+Eventually some of calm's runtime concerns may absorb into
+Seed when Seed is ready. For now, calm stands on its own as a
 focused, JSON-only rendering engine.
 
 ### Sibling packages
 
 - **`@cluesurf/form`** — the schema DSL used in every flow's
   `take` field. Currently a separate package; **planned to be
-  copied into book** so the schema language and the runtime
+  copied into calm** so the schema language and the runtime
   ship as one.
 - **`@cluesurf/flow`** — a sibling function registry for file
   conversion (`flow convert image -I png -O jpg`). Same
-  verb-first dispatch pattern, different domain. `book` shares
+  verb-first dispatch pattern, different domain. `calm` shares
   the design discipline.
 
 ## Anti-goals to remember

@@ -1,6 +1,6 @@
 # Standard catalog
 
-The seed Flow catalog that ships with `@cluesurf/book`. Nine
+The seed Flow catalog that ships with `@cluesurf/calm`. Nine
 verbs cover everything the runtime needs as a baseline; hosts
 extend with domain-specific flows via their own decks.
 
@@ -189,7 +189,7 @@ These names are pre-bound in host and read via `path`:
 ## Where they live in code
 
 ```
-deck/book/code/flow/
+deck/calm/code/flow/
   validate/
     schema.ts
     handler.ts
@@ -291,7 +291,7 @@ distinct return-shape category. Adding a tenth should require
 demonstrating that the new shape doesn't fit any existing verb.
 
 If a real need surfaces, the addition is one new folder under
-`code/flow/`, plus updates to the catalog doc and the Book
+`code/flow/`, plus updates to the catalog doc and the Base
 class's verb-aware machinery.
 
 ## Async flows
@@ -328,5 +328,5 @@ Impure flows must declare `pure: false`:
   catalog has none).
 
 Hosts adding impure flows should think hard about whether
-they belong in book at all — the engine is for documents and
+they belong in calm at all — the engine is for documents and
 validations, not for triggering effects.

@@ -1,7 +1,7 @@
 # Find / Test query filters
 
 How the existing find/test query-filter AST consolidates into
-book's Form + Flow primitives. Book ships these as part of the
+Calm's Form + Flow primitives. Calm ships these as part of the
 standard catalog so hosts get filter-tree authoring with the
 same engine, registry, and editor as everything else.
 
@@ -41,7 +41,7 @@ A URL `?test=(language:english;text:hello*)` parses to a
 WHERE clause. The pattern was its own subsystem with its own
 types, parser, serializer, and walker.
 
-In book, **the same shapes become Forms**, and the constraint
+In calm, **the same shapes become Forms**, and the constraint
 tree itself **becomes a Tree of Flow calls**.
 
 ## The Forms
@@ -222,7 +222,7 @@ const find_count: Flow = {
 Used in a Tree:
 
 ```typescript
-import { flow } from '@cluesurf/book'
+import { flow } from '@cluesurf/calm'
 
 flow.call('find', {
   base: 'list',
@@ -255,7 +255,7 @@ results.
 
 The `find` Cast is a self-contained data object — pure JSON.
 But every constraint inside it has a corresponding **boolean
-Flow** in the standard catalog:
+Flow** in the base catalog:
 
 | filter constraint | boolean Flow |
 |---|---|
@@ -285,15 +285,15 @@ function lower(query: Cast): FlowTree { /* ... */ }
 A host can then iterate a list and apply the lowered Flow:
 
 ```typescript
-const filter_fn = book.compile(lower(query))
+const filter_fn = calm.compile(lower(query))
 const matches = records.filter(record =>
-  book.bind(filter_fn, { record }).output as boolean
+  calm.bind(filter_fn, { record }).output as boolean
 )
 ```
 
 ## Why this matters
 
-Three benefits from consolidating find/test into book:
+Three benefits from consolidating find/test into calm:
 
 1. **One AST.** Authoring a filter, validating data, rendering
    a document — all the same Tree-of-Calls shape. Editor
@@ -310,11 +310,11 @@ Three benefits from consolidating find/test into book:
 The existing URL syntax (`?test=(language:english;text:hello*)`)
 still works at the resource boundary; the URL parser produces
 a `find` Cast. From the Cast onward, everything goes through
-book.
+calm.
 
 ## Standard catalog entries
 
-The Forms and Flows above ship in the standard catalog:
+The Forms and Flows above ship in the base catalog:
 
 ```
 code/form/
@@ -327,7 +327,7 @@ code/flow/find/
   count/   schema.ts handler.ts        # find.count
 ```
 
-Hosts get filtering "for free" — install the standard catalog,
+Hosts get filtering "for free" — install the base catalog,
 register a data-layer adapter, and `find.list` / `find.one` /
 `find.count` work against any registered Form.
 
@@ -348,7 +348,7 @@ slot widgets the template publishes.
 
 Filter Casts serialize to JSON for storage and to the URL
 syntax for transport — both round-trippable per the existing
-spec. Within book, they're just Casts of `find`, indistinguishable
+spec. Within calm, they're just Casts of `find`, indistinguishable
 from any other Cast.
 
 ## Related
@@ -358,5 +358,5 @@ from any other Cast.
 - [`catalog.md`](./catalog.md) — the standard nine-verb
   catalog (`is.among`, `is.between`, `is.matches`, etc., used
   in lowered filter trees)
-- [`book.md`](./book.md) — `book.flow` registration with
+- [`calm.md`](./calm.md) — `calm.flow` registration with
   `async: true` for `find.*`

@@ -1,6 +1,6 @@
 # Editor protocol
 
-The contract between a `Book` runtime and a document editor
+The contract between a `Base` runtime and a document editor
 (typically browser-based). Patches go in, render diffs come
 out, validation errors flow throughout. Designed so the editor
 stays at 60fps on documents with thousands of nodes.
@@ -11,7 +11,7 @@ stays at 60fps on documents with thousands of nodes.
   per `(verb, base, case)`, nested children.
 - Translate user gestures (typing, drags, drops, deletes) into
   `TreePatch` objects.
-- Send patches to the runtime via `book.bindPatch(...)`.
+- Send patches to the runtime via `calm.bindPatch(...)`.
 - Apply the runtime's render diff: re-render only the subtrees
   whose output changed.
 - Surface validation errors inline (squiggles, gutter icons,
@@ -32,8 +32,8 @@ The editor sends one patch per user gesture:
 ```typescript
 type TreePatch =
   | { form: 'set';     node_mark: string; arg: string; value: unknown }
-  | { form: 'replace'; node_mark: string; new_node: EditableNode }
-  | { form: 'insert';  parent_mark: string; arg: string; index: number; new_node: EditableNode }
+  | { form: 'replace'; node_mark: string; new_node: MakeNode }
+  | { form: 'insert';  parent_mark: string; arg: string; index: number; new_node: MakeNode }
   | { form: 'remove';  node_mark: string }
   | { form: 'move';    node_mark: string; new_parent_id: string; new_index: number }
 ```
@@ -162,20 +162,20 @@ editor picks a cadence per tier:
 | 4 | medium | on idle (~1s) | constraint evaluation |
 | 5 | expensive | on save / explicit | async checks, DB roundtrips |
 
-`book.bindPatch` runs tiers 1–3 by default and skips tiers 4–5
+`calm.bindPatch` runs tiers 1–3 by default and skips tiers 4–5
 unless the editor opts in via:
 
 ```typescript
-book.bindPatch(prev, patch, { tiers: ['args', 'types', 'resolve', 'constraints'] })
+calm.bindPatch(prev, patch, { tiers: ['args', 'types', 'resolve', 'constraints'] })
 ```
 
-The editor can also call `book.runConstraints(prev)` /
-`book.runAsync(prev)` standalone to fire the deeper tiers when
+The editor can also call `calm.runConstraints(prev)` /
+`calm.runAsync(prev)` standalone to fire the deeper tiers when
 appropriate.
 
 ## Authorship widgets
 
-Each `(verb, base, case)` triple in the standard catalog has a
+Each `(verb, base, case)` triple in the base catalog has a
 canonical widget:
 
 | triple shape | widget |
@@ -240,7 +240,7 @@ Some user actions (paste, undo, batch delete) produce multiple
 patches at once. The editor sends them as a list:
 
 ```typescript
-book.bindPatch(prev, [patch1, patch2, patch3])
+calm.bindPatch(prev, [patch1, patch2, patch3])
 ```
 
 The runtime applies them sequentially, then runs one
@@ -264,7 +264,7 @@ The runtime doesn't manage undo state; that's the editor's job.
 When the editor first loads a document:
 
 ```typescript
-const prev = book.bind(initialTree, host)
+const prev = calm.bind(initialTree, host)
 ```
 
 This is the cold path. Slow once (~milliseconds for a typical
@@ -276,7 +276,7 @@ subsequent edit is `bindPatch`, which is fast.
 When the user saves, the editor calls:
 
 ```typescript
-const final = book.bindPatch(prev, [], { tiers: ['args', 'types', 'resolve', 'constraints', 'async'] })
+const final = calm.bindPatch(prev, [], { tiers: ['args', 'types', 'resolve', 'constraints', 'async'] })
 ```
 
 This forces every validation tier to run, including async
@@ -290,7 +290,7 @@ loads the document.
 
 ## Multi-user / collaborative editing
 
-Out of host for the core spec — book deals with one editor
+Out of host for the core spec — calm deals with one editor
 at a time. Hosts wanting collaborative editing layer
 operational-transform or CRDT logic between the editor and
 `bindPatch`. The patch protocol is OT-friendly: every patch is

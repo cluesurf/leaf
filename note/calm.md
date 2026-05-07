@@ -1,33 +1,33 @@
-# `Book` — the host class
+# `Base` — the host class
 
 The runtime instance. A host creates one (generic over a
-`FlowBase` type that aggregates the registered Flows),
+`Base` type that aggregates the registered Flows),
 registers flows (directly or via decks), and binds documents.
 
 ```typescript
-import { Book } from '@cluesurf/book'
-import type { FlowBase } from '@cluesurf/book/standard'
+import { Calm } from '@cluesurf/calm'
+import type { Base } from '@cluesurf/calm/base'
 
-const book = new Book<FlowBase>()
+const calm = new Calm<Base>()
 
-book.deck(standardCatalog)
-book.flow('lookup-language', { base: 'language' }, async ({ slug }) => { /* ... */ })
+calm.deck(baseCatalog)
+calm.flow('lookup-language', { base: 'language' }, async ({ slug }) => { /* ... */ })
 
-const result = book.bind(treeFromUser, { stage: 'draft' })
+const result = calm.bind(treeFromUser, { stage: 'draft' })
 ```
 
-The `FlowBase` generic is the registry-of-flows type
+The `Base` generic is the registry-of-flows type
 described in [`types.md`](./types.md). It typechecks every
-`book.flow(...)` registration: name + base + case must
+`calm.flow(...)` registration: name + base + case must
 resolve to a key in the base, and the handler's args /
 return must match the registered shape.
 
 ## Class shape
 
 ```typescript
-class Book<R = FlowBase> {
+class Calm<R = Base> {
   forms: Map<string, Form>           // editor-only; runtime ignores
-  flows: Map<string, Flow>           // keyed by code id (`is.ipa.broad`)
+  flows: Map<string, Flow>           // keyed by code id (`is_ipa_broad`)
   handlers: Map<number, Handler>     // keyed by integer code (compiled dispatch)
 
   // Register a Form (data model schema). Editor surface only.
@@ -35,18 +35,18 @@ class Book<R = FlowBase> {
 
   // Register a Flow with its handler. Typechecked against R.
   flow<
-    Name extends FlowName<R>,
-    Base extends FlowBaseFor<R, Name>,
-    Case extends FlowCaseFor<R, Name, Base>,
+    Verb      extends FlowVerb<R>,
+    BaseValue extends FlowBaseValue<R, Verb>,
+    CaseValue extends FlowCaseValue<R, Verb, BaseValue>,
   >(
-    name: Name,
-    options: { base?: Base; case?: Case } & FlowOptions,
-    handler: FlowHandler<R, Name, Base, Case>,
+    name: Verb,
+    options: { base?: BaseValue; case?: CaseValue } & FlowOptions,
+    handler: FlowHandler<R, Verb, BaseValue, CaseValue>,
   ): void
 
-  flow<Name extends BareFlowName<R>>(
-    name: Name,
-    handler: FlowHandler<R, Name, undefined, undefined>,
+  flow<Verb extends BareFlowVerb<R>>(
+    name: Verb,
+    handler: FlowHandler<R, Verb, undefined, undefined>,
   ): void
 
   // Invoke a registered flow by code id (string OR integer).
@@ -59,29 +59,29 @@ class Book<R = FlowBase> {
   deck(deck: Deck): void
 
   // Compile + execute an editable tree.
-  bind(tree: EditableNode, host?: HostInput): BindResult
+  bind(tree: MakeNode, host?: HostInput): BindResult
 }
 ```
 
-The `R` generic defaults to `FlowBase` (the standard
-catalog's bundled type). Hosts wanting the standard catalog
-only can write `new Book()`. Hosts adding custom Flows
-extend `FlowBase` via `declare module` augmentation (see
+The `R` generic defaults to `Base` (the standard
+catalog's bundled type). Hosts wanting the base catalog
+only can write `new Calm()`. Hosts adding custom Flows
+extend `Base` via `declare module` augmentation (see
 [`types.md`](./types.md)) and still use the default
 generic. Hosts wanting a fully custom Flow set pass their
-own type: `new Book<MyFlowBase>()`.
+own type: `new Calm<MyBase>()`.
 
 `flow ⊂ card ⊂ deck` is the nesting. Hosts register at
 whichever level fits.
 
-## `book.form(form)`
+## `calm.form(form)`
 
 Register a data model schema. Forms become referenceable by
 `save` path; Flows reference forms in their `take` and `like`
 fields.
 
 ```typescript
-book.form({
+calm.form({
   form: 'form',
   save: '@/code/form/language',
   link: {
@@ -95,18 +95,18 @@ book.form({
 Forms are validated at registration: unknown referenced forms,
 type cycles, etc. surface immediately.
 
-## `book.flow(...)`
+## `calm.flow(...)`
 
 Register a Flow with its implementation. Two signatures:
 
 ```typescript
 // Full options form.
-book.flow('is', { base: 'ipa', case: 'broad' }, ({ text }) =>
+calm.flow('is', { base: 'ipa', case: 'broad' }, ({ text }) =>
   Array.from(text).every(is_ipa_symbol),
 )
 
 // Bare verb (no base / case).
-book.flow('always-true', () => true)
+calm.flow('always-true', () => true)
 ```
 
 The options object accepts:
@@ -114,7 +114,7 @@ The options object accepts:
 ```typescript
 type FlowOptions = {
   base?: string                 // the resource / shape being acted on
-  case?: string                 // a sub-variant of the base
+  case?: string                 // the case (variant) being operated on
   like?: string                 // return type
   take?: FormLinkMesh           // input args schema (record of FormLink fields)
   async?: boolean               // batched async (default false)
@@ -134,30 +134,30 @@ unresolved call.
 If `pure: true` (default), the flow's output is memoized on
 `(code, args fingerprint)` for incremental recompilation.
 
-## `book.call(code, bind)`
+## `calm.call(code, bind)`
 
 Direct invocation — bypass compile, run a registered flow by
 its code id.
 
 ```typescript
-const result = book.call('is.ipa.broad', { text: 'fəˈnɛtɪk' })
+const result = calm.call('is_ipa_broad', { text: 'fəˈnɛtɪk' })
 ```
 
 Useful for hosts that store compiled trees and want to trigger
 a single node, or for tests that want to run one flow in
 isolation. The args are still validated against `take`.
 
-## `book.card(card)`
+## `calm.card(card)`
 
 A `card` is one file's worth of related Flows. Calling
-`book.card(...)` registers every flow in the card.
+`calm.card(...)` registers every flow in the card.
 
 ```typescript
 type Card = {
   name: string                  // 'is/ipa', 'make/cased', ...
   forms?: Form[]
   flows?: Flow[]
-  seeds?: Seed[]
+  folds?: Fold[]
 }
 ```
 
@@ -179,17 +179,17 @@ type CardTemplate = {
     name: string
     case?: string
   }[]
-  require_seeds?: SeedSlot[]    // seeds the card MUST publish
-  allow_seeds?: SeedSlot[]      // seeds the card MAY publish (in addition to required)
+  require_folds?: FoldSlot[]    // seeds the card MUST publish
+  allow_folds?: FoldSlot[]      // seeds the card MAY publish (in addition to required)
   forbid?: {                    // explicit deny list
     forms?: string[]
     flows?: { name: string; case?: string }[]
   }
 }
 
-type SeedSlot = {
+type FoldSlot = {
   name: string                  // 'body', 'sidebar', 'header', ...
-  template: string              // the Template name the seed must conform to
+  template: string              // the Template name the fold must conform to
   need?: boolean                // required (default true)
 }
 ```
@@ -202,16 +202,16 @@ const guideCard: Card = {
   template: 'guide-page',       // ← matches a registered CardTemplate
   forms: [/* ... */],
   flows: [/* ... */],
-  seeds: [/* ... */],
+  folds: [/* ... */],
 }
 ```
 
 The runtime validates the card against its template at
 registration time. Cards that violate the template (extra
-forms, disallowed flows, missing required seeds) are rejected
+forms, disallowed flows, missing required folds) are rejected
 with typed errors.
 
-This is what makes book safe for **third-party contributions**.
+This is what makes calm safe for **third-party contributions**.
 A host publishes a `CardTemplate` saying "lesson cards may
 have a body, an exercise list, and a vocab map — nothing
 else." End-users (or third-party authors) can publish lesson
@@ -236,23 +236,23 @@ use as-is or extend:
 - `card-template/lesson` — a teaching unit with body, examples,
   exercises, vocab.
 
-Hosts publish their own templates via `book.cardTemplate(...)`.
+Hosts publish their own templates via `calm.cardTemplate(...)`.
 
-## `book.cardTemplate(template)`
+## `calm.cardTemplate(template)`
 
-Register a CardTemplate. Subsequent `book.card(...)` calls
+Register a CardTemplate. Subsequent `calm.card(...)` calls
 whose `template:` matches are validated against it.
 
 ```typescript
-book.cardTemplate({
+calm.cardTemplate({
   name: 'lesson',
   allow_forms: ['vocab_entry'],
   allow_flows: [{ name: 'is' }, { name: 'has' }, { name: 'get' }],
-  require_seeds: [
+  require_folds: [
     { name: 'body',     template: 'document' },
     { name: 'exercises', template: 'list-of-questions' },
   ],
-  allow_seeds: [
+  allow_folds: [
     { name: 'vocab',   template: 'vocab-map', need: false },
     { name: 'glossary', template: 'glossary',  need: false },
   ],
@@ -263,10 +263,10 @@ Cards that don't declare a template are unconstrained
 (default). Hosts that want strict authoring publish templates
 and require all cards to conform.
 
-## `book.deck(deck)`
+## `calm.deck(deck)`
 
 A `deck` is a module / package — a published collection of
-cards. `book.deck(...)` walks the deck's cards and registers
+cards. `calm.deck(...)` walks the deck's cards and registers
 all of them.
 
 ```typescript
@@ -278,20 +278,20 @@ type Deck = {
 }
 ```
 
-The standard catalog ships as a deck called `book/standard` (or
-similar). Hosts call `book.deck(standardCatalog)` to load it.
+The base catalog ships as a deck called `calm/base` (or
+similar). Hosts call `calm.deck(baseCatalog)` to load it.
 
-Other published decks layer on top — `@cluesurf/book-linguistics`
+Other published decks layer on top — `@cluesurf/calm-linguistics`
 adds linguistic-specific forms and flows; a hypothetical
-`@some-host/book-flows` adds host-specific flows. Multiple
+`@some-host/calm-flows` adds host-specific flows. Multiple
 decks coexist as long as their code ids don't collide.
 
-## `book.bind(tree, host?)`
+## `calm.bind(tree, host?)`
 
 The main lifecycle. Compile + execute an editable tree.
 
 ```typescript
-const result = book.bind(treeFromUser, {
+const result = calm.bind(treeFromUser, {
   value: cellValue,           // optional — for per-cell evaluation
   record: recordSnapshot,     // optional — for record-level evaluation
   stage: 'draft',             // 'draft' | 'commit' | 'export'
@@ -353,10 +353,10 @@ re-bind the whole tree on every keystroke. The patch entry
 point:
 
 ```typescript
-book.bindPatch(prevResult: BindResult, patch: TreePatch): BindResult
+calm.bindPatch(prevResult: BindResult, patch: TreePatch): BindResult
 ```
 
-`prevResult` is the output of a previous `book.bind` call.
+`prevResult` is the output of a previous `calm.bind` call.
 `patch` is a path-targeted update. The runtime:
 - Applies the patch in-place on the cached compiled tree.
 - Marks the affected node and its ancestors dirty.
@@ -367,38 +367,38 @@ book.bindPatch(prevResult: BindResult, patch: TreePatch): BindResult
 The full `bind` is the cold start; `bindPatch` is the hot
 path used during authoring.
 
-## Multiple `Book` instances
+## Multiple `Calm` instances
 
-Hosts can run multiple `Book` instances in the same process —
+Hosts can run multiple `Calm` instances in the same process —
 e.g., one for the document editor, one for the validation
 pipeline. Instances are independent; flows registered on one
 don't leak to the other.
 
 This is also how a host can sandbox different user populations
-with different flow catalogs: an admin Book has admin-only
-flows; a public Book has the safe subset.
+with different flow catalogs: an admin Base has admin-only
+flows; a public Base has the safe subset.
 
 ## Lifecycle order for a host
 
 ```typescript
 // 1. Create the runtime.
-const book = new Book()
+const calm = new Calm()
 
-// 2. Register the standard catalog.
-book.deck(standardCatalog)
+// 2. Register the base catalog.
+calm.deck(baseCatalog)
 
 // 3. Register host-specific decks.
-book.deck(linguisticsCatalog)
+calm.deck(linguisticsCatalog)
 
 // 4. Register host-specific cards / flows.
-book.card(myCustomCard)
-book.flow('lookup-language', { async: true, /* ... */ }, async (args) => /* ... */)
+calm.card(myCustomCard)
+calm.flow('lookup-language', { async: true, /* ... */ }, async (args) => /* ... */)
 
 // 5. Use it.
-const result = book.bind(treeFromUser, { stage: 'commit' })
+const result = calm.bind(treeFromUser, { stage: 'commit' })
 
 // 6. For the editor: incremental edits.
-const updated = book.bindPatch(result, patch)
+const updated = calm.bindPatch(result, patch)
 ```
 
 Steps 1–4 happen once at startup. Steps 5–6 run constantly

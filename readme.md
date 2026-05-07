@@ -6,7 +6,7 @@
 <br/>
 <br/>
 
-<h3 align='center'>@cluesurf/book</h3>
+<h3 align='center'>@cluesurf/calm</h3>
 <p align='center'>
   &nbsp;
 </p>
@@ -22,5 +22,5 @@ TBD.
 ## Installation
 
 ```bash
-pnpm add @cluesurf/book
+pnpm add @cluesurf/calm
 ```

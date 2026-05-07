@@ -1,7 +1,7 @@
 # Primitives: `Form` and `Flow`
 
 The whole spec reduces to these two. Every other concept in
-book is one of them or made of them.
+Calm is one of them or made of them.
 
 ## Type vs instance, recap
 
@@ -22,7 +22,7 @@ Documents are trees of `Call`s operating over `Cast` data.
 
 A `Form` declares "this kind of thing has these fields, with
 these types, with these constraints." Inherited from the
-form-DSL package (eventually copied into book), with the
+form-DSL package (eventually copied into calm), with the
 familiar `Form` / `Hash` / `List` / `Mesh` builders.
 
 ### Shape
@@ -136,7 +136,7 @@ A Cast of `bear` with case `black` looks like:
 Same reserved keys (`form`, `case`, `id`) as Calls — Forms and
 Flows share the namespace tree:
 
-| layer | type-name | sub-variant |
+| layer | type-name | variant (case) |
 |---|---|---|
 | Flow → Call | `name` (verb) | `case` |
 | Form → Cast | `form` (form-name) | `case` |
@@ -145,43 +145,6 @@ Picking a Form-instance is "form + case" exactly the way
 picking a Flow-instance is "name + case." The pattern is
 parallel.
 
-### Dotted cases (sub-sub-variants)
-
-Cases nest via dots in the case name, same as Flow cases:
-
-```typescript
-const error: Form = {
-  form: 'form',
-  save: '@/code/form/error',
-  link: {
-    note: { like: 'string' },
-  },
-  case: {
-    'syntax':              { link: { /* ... */ } },
-    'syntax.unterminated': { link: { /* ... */ } },
-    'syntax.misnested':    { link: { /* ... */ } },
-    'runtime':             { link: { /* ... */ } },
-    'runtime.timeout':     { link: { /* ... */ } },
-    'runtime.cancelled':   { link: { /* ... */ } },
-  },
-}
-```
-
-The case value `'syntax.unterminated'` is a sub-case of
-`'syntax'`. The file layout mirrors:
-
-```
-code/form/error/
-  schema.ts                # the bare error Form
-  syntax/
-    schema.ts              # error.syntax
-    unterminated/schema.ts # error.syntax.unterminated
-    misnested/schema.ts    # error.syntax.misnested
-  runtime/
-    schema.ts
-    timeout/schema.ts
-    cancelled/schema.ts
-```
 
 ### Cast AST shape
 
@@ -205,9 +168,9 @@ validation. The same dispatch machinery used for Calls
 ### Form-name reservation
 
 Because the AST's `form` key is also used by built-in node
-forms (`'call'`, `'read'`, `'view'`, `'fork'`, `'walk'`,
-`'loop'`, `'attempt'`, plus literals like `'text'`,
-`'integer'`, `'list'`), Form names cannot collide with those.
+forms (`'call'`, `'read'`, `'view'`, `'fork'`, `'walk'`, plus
+literals like `'text'`, `'integer'`, `'list'`), Form names
+cannot collide with those.
 The runtime rejects a Form registration whose name is a
 reserved built-in.
 
@@ -226,7 +189,7 @@ Inherited from form-DSL:
 - **`Mesh`** — a graph / tree-shaped form. Used for nested
   structures the schema language can introspect.
 
-These are the existing form-DSL kinds. Book inherits them as-is
+These are the existing form-DSL kinds. Calm inherits them as-is
 and may add new kinds over time.
 
 ## `Flow` — function schemas
@@ -239,7 +202,7 @@ these args and returns this type."
 ```typescript
 type Flow = {
   name: string         // the verb (e.g., 'is', 'make', 'get')
-  case?: string        // the case (e.g., 'ipa', 'ipa.broad', 'lowercase', 'equal')
+  case?: string        // the variant (e.g., 'broad', 'narrow', 'lower', 'equal')
   like?: string        // return-type signature
   take?: FormLink      // input args schema, in form-DSL
 }
@@ -264,12 +227,12 @@ Every Flow is identified by `(name, case)`:
 ```
 (name)            — "is", "make", "get", ...
 (name, case)      — "is.ipa", "make.lowercase", "get.length"
-                  — "is.ipa.broad", "make.cased.lower"  (dotted case for sub-variants)
+
 ```
 
-The pair compiles to a flat `code` id like `is.ipa.broad`. The
+The pair compiles to a flat `code` id like `is_ipa_broad`. The
 registry maps codes to handlers. Sub-variants live in the case
-namespace via dots (`ipa.broad`, `ipa.narrow`); the file layout
+namespace as separate `case` values; the file layout
 mirrors with nested folders.
 
 ### Worked example
@@ -277,7 +240,7 @@ mirrors with nested folders.
 ```typescript
 const is_ipa_broad: Flow = {
   name: 'is',
-  case: 'ipa.broad',
+  base: 'ipa', case: 'broad',
   like: 'boolean',
   take: {
     text: { like: 'string' },
@@ -308,10 +271,10 @@ const get_count: Flow = {
 
 A Flow's schema describes the contract; an implementation
 handler runs the actual work. Hosts register handlers via the
-`Book` class:
+`Base` class:
 
 ```typescript
-book.flow('is', { case: 'ipa.broad' }, ({ text }) =>
+calm.flow('is', { base: 'ipa', case: 'broad' }, ({ text }) =>
   Array.from(text).every(is_ipa_symbol),
 )
 ```
@@ -322,17 +285,17 @@ TypeScript types flow through automatically.
 ## Why two primitives, not one
 
 A naive design might collapse Form and Flow into a single
-"schema" primitive. That hides the asymmetry that makes book
+"schema" primitive. That hides the asymmetry that makes calm
 work:
 
 - A `Form` is **passive** — describes data. No execution.
 - A `Flow` is **active** — describes a function. Has an
   implementation. Runs.
 
-Seeds in book are Flows calling Flows; the leaves bottom out
+Seeds in calm are Flows calling Flows; the leaves bottom out
 at Form-shaped data. The split mirrors the noun/verb split in
 language: nouns describe things, verbs do things, sentences are
-verbs operating on nouns. Book trees are sentences.
+verbs operating on nouns. Base trees are sentences.
 
 ## How the AST encodes this
 
@@ -340,7 +303,7 @@ The reserved AST keys (`form`, `name`, `case`, `id`) encode
 the type-instance lookup chain:
 
 ```
-{ form: 'call', name: 'is', case: 'ipa.broad', id: '01h…', text: '...' }
+{ form: 'call', name: 'is', base: 'ipa', case: 'broad', id: '01h…', text: '...' }
   │            │            │                  │           │
   │            │            │                  │           └── arg matching the Flow's `take` schema
   │            │            │                  └── stable per-node identity
@@ -351,13 +314,13 @@ the type-instance lookup chain:
 
 Reading the keys top-to-bottom is reading the type-instance
 chain: "this is an instance of a Flow; its verb is `is`; its
-case is the `ipa.broad` variant of the IPA Form." The args
+case is the `broad` variant of the IPA base." The args
 are then the Form fields filled in.
 
 ## Where they live
 
 ```
-deck/book/code/
+deck/calm/code/
   form/                      # the schema DSL (absorbed from form-DSL)
     type.ts
     build.ts

@@ -1,6 +1,6 @@
 # AST
 
-The JSON tree shape that book authors, stores, compiles, and
+The JSON tree shape that calm authors, stores, compiles, and
 evaluates.
 
 ## Reserved keys
@@ -12,7 +12,7 @@ Every node uses at most these reserved keys:
 | `form` | discriminant — what kind of node this is |
 | `name` | identifier for `call` (verb) or `view` (component) |
 | `base` | which Cast instance / variant being operated on |
-| `case` | sub-variant of the base |
+| `case` | the case (variant) being operated on |
 | `mark` | stable per-node UUID, used for editor identity + memoization |
 | `code` | (compiled) flattened registry id |
 | `bind` | (compiled) args object ready to dispatch |
@@ -49,7 +49,7 @@ under `bind`.
 ```json
 {
   "form": "call",
-  "code": "is.ipa.broad",
+  "code": 3,
   "mark": "01h…",
   "bind": {
     "text": "fəˈnɛtɪk"
@@ -73,36 +73,52 @@ Each `form:` value picks a different node shape.
 ### `call` — Flow instance
 
 ```typescript
-type CallEditable = {
+type CallMake<T> = {
   form: 'call'
   name: string                  // verb
   base?: string                 // Form-instance variant
-  case?: string                 // sub-variant
-  mark?: string
-  [arg: string]: unknown        // flow args, snake_case keys
+  case?: string                 // the case (variant)
+  mark?: string                 // semver — the schema version this call was authored against
+} & T
+
+type CallWake<T> = {
+  form: 'call'
+  code: number                  // resolved registry id (integer)
+  mark?: string                 // version
+  bind: T                       // args, validated against the Flow's `take`
 }
 
-type CallCompiled = {
-  form: 'call'
-  code: string                  // resolved registry id
-  mark?: string
-  bind: Record<string, unknown> // args, validated
-}
+type Call<T> = CallMake<T> | CallWake<T>
 ```
 
-The whole point of book. Calls compose by referencing other
+`CallMake` is the **make form** — what authors write and what
+the editor manipulates. Args sit flat at the top level via
+the `& T` intersection.
+
+`CallWake` is the **wake form** — what the runtime evaluates.
+Args sit under `bind`, and `code` is the integer index into
+the runtime's compiled handler array.
+
+`Call<T>` is the union — a node may be in either form
+depending on lifecycle stage.
+
+`mark` is the schema-version stamp (semver). The compile step
+checks that a Call authored against an older `mark` still
+typechecks against the current Flow registration.
+
+The whole point of calm. Calls compose by referencing other
 calls (or paths or literals) as arg values.
 
-### `path` — read from host
+### `read` — read from host
 
 ```typescript
-type Path = {
+type Read = {
   form: 'read'
-  path: ReadSeg[]
+  link: ReadLink[]
   mark?: string
 }
 
-type ReadSeg = VariableSeg | FieldSeg | IndexSeg | SliceSeg
+type ReadLink = VariableSeg | FieldSeg | IndexSeg | SliceSeg
 
 type VariableSeg = { form: 'variable'; name: string; safe?: boolean }
 type FieldSeg    = { form: 'field';    name: string; safe?: boolean }
@@ -113,7 +129,7 @@ type SliceSeg    = { form: 'slice';    rise?: number | Node | null; fall?: numbe
 The first segment is a `variable` (the host binding to start
 from). Subsequent segments walk into structure. Index segments
 take Nodes (so indices can be computed) — wrap literal indices
-as Path-with-one-segment, or as integer literals.
+as Read-with-one-segment, or as integer literals.
 
 `safe: true` on a segment makes it null-tolerant — the
 expression short-circuits to null instead of failing if the
@@ -126,7 +142,7 @@ type View = {
   form: 'view'
   name: string                  // component slug
   base?: string                 // optional variant
-  case?: string                 // sub-variant
+  case?: string                 // the case (variant)
   mark?: string
   nest?: Node[]                 // child nodes
   [prop: string]: unknown       // typed props
@@ -151,66 +167,101 @@ type Fork = {
 
 Evaluate `test`, run `then` if truthy, `fall` otherwise.
 
-### `walk` — iteration over a list
+### `walk` — iteration
+
+One node form, four variants distinguished by `case`. Modeled
+after Seed-language's iterator design (see Seed's
+`book/code/iterators.md`).
 
 ```typescript
-type Walk = {
+type Walk =
+  | WalkTest    // condition-based (while loop)
+  | WalkList    // for-each over a collection
+  | WalkSize    // numeric range (counted loop)
+  | WalkForm    // iterator-protocol object
+
+type WalkTest = {
   form: 'walk'
-  list: Node
-  item?: string                 // iterator binding name
+  case: 'test'
+  test: Node                    // boolean condition
+  hook: Node                    // body, evaluated each iteration while test is true
+  mark?: string
+}
+
+type WalkList = {
+  form: 'walk'
+  case: 'list'
+  list: Node                    // the list being iterated
+  item?: string                 // iterator binding name (default: 'item')
   index?: string                // optional index binding
   hook: Node                    // body, evaluated per item with `item`/`index` bound
   mark?: string
 }
-```
 
-### `loop` — numeric range
-
-```typescript
-type Loop = {
-  form: 'loop'
-  start: Node
-  end: Node
-  step?: Node
-  item?: string                 // counter binding
+type WalkSize = {
+  form: 'walk'
+  case: 'size'
+  base: Node                    // start value (inclusive)
+  head: Node                    // end value (exclusive)
+  step?: Node                   // increment (default 1)
+  item?: string                 // counter binding (default: 'i')
   index?: string
-  hook: Node
+  hook: Node                    // body, evaluated per step
+  mark?: string
+}
+
+type WalkForm = {
+  form: 'walk'
+  case: 'form'
+  source: Node                  // an iterator-protocol object
+  item?: string                 // iterator binding name
+  hook: Node                    // body
   mark?: string
 }
 ```
 
-### `attempt` — error catching
+| variant | traditional analogue | use |
+|---|---|---|
+| `walk(test)` | `while (cond)` | condition-based loop |
+| `walk(list)` | `for x in list` | collection iteration |
+| `walk(size)` | `for i in 0..n` | counted loop |
+| `walk(form)` | `for x in iter` | iterator protocol |
 
-```typescript
-type Attempt = {
-  form: 'attempt'
-  flow: Node                    // body
-  catch?: Node                  // run if flow throws
-  mark?: string
-}
-```
+The `walk` family covers every iteration shape calm needs.
+There is no separate `loop` node form; numeric ranges are
+`walk` with `case: 'size'`.
 
 ### Literals
 
-Primitive value nodes:
+Primitive value nodes. All prefixed `Base` so they group as
+the base / primitive type-set, and to avoid collision with
+TypeScript's built-in `Number`, `Boolean`, `Date`:
 
 ```typescript
-type Text    = { form: 'text';           text: string }
-type Integer = { form: 'integer';        value: number }
-type Natural = { form: 'natural_number'; value: number }
-type Number_ = { form: 'number';         value: number }
-type Boolean_= { form: 'boolean';        value: boolean }
-type Date_   = { form: 'date';           value: string }      // ISO string
-type List_   = { form: 'list';           list: Node[] }
-type Weave   = { form: 'weave';          flow: Node[] }       // string concatenation
+type BaseText    = { form: 'text';           text: string }
+type BaseInteger = { form: 'integer';        value: number }
+type BaseNatural = { form: 'natural_number'; value: number }
+type BaseNumber  = { form: 'number';         value: number }
+type BaseBoolean = { form: 'boolean';        value: boolean }
+type BaseDate    = { form: 'date';           value: string }      // ISO string
+type BaseList    = { form: 'list';           list: Node[] }
+type BaseWeave   = { form: 'weave';          flow: Node[] }       // string concatenation
 ```
 
 `weave` is a string-concatenation node — the renderer joins its
 children's rendered output.
 
+Note: the `Base` prefix on these literal types is a naming
+convention for the AST primitives. It is **not** the same as
+the `Base` interface that bundles every authored constant
+(see [`types.md`](./types.md)). They occupy different
+namespaces — primitive-AST-type names start with `Base`
+followed by the primitive name; the bundled aggregate is
+`Base` alone.
+
 ## Auto-promotion
 
-When the Book builder DSL encounters a primitive where a Node
+When the Base builder DSL encounters a primitive where a Node
 is expected, it wraps the primitive in the matching literal
 node automatically:
 
@@ -244,7 +295,8 @@ value bindings. Built-in host variables (engine-provided):
 | `viewer` | viewer's record id (optional) |
 | `viewer_roles` | viewer's roles list (optional) |
 
-User-bound variables come from `walk` / `loop` iterators and
+User-bound variables come from `walk` iterators (any of the
+four cases — `test` / `list` / `size` / `form`) and
 from explicit `bind` (let-binding) calls in the standard
 catalog.
 

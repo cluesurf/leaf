@@ -1,37 +1,37 @@
 # TypeScript types
 
-How book exposes the registered Flows as a fully-typed surface
+How calm exposes the registered Flows as a fully-typed surface
 to host code. Two strategies, one combined system: form-DSL
 codegen for module-local types, plus a kysely-style bundled
 registry for global lookup.
 
 ## Goal
 
-A user opens a `Book` instance generic over a `FlowBase`
+A user opens a `Calm` instance generic over a `Base`
 type, then registers Flow handlers — and TypeScript
 typechecks every call against the base.
 
 ```typescript
-import { Book } from '@cluesurf/book'
-import type { FlowBase } from '@cluesurf/book/standard'
+import { Calm } from '@cluesurf/calm'
+import type { Base } from '@cluesurf/calm/base'
 
-const book = new Book<FlowBase>()
+const calm = new Calm<Base>()
 
-book.flow('is', { base: 'ipa', case: 'broad' }, ({ text }) =>
+calm.flow('is', { base: 'ipa', case: 'broad' }, ({ text }) =>
   Array.from(text).every(is_ipa_symbol),
 )
 ```
 
 TypeScript should:
 
-- Recognize `'is'` as a valid Flow name in `FlowBase`.
+- Recognize `'is'` as a valid Flow name in `Base`.
 - Recognize `'ipa'` as a valid base under `is`.
 - Recognize `'broad'` as a valid case under `is.ipa`.
 - Type `text` as `string` (from the Flow's `take.text.like`).
 - Require the handler to return `boolean` (from the Flow's
   `like`).
 
-All inferred from the `FlowBase` type passed at `Book`
+All inferred from the `Base` type passed at `Base`
 instantiation. No hand-written overloads, no manual `.d.ts`
 files, no separate type declarations.
 
@@ -41,8 +41,8 @@ Two different surfaces, two different shapes of metadata:
 
 | concern | runtime | editor |
 |---|---|---|
-| `FlowBase` type | yes (typechecks `book.flow(...)`) | yes (typechecks editor host code) |
-| `FlowBaseCompiled` (int-keyed) | yes (dispatch table) | no |
+| `Base` type | yes (typechecks `calm.flow(...)`) | yes (typechecks editor host code) |
+| `BaseCompiled` (int-keyed) | yes (dispatch table) | no |
 | `FlowCodeMap` (string → int) | yes (compile step) | yes (compile step) |
 | Form schemas (`take` shapes as data) | no | yes (render input widgets, validate args, draw the editor UI) |
 | Flow handlers | yes | no (or stubbed for preview) |
@@ -60,13 +60,13 @@ them as JSON.
 
 A pure-runtime build (e.g., a server-side template renderer)
 can ship without any Form schemas at all — just the
-`FlowBase` type, the compiled-handler array, and the code
+`Base` type, the compiled-handler array, and the code
 map. A full authoring environment (browser editor) ships
 schemas alongside.
 
-This is why `book.form(...)` and `book.flow(...)` are
+This is why `calm.form(...)` and `calm.flow(...)` are
 distinct calls. Runtime hosts that don't need the editor
-surface call only `book.flow(...)` and skip Forms entirely.
+surface call only `calm.flow(...)` and skip Forms entirely.
 
 ## Strategy 1 — module-scoped types (form-DSL pattern)
 
@@ -82,7 +82,7 @@ exported from the module that owns the schema. The convention:
   `Form B` in its `link` field generates `import { B } from
   '...'` in `A`'s generated type.
 
-Book inherits this pattern verbatim for both `Form` and `Flow`
+Calm inherits this pattern verbatim for both `Form` and `Flow`
 schemas. Each Flow's `take` and `like` annotations compile to
 TypeScript types, exported from the module that registers the
 Flow.
@@ -91,7 +91,7 @@ Flow.
 // code/flow/is/ipa/broad/schema.ts
 export const is_ipa_broad: Flow = {
   name: 'is',
-  case: 'ipa.broad',
+  base: 'ipa', case: 'broad',
   like: 'boolean',
   take: { text: { like: 'string' } },
 }
@@ -104,14 +104,14 @@ export type IsIpaBroadOutput = boolean
 Names are **globally unique within the package** (so codegen
 doesn't need to disambiguate at import time) but **scoped per
 module** (so a deck publishing its own Flows doesn't collide
-with the standard catalog).
+with the base catalog).
 
 This works for module-level references — when a host imports
-the standard catalog, types ride along.
+the base catalog, types ride along.
 
 ## Strategy 2 — kysely-style bundled registry (two layers)
 
-Module-scoped types alone are awkward for `book.flow(...)`,
+Module-scoped types alone are awkward for `calm.flow(...)`,
 because that call has no compile-time knowledge of which
 specific Flow it's registering. Kysely solves the same problem
 for SQL with a single `Database` interface that aggregates
@@ -129,55 +129,55 @@ db.selectFrom('users').select('name')
 //   string from Database   string from Database['users']
 ```
 
-Book applies the same idea, but in **two layers** that mirror
+Calm applies the same idea, but in **two layers** that mirror
 the editable / compiled AST split:
 
-### Layer A — `FlowBase` (editable, string-keyed)
+### Layer A — `Base` (editable, string-keyed)
 
 What authors and the editor see. Keyed by the human-readable
-`(name, base?, case?)` triple flattened to a dotted string:
+`(name, base?, case?)` constant's exported underscore name (e.g. `is_ipa_broad`):
 
 ```typescript
-interface FlowBase {
-  'is.string':       { take: { thing: unknown };               like: boolean }
-  'is.ipa':          { take: { text: string };                 like: boolean }
-  'is.ipa.broad':    { take: { text: string };                 like: boolean }
-  'is.ipa.narrow':   { take: { text: string };                 like: boolean }
-  'is.equal':        { take: { this: unknown; that: unknown }; like: boolean }
-  'is.among':        { take: { thing: unknown; choices: unknown[] }; like: boolean }
-  'make.sum':        { take: { a: number; b: number };         like: number }
-  'make.lowercase':  { take: { text: string };                 like: string }
-  'get.length':      { take: { text: string };                 like: number }
-  'get.count':       { take: { items: unknown[] };             like: number }
-  'find.record':     { take: { reference: string };            like: { id: string; record: { id: string } } }
+interface Base {
+  'is_string':       { take: { thing: unknown };               like: boolean }
+  'is_ipa':          { take: { text: string };                 like: boolean }
+  'is_ipa_broad':    { take: { text: string };                 like: boolean }
+  'is_ipa_narrow':   { take: { text: string };                 like: boolean }
+  'is_equal':        { take: { this: unknown; that: unknown }; like: boolean }
+  'is_among':        { take: { thing: unknown; choices: unknown[] }; like: boolean }
+  'make_sum':        { take: { a: number; b: number };         like: number }
+  'make_lowercase':  { take: { text: string };                 like: string }
+  'get_length':      { take: { text: string };                 like: number }
+  'get_count':       { take: { items: unknown[] };             like: number }
+  'find_record':     { take: { reference: string };            like: { id: string; record: { id: string } } }
   // ... every registered Flow
 }
 ```
 
 Used by:
-- `book.flow(...)` registration (TypeScript looks up the key
+- `calm.flow(...)` registration (TypeScript looks up the key
   to validate handler args / return type).
 - The editor (looks up widget shape by triple).
 - The schema editor / docs (introspection).
 
-### Layer B — `FlowBaseCompiled` (runtime, integer-keyed)
+### Layer B — `BaseCompiled` (runtime, integer-keyed)
 
 What the runtime evaluator sees. Keyed by integer codes
 assigned at registry-finalization time:
 
 ```typescript
-interface FlowBaseCompiled {
-  1:   { take: { thing: unknown };               like: boolean }   // is.string
-  2:   { take: { text: string };                 like: boolean }   // is.ipa
-  3:   { take: { text: string };                 like: boolean }   // is.ipa.broad
-  4:   { take: { text: string };                 like: boolean }   // is.ipa.narrow
-  5:   { take: { this: unknown; that: unknown }; like: boolean }   // is.equal
-  6:   { take: { thing: unknown; choices: unknown[] }; like: boolean }  // is.among
-  7:   { take: { a: number; b: number };         like: number }    // make.sum
-  8:   { take: { text: string };                 like: string }    // make.lowercase
-  9:   { take: { text: string };                 like: number }    // get.length
-  10:  { take: { items: unknown[] };             like: number }    // get.count
-  11:  { take: { reference: string };            like: { id: string; record: { id: string } } }  // find.record
+interface BaseCompiled {
+  1:   { take: { thing: unknown };               like: boolean }   // is_string
+  2:   { take: { text: string };                 like: boolean }   // is_ipa
+  3:   { take: { text: string };                 like: boolean }   // is_ipa_broad
+  4:   { take: { text: string };                 like: boolean }   // is_ipa_narrow
+  5:   { take: { this: unknown; that: unknown }; like: boolean }   // is_equal
+  6:   { take: { thing: unknown; choices: unknown[] }; like: boolean }  // is_among
+  7:   { take: { a: number; b: number };         like: number }    // make_sum
+  8:   { take: { text: string };                 like: string }    // make_lowercase
+  9:   { take: { text: string };                 like: number }    // get_length
+  10:  { take: { items: unknown[] };             like: number }    // get_count
+  11:  { take: { reference: string };            like: { id: string; record: { id: string } } }  // find_record
   // ... every registered Flow, keyed by its assigned integer code
 }
 ```
@@ -198,16 +198,16 @@ two:
 ```typescript
 // generated alongside the registries
 interface FlowCodeMap {
-  'is.string':       1
-  'is.ipa':          2
-  'is.ipa.broad':    3
-  'is.ipa.narrow':   4
-  'is.equal':        5
+  'is_string':       1
+  'is_ipa':          2
+  'is_ipa_broad':    3
+  'is_ipa_narrow':   4
+  'is_equal':        5
   // ...
 }
 
 type FlowCodeMapInverse = { [K in keyof FlowCodeMap as FlowCodeMap[K]]: K }
-// → { 1: 'is.string'; 2: 'is.ipa'; ... }
+// → { 1: 'is_string'; 2: 'is_ipa'; ... }
 ```
 
 The compile step uses `FlowCodeMap` to translate
@@ -233,13 +233,13 @@ string-keyed: human-readable, diff-friendly, version-tolerant.
 | runtime surface | secondary | primary |
 
 The two layers solve disjoint problems. Strings are right for
-authoring; integers are right for evaluating. Book has both
+authoring; integers are right for evaluating. Base has both
 and the codegen keeps them in sync.
 
 ### Code stability across versions
 
 Integer codes are **only stable within a registry build**.
-When `@cluesurf/book` ships a new version with new Flows, the
+When `@cluesurf/calm` ships a new version with new Flows, the
 codegen may re-number. Compiled trees from an older build
 must be re-compiled (decompile → recompile) when loaded under
 a newer build.
@@ -254,8 +254,8 @@ load mismatch, decompile-then-recompile.
 Hosts and decks extend both registries simultaneously:
 
 ```typescript
-declare module '@cluesurf/book' {
-  interface FlowBase {
+declare module '@cluesurf/calm' {
+  interface Base {
     'lookup.language': {
       take: { slug: string }
       like: { id: string; record: { id: string } }
@@ -266,16 +266,61 @@ declare module '@cluesurf/book' {
 
 The codegen step on the host's tsconfig picks up the
 augmentation and assigns an integer code. The compiled-layer
-type (`FlowBaseCompiled`) and code map (`FlowCodeMap`)
+type (`BaseCompiled`) and code map (`FlowCodeMap`)
 extend automatically because they're projections of
-`FlowBase`.
+`Base`.
 
-## How `book.flow(...)` typechecks
+### Combining multiple calm packages
 
-The `Book` class is generic over the `FlowBase`:
+Each calm package publishes its own `Base` schema (its
+contribution to the bundled type). Hosts that combine
+multiple packages get the union — but **collisions on the
+same key are possible**, just like kysely with multiple
+table-defining modules.
 
 ```typescript
-class Book<R = FlowBase> {
+import * as base       from '@cluesurf/calm/base'
+import * as ling       from '@cluesurf/calm-linguistics/base'
+import * as customBase from './my-app/base'
+
+// All three augment Base. If 'is.iso' is defined in both
+// `base` and `ling`, the later registration wins (last-write
+// semantics) and TypeScript shows the merged type.
+```
+
+When two packages need to coexist without overriding each
+other, the consumer renames at import time:
+
+```typescript
+// my-app/base.ts
+import { is_iso as standard_is_iso } from '@cluesurf/calm/base'
+import { is_iso as ling_is_iso }     from '@cluesurf/calm-linguistics/base'
+
+export { standard_is_iso, ling_is_iso }
+
+declare module '@cluesurf/calm' {
+  interface Base {
+    'standard.is.iso': /* ... */
+    'ling.is.iso':     /* ... */
+  }
+}
+```
+
+Calm doesn't auto-namespace per-package; the consumer chooses
+whether to accept the override or rename. This mirrors how
+TypeScript module augmentation behaves generally — name
+collisions are explicit, not magic.
+
+The convention for a host expecting collisions: prefix
+authored constants with the deck name (`@my-app/base.is.iso`)
+so the bundled key stays unique without manual rename.
+
+## How `calm.flow(...)` typechecks
+
+The `Base` class is generic over the `Base`:
+
+```typescript
+class Calm<R = Base> {
   flow<
     Name extends FlowName<R>,
     Case extends FlowCase<R, Name>,
@@ -311,17 +356,17 @@ type FlowHandler<R, Name extends string, Case extends string | undefined> =
       : never
 ```
 
-The result: when the host writes `book.flow('is', { case:
-'ipa.broad' }, handler)`, TypeScript:
+The result: when the host writes `calm.flow('is', { case:
+case: 'broad' }, handler)`, TypeScript:
 
 1. Resolves `'is'` against `FlowName<R>`. Valid.
-2. Resolves `'ipa.broad'` against `FlowCase<R, 'is'>`. Valid.
-3. Looks up `FlowBase['is.ipa.broad'].take` → `{ text:
+2. Resolves `base: 'ipa'` and `case: 'broad'` against the registered Flow. Valid.
+3. Looks up `Base['is_ipa_broad'].take` → `{ text:
    string }`.
-4. Looks up `FlowBase['is.ipa.broad'].like` → `boolean`.
+4. Looks up `Base['is_ipa_broad'].like` → `boolean`.
 5. Types `handler` as `(args: { text: string }) => boolean`.
 
-If the host typos `'ipa.brad'` instead of `'ipa.broad'`,
+If the host typos `case: 'brad'` instead of `case: 'broad'`,
 TypeScript catches it. If the handler returns `string` instead
 of `boolean`, TypeScript catches it. If the handler reads an
 arg called `txt` instead of `text`, TypeScript catches it.
@@ -333,10 +378,10 @@ The pattern follows kysely's module-augmentation approach:
 
 ```typescript
 // host code
-import '@cluesurf/book'
+import '@cluesurf/calm'
 
-declare module '@cluesurf/book' {
-  interface FlowBase {
+declare module '@cluesurf/calm' {
+  interface Base {
     'lookup.language': {
       take: { slug: string }
       like: { id: string; record: { id: string } }
@@ -348,7 +393,7 @@ declare module '@cluesurf/book' {
   }
 }
 
-book.flow('lookup', { case: 'language' }, async ({ slug }) => {
+calm.flow('lookup', { case: 'language' }, async ({ slug }) => {
   // ↑ slug is typed as string
   // ↓ return type checked against { id, record: { id } }
   return await fetchLanguageBySlug(slug)
@@ -356,20 +401,20 @@ book.flow('lookup', { case: 'language' }, async ({ slug }) => {
 ```
 
 The host's `declare module` block widens the global
-`FlowBase` interface. Their `book.flow(...)` calls now
+`Base` interface. Their `calm.flow(...)` calls now
 typecheck against the union of standard catalog + their
 additions.
 
 ## Decks ship as `declare module` blocks
 
 A deck published as an npm package exposes its Flows by
-augmenting `FlowBase`. Importing the deck both registers
+augmenting `Base`. Importing the deck both registers
 runtime handlers AND extends the type.
 
 ```typescript
-// @cluesurf/book-linguistics/src/index.ts
-declare module '@cluesurf/book' {
-  interface FlowBase {
+// @cluesurf/calm-linguistics/src/index.ts
+declare module '@cluesurf/calm' {
+  interface Base {
     'is.iast':           { take: { text: string }; like: boolean }
     'is.wylie-tibetan':  { take: { text: string }; like: boolean }
     'is.pinyin':         { take: { text: string }; like: boolean }
@@ -383,44 +428,293 @@ export const linguisticsDeck: Deck = { /* ... */ }
 Host code:
 
 ```typescript
-import { Book } from '@cluesurf/book'
-import { linguisticsDeck } from '@cluesurf/book-linguistics'
+import { Calm } from '@cluesurf/calm'
+import { linguisticsDeck } from '@cluesurf/calm-linguistics'
 
-const book = new Book()
-book.deck(linguisticsDeck)
+const calm = new Calm()
+calm.deck(linguisticsDeck)
 
-book.flow('is', { case: 'iast' }, ({ text }) => /* ... */)
+calm.flow('is', { case: 'iast' }, ({ text }) => /* ... */)
 //                       ↑
-//          Recognized because @cluesurf/book-linguistics
-//          already augmented FlowBase.
+//          Recognized because @cluesurf/calm-linguistics
+//          already augmented Base.
 ```
 
 This is exactly how kysely-codegen works with `declare module`
 augmentation.
 
-## How the registry is generated
+## How `Base` is generated (codegen pipeline)
 
-A codegen step in `@cluesurf/book` walks every `code/flow/<verb>/<case>/schema.ts`
-file, reads its `take` and `like` annotations, and emits a
-single `FlowBase` interface in a generated `.d.ts`:
+The compiler does **exactly what `@cluesurf/form`'s
+`makeTree` already does** (see
+`deck/form.js/test/index.ts` for the canonical pattern), plus
+one extra emit: a single `Base` interface aggregating every
+authored constant.
+
+### Pipeline
+
+```
+authored exports                         generated outputs
+────────────────                         ─────────────────
+code/form/*.ts        →   makeTree   →   *.form.ts      (TS types per Form)
+code/flow/**/*.ts                        *.take.ts      (Zod parsers per Flow input)
+code/list/*.ts                           *.base.ts      (normalized constants)
+code/hash/*.ts                                          (mirrors form.js makeTree)
+code/fold/*.ts        ───────────────►   Base.d.ts      (NEW — single bundled type)
+                                         BaseCompiled.d.ts (NEW — int-keyed dispatch)
+                                         CodeMap.d.ts     (NEW — string→int)
+```
+
+The first three outputs (`*.form.ts`, `*.take.ts`,
+`*.base.ts`) match form.js verbatim. They produce per-export
+TypeScript types and per-export Zod parsers, written next to
+the schemas they came from.
+
+The next three outputs are calm-specific. They aggregate
+every authored constant into single bundled type surfaces
+that the runtime class is generic over.
+
+### What `Base` looks like
+
+The aggregate is a flat type keyed by the authored constant's
+name. Every Form's Cast type, every Flow's signature, every
+Hash, every List, every Fold — one type, default-exported
+from the generated `base.ts`:
 
 ```typescript
-// generated/registry.d.ts
-import '@cluesurf/book'
+// generated/base.ts
+import type { LanguageString }     from './form/language_string'
+import type { IpaForm }            from './form/ipa_form'
+import type { Bear }               from './form/bear'
+import type { CalmError }          from './form/error'
+import type { IsStringInput,
+              IsStringOutput }     from './flow/is_string'
+import type { IsIpaInput,
+              IsIpaOutput }        from './flow/is_ipa'
+import type { IsIpaBroadInput,
+              IsIpaBroadOutput }   from './flow/is_ipa_broad'
+import type { IsEqualInput,
+              IsEqualOutput }      from './flow/is_equal'
+import type { MakeSumInput,
+              MakeSumOutput }      from './flow/make_sum'
+import type { FindRecordInput,
+              FindRecordOutput }   from './flow/find_record'
+import type { FfmpegCodecs }       from './hash/ffmpeg_codecs'
+import type { IpaSymbols }         from './list/ipa_symbols'
+import type { IsoLanguageCodes }   from './list/iso_language_codes'
+import type { WelcomeGuide }       from './fold/welcome_guide'
+import type { DefaultFilter }      from './find/default_filter'
 
-declare module '@cluesurf/book' {
-  interface FlowBase {
-    'is.string':       { take: { thing: unknown };  like: boolean }
-    'is.integer':      { take: { thing: unknown };  like: boolean }
-    'is.equal':        { take: { this: unknown; that: unknown };  like: boolean }
-    // ... every Flow in the catalog
+type Base = {
+  // Forms (each entry is the Form's Cast shape)
+  language_string: LanguageString
+  ipa_form:        IpaForm
+  bear:            Bear
+  error:           CalmError
+
+  // Flows (each entry is the Flow's signature)
+  'is_string':     { take: IsStringInput;     like: IsStringOutput }
+  'is_ipa':        { take: IsIpaInput;        like: IsIpaOutput }
+  'is_ipa_broad':  { take: IsIpaBroadInput;   like: IsIpaBroadOutput }
+  'is_equal':      { take: IsEqualInput;      like: IsEqualOutput }
+  'make_sum':      { take: MakeSumInput;      like: MakeSumOutput }
+  'find_record':   { take: FindRecordInput;   like: FindRecordOutput }
+
+  // Hashes
+  ffmpeg_codecs:      FfmpegCodecs
+
+  // Lists
+  ipa_symbols:        IpaSymbols
+  iso_language_codes: IsoLanguageCodes
+
+  // Folds (each entry is the Fold's structural shape)
+  welcome_guide:      WelcomeGuide
+
+  // Finds (each entry is the Find's filter shape)
+  default_filter:     DefaultFilter
+}
+
+export default Base
+```
+
+The file is a **flat type** with one entry per authored
+constant, default-exported under the package's `/base` path.
+Consumers import it directly:
+
+```typescript
+import type Base from '@cluesurf/calm/base'
+
+const calm = new Calm<Base>()
+```
+
+This is the literal kysely pattern — `Database` with a row
+shape per table — applied to every primitive shape calm
+understands. The file is generated; never hand-edited.
+
+### Combining multiple packages — type union
+
+Each calm package emits its own `base.ts`. Consumers combine
+multiple packages by intersecting:
+
+```typescript
+import type StandardBase    from '@cluesurf/calm/base'
+import type LinguisticsBase from '@cluesurf/calm-linguistics/base'
+import type MyAppBase       from './my-app/base'
+
+type Base = StandardBase & LinguisticsBase & MyAppBase
+
+const calm = new Calm<Base>()
+```
+
+The `&` intersection unions the keys from every source
+package. If two packages declare the same key, TypeScript's
+intersection rules apply (the merged type must satisfy both
+sides — usually fine for compatible shapes; an error if they
+disagree).
+
+For a host whose collisions are intentional (e.g., overriding
+a library's flow with a custom one), rename at the import
+boundary:
+
+```typescript
+import type StandardBase    from '@cluesurf/calm/base'
+import type { Base as ExtraBase } from '@some-library/base'
+
+type Base = Omit<StandardBase, 'is.iso'> & ExtraBase
+
+const calm = new Calm<Base>()
+```
+
+The intersection-and-rename pattern keeps every key
+reachable while letting the consumer decide who wins.
+
+### Alternative: `declare module` augmentation
+
+For host code that wants the bundled `Base` to be globally
+known (so `import type { Base } from '@cluesurf/calm/base'`
+returns the merged type without per-file intersection), the
+codegen optionally emits a `.d.ts` augmentation:
+
+```typescript
+// generated/base.augment.d.ts
+declare module '@cluesurf/calm/base' {
+  interface Base {
+    'lookup.language': {
+      take: { slug: string }
+      like: { id: string; record: { id: string } }
+    }
   }
 }
 ```
 
-The user's tsconfig picks this up automatically because
-`@cluesurf/book` ships it as part of the package's published
-type surface. No host action required.
+Augmentation widens the published `Base` interface in-place,
+kysely-style. The default-export form (above) is the
+recommended primary pattern; augmentation is an opt-in
+shortcut for projects that don't want consumers to write
+explicit unions.
+
+### Where it gets used
+
+```typescript
+import { Calm } from '@cluesurf/calm'
+import type { Base } from '@cluesurf/calm/base'
+
+const calm = new Calm<Base>()
+
+// Now everything is typechecked through Base:
+
+calm.flow('is', { base: 'ipa', case: 'broad' }, ({ text }) => /* ... */)
+//        ↑                                       ↑
+//   resolved via Base['is_ipa_broad'].take      typed as string
+
+calm.bind(welcomeSeed)
+//        ↑
+//   typed as Base['welcome_guide']
+
+const cast: Base['language_string'] = { /* ... */ }
+//          ↑
+//   the Form's Cast shape, available without per-form imports
+```
+
+`Calm` is generic over `Base`. Every method that touches a
+named entity (`flow`, `form`, `bind`, `call`) infers its
+types from the bundled `Base`.
+
+### Per-export imports still work
+
+The host can also import individual types alongside the
+bundled `Base`:
+
+```typescript
+import type { LanguageString, IsIpaBroadInput } from '@cluesurf/calm/base'
+```
+
+These are the same per-export `*.form.ts` files that form.js
+already emits — module-scoped, globally unique within the
+package. Use them directly when you want one type without
+indexing into `Base`.
+
+### Compile invocation
+
+The compiler entry mirrors form.js's `makeTree`:
+
+```typescript
+import * as MESH from './form'
+import * as FLOW from './flow'
+import * as TASK from './task'
+import * as SEED from './seed'
+import { makeBase } from '@cluesurf/calm/make'
+
+const tree = await makeBase({
+  name: NAME,
+  mesh: { ...MESH, ...FLOW, ...SEED },   // type sources
+  link: { ...MESH, ...FLOW, ...SEED },   // schema cross-refs
+  hook: TASK,                            // handler implementations
+  cast: CAST,
+  testLink: '~/test/test',
+  codeLink: '.',
+})
+
+// writes:
+//   tree.form  → *.form.ts
+//   tree.take  → *.take.ts
+//   tree.base  → *.base.ts
+//   tree.bundled → Base.d.ts (the aggregate)
+//   tree.compiled → BaseCompiled.d.ts (int-keyed)
+//   tree.codemap → CodeMap.d.ts (string → int)
+```
+
+Same `tree.form` / `tree.take` / `tree.base` outputs as
+form.js. Adds three bundled outputs that don't exist in
+form.js: `bundled` (the `Base` aggregate), `compiled` (the
+runtime int-keyed table), and `codemap` (the bidirectional
+string ↔ int map).
+
+### Why one bundled `Base`
+
+Without the aggregate, every host file using calm would have
+to import the specific per-export types it touches:
+
+```typescript
+// without Base
+import type { LanguageString } from '@cluesurf/calm/base/form/language_string'
+import type { IsIpaBroadInput } from '@cluesurf/calm/base/flow/is/ipa/broad'
+import type { MakeSumInput } from '@cluesurf/calm/base/flow/make/sum'
+// ... a dozen more
+```
+
+With the aggregate, one import covers the whole surface:
+
+```typescript
+// with Base
+import type { Base } from '@cluesurf/calm/base'
+// → Base['language_string'], Base['is_ipa_broad'], Base['make_sum'], ...
+```
+
+Plus the runtime-class generic (`new Calm<Base>()`) needs the
+aggregate type as one parameter, not N. Kysely solved exactly
+this for SQL; calm solves it the same way for the function-
+and-data registry.
 
 ## Form types follow the same pattern
 
@@ -441,10 +735,10 @@ interface FormRegistry {
 }
 ```
 
-`book.form(...)` registrations type-check the same way:
+`calm.form(...)` registrations type-check the same way:
 
 ```typescript
-book.form('language_string', schema)
+calm.form('language_string', schema)
 // schema's link fields validated against FormRegistry['language_string']
 ```
 
@@ -459,7 +753,7 @@ function processString(cast: FormRegistry['language_string']) {
 ## What lives where
 
 ```
-deck/book/code/
+deck/calm/code/
   form/                        # form-DSL machinery
     type.ts
     build.ts
@@ -471,7 +765,7 @@ deck/book/code/
       handler.ts               # the implementation
       types.gen.ts             # auto-generated input/output types
   generated/
-    registry.d.ts              # the bundled FlowBase + FormRegistry
+    registry.d.ts              # the bundled Base + FormRegistry
     forms/<form>.gen.ts        # one generated file per Form
     flows/<verb>/<case>.gen.ts # one generated file per Flow
 ```
@@ -487,18 +781,18 @@ SQL types. Adding a table = augmenting `Database` = the rest of
 the kysely surface knows about it. No per-table type
 declarations to wire up; one interface, indexed by name.
 
-Book's `FlowBase` is the same idea for functions:
+Base's `Base` is the same idea for functions:
 
-| concern | kysely | book |
+| concern | kysely | calm |
 |---|---|---|
-| type source | `Database` interface | `FlowBase` + `FormRegistry` |
-| key | table name | flat code id (`is.ipa.broad`) |
+| type source | `Database` interface | `Base` + `FormRegistry` |
+| key | table name | flat code id (`is_ipa_broad`) |
 | value | row shape | `{ take, like }` |
-| generation | `kysely-codegen` from SQL | book codegen from schema files |
+| generation | `kysely-codegen` from SQL | calm codegen from schema files |
 | extension | `declare module` augmentation | same |
-| ergonomics | `db.selectFrom('users')` typed | `book.flow('is', { case: ... })` typed |
+| ergonomics | `db.selectFrom('users')` typed | `calm.flow('is', { case: ... })` typed |
 
-The pattern is well-trodden; book just applies it to a
+The pattern is well-trodden; calm just applies it to a
 different domain.
 
 ## Open questions
@@ -526,7 +820,7 @@ Async Flows return `Promise<like>` at runtime. The registry's
 `like` should reflect this:
 
 ```typescript
-'find.record': {
+'find_record': {
   take: { reference: string }
   like: Promise<{ id: string; record: { id: string } }>
   async: true
@@ -553,7 +847,7 @@ plain `Error`. The registry could carry a `kink` field
 declaring the error union:
 
 ```typescript
-'find.record': {
+'find_record': {
   take: { reference: string }
   like: { id: string; record: { id: string } }
   kink: 'not-found' | 'unauthorized'
@@ -567,9 +861,9 @@ straightforward; deferred until the runtime stabilizes.
 
 - Form-DSL codegen produces module-local TS types
   (globally unique within the package, module-scoped).
-- A bundled `FlowBase` interface aggregates every Flow,
+- A bundled `Base` interface aggregates every Flow,
   kysely-style, keyed by flat code id.
-- `book.flow(...)` and `book.form(...)` are generic over
+- `calm.flow(...)` and `calm.form(...)` are generic over
   these registries, so handler args and return types infer
   automatically.
 - Hosts and decks extend the registries via `declare module`

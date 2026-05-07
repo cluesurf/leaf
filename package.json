@@ -1,5 +1,5 @@
 {
-  "name": "@cluesurf/book",
+  "name": "@cluesurf/calm",
   "version": "0.0.0",
   "license": "MIT",
   "packageManager": "pnpm@10.33.0",
@@ -9,13 +9,10 @@
   "exports": {
     ".": "./host/code/index.js"
   },
-  "bin": {
-    "book": "host/code/console/book.js"
-  },
   "files": ["host", "readme.md", "license.md"],
   "scripts": {
     "test": "pnpm exec vitest run",
-    "make": "rm -rf host && pnpm exec tsc --project tsconfig.json --pretty && rm -f tsconfig.tsbuildinfo && pnpm exec tsc-alias --project tsconfig.json --resolve-full-paths && chmod +x host/code/console/book.js",
+    "make": "rm -rf host && pnpm exec tsc --project tsconfig.json --pretty && rm -f tsconfig.tsbuildinfo && pnpm exec tsc-alias --project tsconfig.json --resolve-full-paths && chmod +x host/code/console/calm.js",
     "host": "pnpm make && pnpm publish --access=public --no-git-checks"
   },
   "prettier": "@cluesurf/wash/flow.json",
