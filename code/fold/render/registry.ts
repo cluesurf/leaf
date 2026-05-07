@@ -30,7 +30,7 @@
  */
 
 import type { Form, HookHash } from '@/form'
-import * as builtIn from '../../hook'
+import * as builtIn from '@/make/hook'
 import type { Node } from '../types'
 import type { Scope } from './scope'
 

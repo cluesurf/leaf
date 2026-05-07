@@ -9,7 +9,7 @@ Every node uses at most these reserved keys:
 
 | key | role |
 |---|---|
-| `form` | discriminant — what kind of node this is |
+| `form` | discriminant. What kind of node this is |
 | `name` | identifier for `call` (verb) or `view` (component) |
 | `base` | which Cast instance / variant being operated on |
 | `case` | the case (variant) being operated on |
@@ -17,7 +17,7 @@ Every node uses at most these reserved keys:
 | `code` | (compiled) flattened registry id |
 | `bind` | (compiled) args object ready to dispatch |
 
-Everything else is **snake_case user data** — flow args,
+Everything else is **snake_case user data**. Flow args,
 component props, list items, path segments. Reserved keys
 cannot collide with user data because they are reserved.
 
@@ -70,7 +70,7 @@ stable across compile.
 
 Each `form:` value picks a different node shape.
 
-### `call` — Flow instance
+### `call`. Flow instance
 
 ```typescript
 type CallMake<T> = {
@@ -78,7 +78,7 @@ type CallMake<T> = {
   name: string                  // verb
   base?: string                 // Form-instance variant
   case?: string                 // the case (variant)
-  mark?: string                 // semver — the schema version this call was authored against
+  mark?: string                 // semver. The schema version this call was authored against
 } & T
 
 type CallWake<T> = {
@@ -91,15 +91,15 @@ type CallWake<T> = {
 type Call<T> = CallMake<T> | CallWake<T>
 ```
 
-`CallMake` is the **make form** — what authors write and what
+`CallMake` is the **make form**. What authors write and what
 the editor manipulates. Args sit flat at the top level via
 the `& T` intersection.
 
-`CallWake` is the **wake form** — what the runtime evaluates.
+`CallWake` is the **wake form**. What the runtime evaluates.
 Args sit under `bind`, and `code` is the integer index into
 the runtime's compiled handler array.
 
-`Call<T>` is the union — a node may be in either form
+`Call<T>` is the union. A node may be in either form
 depending on lifecycle stage.
 
 `mark` is the schema-version stamp (semver). The compile step
@@ -109,7 +109,7 @@ typechecks against the current Flow registration.
 The whole point of calm. Calls compose by referencing other
 calls (or paths or literals) as arg values.
 
-### `read` — read from host
+### `read`. Read from host
 
 ```typescript
 type Read = {
@@ -128,14 +128,14 @@ type SliceSeg    = { form: 'slice';    rise?: number | Node | null; fall?: numbe
 
 The first segment is a `variable` (the host binding to start
 from). Subsequent segments walk into structure. Index segments
-take Nodes (so indices can be computed) — wrap literal indices
+take Nodes (so indices can be computed). Wrap literal indices
 as Read-with-one-segment, or as integer literals.
 
-`safe: true` on a segment makes it null-tolerant — the
+`safe: true` on a segment makes it null-tolerant. The
 expression short-circuits to null instead of failing if the
 parent value is missing.
 
-### `view` — component element
+### `view`. Component element
 
 ```typescript
 type View = {
@@ -150,10 +150,10 @@ type View = {
 ```
 
 The rendering side of the AST. A `view` produces a renderable
-element (a React node, a string, an HTML fragment — whichever
+element (a React node, a string, an HTML fragment. Whichever
 the runtime is configured for).
 
-### `fork` — conditional
+### `fork`. Conditional
 
 ```typescript
 type Fork = {
@@ -167,7 +167,7 @@ type Fork = {
 
 Evaluate `test`, run `then` if truthy, `fall` otherwise.
 
-### `walk` — iteration
+### `walk`. Iteration
 
 One node form, four variants distinguished by `case`. Modeled
 after Seed-language's iterator design (see Seed's
@@ -248,14 +248,14 @@ type BaseList    = { form: 'list';           list: Node[] }
 type BaseWeave   = { form: 'weave';          flow: Node[] }       // string concatenation
 ```
 
-`weave` is a string-concatenation node — the renderer joins its
+`weave` is a string-concatenation node. The renderer joins its
 children's rendered output.
 
 Note: the `Base` prefix on these literal types is a naming
 convention for the AST primitives. It is **not** the same as
 the `Base` interface that bundles every authored constant
 (see [`types.md`](./types.md)). They occupy different
-namespaces — primitive-AST-type names start with `Base`
+namespaces. Primitive-AST-type names start with `Base`
 followed by the primitive name; the bundled aggregate is
 `Base` alone.
 
@@ -281,7 +281,7 @@ the canonical node shape.
 
 ## Reading host
 
-Every node evaluates against a **host** — a chain of name →
+Every node evaluates against a **host**. A chain of name →
 value bindings. Built-in host variables (engine-provided):
 
 | name | meaning |
@@ -296,7 +296,7 @@ value bindings. Built-in host variables (engine-provided):
 | `viewer_roles` | viewer's roles list (optional) |
 
 User-bound variables come from `walk` iterators (any of the
-four cases — `test` / `list` / `size` / `form`) and
+four cases. `test` / `list` / `size` / `form`) and
 from explicit `bind` (let-binding) calls in the standard
 catalog.
 
@@ -314,7 +314,7 @@ When an editor creates a new node, it assigns a fresh `mark`.
 When it edits an existing node, the `mark` stays. Patches always
 target by `mark`.
 
-`mark` survives compile — both editable and compiled forms have
+`mark` survives compile. Both editable and compiled forms have
 the same `mark` for the same logical node.
 
 ## Round-trip guarantee
@@ -327,7 +327,7 @@ form unless they're debugging.
 ## Reserved-key mistakes to catch
 
 If a user-data key collides with a reserved key, that's a
-schema bug — flag it at flow-registration time, not at runtime.
+schema bug. Flag it at flow-registration time, not at runtime.
 The runtime then trusts that no Flow accepts an arg called
 `form` / `name` / `case` / `mark` / `code` / `bind`,
 because the validator already rejected such a Flow at

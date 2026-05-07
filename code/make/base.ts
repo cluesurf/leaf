@@ -95,7 +95,7 @@ export function make_flow({
   // The `Node` type comes from the package root. Inlined because
   // there's no schema entry to thread through `hold.save`.
   list.push(``)
-  list.push(`import type { Node } from '@cluesurf/form'`)
+  list.push(`import type { Node } from '@cluesurf/calm'`)
   list.push(``)
   list.push(
     `export const ${TYPE_NAME}: Node[] = ` +

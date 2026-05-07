@@ -1,7 +1,7 @@
 # Codegen
 
 How calm generates TypeScript types and runtime artifacts from
-authored schemas — and how those concerns stay decoupled from
+authored schemas. And how those concerns stay decoupled from
 where the generated code lives.
 
 ## The decoupling principle
@@ -10,7 +10,7 @@ A `Form`, `Flow`, `Hash`, `List`, `Fold`, or `Find` declares
 **what it is**. It does not declare **where it lives**.
 
 ```typescript
-// good — no path info
+// good. No path info
 export const ffmpeg_codec_data: Form = {
   form: 'form',
   link: {
@@ -21,7 +21,7 @@ export const ffmpeg_codec_data: Form = {
   },
 }
 
-// bad — schema knows its codegen target (form.js's old `save` field)
+// bad. Schema knows its codegen target (form.js's old `save` field)
 export const ffmpeg_codec_data: Form = {
   form: 'form',
   save: '~/code/form/object/ffmpeg',   // ← coupling
@@ -41,7 +41,7 @@ This unlocks two big things:
    into them. Consumers decide where the generated code lands.
 
 2. **Consumers can relocate freely.** Move forms between
-   directories, rename folders, restructure the monorepo —
+   directories, rename folders, restructure the monorepo. 
    none of it touches schema definitions. Only the codegen
    config changes.
 
@@ -79,7 +79,7 @@ identifier in the source module), not by save location.
 ## What the consumer provides
 
 A consumer (host or downstream library) writes one codegen
-script. The pattern is imperative — instantiate a `Make`,
+script. The pattern is imperative. Instantiate a `Make`,
 link source modules to their target output paths, then save:
 
 ```typescript
@@ -131,7 +131,7 @@ calm.flow('is', { base: 'string' }, ({ link }) => /* ... */)
 
 The author's flow-registration call (`calm.flow(...)`) is
 typed by the generated `Base` interface. Names, bases, cases,
-arg shapes, and return types all resolve through it — no
+arg shapes, and return types all resolve through it. No
 hand-written annotations needed.
 
 ## Make class API
@@ -155,22 +155,22 @@ and writes the generated `index.ts` / `form.ts` / `base.ts`
 files alongside the source `make.ts`.
 
 Default behavior: codegen output lands **alongside** the
-source — `make.link('./somewhere/ipa', ipa)` writes
+source. `make.link('./somewhere/ipa', ipa)` writes
 `./somewhere/ipa/index.ts`, `./somewhere/ipa/form.ts`,
 `./somewhere/ipa/base.ts`.
 
 For more control over output placement (separate output tree,
 per-name overrides, resolver function), pass options to the
-constructor — see "Three layered output strategies" below.
+constructor. See "Three layered output strategies" below.
 
 ## Three layered output strategies
 
-The default — output written alongside each linked source
-path — covers most cases. For consumers who want generated
+The default. Output written alongside each linked source
+path. Covers most cases. For consumers who want generated
 artifacts in a different tree, the `Make` constructor takes
 options. Layered from simplest to most flexible.
 
-### 1 — Layout convention (zero config)
+### 1. Layout convention (zero config)
 
 The simplest case: tell the codegen one base directory and a
 layout style. Calm derives every output path from name and
@@ -187,7 +187,7 @@ const make = new Make({
 
 Layouts:
 
-- **`'kind'`** — group by primitive type:
+- **`'kind'`**. Group by primitive type:
   ```
   ./my-app/code/calm/
     form/<name>.ts
@@ -197,17 +197,17 @@ Layouts:
     fold/<name>.ts
     find/<name>.ts
   ```
-- **`'flat'`** — every constant in one folder:
+- **`'flat'`**. Every constant in one folder:
   ```
   ./my-app/code/calm/
     <name>.ts
   ```
-- **`'mirror'`** — mirror the source module's import path:
+- **`'mirror'`**. Mirror the source module's import path:
   ```
   ./my-app/code/calm/
     <relative-path-from-source>.ts
   ```
-- **`'name'`** — use underscore segments of the constant's name as
+- **`'name'`**. Use underscore segments of the constant's name as
   folders:
   ```
   ./my-app/code/calm/
@@ -219,9 +219,9 @@ Layouts:
 90% of consumers pick one layout and never write per-name
 overrides.
 
-### 2 — Per-name overrides (targeted)
+### 2. Per-name overrides (targeted)
 
-For the constants that don't fit the chosen layout — common
+For the constants that don't fit the chosen layout. Common
 when integrating a library whose names don't align with the
 consumer's structure.
 
@@ -241,7 +241,7 @@ const make = new Make({
 The override map takes precedence over the layout. Names not
 in the map fall through to the layout default.
 
-### 3 — Resolver function (programmatic)
+### 3. Resolver function (programmatic)
 
 Full control: a function that takes (name, kind, source-info)
 and returns the output path.
@@ -503,7 +503,7 @@ import from one another in a fixed order:
   parsers locked to those types via `satisfies z.ZodType<T>`.
 - `base.ts` re-exports both, plus the handler from `./flow`.
 
-### `index.ts` — TypeScript types
+### `index.ts`. TypeScript types
 
 For a Form, paired Cast type:
 
@@ -554,7 +554,7 @@ For a List:
 export type IpaSymbols = string[]
 ```
 
-### `form.ts` — Zod parsers
+### `form.ts`. Zod parsers
 
 Always `import type` from `./index` and lock with `satisfies`:
 
@@ -620,9 +620,9 @@ export const ipa_symbols_parser = z.array(z.string())
   satisfies z.ZodType<IpaSymbols>
 ```
 
-### `base.ts` — leaf catalog re-exports
+### `base.ts`. Leaf catalog re-exports
 
-The folder's bundled namespace — pulls in everything in the
+The folder's bundled namespace. Pulls in everything in the
 leaf so consumers get one import:
 
 ```typescript
@@ -667,13 +667,13 @@ validate it.
 ### Why `satisfies` instead of explicit annotation
 
 ```typescript
-// BAD — type annotation, parser is the source of truth
+// BAD. Type annotation, parser is the source of truth
 export const language_string_parser: z.ZodType<LanguageString> = z.object({ /* ... */ })
 //                                  ^ widens the parser; loses inference
 ```
 
 ```typescript
-// GOOD — `satisfies`, type narrows but isn't the declared shape
+// GOOD. `satisfies`, type narrows but isn't the declared shape
 export const language_string_parser = z.object({ /* ... */ })
   satisfies z.ZodType<LanguageString>
 //          ^ verifies compatibility without widening
@@ -741,7 +741,7 @@ Tooling: a `calm migrate-save` script reads the existing
 ### Schemas are values, not config
 
 The schema declares a value of type `Form` (or `Flow`, etc.).
-Values shouldn't know where they're stored on disk — that's a
+Values shouldn't know where they're stored on disk. That's a
 binding from name to location, which lives elsewhere.
 
 This is the same separation as **TypeScript types vs
@@ -761,7 +761,7 @@ consumers compose them however their codebase prefers.
 
 The exported `const some_name` IS the schema's identity.
 Codegen, the bundled `Base` interface, the editor, the
-runtime dispatcher — all key off the same name. No path-vs-
+runtime dispatcher. All key off the same name. No path-vs-
 name disagreements.
 
 ### Hot reload and IDE-friendliness
@@ -872,14 +872,14 @@ calm/code/
 ```
 
 `code/base/` holds **everything authored**: every Flow, Form,
-Hash, List, Fold, Find — organized as `<verb>/<base>/<case>/`.
+Hash, List, Fold, Find. Organized as `<verb>/<base>/<case>/`.
 
 Each leaf folder holds at most two hand-written files:
 
 | file | what |
 |---|---|
-| `make.ts` | the declaration — `Form` / `Flow` / `Hash` / `List` / `Fold` / `Find` definition |
-| `flow.ts` | the implementation — handler function for a Flow (omitted for non-Flow leaves) |
+| `make.ts` | the declaration. `Form` / `Flow` / `Hash` / `List` / `Fold` / `Find` definition |
+| `flow.ts` | the implementation. Handler function for a Flow (omitted for non-Flow leaves) |
 
 Same naming everywhere: `make.ts` is "make this thing"
 (declaration), `flow.ts` is "the handler / what flows."
@@ -890,8 +890,8 @@ Codegen emits **three files alongside** every `make.ts`:
 
 | file | what |
 |---|---|
-| `index.ts` | TypeScript types — paired type declarations the host imports |
-| `form.ts` | Zod parsers — `z.object({...}) satisfies z.ZodType<T>` from `./index` |
+| `index.ts` | TypeScript types. Paired type declarations the host imports |
+| `form.ts` | Zod parsers. `z.object({...}) satisfies z.ZodType<T>` from `./index` |
 | `base.ts` | hashes and lists exported as runtime values; per-folder catalog re-exports |
 
 Layout after codegen:
@@ -907,7 +907,7 @@ code/base/is/ipa/broad/
 
 `make.ts` and `flow.ts` are gitignored only when explicitly
 generated; normally the human writes them. `index.ts`,
-`form.ts`, `base.ts` are always gitignored — pure codegen.
+`form.ts`, `base.ts` are always gitignored. Pure codegen.
 
 ## How the three generated files relate
 
@@ -939,13 +939,13 @@ generated; normally the human writes them. `index.ts`,
 
 Reading order for a host:
 
-1. `import type { IsIpaBroadInput } from '...base/is/ipa/broad'` —
+1. `import type { IsIpaBroadInput } from '...base/is/ipa/broad'`. 
    pulls from `index.ts`.
-2. `import { is_ipa_broad_parser } from '...base/is/ipa/broad/form'` —
+2. `import { is_ipa_broad_parser } from '...base/is/ipa/broad/form'`. 
    pulls Zod parser.
-3. `import { is_ipa_broad_handler } from '...base/is/ipa/broad/flow'` —
+3. `import { is_ipa_broad_handler } from '...base/is/ipa/broad/flow'`. 
    pulls handler.
-4. `import * from '...base/is/ipa/broad/base'` — pulls everything as a
+4. `import * from '...base/is/ipa/broad/base'`. Pulls everything as a
    namespace.
 
 The folder's `base.ts` is the union; `index.ts` / `form.ts` /
@@ -1070,11 +1070,11 @@ alongside (`index.ts`, `form.ts`, `base.ts`)**.
   the exported `const` name.
 - **Codegen config is separate.** `new Make({ output })` then `make.link(...)` then `make.save()`
   takes the schemas and decides where artifacts land.
-- **Three layered output strategies** — layout convention,
-  per-name overrides, resolver function — composable.
+- **Three layered output strategies**. Layout convention,
+  per-name overrides, resolver function. Composable.
 - **Libraries are pure values.** Schemas + optional handlers;
   consumers wire the output.
-- **Handlers wire by name convention** — `<flow_name>_handler`.
+- **Handlers wire by name convention**. `<flow_name>_handler`.
   Override via re-export.
 - **The bundled `Base` aggregate** is part of the codegen
   output, generated once per consumer build.

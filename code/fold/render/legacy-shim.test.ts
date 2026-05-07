@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { flow, makeScope } from './index'
+import { flow, makeScope } from '..'
 
 describe('literal rendering', () => {
   it('renders text', () => {

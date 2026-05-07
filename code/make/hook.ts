@@ -25,8 +25,8 @@ import {
   type FormatRelativeTimeOptions,
   type IntlShape,
 } from '@formatjs/intl'
-import type { BaseContext } from './flow/render/registry'
-import { deepEq } from './flow/task'
+import type { BaseContext } from '@/fold/render/registry'
+import { deepEq } from '@/fold/task'
 
 // ---------------------------------------------------------------------------
 // Intl shape cache (formatjs)

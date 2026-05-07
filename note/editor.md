@@ -7,7 +7,7 @@ stays at 60fps on documents with thousands of nodes.
 
 ## What the editor's responsibility is
 
-- Render the current tree visually — chip rows, input widgets
+- Render the current tree visually. Chip rows, input widgets
   per `(verb, base, case)`, nested children.
 - Translate user gestures (typing, drags, drops, deletes) into
   `TreePatch` objects.
@@ -38,7 +38,7 @@ type TreePatch =
   | { form: 'move';    node_mark: string; new_parent_id: string; new_index: number }
 ```
 
-### `set` — change one arg of one node
+### `set`. Change one arg of one node
 
 User typed in a text field, picked a value from a dropdown,
 toggled a switch:
@@ -50,7 +50,7 @@ toggled a switch:
 The runtime invalidates the node's compile/validate/evaluate
 caches and walks upward marking ancestors dirty.
 
-### `replace` — swap a whole subtree
+### `replace`. Swap a whole subtree
 
 User picked a different flow in the verb-base picker:
 
@@ -65,7 +65,7 @@ User picked a different flow in the verb-base picker:
 The replacement keeps the same `id` so memoization keys
 correlate where possible.
 
-### `insert` — add a child
+### `insert`. Add a child
 
 User dragged a new flow into a slot:
 
@@ -82,7 +82,7 @@ User dragged a new flow into a slot:
 Used for list-shaped args (`things`, `items`, `numbers`,
 `children`) and `nest` arrays on view nodes.
 
-### `remove` — delete a node
+### `remove`. Delete a node
 
 User hit delete on a chip or row:
 
@@ -91,10 +91,10 @@ User hit delete on a chip or row:
 ```
 
 If the parent's slot becomes empty and the slot is required,
-the node enters a "missing" validation state — the runtime
+the node enters a "missing" validation state. The runtime
 flags it but doesn't refuse.
 
-### `move` — relocate within / across parents
+### `move`. Relocate within / across parents
 
 User dragged a chip to reorder or moved a row to a new section:
 
@@ -162,7 +162,7 @@ editor picks a cadence per tier:
 | 4 | medium | on idle (~1s) | constraint evaluation |
 | 5 | expensive | on save / explicit | async checks, DB roundtrips |
 
-`calm.bindPatch` runs tiers 1–3 by default and skips tiers 4–5
+`calm.bindPatch` runs tiers 1. 3 by default and skips tiers 4. 5
 unless the editor opts in via:
 
 ```typescript
@@ -214,7 +214,7 @@ Each `BindError` carries a `node_mark`. The editor:
   a count.
 
 `severity: 'hint'` errors render subtly (small icon, no
-underline) — for "did you mean…" suggestions and stylistic
+underline). For "did you mean…" suggestions and stylistic
 nudges. `'warning'` and `'error'` are visually distinct.
 
 `kind: 'authorization'` errors render with a lock icon, not a
@@ -255,7 +255,7 @@ undo:
 - Compute the inverse patch (the editor knows the old value).
 - Send the inverse via `bindPatch`.
 
-Redo is the same — re-send the original patch.
+Redo is the same. Re-send the original patch.
 
 The runtime doesn't manage undo state; that's the editor's job.
 
@@ -290,7 +290,7 @@ loads the document.
 
 ## Multi-user / collaborative editing
 
-Out of host for the core spec — calm deals with one editor
+Out of host for the core spec. Calm deals with one editor
 at a time. Hosts wanting collaborative editing layer
 operational-transform or CRDT logic between the editor and
 `bindPatch`. The patch protocol is OT-friendly: every patch is

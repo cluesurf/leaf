@@ -9,7 +9,7 @@ export default defineConfig({
   },
   resolve: {
     alias: [
-      { find: /^@\/(.*)/, replacement: path.resolve(__dirname, '$1') },
+      { find: /^@\/(.*)/, replacement: path.resolve(__dirname, 'code', '$1') },
     ],
   },
 })

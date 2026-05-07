@@ -26,10 +26,10 @@ compiled tree   ────►  errors[]   (async lookups failed)
 ```
 
 Each stage produces a result and may produce errors. Errors
-don't halt the pipeline — every stage tries to make progress
+don't halt the pipeline. Every stage tries to make progress
 on every node and accumulates problems for the editor.
 
-## Stage 1 — compile
+## Stage 1. Compile
 
 Walk the editable tree and rewrite each node into compiled
 form.
@@ -55,7 +55,7 @@ node whose triple and arg-content hash are unchanged reuses
 its previous compiled form. Editing one leaf doesn't recompile
 the whole tree.
 
-## Stage 2 — validate args shape
+## Stage 2. Validate args shape
 
 For each compiled `call`, parse `bind` against the Flow's
 `take` schema. The parser is generated from the form-DSL
@@ -65,7 +65,7 @@ is fast.
 Failures produce `BindError`s with the offending node id and
 arg path.
 
-## Stage 3 — type-check composition
+## Stage 3. Type-check composition
 
 Walk parent-expects-child arg types using the `like`
 annotations. The runtime resolves each child's effective
@@ -81,7 +81,7 @@ Mismatches surface as type errors. This is what catches
 // is(equal: { this: 5, that: "five" })  ← error: number vs string
 ```
 
-## Stage 4 — pre-resolve async
+## Stage 4. Pre-resolve async
 
 Walk the compiled tree collecting every node whose Flow is
 registered with `async: true`. Group by Flow code (so the
@@ -100,7 +100,7 @@ Batched fetches give predictable performance: N calls to
 `is-unique-in` collapse into one SQL query; N calls to
 `find-record` collapse into one bulk SELECT.
 
-## Stage 5 — evaluate
+## Stage 5. Evaluate
 
 Walk the compiled tree synchronously, dispatching each node:
 
@@ -158,10 +158,10 @@ Pushed before user evaluation starts:
 
 Added by:
 
-- **Iterators** — any `walk` variant (`test` / `list` / `size`
+- **Iterators**. Any `walk` variant (`test` / `list` / `size`
   / `form`) pushes `item` (or the named iterator) and `index`
   for the duration of the body.
-- **Let-bindings** — the `bind(names: { foo: <expr> }, then:
+- **Let-bindings**. The `bind(names: { foo: <expr> }, then:
   <body>)` flow pushes each name into host before evaluating
   `then`.
 
@@ -221,7 +221,7 @@ Async flows declared `cancelable: true` receive an
 patches a node whose async work is mid-flight, the runtime
 aborts the previous signal and starts fresh.
 
-Without cancellation the runtime still works — it just lets
+Without cancellation the runtime still works. It just lets
 old fetches complete and discards their results. Cancellation
 is an optimization for slow networks.
 
@@ -246,7 +246,7 @@ This prevents stack overflow on malicious or buggy inputs.
 
 ## Errors during evaluation
 
-Most errors surface during stages 1–4 (compile, validate,
+Most errors surface during stages 1. 4 (compile, validate,
 type-check, pre-resolve). Stage-5 errors are runtime
 exceptions:
 
@@ -261,7 +261,7 @@ the tree continues; the failed node's evaluated value is
 `null`.
 
 There is no `attempt` / try-catch node in calm. Calm is a
-templating / rendering engine, not an effect runtime — code
+templating / rendering engine, not an effect runtime. Code
 errors are surfaced as typed validation results, not caught
 and recovered in-tree. Hosts that need recovery handle it at
 the call boundary, not inside the authored Fold.
@@ -276,10 +276,10 @@ documents.
 
 Sources of nondeterminism the runtime explicitly bounds:
 
-- **`now` / `today`** — engine-bound, snapshot at bind start;
+- **`now` / `today`**. Engine-bound, snapshot at bind start;
   same value across the whole bind.
-- **Random** — no `random` flow exists in the base catalog.
-- **Order of async resolution** — handlers are called
+- **Random**. No `random` flow exists in the base catalog.
+- **Order of async resolution**. Handlers are called
   concurrently inside a batch but results are stored by node
   `id`, so order of completion doesn't affect output.
 
@@ -292,7 +292,7 @@ multiple `Calm` instances (cheap; the registry is shared via a
 read-only catalog).
 
 The async pre-resolution stage IS concurrent inside its batch
-— that's the whole point of batching. Concurrency stops at
+. That's the whole point of batching. Concurrency stops at
 the boundary; the synchronous evaluator never sees parallelism.
 
 ## Performance budget

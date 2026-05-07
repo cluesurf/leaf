@@ -19,7 +19,7 @@ extend with domain-specific flows via their own decks.
 | `walk` | varies | non-boolean iteration (map / filter / reduce) |
 
 Negation composes via `is.not(...)`. There is no parallel
-`is-not-X` family. Anti-bloat is a design principle — keep the
+`is-not-X` family. Anti-bloat is a design principle. Keep the
 catalog small enough to internalize.
 
 ## Verb-base-case shape
@@ -218,7 +218,7 @@ deck/calm/code/flow/
       schema.ts          # bare is(ipa)
       handler.ts
       broad/
-        schema.ts        # is(ipa, case: 'broad') — narrows
+        schema.ts        # is(ipa, case: 'broad'). Narrows
         handler.ts
       narrow/
         schema.ts
@@ -278,7 +278,7 @@ under the right verb:
    `case?`, `like`, `take`).
 3. Write `handler.ts` implementing the function.
 4. Export from the parent `card.ts`.
-5. Run codegen — TypeScript types, Zod parsers, JSON Schema,
+5. Run codegen. TypeScript types, Zod parsers, JSON Schema,
    editor widgets all derive automatically.
 
 The standard catalog grows by accretion. Verbs themselves are
@@ -328,5 +328,5 @@ Impure flows must declare `pure: false`:
   catalog has none).
 
 Hosts adding impure flows should think hard about whether
-they belong in calm at all — the engine is for documents and
+they belong in calm at all. The engine is for documents and
 validations, not for triggering effects.

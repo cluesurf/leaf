@@ -5,7 +5,7 @@
  * vdom you pass in (React, Preact, h-script, anything with the
  * `(type, props, ...children) => element` shape).
  *
- *   import { renderElement } from '@cluesurf/form/make/flow/render/element'
+ *   import { renderElement } from '@cluesurf/calm/fold/render/element'
  *   import { createElement, Fragment } from 'react'
  *
  *   renderElement(tree, {

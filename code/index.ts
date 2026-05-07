@@ -4,7 +4,7 @@ export {
   flow,
   RESERVED_NODE_KEYS,
   renderElement,
-} from './make/flow/index'
+} from './fold'
 export type {
   AttemptNode,
   BaseContext,
@@ -47,4 +47,4 @@ export type {
   VariableSeg,
   ViewNode,
   WalkNode,
-} from './make/flow/index'
+} from './fold'

@@ -1,4 +1,4 @@
-# `Base` — the host class
+# `Base`. The host class
 
 The runtime instance. A host creates one (generic over a
 `Base` type that aggregates the registered Flows),
@@ -55,7 +55,7 @@ class Calm<R = Base> {
   // Register a card (one file's worth of related flows).
   card(card: Card): void
 
-  // Register a deck (a published package — many cards).
+  // Register a deck (a published package. Many cards).
   deck(deck: Deck): void
 
   // Compile + execute an editable tree.
@@ -128,7 +128,7 @@ on call. If absent, args pass through unchecked (rare;
 strongly discouraged).
 
 If `async: true`, the flow is collected by the pre-resolution
-pass and batched — the synchronous evaluator never sees the
+pass and batched. The synchronous evaluator never sees the
 unresolved call.
 
 If `pure: true` (default), the flow's output is memoized on
@@ -136,7 +136,7 @@ If `pure: true` (default), the flow's output is memoized on
 
 ## `calm.call(code, bind)`
 
-Direct invocation — bypass compile, run a registered flow by
+Direct invocation. Bypass compile, run a registered flow by
 its code id.
 
 ```typescript
@@ -168,7 +168,7 @@ code namespace.
 ### Card templates (module patterns)
 
 A **`CardTemplate`** is a meta-schema constraining what a Card
-is *allowed* to contain — analogous to how MDX-with-restrictions
+is *allowed* to contain. Analogous to how MDX-with-restrictions
 or a content-CMS schema limits what authors can put on a page.
 
 ```typescript
@@ -213,7 +213,7 @@ with typed errors.
 
 This is what makes calm safe for **third-party contributions**.
 A host publishes a `CardTemplate` saying "lesson cards may
-have a body, an exercise list, and a vocab map — nothing
+have a body, an exercise list, and a vocab map. Nothing
 else." End-users (or third-party authors) can publish lesson
 cards conforming to that template, and the host knows exactly
 what surface area they expose.
@@ -228,12 +228,12 @@ introspectable, and editable.
 The standard catalog ships a few baseline templates hosts can
 use as-is or extend:
 
-- `card-template/document` — generic prose document.
-- `card-template/form-record` — a form definition + sample
+- `card-template/document`. Generic prose document.
+- `card-template/form-record`. A form definition + sample
   casts.
-- `card-template/flow-bundle` — a related set of flows under
+- `card-template/flow-bundle`. A related set of flows under
   one verb (e.g., all `is.iso.*` cases on one card).
-- `card-template/lesson` — a teaching unit with body, examples,
+- `card-template/lesson`. A teaching unit with body, examples,
   exercises, vocab.
 
 Hosts publish their own templates via `calm.cardTemplate(...)`.
@@ -265,7 +265,7 @@ and require all cards to conform.
 
 ## `calm.deck(deck)`
 
-A `deck` is a module / package — a published collection of
+A `deck` is a module / package. A published collection of
 cards. `calm.deck(...)` walks the deck's cards and registers
 all of them.
 
@@ -281,7 +281,7 @@ type Deck = {
 The base catalog ships as a deck called `calm/base` (or
 similar). Hosts call `calm.deck(baseCatalog)` to load it.
 
-Other published decks layer on top — `@cluesurf/calm-linguistics`
+Other published decks layer on top. `@cluesurf/calm-linguistics`
 adds linguistic-specific forms and flows; a hypothetical
 `@some-host/calm-flows` adds host-specific flows. Multiple
 decks coexist as long as their code ids don't collide.
@@ -292,8 +292,8 @@ The main lifecycle. Compile + execute an editable tree.
 
 ```typescript
 const result = calm.bind(treeFromUser, {
-  value: cellValue,           // optional — for per-cell evaluation
-  record: recordSnapshot,     // optional — for record-level evaluation
+  value: cellValue,           // optional. For per-cell evaluation
+  record: recordSnapshot,     // optional. For record-level evaluation
   stage: 'draft',             // 'draft' | 'commit' | 'export'
   locale: 'en',
   viewer: 'usr_001',
@@ -342,7 +342,7 @@ type BindError = {
 6. **Return.** `BindResult` with the final value, errors, and
    warnings.
 
-Compile errors don't prevent later steps — the runtime carries
+Compile errors don't prevent later steps. The runtime carries
 on with what it can, so the editor can show every problem at
 once.
 
@@ -369,7 +369,7 @@ path used during authoring.
 
 ## Multiple `Calm` instances
 
-Hosts can run multiple `Calm` instances in the same process —
+Hosts can run multiple `Calm` instances in the same process. 
 e.g., one for the document editor, one for the validation
 pipeline. Instances are independent; flows registered on one
 don't leak to the other.
@@ -401,5 +401,5 @@ const result = calm.bind(treeFromUser, { stage: 'commit' })
 const updated = calm.bindPatch(result, patch)
 ```
 
-Steps 1–4 happen once at startup. Steps 5–6 run constantly
+Steps 1. 4 happen once at startup. Steps 5. 6 run constantly
 while the user authors documents.

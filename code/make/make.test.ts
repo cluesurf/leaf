@@ -8,7 +8,7 @@
 import { describe, expect, it } from 'vitest'
 import makeTree from './index'
 import type { Flow, Form, Hash, List, Task } from '@/form'
-import { flow as flowNs } from './flow/index'
+import { flow as flowNs } from '@/fold'
 
 describe('makeTree — task + flow + cast', () => {
   it('Task references a Form for input — input codegen comes from the Form', async () => {
@@ -106,7 +106,7 @@ describe('makeTree — task + flow + cast', () => {
 
     const baseOut = tree.base['~/hold/flow/base']!
     expect(baseOut).toContain(
-      `import type { Node } from '@cluesurf/form'`,
+      `import type { Node } from '@cluesurf/calm'`,
     )
     expect(baseOut).toContain('export const MESSAGE_TREE: Node[]')
     expect(baseOut).toContain(`form: 'text'`)

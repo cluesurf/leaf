@@ -1,5 +1,5 @@
 import { RefinementCtx } from 'zod'
-import type { Node as FlowNode } from './make/flow/types'
+import type { Node as FlowNode } from '@/fold/types'
 
 export type Load = Base & {
   testLink: string
@@ -65,7 +65,10 @@ export type NameHash = Record<string, string>
  * Loose at this layer; call sites narrow to the exact input
  * record type.
  */
-export type HookHash = Record<string, (input: any, context?: any) => any>
+export type HookHash = Record<
+  string,
+  (input: any, context?: any) => any
+>
 
 /**
  * Codegen overrides for the built-in `like` → output mappings.

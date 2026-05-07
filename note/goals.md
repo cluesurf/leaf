@@ -1,7 +1,7 @@
 # Goals
 
 The why and what of `@cluesurf/calm`. This is a **goals** doc,
-not a design doc — it articulates the destination so design
+not a design doc. It articulates the destination so design
 choices later can be evaluated against it.
 
 ## What `calm` is, in one sentence
@@ -12,7 +12,7 @@ the only things they can do are call functions the host
 explicitly registered.
 
 The shorthand: **calm is a JSON-structured template language**
-— Handlebars / Mustache / EJS in spirit, but the template
+. Handlebars / Mustache / EJS in spirit, but the template
 isn't a string with embedded code. The template **is** the
 AST. You define the AST; the runtime walks it. No parser, no
 escape problems, no ambiguity. Authors write and edit the
@@ -23,22 +23,22 @@ catalog.
 ## What `calm` is, expanded
 
 The goal is a **complete runtime environment for sandboxed,
-simple code** — the kind of code that real applications need
+simple code**. The kind of code that real applications need
 to give end-users:
 
-- **Templating** — fill text, conditionals, loops, plurals,
+- **Templating**. Fill text, conditionals, loops, plurals,
   date / number formatting, locale-aware copy.
-- **DOM rendering** — declarative component trees with typed
+- **DOM rendering**. Declarative component trees with typed
   props, slots, and child arrays. Renders to React, HTML,
-  PDF, EPUB — wherever the host plugs in a renderer.
-- **Constraint defining** — validation rules over data,
+  PDF, EPUB. Wherever the host plugs in a renderer.
+- **Constraint defining**. Validation rules over data,
   composable, with structured errors and editor feedback.
-- **HTTP request making** — async lookups, batched
+- **HTTP request making**. Async lookups, batched
   field-resolution, cancelable on edit.
-- **Filter / query authoring** — list-endpoint queries
+- **Filter / query authoring**. List-endpoint queries
   expressed as tree-of-Calls, evaluated against the host's
   data layer.
-- **Document authoring** — guides, lessons, manuscripts,
+- **Document authoring**. Guides, lessons, manuscripts,
   reports, blog posts that compose all of the above.
 
 All of it through the same primitives, the same registry, the
@@ -50,7 +50,7 @@ What calm deliberately is NOT:
 - Not a general-purpose programming language.
 - Not a JavaScript replacement.
 - Not a code-loader.
-- Not a sandbox built atop V8 / Wasm — the format itself is
+- Not a sandbox built atop V8 / Wasm. The format itself is
   the sandbox.
 
 The "complete environment" is everything an end-user needs to
@@ -62,19 +62,19 @@ exposure.
 `calm` unifies three concepts that have lived as separate
 systems and packages until now:
 
-1. **Schema DSL** — the `Form` / `Hash` / `List` / `Mesh`
+1. **Schema DSL**. The `Form` / `Hash` / `List` / `Mesh`
    builder language that describes data shapes. Currently lives
    in a sibling package; **eventually copied into calm** so
    the schema language and the runtime ship as one. Base becomes
    the home for the DSL, not just a consumer.
 
-2. **Query filter trees** — the find / test constraint trees
+2. **Query filter trees**. The find / test constraint trees
    used to express list-endpoint filters (keyword equality,
    string wildcards, integer ranges, nested object filters,
    etc.). Refactored as flow calls so a filter is just a tree
    of calls evaluated by the same engine.
 
-3. **Validation constraints** — the verb-based constraint
+3. **Validation constraints**. The verb-based constraint
    system for per-cell and cross-cell validation rules.
    Refactored on top of the same flow-call machinery, so the
    constraint catalog and the filter catalog and the document
@@ -86,7 +86,7 @@ Three systems collapse into one, around two primitives.
 
 Everything in calm reduces to one of two things:
 
-### `Form` — data model schemas
+### `Form`. Data model schemas
 
 Describes the **shape of data**. A `Form` declares "this kind
 of thing has these fields, with these types, with these
@@ -97,7 +97,7 @@ every editor-rendered input.
 
 `Form` is the **noun side** of the spec.
 
-### `Flow` — function schemas
+### `Flow`. Function schemas
 
 Describes the **shape of a function**. A `Flow` declares "this
 verb, applied to this base, optionally narrowed by this case,
@@ -126,11 +126,11 @@ times):
 | function | **`Flow`** | **`Call`** |
 
 - A `Form` declares a data shape ("a `language_string` has
-  these fields"). Its instances are `Cast` objects — the
+  these fields"). Its instances are `Cast` objects. The
   actual data records, validated against the form.
 - A `Flow` declares a function signature ("`is(equal)` takes
   `this` and `that`, returns boolean"). Its instances are
-  `Call` nodes in the AST — `{ form: 'call', name: 'is',
+  `Call` nodes in the AST. `{ form: 'call', name: 'is',
   base: 'equal', this: ..., that: ... }`.
 
 This is why `base` is the AST keyword for "which instance of a
@@ -138,11 +138,11 @@ Form" and `call` (the `form` value) is the AST keyword for
 "which instance of a Flow." The four-part shape (`form`,
 `name`, `base`, `case`) reads naturally:
 
-- `form: 'call'` — this node is an instance of a Flow
-- `name: 'is'` — picking the `is` Flow
-- `base: 'equal'` — picking the `equal` variant (which
+- `form: 'call'`. This node is an instance of a Flow
+- `name: 'is'`. Picking the `is` Flow
+- `base: 'equal'`. Picking the `equal` variant (which
   corresponds to the `equal` Form-instance the Flow accepts)
-- `case: 'broad'` — narrowing the variant further
+- `case: 'broad'`. Narrowing the variant further
 
 The four reserved keys are not arbitrary; they reflect the
 type-instance structure of the two primitives. Once you see
@@ -168,7 +168,7 @@ Author (untrusted)              Host (trusted)
 Host installs `@cluesurf/calm`, registers the flows they want
 their users to be able to call, and exposes an editor. Users
 compose documents from those flows. Nothing they write can
-escape into Node, the browser, the session, the network — only
+escape into Node, the browser, the session, the network. Only
 what the host allowed via registered flows.
 
 ## Why it exists (problems being solved)
@@ -180,7 +180,7 @@ arbitrary React/JS. That's fine when authors are trusted (the
 docs team, the engineers), unsafe when they aren't (paying
 customers, end users). Embedding MDX-style authoring in a SaaS
 product means either trusting every author or sandboxing
-JavaScript — neither is great.
+JavaScript. Neither is great.
 
 `calm` solves this by being **JSON-only**. There is no string
 of code anywhere. There is no `eval`. There is no path from
@@ -191,7 +191,7 @@ on top.
 ### Customers want to build complex documents
 
 Lessons, guides, lab notebooks, conlang spec sheets, paradigm
-tables, blog posts that pull live data — all of these are
+tables, blog posts that pull live data. All of these are
 "documents that compute." Today every product re-invents the
 shape: a custom block editor, a custom JSON config, a
 proprietary template language. Each one re-solves storage,
@@ -206,13 +206,13 @@ Different products plug in different flow catalogs.
 Mustache / Handlebars / Liquid handle simple templates well and
 fall apart on anything dynamic. Once you need conditionals,
 loops, computed fields, async data, validations, custom
-components — you outgrow the template engine and add
+components. You outgrow the template engine and add
 JavaScript, which means losing the sandbox.
 
 `calm` is the missing middle: **expressive enough to handle
 real documents, restrictive enough to stay safe**. The author
 gets `if`, `walk`, `bind`, polymorphic dispatch, async data
-fetching, and component embedding — all expressed as JSON,
+fetching, and component embedding. All expressed as JSON,
 all dispatching through the host's registered flow catalog.
 
 ### Validation needs the same engine
@@ -220,7 +220,7 @@ all dispatching through the host's registered flow catalog.
 Constraints (data validation rules) are also JSON trees of
 function calls. Building a separate engine for validation is
 duplication. `calm` is the **one runtime** that evaluates both
-documents and validations — same AST, same registry, same
+documents and validations. Same AST, same registry, same
 editor.
 
 ## Design constraints
@@ -233,8 +233,8 @@ a registered flow call.
 
 ### Must be language-agnostic at the spec level
 
-The spec — the AST shape, the dispatch rules, the standard flow
-catalog — is independent of implementation language. Anyone can
+The spec. The AST shape, the dispatch rules, the standard flow
+catalog. Is independent of implementation language. Anyone can
 write a Rust or Python or Swift runtime that consumes the same
 trees. `@cluesurf/calm` is the **reference TypeScript runtime**,
 not the only valid one.
@@ -270,10 +270,10 @@ flows are new folders. Adding a variant is one new `case`.
 
 ### Must have a clean editable / compiled split
 
-The **editable AST** is what users write — human-friendly,
+The **editable AST** is what users write. Human-friendly,
 diff-friendly, easy to render in the editor.
 
-The **compiled AST** is what the runtime evaluates — flat ids
+The **compiled AST** is what the runtime evaluates. Flat ids
 instead of `name + base + case` triples, args bound and ready
 to insert.
 
@@ -283,15 +283,15 @@ Both share the same shape; the compile step is mechanical.
 
 Every node has at most these four reserved keys:
 
-- **`form`** — discriminant. `'call'`, `'read'`, `'view'`,
+- **`form`**. Discriminant. `'call'`, `'read'`, `'view'`,
   plus a few others. Tells the engine what kind of node this
   is.
-- **`name`** — the function name (when `form='call'`) or
+- **`name`**. The function name (when `form='call'`) or
   element name (when `form='view'`).
-- **`base`** — optional. The resource / shape being acted on.
+- **`base`**. Optional. The resource / shape being acted on.
   In `{ name: 'is', base: 'equal', this: ..., that: ... }`,
   the base is `equal`.
-- **`case`** — optional. The variant being operated on,
+- **`case`**. Optional. The variant being operated on,
   parallel to `base` (not parsed from any dotted form). In
   `{ name: 'is', base: 'ipa', case: 'broad', text: ... }`,
   the case is `broad`.
@@ -363,14 +363,14 @@ type Flow = {
 ```
 
 `like` is rich enough to express union and complex return
-types — `'string | null'`, `'list<record>'`, `'boolean'`. The
+types. `'string | null'`, `'list<record>'`, `'boolean'`. The
 runtime uses it to type-check call composition. The editor uses
 it to know what subtree shapes can plug where.
 
 `take` is the input schema in form-DSL, so codegen produces
 TypeScript types and Zod parsers without the host writing them.
 
-A flow with no implementation is a **specification stub** —
+A flow with no implementation is a **specification stub**. 
 the spec tells you what it should do; some host needs to
 register the actual function. This lets the base catalog
 ship as schemas-only, with reference implementations layered
@@ -391,10 +391,10 @@ class Calm {
   // Invoke a registered flow by code id.
   call(code: string, bind: Record<string, unknown>): unknown
 
-  // Load a deck (a package — bundle of flows).
+  // Load a deck (a package. Bundle of flows).
   deck(deck: Deck): void
 
-  // Load a card (a module — small grouping of flows).
+  // Load a card (a module. Small grouping of flows).
   card(card: Card): void
 
   // Compile + execute an editable tree.
@@ -405,13 +405,13 @@ class Calm {
 The naming is deliberately simple, drawn from the playing-card
 metaphor:
 
-- **`flow`** — a single function. Smallest unit.
-- **`card`** — a single file (also a module at its level). One
+- **`flow`**. A single function. Smallest unit.
+- **`card`**. A single file (also a module at its level). One
   source file's worth of related flows.
-- **`deck`** — a module / package. A published collection of
+- **`deck`**. A module / package. A published collection of
   cards. `@cluesurf/calm-linguistics` would be a deck.
-- **`bind`** — bring a tree to life. Compile + run.
-- **`call`** — invoke one flow directly, when you have its code
+- **`bind`**. Bring a tree to life. Compile + run.
+- **`call`**. Invoke one flow directly, when you have its code
   id and don't need the whole compile cycle.
 
 `flow ⊂ card ⊂ deck` is the nesting. A deck is many cards; a
@@ -429,18 +429,18 @@ A host typically does:
 `@cluesurf/calm` ships with a standard flow catalog covering
 nine verbs:
 
-- `is` — boolean predicates
-- `has` — boolean possession
-- `make` — transformations (string ops, arithmetic, normalize)
-- `get` — accessors and aggregates (length, count, sum, keys)
-- `find` — async lookups (record fetch, enum members)
-- `if` — conditional
-- `bind` — let-bindings
-- `walk` — non-boolean iteration (map / filter / reduce)
-- `validate` — error-collecting wrapper
+- `is`. Boolean predicates
+- `has`. Boolean possession
+- `make`. Transformations (string ops, arithmetic, normalize)
+- `get`. Accessors and aggregates (length, count, sum, keys)
+- `find`. Async lookups (record fetch, enum members)
+- `if`. Conditional
+- `bind`. Let-bindings
+- `walk`. Non-boolean iteration (map / filter / reduce)
+- `validate`. Error-collecting wrapper
 
 Each verb has many bases (typed sub-shapes), and each base may
-have cases (sub-variants — broad/narrow IPA, lower/upper case,
+have cases (sub-variants. Broad/narrow IPA, lower/upper case,
 etc.). The full catalog covers ~115 named calls.
 
 The seed catalog ships with both **specifications** (schemas +
@@ -454,7 +454,7 @@ lookups, custom widgets, live queries, paradigm rendering.
 ## Goal: long-term browser editor
 
 The eventual product is a **browser-based document editor** for
-end-users — not engineers. They build documents visually:
+end-users. Not engineers. They build documents visually:
 
 - Drag in components (cards, grids, paragraphs, tables).
 - Bind fields to data via dropdowns, not code.
@@ -465,7 +465,7 @@ end-users — not engineers. They build documents visually:
 
 The output is a `calm` document. The same document renders in
 the host's app, a sibling product, an export-to-PDF flow, an
-RSS-style snippet — anywhere a `calm` runtime exists.
+RSS-style snippet. Anywhere a `calm` runtime exists.
 
 ## Goal: portable across products
 
@@ -504,7 +504,7 @@ A constraint reads almost like English without translation.
 - Verb-first directory shape: `code/<verb>/<base>/<case>/`.
 - Single object input per call.
 - Dispatch on the `(name, base, case)` triple.
-- Schema-driven codegen — TypeScript types, Zod parsers, JSON
+- Schema-driven codegen. TypeScript types, Zod parsers, JSON
   Schema, editor widgets all derived from one source.
 
 | design point | calm |
@@ -524,8 +524,8 @@ and safe.
 
 ### Not a general-purpose programming language
 
-`calm` is for documents. It has the dynamism documents need —
-conditionals, loops, computed fields, polymorphic dispatch —
+`calm` is for documents. It has the dynamism documents need. 
+conditionals, loops, computed fields, polymorphic dispatch. 
 and stops there. It is not Turing-complete by design (recursion
 via `bind` has a depth cap), and it has no I/O outside what the
 host explicitly registers.
@@ -566,14 +566,14 @@ plugs in alongside them, not in their place.
 
 The editor never lets a user type something that's broken
 without telling them, immediately. Every edit revalidates the
-affected node — every keystroke if needed — and surfaces
+affected node. Every keystroke if needed. And surfaces
 problems inline.
 
 ### What gets validated, in order of cheapness
 
 1. **Args shape.** The arg object passed to a flow is checked
    against the flow's `take` schema. Missing required fields,
-   extra fields, wrong primitive types — all caught here.
+   extra fields, wrong primitive types. All caught here.
    Cheap (one Zod parse per node) and runs on every edit.
 
 2. **Arg subtree types.** When an arg is itself a node, the
@@ -585,7 +585,7 @@ problems inline.
 
 3. **Compile resolution.** The `(name, base, case)` triple must
    resolve to a registered flow. Unknown verbs, unknown bases,
-   unknown cases — caught at compile, not runtime.
+   unknown cases. Caught at compile, not runtime.
 
 4. **Constraint evaluation.** Once shape/types are clean, any
    `validate(...)` calls run their tests. Failures attach to
@@ -623,16 +623,16 @@ a node `id`:
 - `severity: 'error' | 'warning' | 'info' | 'hint'`
 
 The editor renders these as squiggles, gutter icons, sidebar
-entries, or badges — its choice. The runtime's job is to emit
+entries, or badges. Its choice. The runtime's job is to emit
 the structured result; the editor's job is to display it.
 
 ### What it implies for the spec
 
-Validation isn't a layer on top of the runtime — it IS the
+Validation isn't a layer on top of the runtime. It IS the
 runtime, run at multiple precision tiers. The same engine that
 evaluates a tree at render-time also validates it at edit-time.
 The flow registry, the arg schemas, the type checker, the
-compile resolver, the constraint evaluator — one stack, used
+compile resolver, the constraint evaluator. One stack, used
 twice.
 
 That keeps drift impossible: an edit that the editor accepts is
@@ -645,7 +645,7 @@ Calm is not just a runtime. It's also a **type generator**.
 
 Every flow's `take` schema and `like` return-type annotation
 compile to TypeScript types. Every `Form` schema compiles to
-TypeScript types. Hosts get strict, IDE-aware types for free —
+TypeScript types. Hosts get strict, IDE-aware types for free. 
 no hand-written `.d.ts` files, no parallel type definitions
 that drift.
 
@@ -715,7 +715,7 @@ two.
 ## Goal: real-time partial recompilation
 
 The browser editor is interactive. The user types a character,
-drags a widget, drops a value into a slot — the document
+drags a widget, drops a value into a slot. The document
 re-renders. The runtime must be **incremental**: only the
 subtree that changed gets recompiled and re-evaluated.
 Re-running the whole tree on every keystroke is unacceptable.
@@ -751,7 +751,7 @@ A typical edit cycle:
 3. Engine applies the patch in-place, walks upward marking
    ancestors dirty.
 4. Engine re-validates only the changed node's args against
-   its flow schema (cheap — Zod parser of one object).
+   its flow schema (cheap. Zod parser of one object).
 5. Engine re-evaluates only the dirty path: changed node →
    parent → grandparent → ... → root. Anything off the dirty
    path keeps its memoized value.
@@ -768,7 +768,7 @@ the AST instead of the DOM.
   authored gets a `id` field assigned on creation; edits
   preserve it.
 - **Pure-by-default flows.** Flows without explicit side-effect
-  flags are memoizable — given the same args, same result.
+  flags are memoizable. Given the same args, same result.
   Async flows declare themselves via the registry so the
   cache layer knows to keyed by resolved-arg fingerprint
   instead of identity.
@@ -789,12 +789,12 @@ the AST instead of the DOM.
   previous edit can be aborted (via standard cancellation
   signals) when the edit invalidates it.
 - **Errors are scoped.** A constraint failure in one node
-  doesn't take down the rest of the render — it's a localized
+  doesn't take down the rest of the render. It's a localized
   red squiggle, the rest keeps rendering.
 
 ### What it implies for the spec
 
-Real-time partial recompilation isn't a layer added on top —
+Real-time partial recompilation isn't a layer added on top. 
 it shapes the spec:
 
 - Every editable node has `id` as a reserved structural field.
@@ -812,13 +812,13 @@ always feel laggy no matter how clever the runtime is.
 
 | stage | host |
 |---|---|
-| **0 — spec** | This doc + AST + Flow + Base class definitions written down. |
-| **1 — runtime** | `@cluesurf/calm` reference TypeScript runtime: editable→compiled compiler, registry, `bind` evaluator. |
-| **2 — seed catalog** | Standard flow catalog from constraint-call-api-verbs ported in, schemas + reference impls. |
-| **3 — editor primitives** | A small UI kit that renders an editable AST — chip rows, input widgets per base/case, validation feedback. |
-| **4 — host integrations** | First production use: `mesh/site/word.surf` registers domain flows, ships a guide builder using calm. |
-| **5 — multi-runtime** | Spec frozen enough for a second-language runtime (likely Rust or WASM) to parse and evaluate the same trees. |
-| **6 — public API** | External hosts can build on top. Public docs site, plugin authoring guide. |
+| **0. Spec** | This doc + AST + Flow + Base class definitions written down. |
+| **1. Runtime** | `@cluesurf/calm` reference TypeScript runtime: editable→compiled compiler, registry, `bind` evaluator. |
+| **2. Seed catalog** | Standard flow catalog from constraint-call-api-verbs ported in, schemas + reference impls. |
+| **3. Editor primitives** | A small UI kit that renders an editable AST. Chip rows, input widgets per base/case, validation feedback. |
+| **4. Host integrations** | First production use: `mesh/site/word.surf` registers domain flows, ships a guide builder using calm. |
+| **5. Multi-runtime** | Spec frozen enough for a second-language runtime (likely Rust or WASM) to parse and evaluate the same trees. |
+| **6. Public API** | External hosts can build on top. Public docs site, plugin authoring guide. |
 
 ## Lineage and connections
 
@@ -842,7 +842,7 @@ Where Seed is the ambitious foundation, Calm is the practical
 runtime that lands now and keeps a clean migration path to
 Seed-shaped concepts later. The deck/card/flow vocabulary, the
 type-instance discipline (Form/Cast, Flow/Call), the form-DSL
-roots — all from Seed's design tradition.
+roots. All from Seed's design tradition.
 
 Eventually some of calm's runtime concerns may absorb into
 Seed when Seed is ready. For now, calm stands on its own as a
@@ -850,11 +850,11 @@ focused, JSON-only rendering engine.
 
 ### Sibling packages
 
-- **`@cluesurf/form`** — the schema DSL used in every flow's
+- **`@cluesurf/form`**. The schema DSL used in every flow's
   `take` field. Currently a separate package; **planned to be
   copied into calm** so the schema language and the runtime
   ship as one.
-- **`@cluesurf/flow`** — a sibling function registry for file
+- **`@cluesurf/flow`**. A sibling function registry for file
   conversion (`flow convert image -I png -O jpg`). Same
   verb-first dispatch pattern, different domain. `calm` shares
   the design discipline.

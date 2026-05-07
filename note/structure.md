@@ -15,16 +15,16 @@ covering the type-level declarations and the runtime class.
 | **function** | `Flow` | `Call` |
 
 - A **`Form`** declares a data shape. A **`Fold`** is a special
-  kind of Form whose Casts are tree-shaped — a document
+  kind of Form whose Casts are tree-shaped. A document
   template made of Calls and slots.
 - A **`Cast`** is an instance of any Form (Form, Hash, List, or
   Fold). A simple Cast is a flat record. A Fold's Cast is a
   nested structure of Calls filling the Fold.
-- A **`Flow`** declares a function — its name, args, return
+- A **`Flow`** declares a function. Its name, args, return
   type.
 - A **`Call`** is a node in the AST invoking a Flow.
 
-Casts are the universal instance shape — any data flowing
+Casts are the universal instance shape. Any data flowing
 through the runtime is a Cast of some Form. A document
 authored in the editor is just a Cast of a Fold (which is
 just a particular kind of Form). One instance vocabulary
@@ -35,37 +35,37 @@ A **`Wave`** is the umbrella term: any type-level declaration
 schemas with the runtime, it's registering Waves. The `Wave`
 type is `Form | Flow`.
 
-A **`Base`** is the bundled type — kysely's `DB` equivalent.
+A **`Base`** is the bundled type. Kysely's `DB` equivalent.
 The compiler aggregates every authored constant (every Form,
 Flow, Hash, List, Fold) across the codebase into a single
 `Base` interface, keyed by name. The runtime class is generic
 over it.
 
-A **`Calm`** is the runtime class itself — the environment
+A **`Calm`** is the runtime class itself. The environment
 where Casts live, where Calls evaluate, where Folds render.
 The host instantiates one as `new Calm<Base>()`, registers
 Waves on it, and binds Trees through it. The Calm owns the
-scope chain, the caches, the dispatch table — "where
+scope chain, the caches, the dispatch table. "where
 everything runtimes."
 
 ### Why these names
 
-- **`Form`** — a mold for data. Inherited from Seed.
-- **`Cast`** — what comes out of the mold. An object cast to
+- **`Form`**. A mold for data. Inherited from Seed.
+- **`Cast`**. What comes out of the mold. An object cast to
   the form's shape. Reads as "a Cast of `language_string`."
-- **`Flow`** — a function defined by what flows in (`take`)
+- **`Flow`**. A function defined by what flows in (`take`)
   and out (`like`). Also matches the existing `flow.*` builder
   DSL.
-- **`Call`** — invoking a Flow. Literal English for "make a
+- **`Call`**. Invoking a Flow. Literal English for "make a
   call to this function."
-- **`Fold`** — a Form whose Casts are tree-shaped. Document
+- **`Fold`**. A Form whose Casts are tree-shaped. Document
   templates and authored documents both live as Folds.
-- **`Wave`** — the umbrella. Forms and Flows ride the same
+- **`Wave`**. The umbrella. Forms and Flows ride the same
   registration pipeline; a Wave is what you publish.
-- **`Base`** — the bundled-type aggregate. Every authored
+- **`Base`**. The bundled-type aggregate. Every authored
   constant in the codebase, smashed into one interface, like
   kysely's `DB`.
-- **`Calm`** — the runtime class. Generic over `Base`. Owns
+- **`Calm`**. The runtime class. Generic over `Base`. Owns
   the registered Waves, the host chain, the caches, the
   dispatch table.
 
@@ -134,11 +134,11 @@ Each export type has a clear role:
 | `Find` | a query filter (find / test constraint tree) | `recent_strings`, `unverified_phonemes` |
 
 `Fold` is what's currently called a `flow` tree in
-`@cluesurf/form`'s `make/flow` builders — the JSON node tree
+`@cluesurf/form`'s `make/flow` builders. The JSON node tree
 that the runtime evaluates. Renamed to `Fold` in calm.
 
 `Find` is the find / test query-filter shape consolidated from
-the existing query-system spec — see [`find.md`](./find.md).
+the existing query-system spec. See [`find.md`](./find.md).
 
 A `Fold` is built with the `flow.*` builder DSL:
 
@@ -156,11 +156,11 @@ export const default_filter: Find = flow.call('find', {
 `@cluesurf/form`. The result type is `Fold` (or `Find` when
 the tree is a query filter). The `Flow` type is the function
 declaration. Several concepts using flow/Flow/Fold/Find names
-— ergonomically close, distinct in role.)
+. Ergonomically close, distinct in role.)
 
 ### Aggregation into one module
 
-Exports live wherever they make sense in the source tree —
+Exports live wherever they make sense in the source tree. 
 spread across files, folders, decks, cards. **At compile time,
 calm aggregates every reachable export into a single flattened
 module** that the runtime loads. The aggregation mechanism is
@@ -239,13 +239,13 @@ Authoring style:
   with many fields, a Flow with a complex handler).
 - Multiple small exports per file when they're tightly related
   (all `is.iso.*` cases on one card).
-- Index files are pure `export * from './...'` — no logic.
+- Index files are pure `export * from './...'`. No logic.
 - The `code/index.ts` at the deck root is the only file the
   host's `package.json` `main` points to.
 
 ## Defining a `Form`
 
-A `Form` declares the shape of data — fields, types, defaults,
+A `Form` declares the shape of data. Fields, types, defaults,
 constraints. Pure declaration, no execution.
 
 ```typescript
@@ -269,12 +269,12 @@ const language_string: Form = {
 
 Reading the keywords:
 
-- `form: 'form'` — discriminant; this object is a Form.
-- `save` — module / namespace path.
-- `link` — the field map. Each entry is one field.
-- `like` — that field's type.
-- `need: false` — optional (default `true`).
-- `case: [...]` — enum members for a string field.
+- `form: 'form'`. Discriminant; this object is a Form.
+- `save`. Module / namespace path.
+- `link`. The field map. Each entry is one field.
+- `like`. That field's type.
+- `need: false`. Optional (default `true`).
+- `case: [...]`. Enum members for a string field.
 
 ### Form variants (sum types)
 
@@ -326,14 +326,14 @@ A `Cast` is a concrete record validated against a Form:
 That's a Cast of `language_string`. Every field present, every
 type matching, every enum member valid.
 
-Casts flow through the runtime — they're the args to Flows,
+Casts flow through the runtime. They're the args to Flows,
 the results of Flows, the leaves of every Fold. The runtime
 parses incoming JSON into Casts via the Form's auto-generated
 parser (Zod or equivalent).
 
 ## Defining a `Flow`
 
-A `Flow` declares a function — name, args, return type:
+A `Flow` declares a function. Name, args, return type:
 
 ```typescript
 import type { Flow } from '@cluesurf/calm'
@@ -368,12 +368,12 @@ const get_length: Flow = {
 
 Reading the keywords:
 
-- `name` — the verb (`is`, `make`, `get`, `find`, `if`, …).
-- `case` — which variant. Picks the Cast (Form-instance shape)
+- `name`. The verb (`is`, `make`, `get`, `find`, `if`, …).
+- `case`. Which variant. Picks the Cast (Form-instance shape)
   the Flow operates on.
-- `like` — the return type, in TypeScript-like notation:
+- `like`. The return type, in TypeScript-like notation:
   `'boolean'`, `'string'`, `'list<record>'`, `'A | B'`.
-- `take` — the input args, written as a `link`-shaped record
+- `take`. The input args, written as a `link`-shaped record
   (same DSL as Form fields).
 
 `(name, case)` is the Flow's identity. The combination
@@ -400,7 +400,7 @@ const get_at: Flow = {
 
 Picking a Flow uses three optional fields: `name` (the verb),
 `base` (the resource / shape being operated on), and `case`
-(the variant). They are **separate top-level fields** —
+(the variant). They are **separate top-level fields**. 
 nothing is parsed from a single dotted string.
 
 ```typescript
@@ -431,10 +431,10 @@ A `Call` is a node in the AST invoking a Flow:
 
 Reading the reserved keys top to bottom:
 
-- `form: 'call'` — this AST node is a Call.
-- `name: 'is'` — picks the `is` Flow.
-- `case: 'ipa'` — narrows to the `is.ipa` Flow.
-- `id: '01h…'` — stable per-node UUID.
+- `form: 'call'`. This AST node is a Call.
+- `name: 'is'`. Picks the `is` Flow.
+- `case: 'ipa'`. Narrows to the `is.ipa` Flow.
+- `id: '01h…'`. Stable per-node UUID.
 
 Everything else (`text`) is args. They match the Flow's `take`
 schema field for field. snake_case, no collision with reserved
@@ -446,7 +446,7 @@ Every editable AST node uses at most these reserved keys:
 
 | key | role |
 |---|---|
-| `form` | discriminant — `'call'`, `'read'`, `'view'`, `'fork'`, `'walk'`, plus literals (`'text'`, `'integer'`, `'boolean'`, `'list'`, `'weave'`, ...) |
+| `form` | discriminant. `'call'`, `'read'`, `'view'`, `'fork'`, `'walk'`, plus literals (`'text'`, `'integer'`, `'boolean'`, `'list'`, `'weave'`, ...) |
 | `name` | for Calls and Views, the registered identifier |
 | `case` | for Calls, the chosen Form-instance variant; for `walk`, the iteration kind (`test` / `list` / `size` / `form`) |
 | `mark` | per-call schema-version stamp (semver) |
@@ -498,7 +498,7 @@ point.
 ## Folds
 
 A `Fold` is a kind of Form whose Casts are call-tree
-documents. A `Fold` is a Cast of a Template — a concrete
+documents. A `Fold` is a Cast of a Template. A concrete
 nested structure of Calls.
 
 ```typescript
@@ -527,7 +527,7 @@ A Fold filling that template:
 
 Templates exist so the editor knows what slots a document
 exposes (a guide has a title, a body, optional sidebars, etc.).
-Folds are the JSON the user authors — what gets stored, what
+Folds are the JSON the user authors. What gets stored, what
 gets compiled, what gets evaluated.
 
 `Fold` is the third type/instance pair because users
@@ -561,7 +561,7 @@ flow.call('is', {
 ```
 
 Reads as: "is-all of [is-string(value), is-among(value, [...])]"
-— i.e., the value is both a string AND in the CEFR list.
+. I.e., the value is both a string AND in the CEFR list.
 
 ## Construction with `make` and `bind`
 
@@ -598,7 +598,7 @@ make('result', {
 })
 ```
 
-This is the same `case` keyword used in the AST — picking
+This is the same `case` keyword used in the AST. Picking
 which variant of the Form is being instantiated.
 
 ## How they all fit
@@ -812,12 +812,12 @@ share a compile target.
 
 ## What's next
 
-- [`primitives.md`](./primitives.md) — deeper on Form and Flow.
-- [`ast.md`](./ast.md) — every node form (`call`, `read`,
+- [`primitives.md`](./primitives.md). Deeper on Form and Flow.
+- [`ast.md`](./ast.md). Every node form (`call`, `read`,
     `view`, `fork`, `walk`, literals).
-- [`calm.md`](./calm.md) — the `Calm` class and its methods.
-- [`runtime.md`](./runtime.md) — pipeline, host, dispatch,
+- [`calm.md`](./calm.md). The `Calm` class and its methods.
+- [`runtime.md`](./runtime.md). Pipeline, host, dispatch,
   memoization.
-- [`catalog.md`](./catalog.md) — the standard nine-verb seed
+- [`catalog.md`](./catalog.md). The standard nine-verb seed
   catalog of Flows.
-- [`editor.md`](./editor.md) — patches, render diffs, widgets.
+- [`editor.md`](./editor.md). Patches, render diffs, widgets.

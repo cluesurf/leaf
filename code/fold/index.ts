@@ -7,7 +7,7 @@
  * The `flow` namespace export bundles every builder helper
  * and renderer entry under one import:
  *
- *   import { flow } from '@cluesurf/form'
+ *   import { flow } from '@cluesurf/calm'
  *   const tree = flow.branch(flow.gt(flow.path('count'), 0), ...)
  *   const out = flow.renderText(tree, { scope: flow.scope({ count: 5 }) })
  *
@@ -29,7 +29,7 @@
  */
 
 import * as builders from './build'
-import { evaluateText, makeScope, renderText } from './render/index'
+import { evaluateText, makeScope, renderText } from './render'
 
 export type {
   AttemptNode,
@@ -77,7 +77,7 @@ export type {
   CallHandler,
   Scope,
   TextContext,
-} from './render/index'
+} from './render'
 
 export {
   DEFAULT_HOOK,
@@ -87,7 +87,7 @@ export {
   isNode,
   makeScope,
   renderText,
-} from './render/index'
+} from './render'
 
 export type { ElementBuilder, ElementContext } from './render/element'
 export { renderElement } from './render/element'

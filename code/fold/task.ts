@@ -12,8 +12,8 @@ export function deepEq(a: unknown, b: unknown): boolean {
     return a.every((x, i) => deepEq(x, b[i]))
   }
   if (typeof a === 'object' && typeof b === 'object') {
-    const ak = Object.keys(a as object)
-    const bk = Object.keys(b as object)
+    const ak = Object.keys(a)
+    const bk = Object.keys(b)
     if (ak.length !== bk.length) return false
     return ak.every(k =>
       deepEq(

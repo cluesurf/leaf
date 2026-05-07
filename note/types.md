@@ -8,7 +8,7 @@ registry for global lookup.
 ## Goal
 
 A user opens a `Calm` instance generic over a `Base`
-type, then registers Flow handlers — and TypeScript
+type, then registers Flow handlers. And TypeScript
 typechecks every call against the base.
 
 ```typescript
@@ -59,7 +59,7 @@ schemas live in `code/form/` source files; the editor loads
 them as JSON.
 
 A pure-runtime build (e.g., a server-side template renderer)
-can ship without any Form schemas at all — just the
+can ship without any Form schemas at all. Just the
 `Base` type, the compiled-handler array, and the code
 map. A full authoring environment (browser editor) ships
 schemas alongside.
@@ -68,7 +68,7 @@ This is why `calm.form(...)` and `calm.flow(...)` are
 distinct calls. Runtime hosts that don't need the editor
 surface call only `calm.flow(...)` and skip Forms entirely.
 
-## Strategy 1 — module-scoped types (form-DSL pattern)
+## Strategy 1. Module-scoped types (form-DSL pattern)
 
 `@cluesurf/form` already generates TypeScript types from schema
 declarations: every `Form` produces a type with the same name,
@@ -106,10 +106,10 @@ doesn't need to disambiguate at import time) but **scoped per
 module** (so a deck publishing its own Flows doesn't collide
 with the base catalog).
 
-This works for module-level references — when a host imports
+This works for module-level references. When a host imports
 the base catalog, types ride along.
 
-## Strategy 2 — kysely-style bundled registry (two layers)
+## Strategy 2. Kysely-style bundled registry (two layers)
 
 Module-scoped types alone are awkward for `calm.flow(...)`,
 because that call has no compile-time knowledge of which
@@ -132,7 +132,7 @@ db.selectFrom('users').select('name')
 Calm applies the same idea, but in **two layers** that mirror
 the editable / compiled AST split:
 
-### Layer A — `Base` (editable, string-keyed)
+### Layer A. `Base` (editable, string-keyed)
 
 What authors and the editor see. Keyed by the human-readable
 `(name, base?, case?)` constant's exported underscore name (e.g. `is_ipa_broad`):
@@ -160,7 +160,7 @@ Used by:
 - The editor (looks up widget shape by triple).
 - The schema editor / docs (introspection).
 
-### Layer B — `BaseCompiled` (runtime, integer-keyed)
+### Layer B. `BaseCompiled` (runtime, integer-keyed)
 
 What the runtime evaluator sees. Keyed by integer codes
 assigned at registry-finalization time:
@@ -184,7 +184,7 @@ interface BaseCompiled {
 
 Used by:
 - The runtime dispatcher (integer key into a flat handler
-  array — fastest possible lookup).
+  array. Fastest possible lookup).
 - Compiled tree storage (compiled Calls carry `code: <integer>`,
   not `code: '<string>'`).
 - Wire transport when a runtime ships a precompiled tree to
@@ -224,7 +224,7 @@ string-keyed: human-readable, diff-friendly, version-tolerant.
 | concern | string layer | integer layer |
 |---|---|---|
 | readable | yes | no |
-| versionable across deploys | yes | no — codes can shift |
+| versionable across deploys | yes | no. Codes can shift |
 | diff-friendly | yes | no |
 | dispatch speed | hash lookup | array index |
 | storage size | larger (~30 bytes/key) | smaller (~4 bytes/key) |
@@ -274,7 +274,7 @@ extend automatically because they're projections of
 
 Each calm package publishes its own `Base` schema (its
 contribution to the bundled type). Hosts that combine
-multiple packages get the union — but **collisions on the
+multiple packages get the union. But **collisions on the
 same key are possible**, just like kysely with multiple
 table-defining modules.
 
@@ -308,7 +308,7 @@ declare module '@cluesurf/calm' {
 
 Calm doesn't auto-namespace per-package; the consumer chooses
 whether to accept the override or rename. This mirrors how
-TypeScript module augmentation behaves generally — name
+TypeScript module augmentation behaves generally. Name
 collisions are explicit, not magic.
 
 The convention for a host expecting collisions: prefix
@@ -460,9 +460,9 @@ code/form/*.ts        →   makeTree   →   *.form.ts      (TS types per Form)
 code/flow/**/*.ts                        *.take.ts      (Zod parsers per Flow input)
 code/list/*.ts                           *.base.ts      (normalized constants)
 code/hash/*.ts                                          (mirrors form.js makeTree)
-code/fold/*.ts        ───────────────►   Base.d.ts      (NEW — single bundled type)
-                                         BaseCompiled.d.ts (NEW — int-keyed dispatch)
-                                         CodeMap.d.ts     (NEW — string→int)
+code/fold/*.ts        ───────────────►   Base.d.ts      (NEW. Single bundled type)
+                                         BaseCompiled.d.ts (NEW. Int-keyed dispatch)
+                                         CodeMap.d.ts     (NEW. String→int)
 ```
 
 The first three outputs (`*.form.ts`, `*.take.ts`,
@@ -478,7 +478,7 @@ that the runtime class is generic over.
 
 The aggregate is a flat type keyed by the authored constant's
 name. Every Form's Cast type, every Flow's signature, every
-Hash, every List, every Fold — one type, default-exported
+Hash, every List, every Fold. One type, default-exported
 from the generated `base.ts`:
 
 ```typescript
@@ -547,11 +547,11 @@ import type Base from '@cluesurf/calm/base'
 const calm = new Calm<Base>()
 ```
 
-This is the literal kysely pattern — `Database` with a row
-shape per table — applied to every primitive shape calm
+This is the literal kysely pattern. `Database` with a row
+shape per table. Applied to every primitive shape calm
 understands. The file is generated; never hand-edited.
 
-### Combining multiple packages — type union
+### Combining multiple packages. Type union
 
 Each calm package emits its own `base.ts`. Consumers combine
 multiple packages by intersecting:
@@ -569,7 +569,7 @@ const calm = new Calm<Base>()
 The `&` intersection unions the keys from every source
 package. If two packages declare the same key, TypeScript's
 intersection rules apply (the merged type must satisfy both
-sides — usually fine for compatible shapes; an error if they
+sides. Usually fine for compatible shapes; an error if they
 disagree).
 
 For a host whose collisions are intentional (e.g., overriding
@@ -650,7 +650,7 @@ import type { LanguageString, IsIpaBroadInput } from '@cluesurf/calm/base'
 ```
 
 These are the same per-export `*.form.ts` files that form.js
-already emits — module-scoped, globally unique within the
+already emits. Module-scoped, globally unique within the
 package. Use them directly when you want one type without
 indexing into `Base`.
 

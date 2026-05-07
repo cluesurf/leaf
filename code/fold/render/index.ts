@@ -5,8 +5,8 @@
  * point so `react` stays an optional peer dep rather than
  * forcing every form.js consumer to install it.
  *
- *   import { flow } from '@cluesurf/form'              // text + builders
- *   import { renderReact } from '@cluesurf/form/make/flow/render/react'
+ *   import { flow } from '@cluesurf/calm'              // text + builders
+ *   import { renderReact } from '@cluesurf/calm/fold/render/react'
  */
 
 export type { Scope } from './scope'

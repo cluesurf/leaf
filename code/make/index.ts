@@ -49,7 +49,7 @@ export default async function make({
     if (list?.length) {
       const castList = [
         `import { z } from 'zod'`,
-        `import { LOAD, MAKE, TEST } from '@cluesurf/form'`,
+        `import { LOAD, MAKE, TEST } from '@cluesurf/calm'`,
         `import * as code from '${testLink}'`,
         ``,
         ...makeLoadList(hold, file),

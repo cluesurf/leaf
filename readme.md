@@ -18,7 +18,7 @@
 ## Introduction
 
 Calm is a sandboxed mini-language and runtime where untrusted
-users author rich, executable documents — and the only things
+users author rich, executable documents. And the only things
 they can do are call functions the host explicitly registered.
 
 Think Handlebars / Mustache / EJS, but the template **is** the
@@ -27,7 +27,7 @@ You define the AST; the runtime walks it through a typed
 function catalog the host owns.
 
 Use it for templating, DOM rendering, constraint defining,
-HTTP request making, query filters, document authoring — any
+HTTP request making, query filters, document authoring. Any
 place an app needs to give end-users authoring power without
 giving them a JavaScript runtime.
 
@@ -46,7 +46,7 @@ Two type primitives describe everything:
 | `Form` | a data shape | `Cast` |
 | `Flow` | a function | `Call` |
 
-Plus a small set of utility shapes — `Hash`, `List`, `Fold` (a
+Plus a small set of utility shapes. `Hash`, `List`, `Fold` (a
 tree-shaped Form for documents), `Find` (a query filter).
 
 Authors write declarations as plain TypeScript constants:
@@ -91,10 +91,10 @@ Each `make.link(path, source)` registers a source module at an
 output path. `make.save()` walks them all and emits, alongside
 each `make.ts`:
 
-- `index.ts` — TypeScript types
-- `form.ts` — Zod parsers, `satisfies z.ZodType<T>` from
+- `index.ts`. TypeScript types
+- `form.ts`. Zod parsers, `satisfies z.ZodType<T>` from
   `./index`
-- `base.ts` — leaf catalog re-exports
+- `base.ts`. Leaf catalog re-exports
 
 ## Runtime
 
@@ -116,7 +116,7 @@ calm.flow('is', { base: 'ipa', case: 'broad' }, ({ text }) =>
 const result = calm.bind(treeFromUser, { stage: 'draft' })
 ```
 
-`Calm` is generic over `Base` — the bundled type aggregating
+`Calm` is generic over `Base`. The bundled type aggregating
 every authored constant. Every `calm.flow(...)` /
 `calm.form(...)` / `calm.bind(...)` call typechecks against
 it. Names, bases, cases, arg shapes, and return types resolve
@@ -149,17 +149,17 @@ the catalog. Each leaf has at most two hand-written files
 
 Full design notes live in [`./note/`](./note/):
 
-- [`goals.md`](./note/goals.md) — the why
-- [`structure.md`](./note/structure.md) — vocabulary spine
-- [`primitives.md`](./note/primitives.md) — Form and Flow in depth
-- [`ast.md`](./note/ast.md) — every node form
-- [`calm.md`](./note/calm.md) — the `Calm` class
-- [`runtime.md`](./note/runtime.md) — engine pipeline
-- [`types.md`](./note/types.md) — TypeScript surface
-- [`codegen.md`](./note/codegen.md) — the `Make` class + outputs
-- [`catalog.md`](./note/catalog.md) — standard nine-verb seed catalog
-- [`find.md`](./note/find.md) — query filters
-- [`editor.md`](./note/editor.md) — editor protocol
+- [`goals.md`](./note/goals.md). The why
+- [`structure.md`](./note/structure.md). Vocabulary spine
+- [`primitives.md`](./note/primitives.md). Form and Flow in depth
+- [`ast.md`](./note/ast.md). Every node form
+- [`calm.md`](./note/calm.md). The `Calm` class
+- [`runtime.md`](./note/runtime.md). Engine pipeline
+- [`types.md`](./note/types.md). TypeScript surface
+- [`codegen.md`](./note/codegen.md). The `Make` class + outputs
+- [`catalog.md`](./note/catalog.md). Standard nine-verb seed catalog
+- [`find.md`](./note/find.md). Query filters
+- [`editor.md`](./note/editor.md). Editor protocol
 
 ## Status
 

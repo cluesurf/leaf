@@ -1,6 +1,6 @@
 # `@cluesurf/belt/tool/flow`
 
-Implementation of the flow library — a unified AST for values,
+Implementation of the flow library. A unified AST for values,
 computations, control flow, templates, and views. Spec at
 `note/library/flow/`.
 
@@ -8,21 +8,21 @@ computations, control flow, templates, and views. Spec at
 
 ```
 flow/
-├── types.ts                 — TS types for every node form
-├── build.ts                 — `flow.*` builder helpers
-├── index.ts                 — public surface
-├── render.ts                — back-compat shim → render/index.ts
+├── types.ts. TS types for every node form
+├── build.ts. `flow.*` builder helpers
+├── index.ts. Public surface
+├── render.ts. Back-compat shim → render/index.ts
 ├── render/
-│   ├── scope.ts             — Scope chain
-│   ├── registry.ts          — call + form registries; default operators
-│   ├── path.ts              — shared path resolution
-│   ├── text.ts              — text-output renderer (i18n)
-│   ├── react.ts             — React-output renderer
-│   └── index.ts             — render surface
-├── build.test.ts            — DSL builder tests
-├── render.test.ts           — text-render tests
-├── render-react.test.ts     — React-render tests
-└── extend.test.ts           — extension-hook tests
+│   ├── scope.ts. Scope chain
+│   ├── registry.ts. Call + form registries; default operators
+│   ├── path.ts. Shared path resolution
+│   ├── text.ts. Text-output renderer (i18n)
+│   ├── react.ts. React-output renderer
+│   └── index.ts. Render surface
+├── build.test.ts. DSL builder tests
+├── render.test.ts. Text-render tests
+├── render-react.test.ts. React-render tests
+└── extend.test.ts. Extension-hook tests
 ```
 
 ## Two renderers, same tree
@@ -175,15 +175,15 @@ and `viewRegistry` (overlay for React component dispatch).
 
 ## When to add what
 
-- **Custom call** — pure value computation. A predicate
+- **Custom call**. Pure value computation. A predicate
   (`is-prime`), a derive (`slug`), a formatter (`gloss-style`).
   Most extensions land here.
-- **Custom form** — a new structural primitive that's not a
+- **Custom form**. A new structural primitive that's not a
   call. A `region` that scopes localization to a sub-tree, a
   `defer` that schedules its body for a later render pass, a
   `markdown` that parses its text body. Rare; usually a
   `call` is enough.
-- **Custom view** — a React component a view name should
+- **Custom view**. A React component a view name should
   dispatch to. Always pair a view name in the tree with a
   registered React component before rendering.
 
@@ -212,7 +212,7 @@ customization.
 
 ## See also
 
-- `note/library/flow/` — the spec.
-- `note/library/flow/dsl.md` — every builder helper.
-- `note/library/flow/version.md` — versioning rules for
+- `note/library/flow/`. The spec.
+- `note/library/flow/dsl.md`. Every builder helper.
+- `note/library/flow/version.md`. Versioning rules for
   operators and components.

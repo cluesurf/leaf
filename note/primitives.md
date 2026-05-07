@@ -11,14 +11,14 @@ Calm is one of them or made of them.
 | function | **`Flow`** | **`Call`** |
 
 A `Form` describes the shape of data. Its instances are
-`Cast` objects — actual records validated against the form.
+`Cast` objects. Actual records validated against the form.
 
 A `Flow` describes a function. Its instances are `Call` nodes
-in the AST — concrete invocations dispatched at runtime.
+in the AST. Concrete invocations dispatched at runtime.
 
 Documents are trees of `Call`s operating over `Cast` data.
 
-## `Form` — data model schemas
+## `Form`. Data model schemas
 
 A `Form` declares "this kind of thing has these fields, with
 these types, with these constraints." Inherited from the
@@ -48,16 +48,16 @@ type FormLink = {
 
 The four field-level keys cover the common ground:
 
-- `like` — the type. A primitive (`'string'` / `'integer'` /
+- `like`. The type. A primitive (`'string'` / `'integer'` /
   `'boolean'` / `'date'`), a collection (`'list<X>'` /
   `'map<X>'`), a reference to another Form by name, or a union
   (`'A | B'`).
-- `need` — required vs optional.
-- `fall` — fallback / default.
-- `case` — enum-like, the allowed members for a `string`-typed
+- `need`. Required vs optional.
+- `fall`. Fallback / default.
+- `case`. Enum-like, the allowed members for a `string`-typed
   field.
-- `link` — a nested record (a sub-Form inline).
-- `test` — a constraint subtree, which is itself a Flow call
+- `link`. A nested record (a sub-Form inline).
+- `test`. A constraint subtree, which is itself a Flow call
   returning boolean. Field-level constraints live here.
 
 ### Worked example
@@ -92,7 +92,7 @@ A `Cast` instance of this form looks like:
 }
 ```
 
-### Form variants — `case`
+### Form variants. `case`
 
 A Form can declare variants (sum types / discriminated unions)
 using `case`. Each case is a sub-shape with its own `link`
@@ -133,7 +133,7 @@ A Cast of `bear` with case `black` looks like:
 }
 ```
 
-Same reserved keys (`form`, `case`, `id`) as Calls — Forms and
+Same reserved keys (`form`, `case`, `id`) as Calls. Forms and
 Flows share the namespace tree:
 
 | layer | type-name | variant (case) |
@@ -181,18 +181,18 @@ room.
 
 Inherited from form-DSL:
 
-- **`Hash`** — a record with dynamic keys, all values share a
+- **`Hash`**. A record with dynamic keys, all values share a
   type (`bond: { like: '...' }`).
-- **`List`** — a homogeneous list. The `list:` field is the
+- **`List`**. A homogeneous list. The `list:` field is the
   literal items (used for static enum value sets that are
   generated from data).
-- **`Mesh`** — a graph / tree-shaped form. Used for nested
+- **`Mesh`**. A graph / tree-shaped form. Used for nested
   structures the schema language can introspect.
 
 These are the existing form-DSL kinds. Calm inherits them as-is
 and may add new kinds over time.
 
-## `Flow` — function schemas
+## `Flow`. Function schemas
 
 A `Flow` declares "this verb, applied to this case, takes
 these args and returns this type."
@@ -225,8 +225,8 @@ runtime parsers from it.
 Every Flow is identified by `(name, case)`:
 
 ```
-(name)            — "is", "make", "get", ...
-(name, case)      — "is.ipa", "make.lowercase", "get.length"
+(name). "is", "make", "get", ...
+(name, case). "is.ipa", "make.lowercase", "get.length"
 
 ```
 
@@ -288,8 +288,8 @@ A naive design might collapse Form and Flow into a single
 "schema" primitive. That hides the asymmetry that makes calm
 work:
 
-- A `Form` is **passive** — describes data. No execution.
-- A `Flow` is **active** — describes a function. Has an
+- A `Form` is **passive**. Describes data. No execution.
+- A `Flow` is **active**. Describes a function. Has an
   implementation. Runs.
 
 Seeds in calm are Flows calling Flows; the leaves bottom out
@@ -355,7 +355,7 @@ Each leaf has a `schema.ts` (the declaration) and a
 Flows compose. A Flow whose `like` is `boolean` can be the
 arg of another Flow whose `take` includes a boolean-typed
 field. The runtime checks compatibility at compile time using
-the `like` annotations — no implicit coercions, no runtime
+the `like` annotations. No implicit coercions, no runtime
 type errors that should have been caught earlier.
 
 ```typescript

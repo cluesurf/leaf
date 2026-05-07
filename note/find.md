@@ -156,7 +156,7 @@ Notes:
 - `find_test.test: list<constraint>` accepts a list of
   Constraints under either `form: 'any'` or `form: 'all'`.
 
-A filter tree authored as data is a Cast of `find` — JSON
+A filter tree authored as data is a Cast of `find`. JSON
 exactly matching the shape from `query-system-spec`:
 
 ```json
@@ -253,7 +253,7 @@ results.
 
 ## Why filters are also expressible as Flow trees
 
-The `find` Cast is a self-contained data object — pure JSON.
+The `find` Cast is a self-contained data object. Pure JSON.
 But every constraint inside it has a corresponding **boolean
 Flow** in the base catalog:
 
@@ -268,7 +268,7 @@ Flow** in the base catalog:
 | `negate: true` | wrap in `is(not: { thing: <inner> })` |
 
 So a filter Cast can be **lowered** to a Tree of Flow calls.
-This isn't always done — most hosts run filters as SQL via
+This isn't always done. Most hosts run filters as SQL via
 the `find.list` handler, which is faster than evaluating a
 Flow tree row-by-row. But for in-memory lists, for client-side
 pre-filtering, or for cases where SQL isn't available, the
@@ -296,15 +296,15 @@ const matches = records.filter(record =>
 Three benefits from consolidating find/test into calm:
 
 1. **One AST.** Authoring a filter, validating data, rendering
-   a document — all the same Tree-of-Calls shape. Editor
-   primitives, runtime caches, type-system, codegen — all
+   a document. All the same Tree-of-Calls shape. Editor
+   primitives, runtime caches, type-system, codegen. All
    shared.
 2. **One editor.** The filter-builder UI and the constraint
    editor are the same widgets at the AST level. The form
    layer renders different widgets for different field types,
    but the AST manipulation is shared.
 3. **One spec.** No more parallel grammars (filter URL syntax
-   vs constraint JSON vs document JSON) — three subsystems
+   vs constraint JSON vs document JSON). Three subsystems
    collapse into one.
 
 The existing URL syntax (`?test=(language:english;text:hello*)`)
@@ -327,7 +327,7 @@ code/flow/find/
   count/   schema.ts handler.ts        # find.count
 ```
 
-Hosts get filtering "for free" — install the base catalog,
+Hosts get filtering "for free". Install the base catalog,
 register a data-layer adapter, and `find.list` / `find.one` /
 `find.count` work against any registered Form.
 
@@ -347,16 +347,16 @@ slot widgets the template publishes.
 ## Wire format
 
 Filter Casts serialize to JSON for storage and to the URL
-syntax for transport — both round-trippable per the existing
+syntax for transport. Both round-trippable per the existing
 spec. Within calm, they're just Casts of `find`, indistinguishable
 from any other Cast.
 
 ## Related
 
-- [`primitives.md`](./primitives.md) — Form / Flow / Cast / Call
-- [`structure.md`](./structure.md) — vocabulary
-- [`catalog.md`](./catalog.md) — the standard nine-verb
+- [`primitives.md`](./primitives.md). Form / Flow / Cast / Call
+- [`structure.md`](./structure.md). Vocabulary
+- [`catalog.md`](./catalog.md). The standard nine-verb
   catalog (`is.among`, `is.between`, `is.matches`, etc., used
   in lowered filter trees)
-- [`calm.md`](./calm.md) — `calm.flow` registration with
+- [`calm.md`](./calm.md). `calm.flow` registration with
   `async: true` for `find.*`
