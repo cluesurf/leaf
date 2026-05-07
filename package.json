@@ -1,0 +1,46 @@
+{
+  "name": "@cluesurf/book",
+  "version": "0.0.0",
+  "license": "MIT",
+  "packageManager": "pnpm@10.33.0",
+  "description": "",
+  "type": "module",
+  "main": "./host/code/index.js",
+  "exports": {
+    ".": "./host/code/index.js"
+  },
+  "bin": {
+    "book": "host/code/console/book.js"
+  },
+  "files": ["host", "readme.md", "license.md"],
+  "scripts": {
+    "test": "pnpm exec vitest run",
+    "make": "rm -rf host && pnpm exec tsc --project tsconfig.json --pretty && rm -f tsconfig.tsbuildinfo && pnpm exec tsc-alias --project tsconfig.json --resolve-full-paths && chmod +x host/code/console/book.js",
+    "host": "pnpm make && pnpm publish --access=public --no-git-checks"
+  },
+  "prettier": "@cluesurf/wash/flow.json",
+  "dependencies": {
+    "@types/lodash-es": "catalog:",
+    "lodash-es": "catalog:",
+    "yaml": "catalog:",
+    "yargs": "catalog:"
+  },
+  "devDependencies": {
+    "@cluesurf/wash": "catalog:",
+    "@types/fs-extra": "catalog:",
+    "@types/node": "catalog:",
+    "@types/yargs": "catalog:",
+    "concurrently": "catalog:",
+    "dotenv": "catalog:",
+    "fs-extra": "catalog:",
+    "js-yaml": "catalog:",
+    "tsc-alias": "catalog:",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "yargs": "catalog:",
+    "zod": "catalog:"
+  }
+}

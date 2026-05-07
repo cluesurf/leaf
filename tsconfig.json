@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "outDir": "host",
+    "rootDir": ".",
+    "declaration": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["code/**/*.ts"],
+  "exclude": [
+    "node_modules",
+    "**/node_modules",
+    "host",
+    "test",
+    "text",
+    "out",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
+}
