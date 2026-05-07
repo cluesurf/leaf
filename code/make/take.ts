@@ -1,0 +1,666 @@
+import { toPascalCase } from '@/tool'
+import { snakeCase } from 'lodash-es'
+import {
+  Base,
+  Form,
+  FormLike,
+  LinkMesh,
+  Hash,
+  List,
+} from '@/form'
+import { detectEnumStyleNesting } from './shared'
+import { Hold } from './form'
+
+const TYPE: Record<string, string> = {
+  boolean: 'z.boolean()',
+  decimal: 'z.number()',
+  integer: 'z.number().int()',
+  json: 'z.object({}).passthrough()',
+  string: 'z.string()',
+  timestamp: 'z.coerce.date()',
+  date: 'z.coerce.date()',
+  uuid: 'z.string().uuid()',
+  natural_number: 'z.number().int()',
+}
+
+function castType(base: Base, like: string): string | undefined {
+  return base.cast?.take?.[like] ?? TYPE[like]
+}
+
+// Zod's `z.enum` only accepts string values. For arrays containing
+// numbers, booleans, or other non-strings (e.g. font weights
+// `[100, 200, ..., 900]`), emit a union of literals instead.
+function takeEnum(take: any[]) {
+  if (take.every(v => typeof v === 'string')) {
+    return `z.enum(${JSON.stringify(take)})`
+  }
+  const literals = take.map(v => `z.literal(${JSON.stringify(v)})`)
+  return `z.union([${literals.join(', ')}])`
+}
+
+/**
+ * Make takes in the `[...path]/take.ts` file.
+ */
+
+export default function make(base: Base, hold: Hold) {
+  const hash: Record<string, string[]> = {}
+
+  for (const name in base.link) {
+    const site = base.link[name]
+    if (!site) {
+      continue
+    }
+
+    const file = `${site.save}/take`
+
+    hash[file] ??= []
+
+    const list = hash[file]
+
+    switch (site.form) {
+      case 'form':
+        list.push(``)
+        make_form({
+          form: site,
+          base,
+          name,
+          file,
+          hold,
+        }).forEach(line => {
+          list.push(line)
+        })
+        break
+      case 'hash':
+        make_hash({
+          hash: site,
+          base,
+          name,
+          file,
+          hold,
+        }).forEach(line => {
+          list.push(line)
+        })
+        break
+      case 'list':
+        list.push(``)
+        make_list({
+          list: site,
+          base,
+          name,
+          file,
+          hold,
+        }).forEach(line => {
+          list.push(line)
+        })
+        break
+      case 'task':
+      case 'flow':
+        // Input codegen for Task / Flow comes from their
+        // referenced Form. Nothing to emit here.
+        break
+    }
+  }
+
+  return hash
+}
+
+export function make_hash({
+  name,
+  hash,
+  base,
+  file,
+  hold,
+}: {
+  name: string
+  hash: Hash
+  base: Base
+  file: string
+  hold: Hold
+}) {
+  const list: string[] = []
+
+  const typeName = toPascalCase(name)
+  const TYPE_NAME = snakeCase(name).toUpperCase()
+
+  if (hash.link) {
+    //
+  } else {
+    const load = (hold.load[file] ??= {})
+
+    const typeNameKey = `${typeName}Key`
+    const typeNameKeyModel = `${typeName}KeyParser`
+    const TYPE_NAME_KEY = `${TYPE_NAME}_KEY`
+
+    load[typeNameKey] = true
+    load[TYPE_NAME_KEY] = true
+
+    hold.save[typeNameKeyModel] ??= { file }
+
+    list.push(``)
+    list.push(
+      `export const ${typeNameKeyModel}: z.ZodType<${typeNameKey}> = z.enum(${TYPE_NAME_KEY} as [${typeNameKey}, ...${typeNameKey}[]])`,
+    )
+  }
+
+  return list
+}
+
+export function make_list({
+  name,
+  list,
+  base,
+  file,
+  hold,
+}: {
+  name: string
+  list: List
+  base: Base
+  file: string
+  hold: Hold
+}) {
+  const text: string[] = []
+
+  const typeName = toPascalCase(name)
+  const TYPE_NAME = snakeCase(name).toUpperCase()
+
+  const load = (hold.load[file] ??= {})
+
+  const typeNameModel = `${typeName}`
+
+  load[typeName] = true
+  load[TYPE_NAME] = true
+
+  hold.save[`${typeNameModel}Parser`] ??= { file }
+
+  const allStrings =
+    Array.isArray(list.list) &&
+    list.list.every(v => typeof v === 'string')
+
+  if (allStrings) {
+    text.push(
+      `export const ${typeNameModel}Parser = z.enum(${TYPE_NAME} as readonly [string, ...string[]]) as z.ZodType<${typeName}>`,
+    )
+  } else {
+    const literals = list.list
+      .map(v => `z.literal(${JSON.stringify(v)})`)
+      .join(', ')
+    text.push(
+      `export const ${typeNameModel}Parser = z.union([${literals}]) as z.ZodType<${typeName}>`,
+    )
+  }
+
+  return text
+}
+
+export function make_form({
+  name,
+  form,
+  base,
+  file,
+  hold,
+}: {
+  name: string
+  form: Form
+  base: Base
+  file: string
+  hold: Hold
+}) {
+  const list: string[] = []
+
+  const typeName = toPascalCase(name)
+  const leak = 'leak' in form && form.leak
+
+  const load = (hold.load[file] ??= {})
+  load[typeName] = true
+
+  const typeParserName = `${typeName}Parser`
+
+  if ('link' in form) {
+    let base
+    if (form.base) {
+      const baseParserName = `${toPascalCase(form.base)}Parser`
+      load[baseParserName] = true
+      // Zod 4: parsers are exported as ZodObject values directly,
+      // not factory functions. Call `.extend` on the schema itself
+      // — the old `SomeParser() as any` factory form throws at
+      // runtime because the schema is not callable.
+      base = `(${baseParserName} as any).extend(`
+    } else {
+      base = 'z.object('
+    }
+
+    hold.save[typeParserName] ??= { file }
+
+    list.push(`export const ${typeParserName} = ${base}{`)
+  } else {
+    hold.save[typeParserName] ??= { file }
+
+    list.push(`export const ${typeParserName} =`)
+  }
+
+  make_link_list({
+    name,
+    form,
+    base,
+    leak,
+    file,
+    hold,
+  }).forEach(line => {
+    list.push(`${line}`)
+  })
+
+  if ('link' in form) {
+    list.push(`})`)
+    if (form.make) {
+      list.push(`  .transform(MAKE('${name}', code.${form.make}.make))`)
+    }
+    if (leak) {
+      list.push(`  .passthrough()`)
+    }
+
+    // list.push(`) as z.ZodType<${typeName}>`)
+  }
+
+  list.push(``)
+  list.push(
+    `export type ${typeName}Record = z.infer<typeof ${typeParserName}>`,
+  )
+
+  // const link: Array<string> = []
+
+  // if (load) {
+  //   load.forEach(l => {
+  //     link.push(toPascalCase(l))
+  //   })
+  // }
+
+  // list.push(``)
+  // list.push(
+  //   `export function load${typeName}(source: any): ${typeName} {`,
+  // )
+  // list.push(`  let x = source`)
+  // link.forEach(l => {
+  //   list.push(`  x = ${l}Model.parse(x)`)
+  // })
+  // list.push(`  return x as ${typeName}`)
+  // list.push(`}`)
+
+  return list
+}
+
+export function make_link_list({
+  form,
+  base,
+  leak,
+  name,
+  file,
+  hold,
+}: {
+  name: string
+  form: Form | LinkMesh
+  base: Base
+  leak?: boolean
+  file: string
+  hold: Hold
+}) {
+  const list: string[] = []
+  const load = (hold.load[file] ??= {})
+
+  if ('link' in form) {
+    for (const name in form.link) {
+      const link = form.link[name]
+      if (!link) {
+        continue
+      }
+      const oS = link.need === false ? 'z.optional(' : ''
+      const oE = link.need === false ? ')' : ''
+      const aS = link.list === true ? 'z.array(' : ''
+      const aE = link.list === true ? ')' : ''
+      const r = link.test
+        ? `.refine(TEST('${name}', code.${link.test}.test))`
+        : ''
+      const f =
+        link.fall != null
+          ? `.default(${JSON.stringify(link.fall)})`
+          : ''
+
+      let min = ''
+      let max = ''
+
+      if (link.size) {
+        if (link.like === 'natural_number' || link.like === 'integer') {
+          // Integer-valued numerics. `natural_number` additionally
+          // floors at zero (default min + clamps on explicit
+          // bounds); `integer` allows negatives so no clamp.
+          const floorAtZero = link.like === 'natural_number'
+
+          if (
+            typeof link.size.rise === 'number' &&
+            link.size.rise > 0
+          ) {
+            min = `.gt(${link.size.rise})`
+          } else if (typeof link.size.rise_meet === 'number') {
+            min = floorAtZero
+              ? `.gte(${Math.max(link.size.rise_meet as number, 0)})`
+              : `.gte(${link.size.rise_meet})`
+          } else if (floorAtZero) {
+            min = `.gte(0)`
+          }
+
+          if (typeof link.size.fall === 'number') {
+            max = floorAtZero
+              ? `.lt(${Math.max(link.size.fall as number, 1)})`
+              : `.lt(${link.size.fall})`
+          } else if (typeof link.size.fall_meet === 'number') {
+            max = floorAtZero
+              ? `.lte(${Math.max(link.size.fall_meet as number, 1)})`
+              : `.lte(${link.size.fall_meet})`
+          }
+        } else if (link.like === 'string' || link.list === true) {
+          // Strings and arrays use `.min()` / `.max()` in zod 4 —
+          // `.gte/.lte` only exist on numeric schemas. Inclusive
+          // bounds via `rise_meet` / `fall_meet`; exclusive `rise`
+          // adds 1, exclusive `fall` subtracts 1.
+          if (typeof link.size.rise === 'number') {
+            min = `.min(${link.size.rise + 1})`
+          } else if (typeof link.size.rise_meet === 'number') {
+            min = `.min(${link.size.rise_meet})`
+          }
+
+          if (typeof link.size.fall === 'number') {
+            max = `.max(${Math.max(link.size.fall - 1, 0)})`
+          } else if (typeof link.size.fall_meet === 'number') {
+            max = `.max(${link.size.fall_meet})`
+          }
+        } else {
+          // Remaining numeric types (integer, decimal, number).
+          if (typeof link.size.rise === 'number') {
+            min = `.gt(${link.size.rise})`
+          } else if (typeof link.size.rise_meet === 'number') {
+            min = `.gte(${link.size.rise_meet})`
+          }
+
+          if (typeof link.size.fall === 'number') {
+            max = `.lt(${link.size.fall})`
+          } else if (typeof link.size.fall_meet === 'number') {
+            max = `.lte(${link.size.fall_meet})`
+          }
+        }
+      } else if (link.like === 'natural_number') {
+        // Default floor when no explicit size: natural numbers >= 0.
+        min = `.gte(0)`
+      }
+
+      const l = leak ? `.passthrough()` : ''
+      if (typeof link.like === 'string') {
+        let type = castType(base, link.like)
+        if (type && link.take) {
+          // When take is specified, generate literal/enum instead of base type
+          if (link.take.length === 1) {
+            list.push(
+              `  ${name}: ${oS}${aS}z.literal(${JSON.stringify(link.take[0])})${aE}${oE}${f},`,
+            )
+          } else {
+            list.push(
+              `  ${name}: ${oS}${aS}${takeEnum(link.take)}${aE}${oE}${f},`,
+            )
+          }
+        } else if (type) {
+          list.push(
+            `  ${name}: ${oS}${aS}${type}${min}${max}${r}${aE}${oE}${f},`,
+          )
+        } else {
+          const linkLikeModelName = `${toPascalCase(
+            link.like as string,
+          )}Parser`
+
+          if (base.mesh[link.like]) {
+            const meshForm = base.mesh[link.like]
+            if (meshForm?.form === 'list') {
+              type = `${linkLikeModelName}`
+            } else {
+              type = `${linkLikeModelName}${l}`
+            }
+            load[linkLikeModelName] = true
+            list.push(
+              `  ${name}: ${oS}${aS}z.lazy(() => ${type})${r}${aE}${oE}${f},`,
+            )
+          } else {
+            type = `z.instanceof(${findAndLinkName({
+              like: link.like as string,
+              base,
+              file,
+              hold,
+            })})`
+            list.push(`  ${name}: ${oS}${aS}${type}${r}${aE}${oE}${f},`)
+          }
+        }
+      } else if (link.case) {
+        if (Array.isArray(link.case)) {
+          const like_case: string[] = []
+          link.case.forEach((c, i) => {
+            if (c.like) {
+              let type = castType(base, c.like)
+              const r = c.test
+                ? `.refine(TEST('${name}', code.${c.test}.test))`
+                : ''
+              if (type) {
+                like_case.push(`${type}${r}`)
+              } else {
+                type = `${toPascalCase(c.like as string)}Parser`
+                if (base.mesh[c.like]) {
+                  load[type] = true
+                  like_case.push(`z.lazy(() => ${type})${r}`)
+                } else {
+                  type = `z.instanceof(${findAndLinkName({
+                    like: c.like as string,
+                    base,
+                    file,
+                    hold,
+                  })})`
+                  like_case.push(`${type}${r}`)
+                }
+              }
+            } else if (c.link) {
+              const lines: string[] = []
+              lines.push('z.object({')
+              make_link_list({
+                name,
+                form: c as LinkMesh,
+                base,
+                leak,
+                file,
+                hold,
+              }).forEach(line => {
+                lines.push(`  ${line}`)
+              })
+              lines.push('})')
+              like_case.push(lines.join('\n'))
+            }
+          })
+          list.push(
+            `  ${name}: ${oS}${aS}z.union([${like_case.join(
+              ', ',
+            )}])${aE}${oE},`,
+          )
+        } else {
+          const like_case: string[] = []
+          for (const name in link.case) {
+            like_case.push(`'${name}'`)
+          }
+          list.push(
+            `  ${name}: ${oS}${aS}z.enum([${like_case.join(
+              ', ',
+            )}])${aE}${oE},`,
+          )
+        }
+      } else if (link.fuse) {
+        const like_fuse: string[] = []
+        link.fuse.forEach((c, i) => {
+          if (c.like) {
+            let type = castType(base, c.like)
+            const r = c.test
+              ? `.refine(TEST('${name}', code.${c.test}.test))`
+              : ''
+            if (type) {
+              like_fuse.push(`${type}${r}`)
+            } else {
+              type = `${toPascalCase(c.like as string)}Parser`
+              if (base.mesh[c.like]) {
+                load[type] = true
+                like_fuse.push(`z.lazy(() => ${type})${r}`)
+              } else {
+                type = `z.instanceof(${findAndLinkName({
+                  like: c.like as string,
+                  base,
+                  file,
+                  hold,
+                })})`
+                like_fuse.push(`${type}${r}`)
+              }
+            }
+          }
+        })
+        list.push(
+          `  ${name}: ${oS}${aS}z.intersection([${like_fuse.join(
+            ', ',
+          )}])${aE}${oE},`,
+        )
+      } else if (link.link) {
+        const enumStyle = detectEnumStyleNesting(link.link)
+        if (enumStyle.isEnum) {
+          list.push(
+            `  ${name}: ${oS}${aS}z.enum(${JSON.stringify(enumStyle.keys)})${l}${aE}${oE},`,
+          )
+        } else {
+          list.push(`  ${name}: ${oS}${aS}z.object({`)
+          make_link_list({
+            name,
+            form: link as LinkMesh,
+            base,
+            leak,
+            file,
+            hold,
+          }).forEach(line => {
+            list.push(`  ${line}`)
+          })
+          list.push(`  })${l}${aE}${oE},`)
+        }
+      } else if (link.take) {
+        if (link.take.length === 1) {
+          list.push(`  ${name}: ${oS}${aS}z.literal(`)
+          list.push(`    ${JSON.stringify(link.take[0])}`)
+          list.push(`  )${l}${aE}${oE},`)
+        } else {
+          list.push(
+            `  ${name}: ${oS}${aS}${takeEnum(link.take)}${l}${aE}${oE},`,
+          )
+        }
+      }
+    }
+  } else if ('case' in form) {
+    const formList: string[] = []
+    const baseList: any[] = []
+    const formCase = form.case as FormLike[]
+
+    formCase.forEach(item => {
+      if ('like' in item) {
+        let type = castType(base, item.like)
+        const r = item.test
+          ? `.refine(TEST('${name}', code.${item.test}.test))`
+          : ''
+        if (type) {
+          formList.push(`${type}${r}`)
+        } else {
+          type = `${toPascalCase(item.like)}Parser`
+          if (base.mesh[item.like]) {
+            load[type] = true
+            formList.push(`z.lazy(() => ${type})${r}`)
+          } else {
+            type = `z.instanceof(${findAndLinkName({
+              like: item.like,
+              base,
+              file,
+              hold,
+            })})`
+            formList.push(`${type}${r}`)
+          }
+        }
+      } else if ('link' in item) {
+        const lines: string[] = []
+        lines.push('z.object({')
+        make_link_list({
+          name,
+          form: item as LinkMesh,
+          base,
+          leak,
+          file,
+          hold,
+        }).forEach(line => {
+          lines.push(`  ${line}`)
+        })
+        lines.push('})')
+        formList.push(lines.join('\n'))
+      }
+    })
+
+    const baseSite =
+      baseList.length > 0
+        ? `z.enum([${baseList.join(', ')}])`
+        : undefined
+
+    if (baseSite) {
+      formList.push(baseSite)
+    }
+
+    const formSite =
+      formList.length === 1 && baseSite
+        ? baseSite
+        : `z.union([${formList.join(', ')}])`
+    list.push(formSite)
+  } else if ('fuse' in form) {
+    const formList: string[] = []
+    const fuse = form.fuse as FormLike[]
+
+    fuse.forEach(item => {
+      const itemModelName = `${item.like}Parser`
+      load[itemModelName] = true
+      formList.push(`z.lazy(() => ${itemModelName})`)
+    })
+
+    const formSite = `z.intersection([${formList.join(', ')}])`
+    list.push(formSite)
+  }
+
+  return list
+}
+
+function findAndLinkName({
+  like,
+  base,
+  file,
+  hold,
+}: {
+  like: string
+  base: Base
+  file: string
+  hold: Hold
+}): string {
+  const type = castType(base, like)
+  if (typeof type === 'string') {
+    return type
+  }
+
+  const name = base.name[like]
+
+  if (typeof name === 'string') {
+    return name
+  }
+
+  const headName = toPascalCase(like)
+
+  const load = (hold.load[file] ??= {})
+  load[headName] = true
+
+  return headName
+}

@@ -7,18 +7,23 @@
   "type": "module",
   "main": "./host/code/index.js",
   "exports": {
-    ".": "./host/code/index.js"
+    ".": "./host/code/index.js",
+    "./make": "./host/code/make/index.js"
   },
   "files": ["host", "readme.md", "license.md"],
   "scripts": {
     "test": "pnpm exec vitest run",
-    "make": "rm -rf host && pnpm exec tsc --project tsconfig.json --pretty && rm -f tsconfig.tsbuildinfo && pnpm exec tsc-alias --project tsconfig.json --resolve-full-paths && chmod +x host/code/console/calm.js",
+    "make": "rm -rf host && pnpm exec tsc --project tsconfig.json --pretty && rm -f tsconfig.tsbuildinfo && pnpm exec tsc-alias --project tsconfig.json --resolve-full-paths",
     "host": "pnpm make && pnpm publish --access=public --no-git-checks"
   },
   "prettier": "@cluesurf/wash/flow.json",
   "dependencies": {
+    "@formatjs/intl": "catalog:",
     "@types/lodash-es": "catalog:",
     "lodash-es": "catalog:",
+    "p-limit": "catalog:",
+    "prettier": "catalog:",
+    "ts-morph": "catalog:",
     "yaml": "catalog:",
     "yargs": "catalog:"
   },
@@ -31,13 +36,28 @@
     "dotenv": "catalog:",
     "fs-extra": "catalog:",
     "js-yaml": "catalog:",
+    "ts-node": "catalog:",
     "tsc-alias": "catalog:",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
-    "yargs": "catalog:",
+    "yargs": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:",
     "zod": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "optionalDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
   }
 }

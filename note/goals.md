@@ -11,6 +11,15 @@ author rich, executable documents**, sandboxed by construction:
 the only things they can do are call functions the host
 explicitly registered.
 
+The shorthand: **calm is a JSON-structured template language**
+— Handlebars / Mustache / EJS in spirit, but the template
+isn't a string with embedded code. The template **is** the
+AST. You define the AST; the runtime walks it. No parser, no
+escape problems, no ambiguity. Authors write and edit the
+JSON tree directly (through an editor that gives them a typed
+UI); the runtime evaluates it through a registered function
+catalog.
+
 ## What `calm` is, expanded
 
 The goal is a **complete runtime environment for sandboxed,

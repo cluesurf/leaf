@@ -78,37 +78,97 @@ identifier in the source module), not by save location.
 
 ## What the consumer provides
 
-A consumer (host or downstream library) writes a single
-codegen config that resolves names to output paths:
+A consumer (host or downstream library) writes one codegen
+script. The pattern is imperative — instantiate a `Make`,
+link source modules to their target output paths, then save:
 
 ```typescript
-import { makeBase } from '@cluesurf/calm/make'
-import * as Library from '@some-library/calm'
-import * as MyApp   from './my-app/calm'
+import Make from '@cluesurf/calm/make'
 
-await makeBase({
-  // Sources — every authored constant the consumer wants in
-  // the bundle. Calm walks each module's exports and groups
-  // them by primitive type.
-  waves: {
-    ...Library,
-    ...MyApp,
-  },
+import * as ipa       from './somewhere/ipa/make'
+import * as language  from './somewhere/language/make'
+import * as is_string from './somewhere/is/string/make'
+// ... import every authored `make.ts` source module
 
-  // Output wiring — see below for the three layered strategies.
-  output: { /* ... */ },
-})
+const make = new Make()
+
+make.link('./somewhere/ipa', ipa)
+make.link('./somewhere/language', language)
+make.link('./somewhere/is/string', is_string)
+// ... many more
+
+make.save()                          // emits all the generated files
 ```
 
-The codegen does the form.js-style `tree.form` / `tree.take` /
-`tree.base` emit, plus calm's bundled outputs (`Base.d.ts`,
-`BaseCompiled.d.ts`, `CodeMap.d.ts`). Where each output file
-is written is decided by `output:`.
+Each `make.link(path, module)` call registers one source
+namespace at a chosen output path. The `Make` instance
+collects every link, then `make.save()` walks them and emits
+the per-folder `index.ts` / `form.ts` / `base.ts` artifacts.
+
+Sources are imported once at the top of the codegen script.
+The compiler scans every export typed as `Form`, `Flow`,
+`Hash`, `List`, `Fold`, or `Find` and dispatches it to the
+right emit slot.
+
+After codegen, the host's runtime imports the generated
+artifacts and wires them up to the `Calm` instance:
+
+```typescript
+import { Calm } from '@cluesurf/calm'
+import type Base from './somewhere/base'        // generated bundled type
+
+import * as ipa       from './somewhere/ipa/base'        // generated catalog
+import * as language  from './somewhere/language/base'
+// ...
+
+const calm = new Calm<Base>()
+calm.deck({ ...ipa, ...language /* ... */ })
+
+calm.flow('is', { base: 'string' }, ({ link }) => /* ... */)
+//                        ↑
+//   typechecked against Base['is_string']
+```
+
+The author's flow-registration call (`calm.flow(...)`) is
+typed by the generated `Base` interface. Names, bases, cases,
+arg shapes, and return types all resolve through it — no
+hand-written annotations needed.
+
+## Make class API
+
+```typescript
+class Make {
+  link(path: string, source: SourceModule): void
+  unlink(path: string): void
+  save(): Promise<void>
+}
+
+type SourceModule = Record<string, Form | Flow | Hash | List | Fold | Find>
+```
+
+`make.link(path, source)` registers a source module at the
+given output path. Calling `link` again with the same path
+replaces the previous binding.
+
+`make.save()` walks every linked path, runs codegen for each,
+and writes the generated `index.ts` / `form.ts` / `base.ts`
+files alongside the source `make.ts`.
+
+Default behavior: codegen output lands **alongside** the
+source — `make.link('./somewhere/ipa', ipa)` writes
+`./somewhere/ipa/index.ts`, `./somewhere/ipa/form.ts`,
+`./somewhere/ipa/base.ts`.
+
+For more control over output placement (separate output tree,
+per-name overrides, resolver function), pass options to the
+constructor — see "Three layered output strategies" below.
 
 ## Three layered output strategies
 
-Layered from simplest to most flexible. A consumer typically
-mixes them.
+The default — output written alongside each linked source
+path — covers most cases. For consumers who want generated
+artifacts in a different tree, the `Make` constructor takes
+options. Layered from simplest to most flexible.
 
 ### 1 — Layout convention (zero config)
 
@@ -117,10 +177,12 @@ layout style. Calm derives every output path from name and
 primitive type.
 
 ```typescript
-output: {
-  base: './my-app/code/calm',
-  layout: 'kind',     // 'kind' | 'flat' | 'mirror' | 'name'
-}
+const make = new Make({
+  output: {
+    base: './my-app/code/calm',
+    layout: 'kind',     // 'kind' | 'flat' | 'mirror' | 'name'
+  },
+})
 ```
 
 Layouts:
@@ -164,14 +226,16 @@ when integrating a library whose names don't align with the
 consumer's structure.
 
 ```typescript
-output: {
-  base: './my-app/code/calm',
-  layout: 'kind',
-  override: {
-    ffmpeg_codec_data: './my-app/code/legacy/ffmpeg/codec.ts',
-    is_ipa:            './my-app/code/linguistics/ipa/check.ts',
+const make = new Make({
+  output: {
+    base: './my-app/code/calm',
+    layout: 'kind',
+    override: {
+      ffmpeg_codec_data: './my-app/code/legacy/ffmpeg/codec.ts',
+      is_ipa:            './my-app/code/linguistics/ipa/check.ts',
+    },
   },
-}
+})
 ```
 
 The override map takes precedence over the layout. Names not
@@ -183,18 +247,20 @@ Full control: a function that takes (name, kind, source-info)
 and returns the output path.
 
 ```typescript
-output: {
-  resolve: ({ name, kind, sourceModule }) => {
-    if (sourceModule.startsWith('@some-library/')) {
-      return `./my-app/code/vendor/${name}.ts`
-    }
-    if (kind === 'flow' && name.startsWith('is_')) {
-      const [, base, ...rest] = name.split('_')
-      return `./my-app/code/check/${base}/${rest.join('-')}.ts`
-    }
-    return `./my-app/code/calm/${kind}/${name}.ts`
+const make = new Make({
+  output: {
+    resolve: ({ name, kind, linkPath }) => {
+      if (linkPath.startsWith('vendor/')) {
+        return `./my-app/code/vendor/${name}.ts`
+      }
+      if (kind === 'flow' && name.startsWith('is_')) {
+        const [, base, ...rest] = name.split('_')
+        return `./my-app/code/check/${base}/${rest.join('-')}.ts`
+      }
+      return `./my-app/code/calm/${kind}/${name}.ts`
+    },
   },
-}
+})
 ```
 
 Reach for this when:
@@ -221,23 +287,36 @@ A consumer can use a layout default, override specific names,
 and fall back to a resolver:
 
 ```typescript
-output: {
-  base: './my-app/code/calm',
-  layout: 'kind',
-  override: {
-    welcome_guide: './my-app/code/docs/welcome.ts',
+const make = new Make({
+  output: {
+    base: './my-app/code/calm',
+    layout: 'kind',
+    override: {
+      welcome_guide: './my-app/code/docs/welcome.ts',
+    },
+    resolve: ({ name, kind, linkPath }) => {
+      if (linkPath.startsWith('vendor/')) {
+        return `./my-app/code/vendor/${kind}/${name}.ts`
+      }
+      return null  // null falls through to layout + override
+    },
   },
-  resolve: ({ name, kind, sourceModule }) => {
-    if (sourceModule.startsWith('@some-vendor/')) {
-      return `./my-app/code/vendor/${kind}/${name}.ts`
-    }
-    return null  // null falls through to layout + override
-  },
-}
+})
 ```
 
 Resolution order: `override` → `resolve` (if returns string)
-→ `layout`.
+→ `layout` → default (write alongside the linked source).
+
+The resolver receives:
+
+```typescript
+type ResolverInput = {
+  name: string                  // the constant's exported name
+  kind: 'form' | 'flow' | 'hash' | 'list' | 'fold' | 'find'
+  linkPath: string              // the path passed to make.link()
+  emit: 'index' | 'form' | 'base'   // which artifact
+}
+```
 
 ## What libraries ship
 
@@ -331,15 +410,14 @@ export const is_ipa_handler = ({ text }: { text: string }): boolean =>
 
 ```typescript
 // my-app/codegen.ts
-import { makeBase } from '@cluesurf/calm/make'
-import * as Linguistics from '@cluesurf/calm-linguistics'
-import * as MyApp from './my-app/calm-source'
+import Make from '@cluesurf/calm/make'
 
-await makeBase({
-  waves: {
-    ...Linguistics,
-    ...MyApp,
-  },
+import * as ipa            from './my-app/code/base/is/ipa/make'
+import * as language_string from './my-app/code/base/form/language_string/make'
+import * as is_ipa         from './my-app/code/base/is/ipa/make'
+// ... import every authored make.ts in this app
+
+const make = new Make({
   output: {
     base: './my-app/code/calm',
     layout: 'kind',
@@ -348,6 +426,12 @@ await makeBase({
     },
   },
 })
+
+make.link('./my-app/code/base/is/ipa', ipa)
+make.link('./my-app/code/base/form/language_string', language_string)
+// ... many more
+
+await make.save()
 ```
 
 ### Generated output
@@ -399,15 +483,32 @@ calm.deck({
 
 ## Output file shape
 
-Every generated `*.form.ts` file pairs a **TypeScript type**
-with a **Zod parser** locked to that type via `satisfies
-z.ZodType<...>`. The two stay in sync because TypeScript
-verifies the parser produces a value compatible with the
-declared type:
+Each leaf folder under `code/base/<verb>/<base>/<case>/`
+contains:
+
+```
+make.ts        # hand:  the declaration
+flow.ts        # hand:  the handler (Flows only)
+index.ts       # gen:   TypeScript types
+form.ts        # gen:   Zod parsers, satisfies the index types
+base.ts        # gen:   leaf catalog re-exports
+```
+
+The three generated files (`index.ts`, `form.ts`, `base.ts`)
+have stable shapes per primitive kind, described below. They
+import from one another in a fixed order:
+
+- `index.ts` exports type declarations only.
+- `form.ts` imports types from `./index` and exports Zod
+  parsers locked to those types via `satisfies z.ZodType<T>`.
+- `base.ts` re-exports both, plus the handler from `./flow`.
+
+### `index.ts` — TypeScript types
+
+For a Form, paired Cast type:
 
 ```typescript
-// generated/form/language_string.ts
-import { z } from 'zod'
+// code/base/form/language_string/index.ts (gen)
 
 export type LanguageString = {
   id:           string
@@ -415,6 +516,52 @@ export type LanguageString = {
   language__id: string
   cefr_level?:  'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'
 }
+```
+
+For a Flow, paired Input + Output:
+
+```typescript
+// code/base/is/ipa/broad/index.ts (gen)
+
+export type IsIpaBroadInput = { text: string }
+export type IsIpaBroadOutput = boolean
+export type IsIpaBroadHandler = (args: IsIpaBroadInput) => IsIpaBroadOutput
+```
+
+For a Form with cases (sum type):
+
+```typescript
+// code/base/form/result/index.ts (gen)
+
+export type Result =
+  | { case: 'okay';  value: string }
+  | { case: 'error'; value: string }
+```
+
+For a Hash:
+
+```typescript
+// code/base/hash/ffmpeg_codecs/index.ts (gen)
+
+export type FfmpegCodecs = Record<string, { label: string; lossy: boolean }>
+```
+
+For a List:
+
+```typescript
+// code/base/list/ipa_symbols/index.ts (gen)
+
+export type IpaSymbols = string[]
+```
+
+### `form.ts` — Zod parsers
+
+Always `import type` from `./index` and lock with `satisfies`:
+
+```typescript
+// code/base/form/language_string/form.ts (gen)
+import { z } from 'zod'
+import type { LanguageString } from './index'
 
 export const language_string_parser = z.object({
   id:           z.string(),
@@ -424,84 +571,98 @@ export const language_string_parser = z.object({
 }) satisfies z.ZodType<LanguageString>
 ```
 
-The `satisfies z.ZodType<LanguageString>` clause is the
-glue. Drift between the type and the parser becomes a
-TypeScript compile error — impossible to ship a parser whose
-output doesn't match its declared type.
-
-### Per-Form output
+For a Flow (input parser):
 
 ```typescript
-// generated/form/<name>.ts
+// code/base/is/ipa/broad/form.ts (gen)
 import { z } from 'zod'
+import type { IsIpaBroadInput } from './index'
 
-export type <NameInPascal> = { /* fields */ }
-
-export const <name>_parser = z.object({ /* validators */ })
-  satisfies z.ZodType<<NameInPascal>>
+export const is_ipa_broad_input_parser = z.object({
+  text: z.string(),
+}) satisfies z.ZodType<IsIpaBroadInput>
 ```
 
-### Per-Form-with-cases output
+For a Form-with-cases (discriminated union):
 
 ```typescript
-// generated/form/<name>.ts
+// code/base/form/result/form.ts (gen)
 import { z } from 'zod'
+import type { Result } from './index'
 
-export type <Name> =
-  | { case: 'a'; /* a's fields */ }
-  | { case: 'b'; /* b's fields */ }
-
-export const <name>_parser = z.discriminatedUnion('case', [
-  z.object({ case: z.literal('a'), /* ... */ }),
-  z.object({ case: z.literal('b'), /* ... */ }),
-]) satisfies z.ZodType<<Name>>
+export const result_parser = z.discriminatedUnion('case', [
+  z.object({ case: z.literal('okay'),  value: z.string() }),
+  z.object({ case: z.literal('error'), value: z.string() }),
+]) satisfies z.ZodType<Result>
 ```
 
-### Per-Flow output (input / output split)
+For a Hash:
 
 ```typescript
-// generated/flow/<name>.ts
+// code/base/hash/ffmpeg_codecs/form.ts (gen)
 import { z } from 'zod'
+import type { FfmpegCodecs } from './index'
 
-export type <Name>Input = { /* take fields */ }
-
-export type <Name>Output = /* the `like` type */
-
-export const <name>_input_parser = z.object({ /* ... */ })
-  satisfies z.ZodType<<Name>Input>
-
-// the handler signature flows from the schema:
-export type <Name>Handler = (args: <Name>Input) => <Name>Output
+export const ffmpeg_codecs_parser = z.record(
+  z.string(),
+  z.object({ label: z.string(), lossy: z.boolean() }),
+) satisfies z.ZodType<FfmpegCodecs>
 ```
 
-### Per-Hash / Per-List output
+For a List:
 
 ```typescript
-// generated/hash/<name>.ts
+// code/base/list/ipa_symbols/form.ts (gen)
 import { z } from 'zod'
+import type { IpaSymbols } from './index'
 
-export type <Name> = Record<string, <ValueType>>
+export const ipa_symbols_parser = z.array(z.string())
+  satisfies z.ZodType<IpaSymbols>
+```
 
-export const <name>_parser = z.record(z.string(), <valueParser>)
-  satisfies z.ZodType<<Name>>
+### `base.ts` — leaf catalog re-exports
+
+The folder's bundled namespace — pulls in everything in the
+leaf so consumers get one import:
+
+```typescript
+// code/base/is/ipa/broad/base.ts (gen)
+export type * from './index'
+export * from './form'
+export { is_ipa_broad_handler } from './flow'
+
+// re-exports for the bundle aggregator:
+import type { IsIpaBroadInput, IsIpaBroadOutput } from './index'
+export type IsIpaBroadEntry = {
+  take: IsIpaBroadInput
+  like: IsIpaBroadOutput
+}
+```
+
+For Hashes and Lists, `base.ts` additionally **exports the
+runtime data** (the literal values, since Hashes and Lists
+are data, not just types):
+
+```typescript
+// code/base/hash/ffmpeg_codecs/base.ts (gen)
+export type * from './index'
+export * from './form'
+export { ffmpeg_codecs } from './make'   // the runtime data exported from make.ts
 ```
 
 ```typescript
-// generated/list/<name>.ts
-import { z } from 'zod'
-
-export type <Name> = <ItemType>[]
-
-export const <name>_parser = z.array(<itemParser>)
-  satisfies z.ZodType<<Name>>
+// code/base/list/ipa_symbols/base.ts (gen)
+export type * from './index'
+export * from './form'
+export { ipa_symbols } from './make'     // the runtime data exported from make.ts
 ```
 
 ### Per-Fold / Per-Find output
 
-Folds and Finds are just typed Casts; their generated file is
-the same paired pattern. Their `like`-derived type is the
-shape of the `Cast` (a tree of Calls or a query shape), and
-the parser walks the AST to validate it.
+Folds and Finds are just typed Casts; same three-file pattern.
+Their `like`-derived type is the shape of the `Cast` (a tree of
+Calls or a query shape), and the parser walks the AST to
+validate it.
 
 ### Why `satisfies` instead of explicit annotation
 
@@ -616,7 +777,7 @@ import paths are the only thing the IDE renames.
 
 A consumer that wants generated artifacts in multiple
 locations (e.g., one for the runtime, one for an embedded
-playground) runs `makeBase` multiple times with different
+playground) constructs multiple `Make` instances with different
 `output:` blocks. Same `waves`, different output paths.
 
 ### Per-emit fan-out
@@ -658,7 +819,7 @@ when the runtime needs them somewhere specific.
 
 ### Multi-package monorepo
 
-In a workspace where multiple packages each call `makeBase`,
+In a workspace where multiple packages each run their own `Make`,
 each package gets its own `Base` interface bundle. The host
 that combines them sees the union via `declare module`
 augmentation (see [`types.md`](./types.md)).
@@ -840,7 +1001,7 @@ calm.deck(/* the bundled namespace from base.ts */)
     type.ts                   # AST node types (Call, Read, View, Fork, Walk, BaseText, ...)
     build.ts                  # flow.call(), flow.read(), flow.list(), ...
   make/                       # the codegen entry
-    index.ts                  # makeBase() and friends
+    index.ts                  # the `Make` class and its codegen
   runtime/                    # the Calm class, dispatcher, evaluator
     index.ts                  # the Calm class
     evaluator.ts              # the wake-form walker
@@ -894,7 +1055,7 @@ my-app/
           flow.ts             # async handler with DB access
       ...
     base.ts                   # (generated) the host's bundled Base
-  codegen.ts                  # ONE script that calls makeBase
+  codegen.ts                  # ONE script that calls `make.save()`
   src/
     runtime.ts                # imports + composes Bases, instantiates Calm
 ```
@@ -907,7 +1068,7 @@ alongside (`index.ts`, `form.ts`, `base.ts`)**.
 
 - **Schemas don't carry paths.** No `save:` field. Identity is
   the exported `const` name.
-- **Codegen config is separate.** `makeBase({ waves, output })`
+- **Codegen config is separate.** `new Make({ output })` then `make.link(...)` then `make.save()`
   takes the schemas and decides where artifacts land.
 - **Three layered output strategies** — layout convention,
   per-name overrides, resolver function — composable.
