@@ -210,6 +210,17 @@ export class Make {
     /** Legacy codegen pipeline output (kept while old fixtures migrate). */
     legacy: MakeBack
   }> {
+    // Identity-tuple collision check. Two declarations across
+    // any registered Books with the same identity are an
+    // error — codegen aborts before writing anything.
+    const collisions = collectCollisions(this.books)
+    if (collisions.length > 0) {
+      throw new Error(
+        `Make.save: identity-tuple collisions:\n` +
+          collisions.map(c => `  ${c}`).join('\n'),
+      )
+    }
+
     // Flatten every registered Book's `base` array into the
     // BaseHash shapes the legacy codegen expects. Each cast
     // keyed by its `save` path.
@@ -502,6 +513,72 @@ function makeCode(books: Book[]): {
   codeLines.push('')
 
   return { code: codeLines.join('\n'), link }
+}
+
+/**
+ * Walk every registered Book's `base` array and find any
+ * identity-tuple collisions:
+ *
+ *   - Forms identified by `(cast, call?, case?)`
+ *   - Flows identified by `(call, base?, case?, take?, make?)`
+ *
+ * Two declarations with the same identity are duplicates.
+ * Returns a list of human-readable collision descriptions
+ * (one per duplicated tuple), empty when none.
+ */
+function collectCollisions(books: Book[]): string[] {
+  const seen = new Map<string, { count: number; from: string[] }>()
+
+  const bookLabel = (b: Book) =>
+    b.host && b.name
+      ? `${b.host}:${b.name}`
+      : (b.host ?? b.name ?? '<anonymous>')
+
+  for (const book of books) {
+    const label = bookLabel(book)
+    for (const cast of book.base ?? []) {
+      let key: string
+      switch (cast.form) {
+        case 'form': {
+          const c = cast as Form
+          key = `form:(cast=${c.cast}, call=${c.call ?? ''}, case=${c.case ?? ''})`
+          break
+        }
+        case 'flow': {
+          const f = cast as Flow
+          // Take/make included so two Flows with the same
+          // (call, base, case) but different signatures are
+          // also flagged (would otherwise silently overwrite
+          // each other).
+          const takeSig = JSON.stringify(f.take ?? null)
+          const makeSig = JSON.stringify(f.make ?? null)
+          key = `flow:(call=${f.call}, base=${f.base ?? ''}, case=${f.case ?? ''}, take=${takeSig}, make=${makeSig})`
+          break
+        }
+        case 'fold':
+          key = `fold:(cast=${(cast as Fold).cast})`
+          break
+        case 'hash':
+          key = `hash:(cast=${(cast as Hash).cast})`
+          break
+        case 'list':
+          key = `list:(cast=${(cast as List).cast})`
+          break
+      }
+      const entry = seen.get(key) ?? { count: 0, from: [] }
+      entry.count += 1
+      entry.from.push(label)
+      seen.set(key, entry)
+    }
+  }
+
+  const out: string[] = []
+  for (const [key, { count, from }] of seen) {
+    if (count > 1) {
+      out.push(`${key} — appears ${count}× across [${from.join(', ')}]`)
+    }
+  }
+  return out
 }
 
 /** PascalCase compound name for a Flow's per-take/make alias. */

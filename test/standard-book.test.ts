@@ -150,6 +150,72 @@ describe('Make.save() — Code aggregate generation', () => {
     )
   })
 
+  it('throws on identity-tuple collisions across registered Books', async () => {
+    const bookA = {
+      host: 'org',
+      name: 'a',
+      base: [
+        {
+          form: 'flow' as const,
+          call: 'is',
+          base: 'string',
+          take: { thing: { like: 'unknown' } },
+          make: 'boolean',
+        },
+      ],
+    }
+    const bookB = {
+      host: 'org',
+      name: 'b',
+      base: [
+        {
+          form: 'flow' as const,
+          call: 'is',
+          base: 'string',
+          take: { thing: { like: 'unknown' } },
+          make: 'boolean',
+        },
+      ],
+    }
+
+    const make = new Make({ link: '.', dry: true })
+    make.book(bookA)
+    make.book(bookB)
+
+    await expect(make.save()).rejects.toThrow(
+      /identity-tuple collisions/,
+    )
+  })
+
+  it('does not flag two Flows that differ in case as collisions', async () => {
+    const inline = {
+      base: [
+        {
+          form: 'flow' as const,
+          call: 'is',
+          base: 'ipa',
+          case: 'broad',
+          take: { text: { like: 'string' } },
+          make: 'boolean',
+        },
+        {
+          form: 'flow' as const,
+          call: 'is',
+          base: 'ipa',
+          case: 'narrow',
+          take: { text: { like: 'string' } },
+          make: 'boolean',
+        },
+      ],
+    }
+    const make = new Make({ link: '.', dry: true })
+    make.book(inline)
+    // Should NOT throw — different `case` distinguishes them.
+    const result = await make.save()
+    expect(result.code).toContain("'flow:is:ipa:broad'")
+    expect(result.code).toContain("'flow:is:ipa:narrow'")
+  })
+
   it('emits a CodeLink integer-id table inside code.ts', async () => {
     const make = new Make({ link: '.', dry: true })
     make.book(standard)

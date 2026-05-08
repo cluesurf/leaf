@@ -20,17 +20,20 @@ import * as is_flows from './is/make'
 import * as make_flows from './make/make'
 import * as get_flows from './get/make'
 import * as has_flows from './has/make'
+import * as format_flows from './format/make'
 
 import * as is_hooks from './is/flow'
 import * as make_hooks from './make/flow'
 import * as get_hooks from './get/flow'
 import * as has_hooks from './has/flow'
+import * as format_hooks from './format/flow'
 
 const base: Cast[] = [
   ...Object.values(is_flows),
   ...Object.values(make_flows),
   ...Object.values(get_flows),
   ...Object.values(has_flows),
+  ...Object.values(format_flows),
 ]
 
 const standard: Book = {
@@ -55,6 +58,7 @@ export const hooks = {
   ...make_hooks,
   ...get_hooks,
   ...has_hooks,
+  ...format_hooks,
 } as const
 
 // Re-export the generated `Code` type and `CodeLink` integer-id
