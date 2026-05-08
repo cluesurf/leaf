@@ -727,7 +727,7 @@ export const greet_user_input: Form = {
 }
 
 export const greet_user: Flow = {
-  form: 'task',
+  form: 'flow',
   save: '~/test/hold/task',
   take: 'greet_user_input',
   like: 'string',
@@ -742,7 +742,7 @@ export const sum_numbers_input: Form = {
 }
 
 export const sum_numbers: Flow = {
-  form: 'task',
+  form: 'flow',
   save: '~/test/hold/task',
   take: 'sum_numbers_input',
   like: 'integer',
@@ -764,7 +764,7 @@ export const message_count_input: Form = {
 }
 
 export const message_count_template: Fold = {
-  form: 'flow',
+  form: 'fold',
   save: '~/test/hold/flow',
   take: 'message_count_input',
   tree: [

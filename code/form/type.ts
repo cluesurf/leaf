@@ -1,12 +1,10 @@
-import { RefinementCtx } from 'zod'
-import type { Node as FlowNode } from '@/fold/types'
+import type { Node as FoldNode } from '@/fold/types'
 
 /**
- * A `Book` is a published bundle of declarations.
- * Optional `host` + `name` metadata, plus a single `base`
- * array containing every Form / Flow / Fold / Hash / List
- * the Book ships, in any order. Codegen dispatches each
- * entry by its `form:` discriminant.
+ * A `Book` is a published bundle of declarations. Optional
+ * `host` + `name` metadata, plus a single `base` array of
+ * mixed declarations. Codegen dispatches each entry by its
+ * `form:` discriminant.
  */
 export type Book = {
   host?: string
@@ -14,94 +12,207 @@ export type Book = {
   base?: Cast[]
 }
 
-export type Cast = Form | Hash | List | Test | Make | Flow | Fold
+/**
+ * `Cast` is the umbrella for any JSON object the runtime
+ * processes — Form / Flow / Fold / Hash / List declarations,
+ * Call AST nodes, and record instances.
+ */
+export type Cast = Form | Flow | Fold | Hash | List
 
-export type Load = MakeTake & {
-  testLink: string
-  codeLink: string
-}
-
-export type FormBond = string | number | boolean | null
-
-export type FormBase = {
+/**
+ * A `Form` declares a data shape. Identity is the
+ * `(cast, call?, case?)` triple.
+ *
+ *  - `cast` is the resource the Form shapes (`'language'`,
+ *    `'language_string'`, …).
+ *  - `call` (optional) is the action context — the verb this
+ *    Form serves as input/output for. A Form with `cast:
+ *    'language', call: 'select'` is the response/request
+ *    shape of a `select_language` Flow.
+ *  - `case` (optional) is a variant within an action context.
+ *  - `like` is the field map (LinkMesh).
+ *  - `head` (optional) declares generic type parameters.
+ */
+export type Form = {
   form: 'form'
-  save: string
-  test?: (bond: any, link?: any) => boolean
-  note?: string
-}
-
-export type FormBaseCase = FormBase & {
-  case: FormLike[]
-}
-
-export type FormLike = {
-  like: string
-  test?: (bond: any, link?: any) => boolean
-  note?: string
-}
-
-export type FormLikeCase = {
-  case: FormLike[]
-}
-
-export type FormBaseFuse = FormBase & {
-  fuse: FormLike[]
-}
-
-export type FormBaseLink = FormBase & {
+  cast: string
+  call?: string
+  case?: string
+  like: LinkMesh | LinkMesh[]
+  head?: string[]
+  /** @internal codegen output path; derived from identity when absent. */
+  save?: string
+  /** @internal legacy: parent-Form extension reference. */
   base?: string
-  link: LinkMesh
+  /** @internal legacy: field map alias. */
+  link?: LinkMesh
+  /** @internal legacy: name override used by codegen. */
   name?: string
+  /** @internal legacy: target-Form override used by codegen. */
   make?: string
+  /** @internal legacy. */
   leak?: boolean
+  /** @internal legacy. */
   load?: string[]
 }
 
-export type Form = FormBaseCase | FormBaseFuse | FormBaseLink
+/**
+ * A `Flow` declares a function. Identity is the
+ * `(call, base?, case?)` triple.
+ *
+ *  - `call` is the verb (`'is'`, `'make'`, `'get'`, …). Named
+ *    `call` (not `name`) because `form` is the kind tag — the
+ *    same word `call` is what a Call AST node carries via its
+ *    `name:` prop.
+ *  - `base` is the resource the verb acts on.
+ *  - `case` is a variant within `(call, base)`.
+ *  - `take` is the input shape: Form name, inline LinkMesh,
+ *    or array of either (union).
+ *  - `make` is the output shape: same polymorphism.
+ */
+export type Flow = {
+  form: 'flow'
+  call: string
+  base?: string
+  case?: string
+  take?: string | LinkMesh | (string | LinkMesh)[]
+  make?: string | LinkMesh | (string | LinkMesh)[]
+  /** @internal codegen output path. */
+  save?: string
+  /** @internal legacy: output type signature used by codegen. */
+  like?: string
+}
 
-export type BaseHash = Record<
-  string,
-  Form | Hash | List | Test | Make | Flow | Fold
->
+/**
+ * A `Fold` is a renderable tree. Document templates and
+ * authored documents both live as Folds.
+ */
+export type Fold = {
+  form: 'fold'
+  cast: string
+  take?: string | LinkMesh
+  tree: FoldNode[]
+  /** @internal codegen output path. */
+  save?: string
+}
+
+/**
+ * A `Hash` is a record with dynamic keys, all values one
+ * shape.
+ */
+export type Hash = {
+  form: 'hash'
+  cast: string
+  like: Link
+  load?: Record<string, unknown>
+  /** @internal codegen output path. */
+  save?: string
+  /** @internal legacy: literal hash data, used by codegen. */
+  hash?: Record<string, any>
+  /** @internal legacy: declared field name for hash entries. */
+  link?: string
+  /** @internal legacy: per-value type. */
+  bond?: FormLike
+}
+
+/**
+ * A `List` is a homogeneous list of literal items, used for
+ * static enum value sets generated from data.
+ */
+export type List = {
+  form: 'list'
+  cast: string
+  like: Link
+  load?: unknown[]
+  /** @internal codegen output path. */
+  save?: string
+  /** @internal legacy: literal list data, used by codegen. */
+  list?: any[]
+}
+
+/**
+ * A `Link` declares one field's type and constraints.
+ *
+ *  - `like` is the type signature: a primitive name / Form
+ *    ref (string), a union of those (string[]), an inline
+ *    nested record (LinkMesh), or a union of inline shapes
+ *    (LinkMesh[]).
+ *  - `need` marks the field required (default true).
+ *  - `base` is the default value when missing.
+ *  - `take` is the field's allowed enum values (string[]).
+ *  - `test` is a constraint sub-tree that returns boolean.
+ *  - `list` indicates the field is a list of `like`-typed
+ *    values.
+ */
+export type Link = {
+  like?: string | string[] | LinkMesh | LinkMesh[]
+  need?: boolean
+  base?: unknown
+  take?: string[] | any[]
+  test?: Cast | string
+  list?: boolean
+
+  // ─── Legacy fields used by the existing codegen ───
+  // Kept optional so the codegen continues to compile;
+  // remove once the codegen is rewritten against the
+  // simplified Link shape.
+
+  /** @internal legacy: nested record (use `like: LinkMesh` going forward). */
+  link?: LinkMesh
+  /** @internal legacy: enum members or sub-variant union. */
+  case?: Record<string, Link> | Link[]
+  /** @internal legacy: variant union members. */
+  fuse?: Link[]
+  /** @internal legacy: literal default-value or guide-system flag. */
+  bind?: FormBond | Record<string, FormBond> | FormBond[] | boolean
+  /** @internal legacy. */
+  bond?: Link
+  /** @internal legacy: required-by-default trait bound. */
+  fall?: any
+  /** @internal legacy. */
+  head?: string
+  /** @internal legacy. */
+  note?: string
+  /** @internal legacy. */
+  back?: string
+  /** @internal legacy. */
+  fill?: boolean
+  /** @internal legacy. */
+  hold?: boolean
+  /** @internal legacy. */
+  trim?: boolean
+  /** @internal legacy. */
+  load?: boolean
+  /** @internal legacy. */
+  name?: { base?: string; mark?: string }
+  /** @internal legacy. */
+  size?: number | { fall?: number; fall_meet?: number; rise?: number; rise_meet?: number }
+  /** @internal legacy. View-tree extensions. */
+  slot?: string
+  view?: boolean
+  pick?: string
+  tags?: string[]
+}
+
+export type LinkMesh = Record<string, Link>
+
+// ─── Codegen-config types (consumed by `Make`) ────────────
+
+export type BaseHash = Record<string, Cast>
 
 export type NameHash = Record<string, string>
 
-/**
- * Map of name → implementation function. Two consumers:
- *
- * - `Base.hook` at codegen time, where each entry implements a
- *   declared `Flow` and the `input` is the task's `take` shape.
- *
- * - The flow render context (`BaseContext.hook`), where each entry
- *   implements a `call` operator and may receive a second
- *   `context` argument (locale, scope) — built-ins like `plural`
- *   and `currency` use it.
- *
- * Loose at this layer; call sites narrow to the exact input
- * record type.
- */
 export type HookHash = Record<
   string,
   (input: any, context?: any) => any
 >
 
 /**
- * Codegen overrides for the built-in `like` → output mappings.
+ * Codegen overrides for the built-in `like` → output
+ * mappings.
  *
- * - `form` overrides TypeScript type emission. Each value is the
- *   raw TS type expression to emit when a field has the matching
- *   `like` (e.g. `{ keyword: 'string' }` makes
- *   `like: 'keyword'` render as `string` in `index.ts`).
- *
- * - `take` overrides zod parser emission. Each value is the raw
- *   zod expression (e.g. `{ keyword: 'z.string()' }` makes
- *   `like: 'keyword'` render as `z.string()` in `take.ts`).
- *
- * Built-in mappings (`string`, `boolean`, `integer`,
- * `natural_number`, `decimal`, `number`, `uuid`, `timestamp`,
- * `date`, `array_buffer`, `blob`, `json`) ship by default.
- * Entries here merge over the defaults — supply only the names
- * you want to add or change.
+ *  - `form` overrides TypeScript type emission.
+ *  - `take` overrides Zod parser emission.
  */
 export type CastHash = {
   form?: Record<string, string>
@@ -116,149 +227,60 @@ export type MakeTake = {
   cast?: CastHash
 }
 
-export type LinkMesh = Record<string, Link>
+export type Load = MakeTake & {
+  testLink: string
+  codeLink: string
+}
 
-export type Link = {
-  head?: string
+// ─── Legacy compat aliases ────────────────────────────────
+//
+// The existing codegen pipeline (`code/make/{base,form,take}.ts`)
+// imports several type names from the older form-DSL shape.
+// Aliased here as no-op shims so the codegen still compiles
+// while we migrate it onto the simplified Form/Flow/Link
+// types above.
+
+/** @deprecated The codegen-config type is now `MakeTake`. */
+export type Base = MakeTake
+
+export type FormBond = string | number | boolean | null
+
+/** @deprecated A Form variant member shape used by the legacy codegen. */
+export type FormLike = {
+  like: string
+  test?: (bond: any, link?: any) => boolean
   note?: string
-  back?: string
-  base?: string
-  fall?: any
-  /**
-   * Either a literal default-value binding (`FormBond` /
-   * record / array) used in standard make.ts schemas, OR a
-   * `boolean` flag for the guide-system view-tree extension —
-   * when `true`, the prop accepts a path expression or call
-   * node in addition to a literal.
-   */
-  bind?: FormBond | Record<string, FormBond> | FormBond[] | boolean
-  fill?: boolean
-  hold?: boolean
-  like?: string
-  case?: Record<string, Link> | Link[]
-  fuse?: Link[]
-  bond?: Link
-  link?: LinkMesh
-  list?: boolean
-  name?: {
-    base?: string // database name
-    mark?: string // cli short name
-  }
-  need?: boolean
-  size?:
-    | number
-    | {
-        fall?: number
-        fall_meet?: number
-        rise?: number
-        rise_meet?: number
-      }
-  take?: any[]
-  test?: string
-  trim?: boolean
-  load?: boolean
-
-  // ---- View-tree authoring extensions ----
-  // Optional metadata consumed by editors and runtime walkers
-  // that build typed view trees on top of `Form`. Codegen for
-  // schemas that don't use them ignores these fields.
-
-  /**
-   * Slot type label. The editor's binding picker reads this to
-   * filter compatible variables in scope. The format is a
-   * colon-separated stack — leaf at the bottom, wrappers on
-   * top. Examples: `'string'`, `'list:record:image'`,
-   * `'option:value:number'`. Authors define their own slot
-   * vocabulary on top of the leaf primitives.
-   */
-  slot?: string
-  /**
-   * `true` when the prop accepts child view-tree nodes (e.g.
-   * tabbed sections, layout containers).
-   */
-  view?: boolean
-  /**
-   * Editor input hint. Defaults are derived from `like`; set
-   * here only to override the picker's chosen widget.
-   */
-  pick?: string
-  /**
-   * Free-form keyword list for component-library / catalog
-   * search.
-   */
-  tags?: string[]
 }
 
-export type Hash = {
-  form: 'hash'
+/** @deprecated Legacy Form-with-cases variant used by the codegen. */
+export type FormBaseCase = {
+  form: 'form'
   save: string
-  hash: Record<string, any>
-  link?: string
-  bond: FormLike | FormLikeCase
-  load?: boolean
+  case: FormLike[]
 }
 
-export type List = {
-  form: 'list'
-  save: string
-  list: any[]
-  load?: boolean
+/** @deprecated Legacy. */
+export type FormLikeCase = {
+  case: FormLike[]
 }
 
+/** @deprecated Legacy back-pointer record used by codegen sweeps. */
+export type TestBack = {
+  message?: string
+  path?: string[]
+  params?: any
+}
+
+/** @deprecated Use `Flow` directly. */
 export type Test = {
   form: 'test'
   save: string
   test: (bond: any, name: string) => boolean | string | TestBack
 }
 
+/** @deprecated Use `Flow` directly. */
 export type Make = {
   form: 'make'
   save: string
-  make: (bond: any, context: RefinementCtx, name: string) => any
-}
-
-/**
- * A `Flow` describes a function.
- *
- *  - `take` is the **name** of a separately-defined `Form`
- *    schema describing the input parameters. The referenced
- *    Form's codegen emits the TS input type and zod parser;
- *    Flow itself emits no input codegen.
- *  - `like` is the output type or the name of another schema.
- *
- * Implementations are wired through `Base.hook`.
- */
-export type Flow = {
-  form: 'task'
-  save: string
-  take: string
-  like: string
-  note?: string
-}
-
-/**
- * A `Fold` describes a renderable tree with declared inputs.
- * It's the unified shape behind both i18n templates (rendered
- * to a string via `renderText`) and dynamic component trees
- * (rendered to elements via `renderElement`).
- *
- *  - `take` is the **name** of a separately-defined `Form`
- *    schema describing the call parameters. Same model as
- *    `Flow.take`.
- *  - `tree` is the array of nodes the renderer walks. The
- *    same `Node` union feeds every renderer; only the
- *    renderer's output type changes.
- */
-export type Fold = {
-  form: 'flow'
-  save: string
-  take: string
-  tree: FlowNode[]
-  note?: string
-}
-
-export type TestBack = {
-  message?: string
-  path?: string[]
-  params?: any
+  make: (bond: any, context: any, name: string) => any
 }

@@ -28,6 +28,7 @@ import type {
   FlowResolve,
   FlowTake,
 } from './types'
+import type { Book } from '@/form'
 
 /**
  * The default registry shape. Empty in the library; consumers
@@ -71,9 +72,9 @@ function buildKey(
   base: string | undefined,
   caseValue: string | undefined,
 ): HookName {
-  if (base == null) return name
-  if (caseValue == null) return `${name}_${base}`
-  return `${name}_${base}_${caseValue}`
+  if (base == null) return `flow:${name}`
+  if (caseValue == null) return `flow:${name}:${base}`
+  return `flow:${name}:${base}:${caseValue}`
 }
 
 export class Base<R = Code> {
@@ -113,39 +114,126 @@ export class Base<R = Code> {
 
   flow(name: string, ...rest: any[]): void {
     let options: { base?: string; case?: string } | undefined
-    let Hook: Hook
+    let hook: Hook
 
     if (rest.length === 1 && typeof rest[0] === 'function') {
-      Hook = rest[0] as Hook
+      hook = rest[0] as Hook
     } else if (rest.length >= 2) {
       options = rest[0]
-      Hook = rest[1] as Hook
+      hook = rest[1] as Hook
     } else {
       throw new Error(`base.flow('${name}'): invalid arguments`)
     }
 
     const key = buildKey(name, options?.base, options?.case)
-    this.hook.set(key, Hook)
+    this.hook.set(key, hook)
   }
 
   /**
-   * Invoke a registered Flow by key. Returns the raw Hook
-   * result. Args are not validated at this entry point —
-   * compile-stage validation happens via `base.bind(...)`.
+   * Invoke a registered Flow.
+   *
+   * Mirrors `flow(...)` registration shape: pass the verb
+   * as the first arg and an object combining `base` / `case`
+   * discriminators with the take-side payload as the second.
+   *
+   *   base.call('is',   { base: 'ipa', case: 'broad', text: 'foo' })
+   *   base.call('is',   { base: 'string', thing: 'hello' })
+   *   base.call('make', { base: 'sum', a: 2, b: 3 })
+   *   base.call('always_true', {})
+   *
+   * The runtime extracts `base` / `case` to build the
+   * dispatch key, strips them, and passes the remaining
+   * take payload to the handler.
+   *
+   * Codegen rewrites every typed string-form call site into
+   * the numeric-id form below at build time for fast
+   * dispatch.
    */
-  call<K extends FlowKey<R>>(
-    code: K,
-    bind: FlowTake<R[K]>,
-  ): FlowLike<R[K]>
-  call(code: string, bind: unknown): unknown
-  call(code: string, bind: unknown): unknown {
-    const Hook = this.hook.get(code)
-    if (Hook == null) {
+
+  // (name, base, case)
+  call<
+    N extends FlowName<R>,
+    B extends FlowBaseValue<R, N>,
+    C extends FlowCaseValue<R, N, B>,
+  >(
+    name: N,
+    args: { base: B; case: C } & FlowTake<FlowResolve<R, N, B, C>>,
+  ): FlowLike<FlowResolve<R, N, B, C>>
+
+  // (name, base)
+  call<N extends FlowName<R>, B extends FlowBaseValue<R, N>>(
+    name: N,
+    args: { base: B; case?: undefined } & FlowTake<
+      FlowResolve<R, N, B, undefined>
+    >,
+  ): FlowLike<FlowResolve<R, N, B, undefined>>
+
+  // (name) — bare verb
+  call<N extends BareFlowName<R>>(
+    name: N,
+    args: FlowTake<FlowResolve<R, N, undefined, undefined>>,
+  ): FlowLike<FlowResolve<R, N, undefined, undefined>>
+
+  // Compiled form: numeric id + bind. Untyped — codegen target.
+  call(id: number, bind: any): any
+
+  call(nameOrId: string | number, args: any): any {
+    if (typeof nameOrId === 'number') {
+      const hook = this.hook.get(nameOrId)
+      if (hook == null) {
+        throw new Error(
+          `base.call: no flow registered for code '${nameOrId}'`,
+        )
+      }
+      return hook(args)
+    }
+
+    const { base: argBase, case: argCase, ...take } = args ?? {}
+    const key = buildKey(nameOrId, argBase, argCase)
+    const hook = this.hook.get(key)
+    if (hook == null) {
       throw new Error(
-        `base.call: no flow registered for code '${code}'`,
+        `base.call: no flow registered for code '${String(key)}'`,
       )
     }
-    return Hook(bind)
+    return hook(take)
+  }
+
+  /**
+   * Bulk-register every Flow handler in a Book.
+   *
+   * `book` carries the declarations (with their identity
+   * tuples). `hooks` is a name → handler map keyed by each
+   * Flow's exported-constant name (e.g. `is_ipa_broad`,
+   * `make_sum`). The two pair up by walking the Book's
+   * `base` array and looking up each Flow's handler in
+   * `hooks` by its derived export-name.
+   *
+   *   import standard, { hooks } from '@cluesurf/calm/base'
+   *   const base = new Base<Code>()
+   *   base.bind(standard, hooks)
+   */
+  bind(book: Book, hooks: Record<string, Hook>): void {
+    for (const cast of book.base ?? []) {
+      if (cast.form !== 'flow') continue
+      const flow = cast as {
+        call: string
+        base?: string
+        case?: string
+      }
+      const key = buildKey(flow.call, flow.base, flow.case)
+
+      // The export name is the segments joined by underscore
+      // (e.g. `flow:is:ipa:broad` → `is_ipa_broad`).
+      const exportName = String(key)
+        .replace(/^flow:/, '')
+        .split(':')
+        .join('_')
+
+      const hook = hooks[exportName]
+      if (hook == null) continue
+      this.hook.set(key, hook)
+    }
   }
 
   /** Number of registered Flows (debugging). */

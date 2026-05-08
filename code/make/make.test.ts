@@ -23,7 +23,7 @@ describe('makeTree — task + flow + cast', () => {
     }
 
     const greet_user: Flow = {
-      form: 'task',
+      form: 'flow',
       save: '~/hold/task',
       take: 'greet_user_input',
       like: 'string',
@@ -59,7 +59,7 @@ describe('makeTree — task + flow + cast', () => {
     }
 
     const message: Fold = {
-      form: 'flow',
+      form: 'fold',
       save: '~/hold/flow',
       take: 'message_input',
       tree: [flowNs.text('You have '), flowNs.reference('count')],
@@ -90,7 +90,7 @@ describe('makeTree — task + flow + cast', () => {
     }
 
     const message: Fold = {
-      form: 'flow',
+      form: 'fold',
       save: '~/hold/flow',
       take: 'message_input',
       tree: [flowNs.text('You have '), flowNs.reference('count')],

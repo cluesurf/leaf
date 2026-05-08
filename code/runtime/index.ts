@@ -4,7 +4,7 @@ export type {
   BareFlowName,
   FlowBaseValue,
   FlowCaseValue,
-  FlowHandler,
+  FlowHook,
   FlowLike,
   FlowName,
   FlowOptions,

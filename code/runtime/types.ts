@@ -1,46 +1,49 @@
 /**
- * Type helpers for the `Book` runtime class.
+ * Type helpers for the `Base` runtime class.
  *
- * The `Base` interface is a kysely-style aggregate keyed by
- * the constant's exported name (`is_ipa_broad`, `make_sum`,
- * etc.). Each entry has shape `{ take: <input>; like: <output> }`.
+ * The `Code` interface is a kysely-style aggregate keyed by
+ * each entry's colon-namespaced identity:
+ *
+ *   - Flows: `'flow:<name>:<base?>:<case?>'`
+ *   - Forms: `'form:<cast>:<call?>:<case?>'`
+ *
+ * Each Flow entry has shape `{ take: <input>; make: <output> }`.
  *
  * These helpers reverse-engineer the (name, base, case) triple
- * from each key so `book.flow('is', { base: 'ipa', case:
- * 'broad' }, ...)` infers args and return type from
- * `Base['is_ipa_broad']`.
+ * from each Flow key so:
  *
- * Convention: keys are `name`, `name_base`, or
- * `name_base_case` (snake-case, joined by `_`). The first
- * underscore-segment is the verb / flow name; the second is
- * the base; the rest is the case.
+ *   base.flow('is', { base: 'ipa', case: 'broad' }, ...)
+ *
+ * infers args and return type from
+ * `Code['flow:is:ipa:broad']`.
  */
 
-/** Every entry in `R` carries `{ take, like }`. */
-export type FlowEntryShape = { take: unknown; like: unknown }
+/** Every Flow entry carries `{ take, make }`. */
+export type FlowEntryShape = { take: unknown; make: unknown }
 
 /** All Flow keys in the registry. */
 export type FlowKey<R> = string & keyof R
 
-/** Extract the leading segment (the verb / flow name). */
+/**
+ * Extract the verb / flow name (the segment immediately
+ * after the `flow:` prefix).
+ */
 export type FlowName<R> = {
-  [K in keyof R]: K extends `${infer N}_${string}`
+  [K in keyof R]: K extends `flow:${infer N}:${string}`
     ? N
-    : K extends string
-    ? K
-    : never
+    : K extends `flow:${infer N}`
+      ? N
+      : never
 }[keyof R] &
   string
 
 /**
- * For a verb `N`, all valid base values.
- *
- * `Rest` is everything after `${N}_`. The base is `Rest`'s
- * leading segment (or `Rest` itself if no case follows).
+ * For a verb `N`, all valid base values (the segment after
+ * `flow:<N>:`).
  */
 export type FlowBaseValue<R, N extends string> = {
-  [K in keyof R]: K extends `${N}_${infer Rest}`
-    ? Rest extends `${infer B}_${string}`
+  [K in keyof R]: K extends `flow:${N}:${infer Rest}`
+    ? Rest extends `${infer B}:${string}`
       ? B
       : Rest
     : never
@@ -48,12 +51,8 @@ export type FlowBaseValue<R, N extends string> = {
   string
 
 /** For a (verb, base) pair, all valid case values. */
-export type FlowCaseValue<
-  R,
-  N extends string,
-  B extends string,
-> = {
-  [K in keyof R]: K extends `${N}_${B}_${infer C}` ? C : never
+export type FlowCaseValue<R, N extends string, B extends string> = {
+  [K in keyof R]: K extends `flow:${N}:${B}:${infer C}` ? C : never
 }[keyof R] &
   string
 
@@ -65,24 +64,24 @@ export type FlowResolve<
   C extends string | undefined,
 > = B extends string
   ? C extends string
-    ? `${N}_${B}_${C}` extends keyof R
-      ? R[`${N}_${B}_${C}`]
+    ? `flow:${N}:${B}:${C}` extends keyof R
+      ? R[`flow:${N}:${B}:${C}`]
       : never
-    : `${N}_${B}` extends keyof R
-    ? R[`${N}_${B}`]
+    : `flow:${N}:${B}` extends keyof R
+      ? R[`flow:${N}:${B}`]
+      : never
+  : `flow:${N}` extends keyof R
+    ? R[`flow:${N}`]
     : never
-  : N extends keyof R
-  ? R[N]
-  : never
 
 /** Pull the input shape from a registry entry. */
 export type FlowTake<E> = E extends { take: infer T } ? T : never
 
-/** Pull the return type from a registry entry. */
-export type FlowLike<E> = E extends { like: infer L } ? L : never
+/** Pull the output / return type from a registry entry. */
+export type FlowLike<E> = E extends { make: infer M } ? M : never
 
-/** Handler signature for a (name, base?, case?) registration. */
-export type FlowHandler<
+/** Hook signature for a (name, base?, case?) registration. */
+export type FlowHook<
   R,
   N extends string,
   B extends string | undefined = undefined,
@@ -91,9 +90,13 @@ export type FlowHandler<
   args: FlowTake<FlowResolve<R, N, B, C>>,
 ) => FlowLike<FlowResolve<R, N, B, C>>
 
-/** Verbs that can be called with no base / no case. */
+/** Verbs callable with no base / no case (bare `flow:<N>` keys). */
 export type BareFlowName<R> = {
-  [K in keyof R]: K extends `${string}_${string}` ? never : K
+  [K in keyof R]: K extends `flow:${infer N}`
+    ? N extends `${string}:${string}`
+      ? never
+      : N
+    : never
 }[keyof R] &
   string
 
@@ -106,9 +109,4 @@ export type FlowOptions<
 > = {
   base?: B
   case?: C
-  like?: string
-  take?: unknown
-  async?: boolean
-  pure?: boolean
-  cancelable?: boolean
 }

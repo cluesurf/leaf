@@ -24,6 +24,7 @@ const TYPE: Record<string, string> = {
   timestamp: 'Date',
   date: 'Date',
   uuid: 'string',
+  unknown: 'unknown',
 }
 
 function castType(base: Base, like: string): string | undefined {
@@ -89,8 +90,8 @@ export default function make(base: Base, hold: Hold, need = true) {
           },
         )
         break
-      case 'task':
       case 'flow':
+      case 'fold':
         // Input codegen for Flow / Fold comes from their
         // referenced Form (via `take: '<form_name>'`). Nothing
         // to emit here.
@@ -180,9 +181,10 @@ export function make_hash({
 
   list.push(`export type ${typeValueName} = `)
 
-  if ('case' in hash.bond) {
+  const bond = hash.bond!
+  if ('case' in bond) {
     make_form_case({
-      form: hash.bond,
+      form: bond as FormLikeCase,
       base,
       file,
       hold,
@@ -192,7 +194,7 @@ export function make_hash({
     })
   } else {
     make_form_like({
-      form: hash.bond,
+      form: bond,
       base,
       hold,
       file,
@@ -224,7 +226,7 @@ export function make_hash({
       `export type ${typeName} = Record<${linkTypeName}, ${typeValueName}>`,
     )
   } else {
-    const keyList = Object.keys(hash.hash)
+    const keyList = Object.keys(hash.hash ?? {})
     const typeKeyName = makePascalName(`${name}_key`, need)
 
     hold.save[typeKeyName] ??= { file, form: 'list' }
@@ -269,7 +271,7 @@ export function make_list({
 
   text.push(``)
   text.push(`export type ${typeName} =
-${list.list.map(key => `  | '${key}'`).join('\n')}`)
+${(list.list ?? []).map(key => `  | '${key}'`).join('\n')}`)
 
   return text
 }
@@ -395,7 +397,7 @@ export function make_link_list({
     }
   } else if ('case' in form) {
     make_form_case({
-      form: form as FormBaseCase,
+      form: form as unknown as FormBaseCase,
       base,
       file,
       hold,
@@ -405,7 +407,7 @@ export function make_link_list({
     })
   } else if ('fuse' in form) {
     const formList: string[] = []
-    const fuse = form.fuse as FormLike[]
+    const fuse = form.fuse as unknown as FormLike[]
 
     fuse.forEach(item => {
       const type = findAndLinkName({

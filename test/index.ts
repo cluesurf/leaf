@@ -1,10 +1,8 @@
 import * as MESH from './form'
 import * as test from './test'
 import * as TASK from './task'
-import makeTree from '../code/make'
-import type { CastHash, HookHash } from '../code/form'
-import fs from 'fs'
-import path from 'path'
+import { Make } from '../code/make'
+import type { Book, Cast, CastHash, HookHash } from '../code/form'
 
 const NAME = {
   html_div_element: 'HTMLDivElement',
@@ -18,73 +16,41 @@ const NAME = {
  * override threads `keyword` through as plain string in both
  * the TS output and the zod parser.
  */
-
 const CAST: CastHash = {
   form: { keyword: 'string' },
   take: { keyword: 'z.string()' },
 }
 
-// `hook`: per-task implementations sourced from `task.ts`,
-// which re-exports every `<name>/task.ts` in this project. Each
-// function's input is typed with the codegen output for the
-// matching task's `take` shape, so call sites are fully
-// type-checked against the schema.
+/**
+ * `hook`: per-flow implementations sourced from `task.ts`,
+ * which re-exports every `<name>/task.ts` in this project.
+ * Each function's input is typed with the codegen output for
+ * the matching flow's `take` shape, so call sites are fully
+ * type-checked against the schema.
+ */
+const HOOK: HookHash = TASK as HookHash
 
-const HOOK: HookHash = TASK
-
-make()
-
-async function make() {
-  const tree = await makeTree({
-    name: NAME,
-    mesh: { ...MESH, ...test },
-    link: { ...MESH, ...test },
-    cast: CAST,
-    hook: HOOK,
-    testLink: '~/test/test',
-    codeLink: '.',
-  })
-
-  for (const name in tree.form) {
-    const link = name.replace('~', '.')
-    const base = path.dirname(link)
-    fs.mkdirSync(base, { recursive: true })
-    fs.writeFileSync(`${link}.ts`, tree.form[name] as string)
-  }
-
-  for (const name in tree.take) {
-    const link = name.replace('~', '.')
-    const base = path.dirname(link)
-    fs.mkdirSync(base, { recursive: true })
-    fs.writeFileSync(`${link}.ts`, tree.take[name] as string)
-  }
-
-  for (const name in tree.base) {
-    const link = name.replace('~', '.')
-    const base = path.dirname(link)
-    fs.mkdirSync(base, { recursive: true })
-    fs.writeFileSync(`${link}.ts`, tree.base[name] as string)
-  }
+/**
+ * The existing test fixtures (`./form`, `./test`) are
+ * namespaced module exports. Wrap them in a single Book so
+ * the new `Make` class can register them like any other
+ * upstream Book.
+ */
+const TEST_BOOK: Book = {
+  host: 'cluesurf',
+  name: 'calm-test',
+  base: [
+    ...(Object.values(MESH) as Cast[]),
+    ...(Object.values(test) as Cast[]),
+  ],
 }
 
-// console.log(
-//   convertObjectKeyCase(
-//     {
-//       FooBar: {
-//         helloWorld: true,
-//       },
-//     },
-//     'snakeCase',
-//   ),
-// )
-
-// console.log(
-//   convertObjectKeyCase(
-//     {
-//       foo_bar: {
-//         hello_world: true,
-//       },
-//     },
-//     'camelCase',
-//   ),
-// )
+new Make({
+  link: '.',
+  testLink: '~/test/test',
+  name: NAME,
+  cast: CAST,
+  hook: HOOK,
+})
+  .book(TEST_BOOK)
+  .save()

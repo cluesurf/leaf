@@ -13,7 +13,8 @@
   "files": ["host", "readme.md", "license.md"],
   "scripts": {
     "test": "pnpm exec vitest run",
-    "make": "rm -rf host && pnpm exec tsc --project tsconfig.json --pretty && rm -f tsconfig.tsbuildinfo && pnpm exec tsc-alias --project tsconfig.json --resolve-full-paths",
+    "make:base": "pnpm exec tsx task/save.ts",
+    "make": "pnpm make:base && rm -rf host && pnpm exec tsc --project tsconfig.json --pretty && rm -f tsconfig.tsbuildinfo && pnpm exec tsc-alias --project tsconfig.json --resolve-full-paths",
     "host": "pnpm make && pnpm publish --access=public --no-git-checks"
   },
   "prettier": "@cluesurf/wash/flow.json",

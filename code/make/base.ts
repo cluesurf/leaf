@@ -50,7 +50,7 @@ export default function make(base: Base, hold: Hold) {
           },
         )
         break
-      case 'flow':
+      case 'fold':
         make_flow({ flow: site, base, name, hold, file }).forEach(
           line => {
             list.push(line)
@@ -135,7 +135,7 @@ export function make_hash({
 
   if (hash.link) {
   } else {
-    const keyList = Object.keys(hash.hash)
+    const keyList = Object.keys(hash.hash ?? {})
     const TYPE_NAME_KEY = `${TYPE_NAME}_KEY`
     const typeNameKey = `${typeName}Key`
 

@@ -21,6 +21,7 @@ const TYPE: Record<string, string> = {
   date: 'z.coerce.date()',
   uuid: 'z.string().uuid()',
   natural_number: 'z.number().int()',
+  unknown: 'z.unknown()',
 }
 
 function castType(base: Base, like: string): string | undefined {
@@ -93,8 +94,8 @@ export default function make(base: Base, hold: Hold) {
           list.push(line)
         })
         break
-      case 'task':
       case 'flow':
+      case 'fold':
         // Input codegen for Flow / Fold comes from their
         // referenced Form. Nothing to emit here.
         break
@@ -181,7 +182,7 @@ export function make_list({
       `export const ${typeNameModel}Parser = z.enum(${TYPE_NAME} as readonly [string, ...string[]]) as z.ZodType<${typeName}>`,
     )
   } else {
-    const literals = list.list
+    const literals = (list.list ?? [])
       .map(v => `z.literal(${JSON.stringify(v)})`)
       .join(', ')
     text.push(
@@ -561,7 +562,7 @@ export function make_link_list({
   } else if ('case' in form) {
     const formList: string[] = []
     const baseList: any[] = []
-    const formCase = form.case as FormLike[]
+    const formCase = form.case as unknown as FormLike[]
 
     formCase.forEach(item => {
       if ('like' in item) {
@@ -620,7 +621,7 @@ export function make_link_list({
     list.push(formSite)
   } else if ('fuse' in form) {
     const formList: string[] = []
-    const fuse = form.fuse as FormLike[]
+    const fuse = form.fuse as unknown as FormLike[]
 
     fuse.forEach(item => {
       const itemModelName = `${item.like}Parser`
