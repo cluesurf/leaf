@@ -50,14 +50,6 @@ export const is_ipa_broad = ({ text }: { text: string }): boolean =>
 ```
 
 ```ts
-// task/save.ts — codegen
-import { Make } from '@cluesurf/calm/make'
-import standard from './code/base'
-
-await new Make({ link: 'code/base' }).book(standard).save()
-```
-
-```ts
 // app.ts — runtime
 import { Base } from '@cluesurf/calm'
 import standard, { hooks, CodeLink, type Code } from './code/base'
@@ -68,6 +60,9 @@ base.bind(standard, hooks, CodeLink)
 base.call('is', { base: 'ipa', case: 'broad', text: 'fəˈnɛtɪk' })
 // → true
 ```
+
+`pnpm make:base` runs the codegen — emits the `Code` type, integer-id
+table, and per-verb Zod parsers from the registered Books.
 
 ## Architecture
 
@@ -85,78 +80,7 @@ Two type primitives drive the schema layer:
 | `Form`    | a data shape | `(cast, call?, case?)` |
 | `Flow`    | a function   | `(call, base?, case?)` |
 
-Plus utility shapes: `Hash` (record with dynamic keys), `List`
-(homogeneous list), `Fold` (tree-shaped Form for documents), `Find`
-(query filter).
-
-## Codegen
-
-```
-authored                    generated
-────────                    ─────────
-code/base/<verb>/make.ts    code/base/<verb>/index.ts   (TS types)
-code/base/<verb>/flow.ts    code/base/<verb>/form.ts    (Zod parsers)
-                            code/base/<verb>/base.ts    (literal data)
-                            code/base/code.ts           (Code aggregate
-                                                         + CodeLink ids)
-```
-
-`pnpm make:base` runs `task/save.ts` → invokes `Make.save()` → walks
-every registered Book → writes the four output streams.
-
-Each generated entry comes paired:
-
-```ts
-export type IsIpaBroadTake = { text: string }
-export type IsIpaBroad     = boolean
-
-export const IsIpaBroadTakeForm = z.object({
-  text: z.string(),
-}) satisfies z.ZodType<IsIpaBroadTake>
-export const IsIpaBroadForm = z.boolean()
-  satisfies z.ZodType<IsIpaBroad>
-```
-
-The bundled `code/base/code.ts` aggregates every entry under its
-colon-key:
-
-```ts
-import type { IsIpaBroad, IsIpaBroadTake } from './is'
-// ...
-
-export type Code = {
-  'flow:is:ipa:broad': { take: IsIpaBroadTake; make: IsIpaBroad }
-  // ...
-}
-
-export const CodeLink = {
-  'flow:is:ipa:broad': 18,
-  // ...
-} as const
-```
-
-## Runtime
-
-`Base<Code>` is generic over the bundled type. Every `base.flow(...)`
-registration and `base.call(...)` dispatch typechecks against `Code`:
-
-```ts
-const base = new Base<Code>()
-
-// Register one handler at a time
-base.flow('is', { base: 'ipa', case: 'broad' }, ({ text }) =>
-  /^[\p{L}\p{M}]+$/u.test(text),
-)
-
-// Or bind a whole Book in one call
-base.bind(standard, hooks, CodeLink)
-
-// Typed dispatch — full inference on `text` and the return type
-base.call('is', { base: 'ipa', case: 'broad', text: 'fəˈnɛtɪk' })
-
-// Compiled-form dispatch through CodeLink integer ids
-base.call(CodeLink['flow:is:ipa:broad'], { text: 'fəˈnɛtɪk' })
-```
+Plus utility shapes: `Hash`, `List`, `Fold`, `Find`.
 
 ## Standard catalog
 
@@ -170,31 +94,10 @@ Five verbs ship by default:
 | `has`    | possession predicates (`has_prefix`, `has_key`)  |
 | `format` | locale-aware text/number/date formatting         |
 
-71 flows total, each with TS types + Zod parsers + handler
-implementations.
-
-## Project structure
-
-```
-calm/code/
-  form/                   # schema DSL — Form / Flow / Link / LinkMesh
-  fold/                   # render-tree DSL (flow.* builders + renderers)
-  make/                   # the Make codegen class
-  runtime/                # the Base runtime class
-  base/                   # the standard catalog
-    is/         { make.ts, flow.ts, index.ts, form.ts }
-    make/       { make.ts, flow.ts, index.ts, form.ts }
-    get/        { make.ts, flow.ts, index.ts, form.ts }
-    has/        { make.ts, flow.ts, index.ts, form.ts }
-    format/     { make.ts, flow.ts, index.ts, form.ts }
-    code.ts                # bundled Code type + CodeLink table
-    index.ts               # the standard Book + hooks
-```
-
-`code/fold/` powers authored render trees — `flow.*` builders produce
-JSON ASTs that `renderText` turns into strings and `renderElement` turns
-into vdom elements (React, Preact, any `createElement`-compatible
-factory).
+`code/fold/` adds an authored render-tree DSL — `flow.*` builders
+produce JSON ASTs that `renderText` turns into strings and
+`renderElement` turns into vdom elements (React, Preact, any
+`createElement`-compatible factory).
 
 ## Spec
 
@@ -203,16 +106,11 @@ Full design notes live in [`./note/`](./note/):
 - [`goals.md`](./note/goals.md) — the why
 - [`architecture.md`](./note/architecture.md) — the four core pieces
 - [`schema.md`](./note/schema.md) — reserved props on every declaration
-- [`structure.md`](./note/structure.md) — vocabulary spine
 - [`primitives.md`](./note/primitives.md) — Form and Flow in depth
-- [`ast.md`](./note/ast.md) — every node form
 - [`runtime.md`](./note/runtime.md) — engine pipeline
 - [`codegen.md`](./note/codegen.md) — Make class + outputs
-- [`types.md`](./note/types.md) — TypeScript surface
 - [`catalog.md`](./note/catalog.md) — standard catalog
-- [`find.md`](./note/find.md) — query filters
 - [`editor.md`](./note/editor.md) — editor protocol
-- [`book.md`](./note/book.md) — the Book _type_
 
 ## License
 
