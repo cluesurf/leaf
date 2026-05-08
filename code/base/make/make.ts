@@ -12,6 +12,7 @@ import type { Flow } from '@/form'
 
 export const make_lowercase: Flow = {
   form: 'flow',
+  save: 'make',
   call: 'make',
   base: 'lowercase',
   take: { text: { like: 'string' } },
@@ -20,6 +21,7 @@ export const make_lowercase: Flow = {
 
 export const make_uppercase: Flow = {
   form: 'flow',
+  save: 'make',
   call: 'make',
   base: 'uppercase',
   take: { text: { like: 'string' } },
@@ -28,6 +30,7 @@ export const make_uppercase: Flow = {
 
 export const make_trimmed: Flow = {
   form: 'flow',
+  save: 'make',
   call: 'make',
   base: 'trimmed',
   take: { text: { like: 'string' } },
@@ -38,6 +41,7 @@ export const make_trimmed: Flow = {
 
 export const make_sum: Flow = {
   form: 'flow',
+  save: 'make',
   call: 'make',
   base: 'sum',
   take: {
@@ -49,6 +53,7 @@ export const make_sum: Flow = {
 
 export const make_difference: Flow = {
   form: 'flow',
+  save: 'make',
   call: 'make',
   base: 'difference',
   take: {
@@ -60,6 +65,7 @@ export const make_difference: Flow = {
 
 export const make_product: Flow = {
   form: 'flow',
+  save: 'make',
   call: 'make',
   base: 'product',
   take: {
@@ -71,6 +77,7 @@ export const make_product: Flow = {
 
 export const make_quotient: Flow = {
   form: 'flow',
+  save: 'make',
   call: 'make',
   base: 'quotient',
   take: {

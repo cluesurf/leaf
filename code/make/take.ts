@@ -216,15 +216,16 @@ export function make_form({
 
   const typeParserName = `${typeName}Parser`
 
+  // Cast through any so the legacy fixture path keeps reading
+  // the now-removed FormBaseLink fields (`base`, `make`, `leak`).
+  // New-shape Forms don't carry these.
+  const legacyForm = form as any
+
   if ('link' in form) {
     let base
-    if (form.base) {
-      const baseParserName = `${toPascalCase(form.base)}Parser`
+    if (legacyForm.base) {
+      const baseParserName = `${toPascalCase(legacyForm.base)}Parser`
       load[baseParserName] = true
-      // Zod 4: parsers are exported as ZodObject values directly,
-      // not factory functions. Call `.extend` on the schema itself
-      // — the old `SomeParser() as any` factory form throws at
-      // runtime because the schema is not callable.
       base = `(${baseParserName} as any).extend(`
     } else {
       base = 'z.object('
@@ -243,7 +244,7 @@ export function make_form({
     name,
     form,
     base,
-    leak,
+    leak: legacyForm.leak as boolean | undefined,
     file,
     hold,
   }).forEach(line => {
@@ -252,14 +253,12 @@ export function make_form({
 
   if ('link' in form) {
     list.push(`})`)
-    if (form.make) {
-      list.push(`  .transform(MAKE('${name}', code.${form.make}.make))`)
+    if (legacyForm.make) {
+      list.push(`  .transform(MAKE('${name}', code.${legacyForm.make}.make))`)
     }
-    if (leak) {
+    if (legacyForm.leak) {
       list.push(`  .passthrough()`)
     }
-
-    // list.push(`) as z.ZodType<${typeName}>`)
   }
 
   list.push(``)

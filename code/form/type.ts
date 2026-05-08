@@ -40,20 +40,14 @@ export type Form = {
   case?: string
   like: LinkMesh | LinkMesh[]
   head?: string[]
-  /** @internal codegen output path; derived from identity when absent. */
+  /**
+   * Output sub-directory under `MakeTake.link`. Convention:
+   * `'<verb>'` or `'<verb>/<base>'` (`'is'`, `'is/ipa'`,
+   * `'make'`, `'language'`). When absent, the cast's
+   * generated TS / Zod / data files land directly in the
+   * `link` root.
+   */
   save?: string
-  /** @internal legacy: parent-Form extension reference. */
-  base?: string
-  /** @internal legacy: field map alias. */
-  link?: LinkMesh
-  /** @internal legacy: name override used by codegen. */
-  name?: string
-  /** @internal legacy: target-Form override used by codegen. */
-  make?: string
-  /** @internal legacy. */
-  leak?: boolean
-  /** @internal legacy. */
-  load?: string[]
 }
 
 /**
@@ -77,10 +71,13 @@ export type Flow = {
   case?: string
   take?: string | LinkMesh | (string | LinkMesh)[]
   make?: string | LinkMesh | (string | LinkMesh)[]
-  /** @internal codegen output path. */
+  /**
+   * Output sub-directory under `MakeTake.link`. Convention:
+   * `'<verb>'` or `'<verb>/<base>'`. When absent, the cast's
+   * generated TS / Zod / data files land directly in the
+   * `link` root.
+   */
   save?: string
-  /** @internal legacy: output type signature used by codegen. */
-  like?: string
 }
 
 /**

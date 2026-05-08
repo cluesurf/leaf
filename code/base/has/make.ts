@@ -9,6 +9,7 @@ import type { Flow } from '@/form'
 
 export const has_key: Flow = {
   form: 'flow',
+  save: 'has',
   call: 'has',
   base: 'key',
   take: {
@@ -20,6 +21,7 @@ export const has_key: Flow = {
 
 export const has_keys: Flow = {
   form: 'flow',
+  save: 'has',
   call: 'has',
   base: 'keys',
   take: {
@@ -31,6 +33,7 @@ export const has_keys: Flow = {
 
 export const has_value: Flow = {
   form: 'flow',
+  save: 'has',
   call: 'has',
   base: 'value',
   take: {
@@ -42,6 +45,7 @@ export const has_value: Flow = {
 
 export const has_item: Flow = {
   form: 'flow',
+  save: 'has',
   call: 'has',
   base: 'item',
   take: {
@@ -53,6 +57,7 @@ export const has_item: Flow = {
 
 export const has_prefix: Flow = {
   form: 'flow',
+  save: 'has',
   call: 'has',
   base: 'prefix',
   take: {
@@ -64,6 +69,7 @@ export const has_prefix: Flow = {
 
 export const has_suffix: Flow = {
   form: 'flow',
+  save: 'has',
   call: 'has',
   base: 'suffix',
   take: {
@@ -75,6 +81,7 @@ export const has_suffix: Flow = {
 
 export const has_substring: Flow = {
   form: 'flow',
+  save: 'has',
   call: 'has',
   base: 'substring',
   take: {
@@ -86,6 +93,7 @@ export const has_substring: Flow = {
 
 export const has_pattern: Flow = {
   form: 'flow',
+  save: 'has',
   call: 'has',
   base: 'pattern',
   take: {

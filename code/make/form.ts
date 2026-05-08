@@ -124,9 +124,13 @@ export function make_form({
 
   if ('link' in form) {
     let base
-
-    if (form.base) {
-      const name = makePascalName(form.base, need)
+    // `base` (parent-Form extension) was a legacy field on
+    // FormBaseLink; new-shape Forms don't have it. Cast through
+    // any to keep the legacy-fixture path working until those
+    // fixtures migrate to the new shape.
+    const legacyBase = (form as any).base as string | undefined
+    if (legacyBase) {
+      const name = makePascalName(legacyBase, need)
       base = `${name} & `
       load[name] = true
     } else {

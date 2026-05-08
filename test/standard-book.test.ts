@@ -55,25 +55,37 @@ describe('Make.save() — Code aggregate generation', () => {
     expect(result.code).toContain('export default Code')
   })
 
-  it('Flow take/make types render as expected primitive aliases', async () => {
+  it('Flow take/make resolve via per-Flow type aliases', async () => {
     const make = new Make({ link: '.', dry: true })
     make.book(standard)
 
     const result = await make.save()
 
-    // is_ipa_broad: take is { text: string }, make is boolean
-    expect(result.code).toMatch(
-      /'flow:is:ipa:broad':\s*\{\s*take:\s*\{\s*text:\s*string\s*\};\s*make:\s*boolean\s*\}/,
+    // Per-Flow aliases get emitted as top-level types:
+    expect(result.code).toContain(
+      'export type IsIpaBroadTake = { text: string }',
     )
+    expect(result.code).toContain('export type IsIpaBroad = boolean')
 
-    // make_sum: take is { a: number; b: number }, make is number
-    expect(result.code).toMatch(
-      /'flow:make:sum':\s*\{\s*take:\s*\{\s*a:\s*number;\s*b:\s*number\s*\};\s*make:\s*number\s*\}/,
+    expect(result.code).toContain(
+      'export type MakeSumTake = { a: number; b: number }',
     )
+    expect(result.code).toContain('export type MakeSum = number')
 
-    // is_string: take.thing is unknown
-    expect(result.code).toMatch(
-      /'flow:is:string':\s*\{\s*take:\s*\{\s*thing:\s*unknown\s*\};\s*make:\s*boolean\s*\}/,
+    expect(result.code).toContain(
+      'export type IsStringTake = { thing: unknown }',
+    )
+    expect(result.code).toContain('export type IsString = boolean')
+
+    // The Code aggregate references those aliases:
+    expect(result.code).toContain(
+      "'flow:is:ipa:broad': { take: IsIpaBroadTake; make: IsIpaBroad }",
+    )
+    expect(result.code).toContain(
+      "'flow:make:sum': { take: MakeSumTake; make: MakeSum }",
+    )
+    expect(result.code).toContain(
+      "'flow:is:string': { take: IsStringTake; make: IsString }",
     )
   })
 
@@ -118,9 +130,18 @@ describe('Make.save() — Code aggregate generation', () => {
     expect(result.code).toContain('export type LanguageRequest')
     expect(result.code).toContain('export type Language')
 
-    // Flow's take/make resolve to those type names:
+    // Flow's take/make resolve to those Form types via per-Flow
+    // aliases (SelectLanguageTake → LanguageRequest, etc.):
+    expect(result.code).toContain(
+      'export type SelectLanguageTake = LanguageRequest',
+    )
+    expect(result.code).toContain(
+      'export type SelectLanguage = Language',
+    )
+
+    // The Code aggregate references the per-Flow aliases:
     expect(result.code).toMatch(
-      /'flow:select:language':\s*\{\s*take:\s*LanguageRequest;\s*make:\s*Language\s*\}/,
+      /'flow:select:language':\s*\{\s*take:\s*SelectLanguageTake;\s*make:\s*SelectLanguage\s*\}/,
     )
   })
 
