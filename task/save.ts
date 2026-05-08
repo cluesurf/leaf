@@ -3,9 +3,10 @@
  * standard catalog Book. Run with `pnpm tsx task/save.ts`
  * (or `pnpm make:base`).
  *
- * Output: `code/base/code.ts` — the colon-keyed `Code` type
- * aggregating every entry in the standard catalog. Consumed
- * by `Base<Code>` for type inference.
+ * Output: `code/base/code.ts` — exports the colon-keyed
+ * `Code` type (kysely-DB equivalent for type inference) AND
+ * the `CodeLink` integer-id table (compile target for
+ * `base.call(...)` rewrites).
  */
 
 import fs from 'node:fs'

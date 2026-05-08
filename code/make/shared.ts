@@ -19,9 +19,7 @@ export function detectEnumStyleNesting(
 ): EnumStyleResult {
   if (!nested) return { isEnum: false, keys: [] }
 
-  const entries = Object.entries(nested) as Array<
-    [string, Link | undefined]
-  >
+  const entries = Object.entries(nested) as [string, Link | undefined][]
   if (entries.length === 0) return { isEnum: false, keys: [] }
 
   const allShapeless = entries.every(([, child]) => {

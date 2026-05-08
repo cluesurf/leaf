@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { Base } from '../code'
-import standard, { hooks, type Code } from '../code/base'
+import standard, { hooks, CodeLink, type Code } from '../code/base'
 
 // IPA symbol predicate — minimal stub for the example.
 const is_ipa_symbol = (ch: string): boolean =>

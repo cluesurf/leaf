@@ -124,6 +124,25 @@ describe('Make.save() — Code aggregate generation', () => {
     )
   })
 
+  it('emits a CodeLink integer-id table inside code.ts', async () => {
+    const make = new Make({ link: '.', dry: true })
+    make.book(standard)
+
+    const result = await make.save()
+
+    expect(result.code).toContain('export const CodeLink = {')
+    expect(result.code).toContain("'flow:is:ipa:broad':")
+    expect(result.code).toContain("'flow:make:sum':")
+    expect(result.code).toContain('export type CodeLink =')
+
+    // Ids are stable across runs (sorted lex) — re-run and
+    // compare:
+    const second = await new Make({ link: '.', dry: true })
+      .book(standard)
+      .save()
+    expect(second.code).toBe(result.code)
+  })
+
   it('emits Form / Hash / List entries with their cast shapes', async () => {
     // The standard catalog ships only generic verb flows.
     // Form / Hash / List Code entries are exercised by

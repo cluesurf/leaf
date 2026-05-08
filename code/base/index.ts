@@ -57,6 +57,11 @@ export const hooks = {
   ...has_hooks,
 } as const
 
-// Re-export the generated `Code` type from the same folder so
-// consumers can `import type { Code } from '@cluesurf/calm/base'`.
+// Re-export the generated `Code` type and `CodeLink` integer-id
+// table from the same folder so consumers can:
+//
+//   import type { Code, CodeLink } from '@cluesurf/calm/base'
+//   import { CodeLink } from '@cluesurf/calm/base'
 export type { Code } from './code'
+export { CodeLink } from './code'
+export type { CodeLink as CodeLinkValue } from './code'
