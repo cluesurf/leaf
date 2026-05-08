@@ -1,21 +1,21 @@
 /**
- * The standard catalog's bundled `Base` type.
+ * The standard catalog's bundled `Code` type.
  *
- * This file is the kysely-style aggregate exported at
- * `@cluesurf/calm/base`. Every entry maps a flow's
- * exported-constant name to its `{ take, like }` signature.
+ * This file is the kysely-style aggregate of every flow the
+ * standard catalog ships. Every entry maps a flow's identity
+ * tuple (encoded as a snake_case key) to its `{ take, like }`
+ * signature.
  *
  * Hosts that bring their own catalog re-export their generated
- * `Base` from their own package and pass it as the `Book`
- * type parameter.
+ * `Code` from their own bundle and pass it as the `Base`
+ * runtime class's type parameter.
  *
  * The entries below are a minimal seed set. The full catalog
- * (~115 flows across 9 verbs) is generated from
- * `code/base/<verb>/<base>/<case>/make.ts` files once those
- * land — see `note/roadmap.md` Phase 6.
+ * (~115 flows across 9 verbs) is generated from declarations
+ * once Phase 6 lands — see `note/roadmap.md`.
  */
 
-export type Base = {
+export type Code = {
   // Always-true / always-false constants.
   always_true:  { take: Record<string, never>; like: boolean }
   always_false: { take: Record<string, never>; like: boolean }
@@ -89,4 +89,4 @@ export type Base = {
   get_largest:  { take: { numbers: number[] }; like: number }
 }
 
-export default Base
+export default Code

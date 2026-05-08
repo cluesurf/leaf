@@ -7,11 +7,11 @@
 
 import { describe, expect, it } from 'vitest'
 import makeTree from './index'
-import type { Flow, Form, Hash, List, Task } from '@/form'
+import type { Fold, Form, Hash, List, Flow } from '@/form'
 import { flow as flowNs } from '@/fold'
 
 describe('makeTree — task + flow + cast', () => {
-  it('Task references a Form for input — input codegen comes from the Form', async () => {
+  it('Flow references a Form for input — input codegen comes from the Form', async () => {
     const greet_user_input: Form = {
       form: 'form',
       save: '~/hold/task',
@@ -22,7 +22,7 @@ describe('makeTree — task + flow + cast', () => {
       },
     }
 
-    const greet_user: Task = {
+    const greet_user: Flow = {
       form: 'task',
       save: '~/hold/task',
       take: 'greet_user_input',
@@ -49,7 +49,7 @@ describe('makeTree — task + flow + cast', () => {
     expect(takeOut).toContain('z.boolean()')
   })
 
-  it('Flow references a Form for input — input codegen comes from the Form', async () => {
+  it('Fold references a Form for input — input codegen comes from the Form', async () => {
     const message_input: Form = {
       form: 'form',
       save: '~/hold/flow',
@@ -58,7 +58,7 @@ describe('makeTree — task + flow + cast', () => {
       },
     }
 
-    const message: Flow = {
+    const message: Fold = {
       form: 'flow',
       save: '~/hold/flow',
       take: 'message_input',
@@ -82,14 +82,14 @@ describe('makeTree — task + flow + cast', () => {
     expect(takeOut).toContain('count: z.number()')
   })
 
-  it('emits the Flow tree as a Node[] const in base.ts', async () => {
+  it('emits the Fold tree as a Node[] const in base.ts', async () => {
     const message_input: Form = {
       form: 'form',
       save: '~/hold/flow',
       link: { count: { like: 'natural_number' } },
     }
 
-    const message: Flow = {
+    const message: Fold = {
       form: 'flow',
       save: '~/hold/flow',
       take: 'message_input',

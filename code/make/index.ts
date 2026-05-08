@@ -1,10 +1,10 @@
 import make_types, { Hold } from './form'
 import make_parsers from './take'
 import make_constants from './base'
-import { Load } from '@/form'
+import { Load, type Book } from '@/form'
 import { washFileList } from './wash'
 
-export type Make = Load
+export type MakeInput = Load
 
 export interface MakeBack {
   form: Record<string, string>
@@ -12,11 +12,22 @@ export interface MakeBack {
   base: Record<string, string>
 }
 
-export default async function make({
+/**
+ * The codegen entry point. Walks the registered declarations
+ * (passed via `MakeInput`) and emits the four-stream output:
+ * `form` (TS types), `take` (Zod parsers), `base` (runtime
+ * registry).
+ *
+ * Most consumers should use the `Make` class wrapper below
+ * instead of calling this function directly. The class
+ * accepts `Book` values via `make.book(book)` and converts
+ * them to `MakeInput` internally.
+ */
+export default async function makeTree({
   testLink,
   codeLink,
   ...baseMesh
-}: Make): Promise<MakeBack> {
+}: MakeInput): Promise<MakeBack> {
   const hold: Hold = { load: {}, save: {} }
 
   const type_list_hash = make_types(baseMesh, hold)
@@ -125,4 +136,64 @@ function makeLoadList(hold: Hold, file: string) {
   text.push(``)
 
   return text
+}
+
+/**
+ * `Make` is the codegen orchestrator class.
+ *
+ *     const make = new Make({ link: './libs' })
+ *
+ *     make.book(standardCatalog)
+ *     make.book(myAppBook)
+ *
+ *     await make.save()
+ *
+ * `make.book(book)` registers a Book by appending it to the
+ * internal list. `make.save()` walks every registered Book,
+ * invokes `makeTree()` on the union, and writes the output.
+ *
+ * The bridge from the new Book-shaped registration surface to
+ * the existing `MakeInput` codegen is intentionally thin —
+ * `Make.save()` flattens registered Books' `base: Cast[]`
+ * arrays into the `mesh` / `link` / `name` records the codegen
+ * function expects.
+ */
+export type MakeTake = {
+  link: string
+}
+
+export class Make {
+  private books: Book[] = []
+
+  constructor(private take: MakeTake) {}
+
+  book(book: Book): this {
+    this.books.push(book)
+    return this
+  }
+
+  async save(): Promise<MakeBack> {
+    // Flatten every registered Book's `base` array into the
+    // BaseHash shapes the codegen function expects.
+    const mesh: Record<string, any> = {}
+    const link: Record<string, any> = {}
+    const name: Record<string, string> = {}
+
+    for (const book of this.books) {
+      for (const cast of book.base ?? []) {
+        if ('save' in cast && typeof cast.save === 'string') {
+          mesh[cast.save] = cast
+          link[cast.save] = cast
+        }
+      }
+    }
+
+    return makeTree({
+      mesh,
+      link,
+      name,
+      testLink: this.take.link,
+      codeLink: this.take.link,
+    })
+  }
 }

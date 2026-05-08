@@ -1,8 +1,8 @@
 export * from './form'
 export * from './tool'
-export { Book } from './runtime'
+export { Base } from './runtime'
 export type {
-  Base,
+  Code,
   BareFlowName,
   FlowBaseValue,
   FlowCaseValue,

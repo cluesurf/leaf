@@ -1,6 +1,6 @@
 import { toPascalCase } from '@/tool'
 import { snakeCase } from 'lodash-es'
-import { Flow, Hash, List, Base } from '@/form'
+import { Fold, Hash, List, Base } from '@/form'
 import { Hold } from './form'
 
 /**
@@ -64,7 +64,7 @@ export default function make(base: Base, hold: Hold) {
 }
 
 /**
- * Emit the `Flow` node tree as a const so consumers can do:
+ * Emit the `Fold` node tree as a const so consumers can do:
  *
  *   import { MESSAGE_COUNT_FLOW } from './hold/flow/base'
  *   flow.renderText({ form: 'weave', flow: MESSAGE_COUNT_FLOW }, context)
@@ -81,7 +81,7 @@ export function make_flow({
   hold,
 }: {
   name: string
-  flow: Flow
+  flow: Fold
   base: Base
   file: string
   hold: Hold

@@ -1,4 +1,4 @@
-import { Hash, List, Form, Task, Flow } from '../code/form'
+import { Hash, List, Form, Flow, Fold } from '../code/form'
 import { flow } from '../code/fold'
 import DATA from './data.json'
 
@@ -710,7 +710,7 @@ export const test_case: Form = {
 }
 
 /**
- * `Task`: a function definition. `take` references a separately
+ * `Flow`: a function definition. `take` references a separately
  * declared `Form` schema (the input shape); `like` names the
  * output form. The referenced Form's codegen handles the input
  * TS type + zod parser.
@@ -726,7 +726,7 @@ export const greet_user_input: Form = {
   },
 }
 
-export const greet_user: Task = {
+export const greet_user: Flow = {
   form: 'task',
   save: '~/test/hold/task',
   take: 'greet_user_input',
@@ -741,7 +741,7 @@ export const sum_numbers_input: Form = {
   },
 }
 
-export const sum_numbers: Task = {
+export const sum_numbers: Flow = {
   form: 'task',
   save: '~/test/hold/task',
   take: 'sum_numbers_input',
@@ -749,7 +749,7 @@ export const sum_numbers: Task = {
 }
 
 /**
- * `Flow`: a renderable tree with declared params. `take`
+ * `Fold`: a renderable tree with declared params. `take`
  * references a separately declared `Form` for the input shape;
  * `tree` is the array of nodes the renderer walks.
  */
@@ -763,7 +763,7 @@ export const message_count_input: Form = {
   },
 }
 
-export const message_count_template: Flow = {
+export const message_count_template: Fold = {
   form: 'flow',
   save: '~/test/hold/flow',
   take: 'message_count_input',

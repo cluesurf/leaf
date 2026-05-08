@@ -91,7 +91,7 @@ export default function make(base: Base, hold: Hold, need = true) {
         break
       case 'task':
       case 'flow':
-        // Input codegen for Task / Flow comes from their
+        // Input codegen for Flow / Fold comes from their
         // referenced Form (via `take: '<form_name>'`). Nothing
         // to emit here.
         break

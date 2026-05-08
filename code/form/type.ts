@@ -1,7 +1,22 @@
 import { RefinementCtx } from 'zod'
 import type { Node as FlowNode } from '@/fold/types'
 
-export type Load = Base & {
+/**
+ * A `Book` is a published bundle of declarations.
+ * Optional `host` + `name` metadata, plus a single `base`
+ * array containing every Form / Flow / Fold / Hash / List
+ * the Book ships, in any order. Codegen dispatches each
+ * entry by its `form:` discriminant.
+ */
+export type Book = {
+  host?: string
+  name?: string
+  base?: Cast[]
+}
+
+export type Cast = Form | Hash | List | Test | Make | Flow | Fold
+
+export type Load = MakeTake & {
   testLink: string
   codeLink: string
 }
@@ -46,7 +61,7 @@ export type Form = FormBaseCase | FormBaseFuse | FormBaseLink
 
 export type BaseHash = Record<
   string,
-  Form | Hash | List | Test | Make | Task | Flow
+  Form | Hash | List | Test | Make | Flow | Fold
 >
 
 export type NameHash = Record<string, string>
@@ -55,7 +70,7 @@ export type NameHash = Record<string, string>
  * Map of name → implementation function. Two consumers:
  *
  * - `Base.hook` at codegen time, where each entry implements a
- *   declared `Task` and the `input` is the task's `take` shape.
+ *   declared `Flow` and the `input` is the task's `take` shape.
  *
  * - The flow render context (`BaseContext.hook`), where each entry
  *   implements a `call` operator and may receive a second
@@ -93,7 +108,7 @@ export type CastHash = {
   take?: Record<string, string>
 }
 
-export type Base = {
+export type MakeTake = {
   mesh: BaseHash
   link: BaseHash
   name: NameHash
@@ -203,17 +218,17 @@ export type Make = {
 }
 
 /**
- * A `Task` describes a function.
+ * A `Flow` describes a function.
  *
  *  - `take` is the **name** of a separately-defined `Form`
  *    schema describing the input parameters. The referenced
  *    Form's codegen emits the TS input type and zod parser;
- *    Task itself emits no input codegen.
+ *    Flow itself emits no input codegen.
  *  - `like` is the output type or the name of another schema.
  *
  * Implementations are wired through `Base.hook`.
  */
-export type Task = {
+export type Flow = {
   form: 'task'
   save: string
   take: string
@@ -222,19 +237,19 @@ export type Task = {
 }
 
 /**
- * A `Flow` describes a renderable tree with declared inputs.
+ * A `Fold` describes a renderable tree with declared inputs.
  * It's the unified shape behind both i18n templates (rendered
  * to a string via `renderText`) and dynamic component trees
  * (rendered to elements via `renderElement`).
  *
  *  - `take` is the **name** of a separately-defined `Form`
  *    schema describing the call parameters. Same model as
- *    `Task.take`.
+ *    `Flow.take`.
  *  - `tree` is the array of nodes the renderer walks. The
  *    same `Node` union feeds every renderer; only the
  *    renderer's output type changes.
  */
-export type Flow = {
+export type Fold = {
   form: 'flow'
   save: string
   take: string
