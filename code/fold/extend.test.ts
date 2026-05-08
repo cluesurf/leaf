@@ -14,7 +14,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { flow, renderText } from './index'
+import { flow, renderText } from '.'
 
 describe('hook (call operators)', () => {
   it('adds a new call operator via context.hook', () => {
@@ -40,7 +40,9 @@ describe('hook (call operators)', () => {
     expect(
       renderText(tree, {
         scope: flow.scope({ msg: 'hi' }),
-        hook: { shout: ({ value }) => `${String(value).toUpperCase()}!` },
+        hook: {
+          shout: ({ value }) => `${String(value).toUpperCase()}!`,
+        },
       }),
     ).toBe('HI!')
   })

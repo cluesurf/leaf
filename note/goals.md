@@ -264,9 +264,14 @@ not possible because there is one source.
 
 ### Must be browseable
 
-The standard catalog uses a flat directory shape:
-`code/<verb>/<base>/<case>/`. The file tree IS the API. New
-flows are new folders. Adding a variant is one new `case`.
+Source files group declarations by logical domain. A
+language-oriented Book might group by resource (`language/`,
+`script/`, `phoneme/`); a logic-oriented Book might group by
+verb (`is/`, `make/`, `get/`). Each group's `make.ts`
+exports related Forms/Flows together, and the sibling
+`flow.ts` exports the handlers. The file tree is whatever
+makes the source easy to read; the runtime keys off the
+schema's reserved props, not the file system.
 
 ### Must have a clean editable / compiled split
 
@@ -358,7 +363,7 @@ type Flow = {
   base?: string        // the noun (e.g., 'ipa')
   case?: string        // the variant (e.g., 'broad')
   like?: string        // return-type signature, TypeScript-like
-  take?: FormLinkMesh  // input args schema, in @cluesurf/form's DSL
+  take?: LinkMesh  // input args schema, in @cluesurf/form's DSL
 }
 ```
 
@@ -381,48 +386,33 @@ on top.
 The host's API surface:
 
 ```typescript
-class Calm {
-  flows: Flow[]
+class Base<T extends Code> {
+  flow: Map<number, Flow>
+  handler: Map<number, Handler>
 
-  // Register a flow implementation (overloaded).
-  flow(name: string, options: FlowOptions, handler: Handler): void
+  // Register a flow handler (typed against Code).
+  flow(name: string, options: { base?: string; case?: string }, handler: Handler): void
   flow(name: string, handler: Handler): void
 
-  // Invoke a registered flow by code id.
-  call(code: string, bind: Record<string, unknown>): unknown
-
-  // Load a deck (a package. Bundle of flows).
-  deck(deck: Deck): void
-
-  // Load a card (a module. Small grouping of flows).
-  card(card: Card): void
+  // Invoke a registered flow.
+  call(idOrKey: number | string, args: object): unknown
 
   // Compile + execute an editable tree.
   bind(tree: MakeNode): unknown
 }
 ```
 
-The naming is deliberately simple, drawn from the playing-card
-metaphor:
-
-- **`flow`**. A single function. Smallest unit.
-- **`card`**. A single file (also a module at its level). One
-  source file's worth of related flows.
-- **`deck`**. A module / package. A published collection of
-  cards. `@cluesurf/calm-linguistics` would be a deck.
-- **`bind`**. Bring a tree to life. Compile + run.
-- **`call`**. Invoke one flow directly, when you have its code
-  id and don't need the whole compile cycle.
-
-`flow ⊂ card ⊂ deck` is the nesting. A deck is many cards; a
-card is many flows.
-
 A host typically does:
-1. `new Calm()`.
-2. `calm.deck(...)` for any standard packages they want.
-3. `calm.flow(...)` for any custom flows specific to their app.
-4. `calm.bind(treeFromUser)` whenever a user-authored document
-   needs to render.
+1. Run codegen (`Make.save()`) to produce the bundled `Code`
+   type from registered Books.
+2. `new Base<Code>(...)` instantiating the runtime.
+3. `base.flow(...)` for each app-specific handler.
+4. `base.bind(treeFromUser)` whenever a user-authored
+   document needs to render.
+
+Handlers for upstream-Book flows are loaded from the
+generated bundle's `flow.ts` (codegen re-exports the Book's
+own published handlers).
 
 ## Goal: standardized seed catalog
 
@@ -499,22 +489,25 @@ A constraint reads almost like English without translation.
 
 ## Goal: function-registry dispatch pattern
 
-`calm` follows a verb-first function-registry pattern:
+`calm` follows a function-registry pattern:
 
-- Verb-first directory shape: `code/<verb>/<base>/<case>/`.
+- Source organized by **logical domain**, with each group
+  carrying a `make.ts` (declarations) and `flow.ts`
+  (handlers).
 - Single object input per call.
-- Dispatch on the `(name, base, case)` triple.
-- Schema-driven codegen. TypeScript types, Zod parsers, JSON
-  Schema, editor widgets all derived from one source.
+- Dispatch on the `(name, base, case)` triple at runtime
+  (compiled to a numeric id at build time).
+- Schema-driven codegen. TypeScript types, Zod parsers, and
+  the bundled `Code` type all derived from one source.
 
 | design point | calm |
 |---|---|
-| directory shape | `code/<verb>/<base>/<case>/` |
-| call shape | `is(ipa: { text, case: 'broad' })` |
-| input | single object |
+| source layout | logical-domain groups (`code/base/<group>/{make,flow}.ts`) |
+| call shape | `base.call('is', { base: 'ipa', case: 'broad', text })` |
+| input | single object (verb + base/case + take payload merged) |
 | output | value (sync) or Promise (async) |
-| dispatch | `(name, base, case)` triple → registered handler |
-| schema | form-DSL `make.ts` per flow |
+| dispatch | `(name, base, case)` triple → integer id → handler |
+| schema | declarations in `make.ts` files |
 | codegen surfaces | engine / editor / validator / docs |
 
 ## Non-goals
@@ -534,8 +527,8 @@ host explicitly registers.
 
 The runtime never loads strings of source. It never `eval`s.
 It never imports anything dynamically. The set of executable
-flows is fixed at the moment the host calls `calm.deck(...)` /
-`calm.flow(...)`.
+flows is fixed at the moment the host calls `base.deck(...)` /
+`base.flow(...)`.
 
 ### Not a host for arbitrary user side effects
 

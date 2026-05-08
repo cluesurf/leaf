@@ -52,99 +52,107 @@ spec verbatim; no semantic change.
 ```typescript
 const find: Form = {
   form: 'form',
-  save: '@/code/form/find',
+  cast: 'find',
   link: {
     test: { like: 'find_test' },
     sort: { like: 'list<find_sort>', need: false },
-    size: { like: 'integer',         need: false, fall: 50 },
-    list: { like: 'integer',         need: false, fall: 0 },
+    size: { like: 'integer',         need: false, base: 50 },
+    list: { like: 'integer',         need: false, base: 0 },
     book: { like: 'find_book',       need: false },
   },
 }
 
 const find_test: Form = {
   form: 'form',
-  save: '@/code/form/find',
+  cast: 'find_test',
   link: {
-    form: { like: 'string', case: ['any', 'all'] },
+    form: { like: 'string', take: ['any', 'all'] },
     test: { like: 'list<constraint>' },
   },
 }
 
 const find_sort: Form = {
   form: 'form',
-  save: '@/code/form/find',
+  cast: 'find_sort',
   link: {
     name: { like: 'string' },
-    flow: { like: 'string', case: ['+', '-'] },
+    flow: { like: 'string', take: ['+', '-'] },
   },
 }
 
 const constraint: Form = {
   form: 'form',
-  save: '@/code/form/find',
-  case: {
-    keyword: {
-      link: {
+  cast: 'constraint',
+  link: [
+    {
+      like: 'keyword',
+      bind: {
         text:   { like: 'string' },
         negate: { like: 'boolean', need: false },
       },
     },
-    string: {
-      link: {
+    {
+      like: 'string',
+      bind: {
         text:   { like: 'string' },
-        part:   { like: 'string', case: ['start', 'end', 'any', 'exact'], need: false },
+        part:   { like: 'string', take: ['start', 'end', 'any', 'exact'], need: false },
         fuzzy:  { like: 'boolean', need: false },
         negate: { like: 'boolean', need: false },
       },
     },
-    number: {
-      link: {
+    {
+      like: 'number',
+      bind: {
         // either literal or range
-        value:    { like: 'number',   need: false },
-        min:      { like: 'number',   need: false },
-        max:      { like: 'number',   need: false },
-        negate:   { like: 'boolean',  need: false },
+        value:         { like: 'number',  need: false },
+        min:           { like: 'number',  need: false },
+        max:           { like: 'number',  need: false },
+        negate:        { like: 'boolean', need: false },
         exclusive_min: { like: 'boolean', need: false },
         exclusive_max: { like: 'boolean', need: false },
       },
     },
-    integer: {
-      link: {
-        value:    { like: 'integer', need: false },
-        min:      { like: 'integer', need: false },
-        max:      { like: 'integer', need: false },
-        negate:   { like: 'boolean', need: false },
+    {
+      like: 'integer',
+      bind: {
+        value:         { like: 'integer', need: false },
+        min:           { like: 'integer', need: false },
+        max:           { like: 'integer', need: false },
+        negate:        { like: 'boolean', need: false },
         exclusive_min: { like: 'boolean', need: false },
         exclusive_max: { like: 'boolean', need: false },
       },
     },
-    boolean: {
-      link: {
+    {
+      like: 'boolean',
+      bind: {
         value:  { like: 'boolean' },
         negate: { like: 'boolean', need: false },
       },
     },
-    date: {
-      link: {
-        value:    { like: 'date',    need: false },
-        min:      { like: 'date',    need: false },
-        max:      { like: 'date',    need: false },
-        negate:   { like: 'boolean', need: false },
+    {
+      like: 'date',
+      bind: {
+        value:  { like: 'date',    need: false },
+        min:    { like: 'date',    need: false },
+        max:    { like: 'date',    need: false },
+        negate: { like: 'boolean', need: false },
       },
     },
-    index: {
-      link: {
+    {
+      like: 'index',
+      bind: {
         value:  { like: 'integer' },
         negate: { like: 'boolean', need: false },
       },
     },
-    object: {
-      link: {
+    {
+      like: 'object',
+      bind: {
         value: { like: 'map<find_test>' },
       },
     },
-  },
+  ],
 }
 ```
 
@@ -287,7 +295,7 @@ A host can then iterate a list and apply the lowered Flow:
 ```typescript
 const filter_fn = calm.compile(lower(query))
 const matches = records.filter(record =>
-  calm.bind(filter_fn, { record }).output as boolean
+  base.bind(filter_fn, { record }).output as boolean
 )
 ```
 
@@ -314,22 +322,20 @@ calm.
 
 ## Standard catalog entries
 
-The Forms and Flows above ship in the base catalog:
+The Forms and Flows above ship in the base catalog. They
+live in whichever logical-grouping file fits — typically
+one `find/` directory grouping the find Forms and Flows
+together:
 
 ```
-code/form/
-  find.ts
-    find / find_test / find_sort / find_book / constraint
-
-code/flow/find/
-  list/    schema.ts handler.ts        # find.list
-  one/     schema.ts handler.ts        # find.one
-  count/   schema.ts handler.ts        # find.count
+code/base/find/
+  make.ts    # exports find / find_test / find_sort + find_list / find_one / find_count Flows
+  flow.ts    # handlers for find_list / find_one / find_count
 ```
 
 Hosts get filtering "for free". Install the base catalog,
-register a data-layer adapter, and `find.list` / `find.one` /
-`find.count` work against any registered Form.
+register a data-layer adapter, and `find_list` / `find_one`
+/ `find_count` work against any registered Form.
 
 ## Editor: filter as authored Cast
 
@@ -339,10 +345,10 @@ diffs, same validation tiers. A user dragging a "language is
 english" chip into a filter row is patching the `find` Cast in
 the same way they'd patch a document Tree.
 
-The filter UI ships as a card template (`card-template/filter`)
-restricting authors to the `find` shape and the constraint
-verbs. Other surfaces (sort selectors, page-size inputs) are
-slot widgets the template publishes.
+The filter UI ships as a Fold variant restricting authors to
+the `find` shape and the constraint verbs. Other surfaces
+(sort selectors, page-size inputs) are slot widgets the Fold
+publishes.
 
 ## Wire format
 
@@ -353,10 +359,10 @@ from any other Cast.
 
 ## Related
 
-- [`primitives.md`](./primitives.md). Form / Flow / Cast / Call
+- [`primitives.md`](./primitives.md). Form / Flow / Call
 - [`structure.md`](./structure.md). Vocabulary
 - [`catalog.md`](./catalog.md). The standard nine-verb
-  catalog (`is.among`, `is.between`, `is.matches`, etc., used
-  in lowered filter trees)
-- [`calm.md`](./calm.md). `calm.flow` registration with
-  `async: true` for `find.*`
+  catalog (`is.among`, `is.between`, `is.matches`, etc.,
+  used in lowered filter trees)
+- [`runtime.md`](./runtime.md). `base.flow` registration
+  with `async: true` for `find.*`

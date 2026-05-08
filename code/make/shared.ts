@@ -1,4 +1,4 @@
-import { FormLink, LinkMesh } from '@/form'
+import { Link, LinkMesh } from '@/form'
 
 /**
  * An "enum-style" nested link is one whose `link.link` holds only
@@ -20,7 +20,7 @@ export function detectEnumStyleNesting(
   if (!nested) return { isEnum: false, keys: [] }
 
   const entries = Object.entries(nested) as Array<
-    [string, FormLink | undefined]
+    [string, Link | undefined]
   >
   if (entries.length === 0) return { isEnum: false, keys: [] }
 

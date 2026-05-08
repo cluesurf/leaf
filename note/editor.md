@@ -11,7 +11,7 @@ stays at 60fps on documents with thousands of nodes.
   per `(verb, base, case)`, nested children.
 - Translate user gestures (typing, drags, drops, deletes) into
   `TreePatch` objects.
-- Send patches to the runtime via `calm.bindPatch(...)`.
+- Send patches to the runtime via `base.bindPatch(...)`.
 - Apply the runtime's render diff: re-render only the subtrees
   whose output changed.
 - Surface validation errors inline (squiggles, gutter icons,
@@ -162,11 +162,11 @@ editor picks a cadence per tier:
 | 4 | medium | on idle (~1s) | constraint evaluation |
 | 5 | expensive | on save / explicit | async checks, DB roundtrips |
 
-`calm.bindPatch` runs tiers 1. 3 by default and skips tiers 4. 5
+`base.bindPatch` runs tiers 1. 3 by default and skips tiers 4. 5
 unless the editor opts in via:
 
 ```typescript
-calm.bindPatch(prev, patch, { tiers: ['args', 'types', 'resolve', 'constraints'] })
+base.bindPatch(prev, patch, { tiers: ['args', 'types', 'resolve', 'constraints'] })
 ```
 
 The editor can also call `calm.runConstraints(prev)` /
@@ -240,7 +240,7 @@ Some user actions (paste, undo, batch delete) produce multiple
 patches at once. The editor sends them as a list:
 
 ```typescript
-calm.bindPatch(prev, [patch1, patch2, patch3])
+base.bindPatch(prev, [patch1, patch2, patch3])
 ```
 
 The runtime applies them sequentially, then runs one
@@ -264,7 +264,7 @@ The runtime doesn't manage undo state; that's the editor's job.
 When the editor first loads a document:
 
 ```typescript
-const prev = calm.bind(initialTree, host)
+const prev = base.bind(initialTree, host)
 ```
 
 This is the cold path. Slow once (~milliseconds for a typical
@@ -276,7 +276,7 @@ subsequent edit is `bindPatch`, which is fast.
 When the user saves, the editor calls:
 
 ```typescript
-const final = calm.bindPatch(prev, [], { tiers: ['args', 'types', 'resolve', 'constraints', 'async'] })
+const final = base.bindPatch(prev, [], { tiers: ['args', 'types', 'resolve', 'constraints', 'async'] })
 ```
 
 This forces every validation tier to run, including async

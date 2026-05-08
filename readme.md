@@ -99,26 +99,26 @@ each `make.ts`:
 ## Runtime
 
 ```ts
-import { Calm } from '@cluesurf/calm'
+import { Book } from '@cluesurf/calm'
 import type Base from './code/base/base'
 
 import * as is_ipa from './code/base/is/ipa/base'
 // ... import every generated leaf catalog
 
-const calm = new Calm<Base>()
+const book = new Book<Base>()
 
-calm.deck({ ...is_ipa /* ... */ })
+book.deck({ ...is_ipa /* ... */ })
 
-calm.flow('is', { base: 'ipa', case: 'broad' }, ({ text }) =>
+book.flow('is', { base: 'ipa', case: 'broad' }, ({ text }) =>
   Array.from(text).every(is_ipa_symbol),
 )
 
-const result = calm.bind(treeFromUser, { stage: 'draft' })
+const result = book.bind(treeFromUser, { stage: 'draft' })
 ```
 
-`Calm` is generic over `Base`. The bundled type aggregating
-every authored constant. Every `calm.flow(...)` /
-`calm.form(...)` / `calm.bind(...)` call typechecks against
+`Book` is generic over `Base`. The bundled type aggregating
+every authored constant. Every `book.flow(...)` /
+`book.form(...)` / `book.bind(...)` call typechecks against
 it. Names, bases, cases, arg shapes, and return types resolve
 through the generated `Base`.
 
@@ -153,7 +153,7 @@ Full design notes live in [`./note/`](./note/):
 - [`structure.md`](./note/structure.md). Vocabulary spine
 - [`primitives.md`](./note/primitives.md). Form and Flow in depth
 - [`ast.md`](./note/ast.md). Every node form
-- [`calm.md`](./note/calm.md). The `Calm` class
+- [`calm.md`](./note/calm.md). The `Book` class
 - [`runtime.md`](./note/runtime.md). Engine pipeline
 - [`types.md`](./note/types.md). TypeScript surface
 - [`codegen.md`](./note/codegen.md). The `Make` class + outputs

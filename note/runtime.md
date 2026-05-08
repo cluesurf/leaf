@@ -171,8 +171,8 @@ type.
 
 ## Real-time partial recompilation
 
-The editor calls `calm.bindPatch(prev, patch)` instead of
-re-running `calm.bind`. The runtime supports this via three
+The editor calls `base.bindPatch(prev, patch)` instead of
+re-running `base.bind`. The runtime supports this via three
 caches:
 
 1. **Compile cache.** Keyed by node `id` + content hash. The
@@ -268,7 +268,7 @@ the call boundary, not inside the authored Fold.
 
 ## Determinism
 
-Two runs of `calm.bind(tree, host)` with the same `host` and
+Two runs of `base.bind(tree, host)` with the same `host` and
 the same `tree` always produce the same `output` (modulo
 async lookups whose backing data changed). This is essential
 for caching, testing, and reproducibility of authored
@@ -285,11 +285,11 @@ Sources of nondeterminism the runtime explicitly bounds:
 
 ## Concurrency
 
-A `Calm` instance is single-threaded inside its synchronous
+A `Base` instance is single-threaded inside its synchronous
 evaluation. Multiple `bind` calls run sequentially. For
 parallel rendering of independent documents, hosts spin up
-multiple `Calm` instances (cheap; the registry is shared via a
-read-only catalog).
+multiple `Base` instances (cheap; the registry is shared via
+a read-only catalog).
 
 The async pre-resolution stage IS concurrent inside its batch
 . That's the whole point of batching. Concurrency stops at
@@ -300,8 +300,8 @@ the boundary; the synchronous evaluator never sees parallelism.
 For an editor running at 60fps with 16ms frames, the runtime
 aims for:
 
-- **Cold `calm.bind` of a 10,000-node document**: under 200ms.
-- **Hot `calm.bindPatch` of a single-node edit**: under 5ms.
+- **Cold `base.bind` of a 10,000-node document**: under 200ms.
+- **Hot `base.bindPatch` of a single-node edit**: under 5ms.
 - **Memory** per cached tree: linear in node count, ~200 bytes
   per node.
 

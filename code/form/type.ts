@@ -101,9 +101,9 @@ export type Base = {
   cast?: CastHash
 }
 
-export type LinkMesh = Record<string, FormLink>
+export type LinkMesh = Record<string, Link>
 
-export type FormLink = {
+export type Link = {
   head?: string
   note?: string
   back?: string
@@ -120,9 +120,9 @@ export type FormLink = {
   fill?: boolean
   hold?: boolean
   like?: string
-  case?: Record<string, FormLink> | FormLink[]
-  fuse?: FormLink[]
-  bond?: FormLink
+  case?: Record<string, Link> | Link[]
+  fuse?: Link[]
+  bond?: Link
   link?: LinkMesh
   list?: boolean
   name?: {

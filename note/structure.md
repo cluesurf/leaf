@@ -6,80 +6,97 @@ it before the deeper specs.
 
 ## Vocabulary
 
-Calm has **two type/instance pairs**, plus an umbrella term
-covering the type-level declarations and the runtime class.
+Calm has **two type/instance pairs** at the schema level,
+plus four core architectural pieces (two types, two classes)
+that frame the system end-to-end.
+
+### Schema layer
 
 | layer | type (declaration) | instance (occurrence) |
 |---|---|---|
-| **data** | `Form` | `Cast` |
+| **data** | `Form` | a record (instance with `form: <cast>`) |
 | **function** | `Flow` | `Call` |
 
-- A **`Form`** declares a data shape. A **`Fold`** is a special
-  kind of Form whose Casts are tree-shaped. A document
-  template made of Calls and slots.
-- A **`Cast`** is an instance of any Form (Form, Hash, List, or
-  Fold). A simple Cast is a flat record. A Fold's Cast is a
-  nested structure of Calls filling the Fold.
-- A **`Flow`** declares a function. Its name, args, return
-  type.
+- A **`Form`** declares a data shape. A **`Fold`** is a Form
+  whose instances are tree-shaped — a document template made
+  of Calls and slots.
+- A **`Flow`** declares a function: its name, optional base
+  resource, optional case variant, optional take (input), and
+  optional make (output).
 - A **`Call`** is a node in the AST invoking a Flow.
 
-Casts are the universal instance shape. Any data flowing
-through the runtime is a Cast of some Form. A document
-authored in the editor is just a Cast of a Fold (which is
-just a particular kind of Form). One instance vocabulary
-covers everything.
+A **`Cast`** is the umbrella type for any JSON object calm
+processes — whether a Form declaration, a Flow declaration,
+a Call AST node, a record instance, or a Fold. Every value
+in the system is a Cast of some kind, distinguished by its
+`form:` discriminant. When a doc says "a Cast," it means
+"a JSON object handled by the runtime."
 
-A **`Wave`** is the umbrella term: any type-level declaration
-(a `Form` or a `Flow`) is a Wave. When the host registers
-schemas with the runtime, it's registering Waves. The `Wave`
-type is `Form | Flow`.
+See [`schema.md`](./schema.md) for the reserved props on
+each.
 
-A **`Base`** is the bundled type. Kysely's `DB` equivalent.
-The compiler aggregates every authored constant (every Form,
-Flow, Hash, List, Fold) across the codebase into a single
-`Base` interface, keyed by name. The runtime class is generic
-over it.
+### Architectural pieces
 
-A **`Calm`** is the runtime class itself. The environment
-where Casts live, where Calls evaluate, where Folds render.
-The host instantiates one as `new Calm<Base>()`, registers
-Waves on it, and binds Trees through it. The Calm owns the
-scope chain, the caches, the dispatch table. "where
-everything runtimes."
+The system has four core pieces. Two are types, two are
+classes. See [`architecture.md`](./architecture.md) for the
+full mapping.
+
+| name   | shape | role                                                  |
+|--------|-------|-------------------------------------------------------|
+| `Book` | type  | a published bundle (forms + flows + folds + hashes + lists) |
+| `Code` | type  | generated registry: every entry's colon-key → its type |
+| `Base` | class | runtime: registers flow handlers AND dispatches calls |
+| `Make` | class | codegen orchestrator: reads Books, emits the bundle   |
+
+- **`Book`** is what an upstream library ships. Plain data.
+  Has optional `host` + `name` metadata plus a single `base`
+  array of mixed declarations (Forms / Flows / Folds /
+  Hashes / Lists).
+- **`Code`** is what `Make` emits — the giant TypeScript
+  type. Kysely's `DB` equivalent.
+- **`Base`** is the runtime class the host instantiates as
+  `new Base<Code>()`. Where flow handlers register and where
+  calls dispatch.
+- **`Make`** is the build-time class that walks registered
+  Books and produces the bundle.
 
 ### Why these names
 
 - **`Form`**. A mold for data. Inherited from Seed.
-- **`Cast`**. What comes out of the mold. An object cast to
-  the form's shape. Reads as "a Cast of `language_string`."
 - **`Flow`**. A function defined by what flows in (`take`)
-  and out (`like`). Also matches the existing `flow.*` builder
-  DSL.
+  and out (`make`). Also matches the existing `flow.*`
+  builder DSL.
 - **`Call`**. Invoking a Flow. Literal English for "make a
   call to this function."
-- **`Fold`**. A Form whose Casts are tree-shaped. Document
-  templates and authored documents both live as Folds.
-- **`Wave`**. The umbrella. Forms and Flows ride the same
-  registration pipeline; a Wave is what you publish.
-- **`Base`**. The bundled-type aggregate. Every authored
-  constant in the codebase, smashed into one interface, like
-  kysely's `DB`.
-- **`Calm`**. The runtime class. Generic over `Base`. Owns
-  the registered Waves, the host chain, the caches, the
+- **`Fold`**. A Form whose instances are tree-shaped.
+  Document templates and authored documents both live as
+  Folds.
+- **`Book`**. A published bundle. The Book TYPE is what an
+  upstream library ships; consumers register Books with
+  `Make`.
+- **`Code`**. The generated giant type — what the bundle's
+  *code* describes. Each colon-key in `Code` maps to the
+  type of one entry across all registered Books.
+- **`Base`**. The runtime class. Generic over `Code`. Owns
+  the registered handlers, the host chain, the caches, the
   dispatch table.
+- **`Make`**. The codegen orchestrator. Reads Books, emits
+  artifacts, validates the union.
 
 ```
-new Calm<Base>()
+new Base<Code>()
          ↑
-    every authored Form / Flow / Hash / List / Fold,
-    aggregated into one type at compile time
+    every authored Form / Flow / Hash / List / Fold across
+    every registered Book, aggregated into one type
+    at compile time
 
-Calm   ⊃   { Waves (Forms + Flows), host, caches, dispatch }
-       ⊃   { Casts, Calls, Folds flowing through evaluation }
+Base ⊃ { handlers, host, caches, dispatch table }
+     ⊃ { records, Calls, Folds flowing through evaluation }
 ```
 
-Nine words total. The spec doesn't introduce more.
+Nine vocabulary words at the schema layer (Form, Fold, Hash,
+List, Flow, Call, Find), four architectural pieces (Book,
+Code, Base, Make). The spec doesn't introduce more.
 
 ## Keyword grammar
 
@@ -88,20 +105,22 @@ schemas. Each keyword has one job:
 
 | keyword | role | used in |
 |---|---|---|
-| `form` | declare a data shape (top-level discriminant on AST nodes too) | Form / AST |
-| `link` | a field of a Form (and the type alias for input args) | Form, Flow.take |
-| `like` | type annotation (this thing IS this type) | Form fields, Flow `like`, Flow `take` |
-| `case` | a variant / sub-type, OR (in AST) the chosen variant | Form, Flow, AST |
+| `form` | kind discriminant (declarations + AST nodes) | Form / Flow / AST |
+| `link` | a Form's field map (single shape or array of variants) | Form |
+| `like` | type signature on a `Link` field; variant tag on union members | Link, union members |
+| `case` | a Flow / Form variant, or (in AST) the chosen variant | Form, Flow, AST |
 | `head` | a generic type parameter | Form / Flow |
-| `take` | an input parameter to a Flow | Flow |
-| `need` | required-ness flag, or trait bound on `head` | Form / Flow |
-| `fall` | default value when missing | Form / Flow |
-| `test` | a Call subtree that returns boolean (constraint on a field) | Form |
-| `make` | construct an instance | Cast |
-| `bind` | set a field on a Cast being constructed (or compiled-args slot on a Call) | Cast / Call |
-| `name` | identifier for a Call (the Flow's name) or View (component name) | AST |
-| `code` | (compiled) flattened registry id | AST (compiled) |
-| `mark` | per-call schema-version stamp (semver) | AST |
+| `take` | a Flow's input shape; on a `Link`, the field's allowed enum values | Flow / Link |
+| `make` | a Flow's output shape | Flow |
+| `need` | required-ness flag | Link |
+| `base` | on a Flow: the resource acted on; on a `Link`: default value when missing; on a `Book`: the array of declarations | Flow / Link / Book |
+| `cast` | the resource a Form shapes | Form |
+| `call` | the action context on a Form (when scoped to a verb) | Form |
+| `test` | a Call subtree that returns boolean (constraint on a Link) | Link |
+| `bind` | a union member's field map; on a compiled Call, the args envelope | union members / Call (compiled) |
+| `name` | the verb on a Flow / Call | Flow / Call |
+| `code` | compiled flat numeric id | instances (compiled) |
+| `mark` | per-instance schema-version stamp (semver) | instances (compiled) |
 
 These words come from Seed and align with the data-modeling
 discipline calm inherits from it.
@@ -217,11 +236,11 @@ import * as base from '@cluesurf/calm/base'
 
 // base.language_string, standard.is_ipa, standard.welcome_guide, ...
 
-const calm = new Calm()
-calm.deck(base)   // ingests every Form / Flow / Hash / List / Fold
+const base = new Base()
+base.deck(base)   // ingests every Form / Flow / Hash / List / Fold
 ```
 
-`calm.deck(...)` walks the imported namespace, dispatches each
+`base.deck(...)` walks the imported namespace, dispatches each
 export to its registry slot based on its primitive type
 (`Form`, `Flow`, `Hash`, `List`, `Fold`), and indexes by the
 constant's name.
@@ -261,7 +280,7 @@ const language_string: Form = {
     cefr_level:   {
       like: 'string',
       need: false,
-      case: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+      take: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
     },
   },
 }
@@ -270,32 +289,31 @@ const language_string: Form = {
 Reading the keywords:
 
 - `form: 'form'`. Discriminant; this object is a Form.
-- `save`. Module / namespace path.
+- `cast`. The resource the Form shapes.
 - `link`. The field map. Each entry is one field.
-- `like`. That field's type.
+- `like`. The field's type.
 - `need: false`. Optional (default `true`).
-- `case: [...]`. Enum members for a string field.
+- `take: [...]`. Enum members for a string field.
+- `base`. Default value when missing.
 
 ### Form variants (sum types)
 
-A Form can have multiple `case`s. Each case is a sub-type:
+A Form expresses variants by passing an array to `link`.
+Each member uses `like` (variant tag) + `bind` (field map):
 
 ```typescript
 const result: Form = {
   form: 'form',
-  save: '@/code/form/result',
-  case: {
-    okay: {
-      link: { value: { like: 'string' } },
-    },
-    error: {
-      link: { value: { like: 'string' } },
-    },
-  },
+  cast: 'result',
+  link: [
+    { like: 'okay',  bind: { value: { like: 'string' } } },
+    { like: 'error', bind: { value: { like: 'string' } } },
+  ],
 }
 ```
 
-Same shape as Seed's `form result` with `case okay` / `case error`.
+Same shape as Seed's `form result` with `case okay` / `case
+error`.
 
 ### Generic Forms (`head`)
 
@@ -304,7 +322,7 @@ Type parameters are declared with `head`:
 ```typescript
 const box: Form = {
   form: 'form',
-  save: '@/code/form/box',
+  cast: 'box',
   head: ['t'],
   link: { value: { like: 't' } },
 }
@@ -635,7 +653,7 @@ const language_string: Form = {
     cefr_level: {
       like: 'string',
       need: false,
-      case: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+      take: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
     },
   },
 }
@@ -644,15 +662,15 @@ const language_string: Form = {
 ### 2. Flows (host registers)
 
 ```typescript
-calm.flow('is', { case: 'string' }, ({ thing }) => typeof thing === 'string')
-calm.flow('is', { case: 'ipa' },    ({ text })  => everyCharIsIpa(text))
-calm.flow('is', { case: 'above' },  ({ this: a, that: b }) => a > b)
-calm.flow('is', { case: 'among' },  ({ thing, choices }) => choices.includes(thing))
-calm.flow('is', { case: 'all' },    ({ things }) => things.every(Boolean))
-calm.flow('get', { case: 'length' }, ({ text }) => text.length)
+base.flow('is', { case: 'string' }, ({ thing }) => typeof thing === 'string')
+base.flow('is', { case: 'ipa' },    ({ text })  => everyCharIsIpa(text))
+base.flow('is', { case: 'above' },  ({ this: a, that: b }) => a > b)
+base.flow('is', { case: 'among' },  ({ thing, choices }) => choices.includes(thing))
+base.flow('is', { case: 'all' },    ({ things }) => things.every(Boolean))
+base.flow('get', { case: 'length' }, ({ text }) => text.length)
 ```
 
-(Each `calm.flow(...)` registers the Flow's schema + handler.)
+(Each `base.flow(...)` registers the Flow's schema + handler.)
 
 ### 3. User authors a Fold
 
@@ -702,50 +720,56 @@ attached to the offending node `id`.
 
 ## Where the code lives
 
+Source files are grouped **by logical domain**, not by
+verb-base-case leaf. A single file can export many Forms,
+Flows, and Folds that belong together; the Book that
+collects them is what the runtime sees.
+
 ```
 deck/calm/code/
-  form/                          # the schema DSL (Form-related code)
-    type.ts                      # Form / link / like / case / head types
-    build.ts                     # form() / link() / case() builders
+  form/                          # the schema DSL (Form-related machinery)
+    type.ts                      # Form / link / like / head types
+    build.ts                     # form / link / case builders
     parse.ts                     # validation parsers
 
   flow/                          # the AST builder DSL (`flow.*`)
-    type.ts                      # Call / path / view / literal types
+    type.ts                      # Call / read / view / literal types
     build.ts                     # flow.call / flow.read / flow.list etc.
 
-  flow/                          # registered Flow implementations
+  base/                          # authored declarations + handlers
+    language/
+      make.ts                    # exports Form `language` + Flows `select_language`, `update_language`, ...
+      flow.ts                    # handlers for the Flows above
+    script/
+      make.ts
+      flow.ts
+    phoneme/
+      make.ts
+      flow.ts
     is/
-      string/    schema.ts handler.ts
-      integer/
-      equal/
-      above/
-      below/
-      ipa/
-        schema.ts                # bare is.ipa
-        handler.ts
-        broad/
-          schema.ts              # is_ipa_broad (the bare is_ipa case='broad')
-          handler.ts
-        narrow/
-          schema.ts
-          handler.ts
-      among/
-      all/
-      every/
-      ...
-    has/
-    make/
-    get/
-    find/
-    if/
-    bind/
-    walk/
-    validate/
+      make.ts                    # exports many `is_*` Flows together
+      flow.ts                    # one file's worth of `is_*` handlers
+    ...
 ```
 
-`code/form/` holds the schema language. `code/flow/` holds AST
-builders. `code/flow/` holds Flow declarations + handlers,
-organized by `<verb>/<case>/`.
+The grouping is whatever makes sense for the domain. A
+language-oriented Book might group by resource (`language/`,
+`script/`, `phoneme/`). A logic-oriented Book might group by
+verb (`is/`, `make/`, `get/`). Different Books can use
+different conventions.
+
+What stays consistent:
+- A `make.ts` file exports the **declarations** (Forms,
+  Flows, Folds, Hashes, Lists).
+- A `flow.ts` file exports the **handlers** (functions with
+  the same name as the Flows in `make.ts` they implement).
+- The Book bundles everything together regardless of file
+  layout.
+
+There is no per-leaf-folder requirement. One file can carry
+dozens of related Forms and Flows. The `(name, base?, case?)`
+triple uniquely identifies each Flow at the schema level;
+the file system isn't part of identity.
 
 ## Mapping summary
 
@@ -815,7 +839,7 @@ share a compile target.
 - [`primitives.md`](./primitives.md). Deeper on Form and Flow.
 - [`ast.md`](./ast.md). Every node form (`call`, `read`,
     `view`, `fork`, `walk`, literals).
-- [`calm.md`](./calm.md). The `Calm` class and its methods.
+- [`book.md`](./book.md). The `Base` class and its methods.
 - [`runtime.md`](./runtime.md). Pipeline, host, dispatch,
   memoization.
 - [`catalog.md`](./catalog.md). The standard nine-verb seed
