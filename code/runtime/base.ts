@@ -205,15 +205,24 @@ export class Base<R = Code> {
    * `book` carries the declarations (with their identity
    * tuples). `hooks` is a name → handler map keyed by each
    * Flow's exported-constant name (e.g. `is_ipa_broad`,
-   * `make_sum`). The two pair up by walking the Book's
-   * `base` array and looking up each Flow's handler in
-   * `hooks` by its derived export-name.
+   * `make_sum`). Optionally pass `link` (the generated
+   * `CodeLink` integer-id table) to also register handlers
+   * under their integer ids — enables the compiled-call form
+   * `base.call(<id>, bind)`.
    *
-   *   import standard, { hooks } from '@cluesurf/calm/base'
+   *   import standard, { hooks, CodeLink } from '@cluesurf/calm/base'
    *   const base = new Base<Code>()
-   *   base.bind(standard, hooks)
+   *   base.bind(standard, hooks, CodeLink)
+   *
+   *   // Both forms now work and dispatch to the same handler:
+   *   base.call('is', { base: 'string', thing: 'hello' })
+   *   base.call(CodeLink['flow:is:string'], { thing: 'hello' })
    */
-  bind(book: Book, hooks: Record<string, Hook>): void {
+  bind(
+    book: Book,
+    hooks: Record<string, Hook>,
+    link?: Record<string, number>,
+  ): void {
     for (const cast of book.base ?? []) {
       if (cast.form !== 'flow') continue
       const flow = cast as {
@@ -233,6 +242,12 @@ export class Base<R = Code> {
       const hook = hooks[exportName]
       if (hook == null) continue
       this.hook.set(key, hook)
+
+      // When a CodeLink table is supplied, mirror the handler
+      // under its integer id so the compiled-call form
+      // `base.call(<id>, bind)` resolves to the same handler.
+      const id = link?.[String(key)]
+      if (typeof id === 'number') this.hook.set(id, hook)
     }
   }
 

@@ -148,4 +148,27 @@ describe('Base runtime — type inference', () => {
     ).toBe(true)
   })
 
+  it('base.call(<id>, bind) dispatches via CodeLink integer ids', () => {
+    const base = new Base<Code>()
+    base.bind(standard, hooks, CodeLink)
+
+    // After bind() with CodeLink, integer-id dispatch hits
+    // the same handlers the typed string form does.
+    expect(
+      base.call(CodeLink['flow:is:string'], { thing: 'hello' }),
+    ).toBe(true)
+    expect(
+      base.call(CodeLink['flow:make:sum'], { a: 2, b: 3 }),
+    ).toBe(5)
+    expect(
+      base.call(CodeLink['flow:get:length'], { text: 'hello' }),
+    ).toBe(5)
+    expect(
+      base.call(CodeLink['flow:is:ipa:broad'], { text: 'fəˈnɛtɪk' }),
+    ).toBe(true)
+
+    // The typed string form keeps working alongside it.
+    expect(base.call('is', { base: 'string', thing: 'hello' })).toBe(true)
+  })
+
 })
