@@ -55,29 +55,33 @@ describe('Make.save() — Code aggregate generation', () => {
     expect(result.code).toContain('export default Code')
   })
 
-  it('Flow take/make resolve via per-Flow type aliases', async () => {
+  it('Flow take/make resolve via per-Flow type aliases in their save dirs', async () => {
     const make = new Make({ link: '.', dry: true })
     make.book(standard)
 
     const result = await make.save()
 
-    // Per-Flow aliases get emitted as top-level types:
-    expect(result.code).toContain(
+    // Per-Flow aliases land in their `save:` directory's
+    // index.ts (e.g. is/index.ts, make/index.ts).
+    expect(result.link.is).toContain(
       'export type IsIpaBroadTake = { text: string }',
     )
-    expect(result.code).toContain('export type IsIpaBroad = boolean')
+    expect(result.link.is).toContain('export type IsIpaBroad = boolean')
 
-    expect(result.code).toContain(
+    expect(result.link.make).toContain(
       'export type MakeSumTake = { a: number; b: number }',
     )
-    expect(result.code).toContain('export type MakeSum = number')
+    expect(result.link.make).toContain('export type MakeSum = number')
 
-    expect(result.code).toContain(
+    expect(result.link.is).toContain(
       'export type IsStringTake = { thing: unknown }',
     )
-    expect(result.code).toContain('export type IsString = boolean')
+    expect(result.link.is).toContain('export type IsString = boolean')
 
-    // The Code aggregate references those aliases:
+    // The bundled `code.ts` imports aliases from each save
+    // directory and references them in the Code aggregate:
+    expect(result.code).toContain("from './is'")
+    expect(result.code).toContain("from './make'")
     expect(result.code).toContain(
       "'flow:is:ipa:broad': { take: IsIpaBroadTake; make: IsIpaBroad }",
     )
@@ -126,16 +130,17 @@ describe('Make.save() — Code aggregate generation', () => {
 
     const result = await make.save()
 
-    // Forms get top-level type aliases:
-    expect(result.code).toContain('export type LanguageRequest')
-    expect(result.code).toContain('export type Language')
+    // Forms get top-level type aliases in their save dir
+    // (root `''` since the inline Book sets no `save:`).
+    expect(result.link['']).toContain('export type LanguageRequest')
+    expect(result.link['']).toContain('export type Language')
 
-    // Flow's take/make resolve to those Form types via per-Flow
-    // aliases (SelectLanguageTake → LanguageRequest, etc.):
-    expect(result.code).toContain(
+    // Flow's take/make resolve to those Form types via
+    // per-Flow aliases:
+    expect(result.link['']).toContain(
       'export type SelectLanguageTake = LanguageRequest',
     )
-    expect(result.code).toContain(
+    expect(result.link['']).toContain(
       'export type SelectLanguage = Language',
     )
 
@@ -198,15 +203,26 @@ describe('Make.save() — Code aggregate generation', () => {
 
     const result = await make.save()
 
-    // Form gets a top-level TS type alias.
-    expect(result.code).toContain(
+    // Type aliases live in dirs (root, since no `save:` set).
+    expect(result.link['']).toContain(
       'export type SampleForm = { id: string; text?: string }',
     )
-    // The Code entry references that alias.
-    expect(result.code).toContain("'form:sample_form': { cast: SampleForm }")
-    expect(result.code).toContain("'list:sample_list': { cast: string[] }")
+    expect(result.link['']).toContain(
+      'export type SampleList = string[]',
+    )
+    expect(result.link['']).toContain(
+      'export type SampleHash = Record<string, string>',
+    )
+
+    // The Code aggregate references those aliases:
     expect(result.code).toContain(
-      "'hash:sample_hash': { cast: Record<string, string> }",
+      "'form:sample_form': { cast: SampleForm }",
+    )
+    expect(result.code).toContain(
+      "'list:sample_list': { cast: SampleList }",
+    )
+    expect(result.code).toContain(
+      "'hash:sample_hash': { cast: SampleHash }",
     )
   })
 })

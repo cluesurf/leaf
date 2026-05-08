@@ -20,13 +20,19 @@ async function main() {
       result.code.split('\n').length
     } lines)`,
   )
-  for (const [save, content] of Object.entries(result.dirs)) {
-    const dir = save || '(root)'
-    console.log(
-      `wrote code/base/${dir}/index.ts (${content.length} chars, ${
-        content.split('\n').length
-      } lines)`,
-    )
+  for (const [stream, bundle] of [
+    ['index.ts', result.link],
+    ['form.ts',  result.form],
+    ['base.ts',  result.base],
+  ] as const) {
+    for (const [save, content] of Object.entries(bundle)) {
+      const dir = save || '(root)'
+      console.log(
+        `wrote code/base/${dir}/${stream} (${content.length} chars, ${
+          content.split('\n').length
+        } lines)`,
+      )
+    }
   }
 }
 
