@@ -66,8 +66,8 @@ base.load({
   ],
 })
 
-base.cast('greeting', { name: 'Lance' })
-// → 'Hello, Lance!'
+base.cast('greeting', { name: 'World' })
+// → 'Hello, World!'
 ```
 
 ## End-to-end
