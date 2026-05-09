@@ -1,39 +1,44 @@
 import { describe, it, expect } from 'vitest'
 import { Base } from '../code'
-import standard, { CodeLink, type Code } from '../code/book'
+import makeBook, { CodeLink, type Code } from '../code/book'
 
 describe('format verb — text shaping', () => {
   const base = new Base<Code>()
-  base.load(standard)
+  base.load(makeBook)
 
   it('format:capitalized capitalizes the first letter', async () => {
-    expect(base.call('format:capitalized', { text: 'hello' }),
-    ).toBe('Hello')
-    expect(base.call('format:capitalized', { text: '' }),
-    ).toBe('')
+    expect(base.call('format:capitalized', { text: 'hello' })).toBe(
+      'Hello',
+    )
+    expect(base.call('format:capitalized', { text: '' })).toBe('')
   })
 
   it('format:reversed reverses unicode-aware', async () => {
-    expect(base.call('format:reversed', { text: 'hello' }),
-    ).toBe('olleh')
-    expect(base.call('format:reversed', { text: '🚀abc' }),
-    ).toBe('cba🚀')
+    expect(base.call('format:reversed', { text: 'hello' })).toBe(
+      'olleh',
+    )
+    expect(base.call('format:reversed', { text: '🚀abc' })).toBe(
+      'cba🚀',
+    )
   })
 
   it('format:joined joins with optional separator', async () => {
-    expect(base.call('format:joined', {
+    expect(
+      base.call('format:joined', {
         parts: ['a', 'b', 'c'],
         separator: '-',
       }),
     ).toBe('a-b-c')
-    expect(base.call('format:joined', {
+    expect(
+      base.call('format:joined', {
         parts: ['x', 'y'],
       }),
     ).toBe('xy')
   })
 
   it('format:split returns the value envelope', async () => {
-    expect(base.call('format:split', {
+    expect(
+      base.call('format:split', {
         text: 'a,b,c',
         separator: ',',
       }),
@@ -41,7 +46,8 @@ describe('format verb — text shaping', () => {
   })
 
   it('format:replaced replaces every occurrence', async () => {
-    expect(base.call('format:replaced', {
+    expect(
+      base.call('format:replaced', {
         text: 'foo bar foo',
         pattern: 'foo',
         replacement: 'baz',
@@ -50,17 +56,20 @@ describe('format verb — text shaping', () => {
   })
 
   it('format:truncated cuts and appends suffix', async () => {
-    expect(base.call('format:truncated', {
+    expect(
+      base.call('format:truncated', {
         text: 'hello world',
         length: 8,
       }),
     ).toBe('hello w…')
-    expect(base.call('format:truncated', {
+    expect(
+      base.call('format:truncated', {
         text: 'hello',
         length: 10,
       }),
     ).toBe('hello')
-    expect(base.call('format:truncated', {
+    expect(
+      base.call('format:truncated', {
         text: 'hello world',
         length: 8,
         suffix: '...',
@@ -71,10 +80,11 @@ describe('format verb — text shaping', () => {
 
 describe('format verb — number formatting', () => {
   const base = new Base<Code>()
-  base.load(standard)
+  base.load(makeBook)
 
   it('format:number applies locale-aware grouping', async () => {
-    expect(base.call('format:number', {
+    expect(
+      base.call('format:number', {
         value: 1234567.89,
         locale: 'en-US',
       }),
@@ -82,7 +92,8 @@ describe('format verb — number formatting', () => {
   })
 
   it('format:currency formats with currency code', async () => {
-    expect(base.call('format:currency', {
+    expect(
+      base.call('format:currency', {
         value: 19.5,
         currency: 'USD',
         locale: 'en-US',
@@ -91,7 +102,8 @@ describe('format verb — number formatting', () => {
   })
 
   it('format:percent formats with percent style', async () => {
-    expect(base.call('format:percent', {
+    expect(
+      base.call('format:percent', {
         value: 0.875,
         locale: 'en-US',
       }),
@@ -101,13 +113,13 @@ describe('format verb — number formatting', () => {
 
 describe('format verb — date formatting', () => {
   const base = new Base<Code>()
-  base.load(standard)
+  base.load(makeBook)
 
   it('format:date returns a non-empty string', async () => {
-    const result = (base.call('format:date', {
+    const result = base.call('format:date', {
       value: new Date('2026-01-15T12:00:00Z'),
       locale: 'en-US',
-    })) as string
+    }) as string
     expect(typeof result).toBe('string')
     expect(result.length).toBeGreaterThan(0)
   })
@@ -115,11 +127,11 @@ describe('format verb — date formatting', () => {
   it('format:relative produces "yesterday" / "tomorrow" style strings', async () => {
     const now = new Date('2026-01-15T12:00:00Z')
     const tomorrow = new Date('2026-01-16T12:00:00Z')
-    const result = (base.call('format:relative', {
+    const result = base.call('format:relative', {
       value: tomorrow,
       now,
       locale: 'en-US',
-    })) as string
+    }) as string
     expect(typeof result).toBe('string')
     expect(result.length).toBeGreaterThan(0)
   })
@@ -127,10 +139,11 @@ describe('format verb — date formatting', () => {
 
 describe('format verb — pluralization', () => {
   const base = new Base<Code>()
-  base.load(standard)
+  base.load(makeBook)
 
   it('format:plural picks singular for one', async () => {
-    expect(base.call('format:plural', {
+    expect(
+      base.call('format:plural', {
         count: 1,
         singular: 'item',
         plural: 'items',
@@ -140,14 +153,16 @@ describe('format verb — pluralization', () => {
   })
 
   it('format:plural picks plural for multi/zero', async () => {
-    expect(base.call('format:plural', {
+    expect(
+      base.call('format:plural', {
         count: 5,
         singular: 'item',
         plural: 'items',
         locale: 'en-US',
       }),
     ).toBe('items')
-    expect(base.call('format:plural', {
+    expect(
+      base.call('format:plural', {
         count: 0,
         singular: 'item',
         plural: 'items',

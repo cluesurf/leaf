@@ -4,21 +4,21 @@
 
 // ─── String transforms ────────────────────────────────────
 
-export const makeLowercase = ({ text }: { text: string }): string =>
+const makeLowercase = ({ text }: { text: string }): string =>
   text.toLowerCase()
 
-export const makeUppercase = ({ text }: { text: string }): string =>
+const makeUppercase = ({ text }: { text: string }): string =>
   text.toUpperCase()
 
-export const makeTrimmed = ({ text }: { text: string }): string =>
+const makeTrimmed = ({ text }: { text: string }): string =>
   text.trim()
 
 // ─── Numeric transforms ───────────────────────────────────
 
-export const makeSum = ({ a, b }: { a: number; b: number }): number =>
+const makeSum = ({ a, b }: { a: number; b: number }): number =>
   a + b
 
-export const makeDifference = ({
+const makeDifference = ({
   a,
   b,
 }: {
@@ -26,7 +26,7 @@ export const makeDifference = ({
   b: number
 }): number => a - b
 
-export const makeProduct = ({
+const makeProduct = ({
   a,
   b,
 }: {
@@ -34,10 +34,37 @@ export const makeProduct = ({
   b: number
 }): number => a * b
 
-export const makeQuotient = ({
+const makeQuotient = ({
   a,
   b,
 }: {
   a: number
   b: number
 }): number => a / b
+
+
+// ─── Host primitives ──────────────────────────────────────
+
+const makeNow = (): Date => new Date()
+
+const makeUuid = (): string =>
+  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+
+
+const flow = {
+  'make:lowercase': makeLowercase,
+  'make:uppercase': makeUppercase,
+  'make:trimmed': makeTrimmed,
+  'make:sum': makeSum,
+  'make:difference': makeDifference,
+  'make:product': makeProduct,
+  'make:quotient': makeQuotient,
+  'make:now': makeNow,
+  'make:uuid': makeUuid,
+}
+
+export default flow

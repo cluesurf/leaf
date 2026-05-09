@@ -185,3 +185,29 @@ export const formatPlural: Flow = {
   },
   make: 'string',
 }
+
+// ─── Locale-sensitive case conversion ─────────────────────
+
+export const formatLowercase: Flow = {
+  form: 'flow',
+  save: 'format',
+  call: 'format',
+  case: 'lowercase',
+  take: {
+    text:   { like: 'string' },
+    locale: { like: 'string', need: false },
+  },
+  make: 'string',
+}
+
+export const formatUppercase: Flow = {
+  form: 'flow',
+  save: 'format',
+  call: 'format',
+  case: 'uppercase',
+  take: {
+    text:   { like: 'string' },
+    locale: { like: 'string', need: false },
+  },
+  make: 'string',
+}

@@ -3,11 +3,11 @@
  *
  * Eager-arg form: callers pass a parallel array of per-item
  * values (already resolved by the AST walker). For true
- * scoped iteration, use `make.walk(...)` / `make.walkSize` /
- * `make.walkTest` from `@cluesurf/bead`.
+ * scoped iteration, use `cast.walk(...)` / `cast.walkSize` /
+ * `cast.walkTest` from `@cluesurf/bead`.
  */
 
-export const walkMap = ({
+const walkMap = ({
   yield: values,
 }: {
   items: unknown[]
@@ -16,7 +16,7 @@ export const walkMap = ({
   return Array.isArray(values) ? values : []
 }
 
-export const walkFilter = ({
+const walkFilter = ({
   items,
   test,
 }: {
@@ -31,7 +31,7 @@ export const walkFilter = ({
   return out
 }
 
-export const walkReduce = ({
+const walkReduce = ({
   yield: stepResult,
 }: {
   items: unknown[]
@@ -44,7 +44,7 @@ export const walkReduce = ({
   return stepResult
 }
 
-export const walkChunk = ({
+const walkChunk = ({
   items,
   size,
 }: {
@@ -59,10 +59,21 @@ export const walkChunk = ({
   return out
 }
 
-export const walkDistinct = ({
+const walkDistinct = ({
   items,
 }: {
   items: unknown[]
 }): unknown[] => {
   return Array.from(new Set(items))
 }
+
+
+const flow = {
+  'walk:map': walkMap,
+  'walk:filter': walkFilter,
+  'walk:reduce': walkReduce,
+  'walk:chunk': walkChunk,
+  'walk:distinct': walkDistinct,
+}
+
+export default flow

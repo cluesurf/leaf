@@ -86,3 +86,21 @@ export const makeQuotient: Flow = {
   },
   make: 'number',
 }
+
+// ─── Host primitives ──────────────────────────────────────
+
+export const makeNow: Flow = {
+  form: 'flow',
+  save: 'make',
+  call: 'make',
+  case: 'now',
+  make: 'date',
+}
+
+export const makeUuid: Flow = {
+  form: 'flow',
+  save: 'make',
+  call: 'make',
+  case: 'uuid',
+  make: 'string',
+}

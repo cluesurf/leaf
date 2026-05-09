@@ -8,7 +8,7 @@
  * if a future renderer adds that special-form treatment.
  */
 
-export const bind = ({
+const bind = ({
   then,
 }: {
   names: Record<string, unknown>
@@ -16,3 +16,9 @@ export const bind = ({
 }): unknown => {
   return then
 }
+
+const flow = {
+  bind: bind,
+}
+
+export default flow

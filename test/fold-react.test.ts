@@ -9,13 +9,13 @@
 import { describe, it, expect } from 'vitest'
 import { createElement, Fragment } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { make, Base } from '../code'
+import { cast, Base } from '../code'
 import standard, { type Code } from '../code/book'
 import { castInline } from './helper'
 
 describe('Base render modes', () => {
   it('text mode renders a tree against scope params', async () => {
-    const tree = make.text('Hello, ', make.path('user', 'name'), '!')
+    const tree = cast.text('Hello, ', cast.path('user', 'name'), '!')
 
     const base = new Base<Code>()
     base.load(standard)
@@ -25,11 +25,12 @@ describe('Base render modes', () => {
   })
 
   it('React mode renders a view tree through createElement', async () => {
-    const tree = make.view('section', { className: 'greeting' }, [
-      make.view('p', {}, ['hi']),
+    const tree = cast.view('section', { className: 'greeting' }, [
+      cast.view('p', {}, ['hi']),
     ])
 
-    const base = new Base<Code>({ createElement })
+    const base = new Base<Code>()
+    base.load({ flow: { 'create:element': createElement } })
     base.load({ ...standard, view: { fragment: Fragment } })
 
     const element = castInline(base, tree)
@@ -45,7 +46,7 @@ describe('Base render modes', () => {
 
     const upper = base.call('format:capitalized', { text: 'hello' })
 
-    const tree = make.text('Greeting: ', upper as string)
+    const tree = cast.text('Greeting: ', upper as string)
     expect(castInline(base, tree)).toBe('Greeting: Hello')
   })
 
@@ -53,7 +54,7 @@ describe('Base render modes', () => {
     const base = new Base<Code>()
     base.load(standard)
 
-    const tree = make.call('format', {
+    const tree = cast.call('format', {
       base: 'capitalized',
       text: 'world',
     })

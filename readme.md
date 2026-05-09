@@ -6,9 +6,13 @@
 <br/>
 <br/>
 
+<p align='center'>
+  <img src='https://github.com/cluesurf/leaf/blob/make/view/leaf.svg?raw=true' height='312'/>
+</p>
+
 <h3 align='center'>@cluesurf/bead</h3>
 <p align='center'>
-  Trees as JSON ⋈
+  A Template Language ⋈
 </p>
 
 <br/>
@@ -17,332 +21,315 @@
 
 ## What is bead
 
-Bead is **not a templating mini-language**. It's a JSON system for
-building app features where users author rich documents or rules
-and you save their work as JSON.
+Bead is a **JSON system for app features**. Author rich documents or
+rules. Save them as JSON. The runtime renders that JSON to text or vdom.
 
-The runtime renders that JSON to text or vdom (React, Preact, any
-`createElement`-shaped factory). Trees are pure data, safe to ship
-over the wire and store in your database, with strongly-typed runtime
-dispatch via codegen and a sandbox so user-supplied logic can't
-reach the host.
+Trees are pure data. Same JSON renders many ways. Survives editor
+patches. Travels over the wire. Typechecks against your catalog.
+
+Not a templating mini-language. Not an interpreter for a custom DSL.
+Just JSON.
 
 ## Why you need this
 
-| building | what bead gives you |
-|---|---|
-| Notion-class doc editor | one tree shape for blocks / inline / embeds / database views. Per-mark `bindPatch` updates only dirty subtrees |
-| Multi-target rendering (HTML + React + email + AMP) | author once as JSON. Text and vdom renderers share the same tree |
-| Localization | locale-aware `format(*)`, CLDR plurals, gender select, RTL |
-| User- or AI-supplied logic, sandboxed | rules + formulas run against a host scope. No `eval`, no DOM, no network |
+| building                                   | bead gives you                                                           |
+| ------------------------------------------ | ------------------------------------------------------------------------ |
+| Notion-class doc editor                    | one tree shape for blocks / inline / embeds / database views             |
+| HTML + React + email + AMP from one source | author once. Text + element renderers share the tree                     |
+| Localization                               | locale-aware `format(*)`, CLDR plurals, gender select, RTL               |
+| User- or AI-supplied logic, sandboxed      | rules + formulas run against a host scope. No `eval`, no DOM, no network |
+| Reusable fragments                         | `Fold` declarations registered in the Book                               |
+| Wire-format-stable bytecode                | `compile(tree)` rewrites call names to integer ids                       |
 
-## Installation
+## Install
 
-```
+```sh
 pnpm add @cluesurf/bead
 ```
 
-## Quick example
-
-Hello world:
+## Hello world
 
 ```ts
-import { make, Base } from '@cluesurf/bead'
+import { Base, make } from '@cluesurf/bead'
+import beadBook, { type Code } from '@cluesurf/bead/book'
 
-const greeting = make.text('Hello, ', make.read('name'), '!')
+const base = new Base<Code>()
+base.load(beadBook)
 
-const base = new Base()
-base.cast(greeting, { name: 'World' })
-// → 'Hello, World!'
-```
-
-A bit richer. pluralization + iteration + join:
-
-```ts
-const summary = make.text(
-  make.read('user'),
-  ' has ',
-  make.read('count'),
-  ' ',
-  make.pluralCases('count', { one: 'message', other: 'messages' }),
-  '. Tags: ',
-  make.join(', ', make.walk(make.read('tags'), make.read('item'))),
-  '.',
-)
-
-base.cast(summary, {
-  user: 'Lance',
-  count: 3,
-  tags: ['urgent', 'review'],
+base.load({
+  make: [
+    {
+      form: 'fold',
+      case: 'greeting',
+      tree: [make.text('Hello, ', make.read('name'), '!')],
+    },
+  ],
 })
-// → 'Lance has 3 messages. Tags: urgent, review.'
+
+base.cast('greeting', { name: 'Lance' })
+// → 'Hello, Lance!'
 ```
 
-## Usage
-
-End-to-end. A bead host has four files:
-
-```
-code/
-  book/
-    email/
-      make.ts     # 1. authored declarations
-      flow.ts     # 2. handler implementations
-    index.ts      # 3. the Book (aggregates groups)
-task/
-  make.ts         # 4. codegen entry
-```
-
-**1. Authored declarations**. declare a `Form`, `Flow`, `Fold`,
-`Hash`, or `List`. The `save:` field tells codegen which output
-folder to emit into.
+## End-to-end: a typed Book
 
 ```ts
 // code/book/email/make.ts
-import type { Flow } from '@cluesurf/bead'
+import type { Flow, Fold } from '@cluesurf/bead'
+import { make } from '@cluesurf/bead'
 
-export const is_email: Flow = {
+export const isEmail: Flow = {
   form: 'flow',
-  save: 'email',
   call: 'is',
   case: 'email',
   take: { text: { like: 'string' } },
   make: 'boolean',
+  save: 'email',
+}
+
+export const emailStatus: Fold = {
+  form: 'fold',
+  case: 'email:status',
+  take: { input: { like: 'string' } },
+  tree: [
+    make.text(
+      'Mail to ',
+      make.read('input'),
+      ' is ',
+      make.fork(
+        make.call('is:email', { text: make.read('input') }),
+        'valid',
+        'invalid',
+      ),
+    ),
+  ],
+  save: 'email',
 }
 ```
 
-**2. Handler**. function per Flow, named exactly like the
-declaration.
-
 ```ts
 // code/book/email/flow.ts
-export const is_email = ({ text }: { text: string }): boolean =>
+export const isEmail = ({ text }: { text: string }): boolean =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)
 ```
-
-**3. Aggregate the Book.**
 
 ```ts
 // code/book/index.ts
 import type { Book } from '@cluesurf/bead'
-import * as email_flows from './email/make'
-import * as email_hooks from './email/flow'
-import { CodeLink } from './code'
+import * as emailFlows from './email/make'
+import * as emailHooks from './email/flow'
+import { CodeLink } from './code' // generated
 
 export default {
   host: 'app',
-  cast: Object.values(email_flows),
-  call: email_hooks,
+  name: 'email',
+  cast: Object.values(emailFlows),
+  call: emailHooks,
   code: CodeLink,
 } satisfies Book
-
-export type { Code } from './code'
 ```
-
-**4. Run codegen.**
 
 ```ts
-// task/make.ts
-import { Make } from '@cluesurf/bead'
-import standard from '../code/book'
-
-await new Make({ link: './code/book' }).load(standard).save()
-```
-
-```bash
-pnpm tsx task/make.ts
-```
-
-Codegen emits per-group `index.ts` (TS types), `form.ts` (Zod
-parsers), and the bundled `code/book/code.ts` (`Code` aggregate +
-`CodeLink` integer table).
-
-**5. Run.**
-
-```ts
-// app.ts
+// app entry
 import { Base } from '@cluesurf/bead'
-import standard, { type Code } from './code/book'
+import emailBook, { type Code } from './book'
 
 const base = new Base<Code>()
-base.load(standard)
+base.load(emailBook)
 
-base.call('is:email', { text: 'hi@bead.dev' })  // → true
+base.cast('email:status', { input: 'hi@bead.dev' })
+// → 'Mail to hi@bead.dev is valid'
+
+base.call('is:email', { text: 'hi@bead.dev' })
+// → true (typed)
 ```
 
-The `<Code>` generic gives end-to-end type inference: every
-`base.call(...)` is checked for verb / case existence and typed
-args + return.
+## Five top-level shapes
 
-**6. Author trees + render.**
+Every entry in `book.cast` carries a `form:` discriminant.
+
+| `form:`  | role                                           |
+| -------- | ---------------------------------------------- |
+| `'form'` | data shape with fields and types               |
+| `'flow'` | function with input, output, and handler       |
+| `'fold'` | renderable tree (document or template)         |
+| `'hash'` | record with dynamic keys, all values one shape |
+| `'list'` | homogeneous list of literals (an enum source)  |
+
+**Form** identity is `(name, flow?, case?)`. **Flow** identity is
+`(call, case?)`. **Fold** identity is `(case)`. Hash and List are keyed
+by `name`.
+
+### Link modifiers
+
+Each field in a `like:` mesh accepts these modifiers:
+
+| modifier      | role                                                             |
+| ------------- | ---------------------------------------------------------------- |
+| `like`        | the type (primitive name, Form ref, inline mesh, or union array) |
+| `need: false` | mark the field optional                                          |
+| `list: true`  | wrap as array (`T[]`)                                            |
+| `take: [...]` | enum of allowed values                                           |
 
 ```ts
-import { make } from '@cluesurf/bead'
-
-const tree = make.fork(
-  make.call('is:email', { text: make.read('input') }),
-  'OK',
-  'Invalid email',
-)
-
-base.cast(tree, { input: 'hi@bead.dev' })  // → 'OK'
+{
+  form: 'form', name: 'event',
+  like: {
+    action:   { take: ['create', 'update', 'delete'] },
+    priority: { take: ['high', 'low'], need: false },
+    flags:    { take: ['archived', 'pinned'], list: true },
+    tags:     { like: 'string', list: true },
+  },
+}
 ```
 
-For production hot paths, run `compile(tree, CodeLink)` once and
-store the wake form (integer ids, args under `bind:`). `base.cast`
-accepts both flavors transparently.
+→ TS: `action: 'create' | 'update' | 'delete'`,
+`priority?: 'high' | 'low'`, `flags: ('archived' | 'pinned')[]`.
 
-## Architecture
-
-| name | shape | role |
-|---|---|---|
-| `Book` | type | a published bundle: `{ host?, name?, cast?, call?, code? }` |
-| `Code` | type | generated registry: every entry's colon-key → its TS type |
-| `Base` | class | runtime that loads books, dispatches calls, and casts trees |
-| `Make` | class | codegen orchestrator that loads books and emits artifacts |
-
-A `Book` carries three slots:
-
-| slot | shape | role |
-|---|---|---|
-| `cast` | `Cast[]` | the declarations (Form / Flow / Fold / Hash / List) |
-| `call` | `Record<string, Hook>` | runtime hook implementations |
-| `code` | `Record<string, number>` | generated `CodeLink` integer-id table |
-
-Two type primitives drive the schema layer:
-
-| primitive | declares | identity |
-|---|---|---|
-| `Form` | a data shape | `(name, flow?, case?)` |
-| `Flow` | a function | `(call, case?)` |
-
-Plus utility shapes: `Hash`, `List`, `Fold`, `Find`.
-
-## Standard catalog
-
-Ten verbs ship by default. Hosts extend with their own domain flows.
-
-| verb | returns | purpose | examples |
-|---|---|---|---|
-| `is` | boolean | predicates | `is:string`, `is:email`, `is:ipa:broad` |
-| `has` | boolean | possession predicates | `has:prefix`, `has:key`, `has:pattern` |
-| `make` | varies | transformations | `make:sum`, `make:lowercase` |
-| `get` | varies | accessors / aggregates | `get:length`, `get:sum`, `get:first` |
-| `format` | string | locale-aware text / number / date | `format:number`, `format:capitalized` |
-| `find` | varies | async lookups | `find:record`, `find:list`, `find:count` |
-| `fork` | varies | value selector (lazy) | `{ test, then, else? }` |
-| `bind` | varies | let-binding (lazy) | `{ names, then }` |
-| `walk` | varies | array transforms | `walk:map`, `walk:filter`, `walk:chunk` |
-| `validate` | object | error-collecting test wrapper | `{ test, message? }` |
-
-Negation composes via `is(not: { thing })` rather than parallel
-`is-not-X` flows. The verb set is fixed. cases are open.
-
-`fork` and `bind` evaluate **lazily**. only the selected branch /
-new scope frame walks. `find` defaults throw. hosts override with
-their data layer.
+→ Zod: `action: z.enum([...])`, `priority: z.enum([...]).optional()`,
+`flags: z.array(z.enum([...]))`.
 
 ## AST primitives
 
-Native scalars (`string` / `number` / `boolean` / `Date` / `null`)
-are first-class fold-tree leaves. no wrapping required. Tagged
-structural nodes carry a `form:` discriminant:
+Inside a `Fold.tree`. Build with `make.*`:
 
-```
-text | list | hash | join | reference | read | call |
-fork | switch | match | case | pick | walk |
-find | fold | view
-```
+| primitive             | builder                                                                        |
+| --------------------- | ------------------------------------------------------------------------------ |
+| string concat         | `make.text(...)`                                                               |
+| literal list          | `make.list(...)`                                                               |
+| literal record        | `make.hash(k, v, ...)`                                                         |
+| join with separator   | `make.join(sep, list)`                                                         |
+| read scope key        | `make.reference('name')`                                                       |
+| read path             | `make.read('user', 'name')`                                                    |
+| call a Flow           | `make.call('is:email', { text })`                                              |
+| binary fork           | `make.fork(test, then, else)`                                                  |
+| tagged dispatch       | `make.switch(value, [arms])`                                                   |
+| pattern match         | `make.match(value, [arms])`                                                    |
+| arm                   | `make.case(test, body)` / `make.value(literal, body)` / `make.otherwise(body)` |
+| pick from list        | `make.pick(list, index)`                                                       |
+| iterate               | `make.walk(list, body)`                                                        |
+| resolve resource      | `make.find('page', { where, sort, limit })`                                    |
+| embed registered Fold | `make.fold('greeting', { name })`                                              |
+| view node             | `make.view('section', props, [children])`                                      |
 
-`walk` has three case-discriminated variants: `walk(list)` (for-each,
-default `make.walk(list, hook)`), `walk(test)` (while-style,
-`make.walkTest(test, hook)`), and `walk(size)` (counted range,
-`make.walkSize(start, end, hook)`).
+Bare scalars (string, number, boolean, Date, null) sit anywhere.
 
-For separator-between-iterations, wrap a walk with `make.join`:
-
-```ts
-make.join(', ', make.walk(items, make.read('item')))
-```
-
-## Make ↔ Wake compile pass
-
-Calls have two flavors. **Make form** (`name`, `case?`, flat args)
-is what authors write. **Wake form** (`code: number`, `bind:
-{…args}`) is what the runtime evaluates.
+## Base: the runtime
 
 ```ts
-import { make, compile, decompile, buildDecodeTable } from '@cluesurf/bead'
-import { CodeLink } from './code/book'
-
-const authored = make.eq(make.read('status'), 'on')
-// → { form: 'call', name: 'eq', a: {…}, b: 'on' }
-
-const compiled = compile(authored, CodeLink)
-// → { form: 'call', code: 1, bind: { a: {…}, b: 'on' } }
-
-const back = decompile(compiled, buildDecodeTable(CodeLink))
-// → original `authored` shape
+const base = new Base<Code>({ createElement?: ElementBuilder })
 ```
 
-Both flavors render identically. The runtime short-circuits via
-`code` when present and falls back to `(call, case)` lookup
-otherwise. The optional `mark?: string` (UUID v7 recommended) on
-every Call survives both directions, so editor identity and
-memoization keys stay stable across compile.
+`createElement` enables vdom mode. Omit it for text mode.
+
+| method                             | what it does                      |
+| ---------------------------------- | --------------------------------- |
+| `base.load(book \| cast \| array)` | register declarations. Idempotent |
+| `base.toss(book \| cast \| array)` | inverse of load                   |
+| `base.flow(name, ?options, hook)`  | register one handler ad-hoc       |
+| `base.call('verb:case', args)`     | invoke a Flow. Sync. Typed        |
+| `base.cast('case', params)`        | render a registered Fold. Sync    |
+
+`base.cast` accepts **only a Fold's `case:`**, never an inline tree.
+Production code goes through registered Folds.
 
 ## React mode
 
 ```ts
 import { createElement, Fragment } from 'react'
 
-const base = new Base<Code>({ createElement, fragment: Fragment })
-base.load(standard)
+const base = new Base<Code>({ createElement })
+base.load({
+  ...beadBook,
+  view: { fragment: Fragment, callout: Callout },
+})
 
-const tree = make.view('article', null, [
-  make.view('h1', null, [make.read('title')]),
-])
-
-base.cast(tree, { title: 'Hello' })
-// → ReactElement
+base.cast('page:greeting', { user })
+// → React vdom
 ```
 
-`component:` in the config maps view names to React components.
+`view:` carries components keyed by name. The reserved `'fragment'` key
+is the fragment value the renderer uses for sibling wrapping.
 
-## Editor patches
+## Make: the codegen
 
 ```ts
-const r0 = base.bind(tree, { name: 'A' })
-// r0.output = 'hello A'
+import { Make } from '@cluesurf/bead'
 
-const r1 = base.bindPatch(r0, [
-  { op: 'replace', mark: 'M-name', value: 'world' },
-])
-// r1.output = 'hello world'
-// r0.tree untouched (immutable result)
+const make = new Make({ link: './host' }) // or wherever you want
+
+make.load(beadBook)
+make.load(myAppBook)
+
+await make.save()
 ```
 
-Patches address by `mark`. Memoization invalidates only the dirty
-mark + its ancestor chain. unrelated subtrees reuse cached output.
+`link` is **whatever path you choose**. Bead doesn't impose a directory
+name. pick `host/`, `generated/`, `dist/types/`, or nest it inside an
+existing `code/` tree. The path is the root for all emitted files.
 
-## Spec
+`save()` emits four streams keyed by each cast's `save:`:
 
-The complete reference lives at [`./note/spec.md`](./note/spec.md).
-It supersedes the older docs in `./note/` and is the source of truth
-for AST primitives, lookup keys, codegen artifacts, and runtime
-contracts.
+- `<link>/code.ts` is the bundled `Code` aggregate type and `CodeLink`
+  integer-id table.
+- `<link>/<save>/index.ts` is TS type aliases.
+- `<link>/<save>/form.ts` is the Zod parsers locked via
+  `satisfies z.ZodType<TypeName>`.
+- `<link>/<save>/base.ts` is the literal data exports for Hash/List with
+  `load:`.
 
-## License
+Identity-tuple uniqueness is validated across all loaded books.
+Collisions abort `save()` before any file write.
 
-MIT
+Every emitted file is washed through the host's ESLint + Prettier
+configs (when present). Mirrors VS Code "Save" semantics:
+organize-imports, ESLint --fix, then Prettier. With no host configs, the
+only pass is organize-imports. No bundled defaults.
 
-## ClueSurf
+## Compile: tree → wake
 
-Made by [ClueSurf](https://clue.surf), meditating on the universe ¤.
-Follow the work on [YouTube](https://youtube.com/@cluesurf),
-[X](https://x.com/cluesurf),
-[Instagram](https://instagram.com/cluesurf),
-[Substack](https://cluesurf.substack.com),
-[Facebook](https://facebook.com/cluesurf), and
-[LinkedIn](https://linkedin.com/company/cluesurf), and browse more of
-our open-source work here on [GitHub](https://github.com/cluesurf).
+```ts
+import { compile } from '@cluesurf/bead'
+
+const wake = compile(tree, beadBook.code!)
+// every named call rewritten to { form: 'call', code: <int>, bind: {...} }
+```
+
+Wire-stable across catalog renames as long as `CodeLink` is stable.
+
+## Standard book
+
+`@cluesurf/bead/book` ships verbs:
+
+`is`, `make`, `get`, `has`, `format`, `fork`, `bind`, `validate`,
+`walk`, `find`.
+
+Plus AST operators (`eq`, `gt`, `plural`, `count`, `now`, `uuid`, …)
+under `code/book/check/flow.ts`.
+
+Replace any handler by loading your own Book on top:
+
+```ts
+base.load(beadBook)
+base.load(myAppBook) // overrides matching keys
+```
+
+## Sandbox
+
+Trees are JSON. `compile(tree)` produces JSON. The runtime evaluates
+JSON. There is no `eval`, no `Function`, no DOM, no network access from
+a tree.
+
+Hosts gate side effects through `book.call` and `base.flow(...)`. A
+handler that talks to the network is the host's choice. The tree
+language can't introduce one.
+
+## Conventions
+
+- Discriminant property is always `form:`.
+- File names are kebab-case, identifiers camelCase.
+- Snake_case appears only in `form:` string values (e.g.
+  `'natural_number'`).
+
+## Reference
+
+Full spec at [`note/spec-v2.md`](./note/spec-v2.md).

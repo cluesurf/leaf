@@ -9,7 +9,7 @@ export type ValidateResult = {
   kind?: string
 }
 
-export const validate = ({
+const validate = ({
   test,
   message,
   slug,
@@ -27,3 +27,10 @@ export const validate = ({
   if (kind != null) out.kind = kind
   return out
 }
+
+
+const flow = {
+  'validate': validate,
+}
+
+export default flow

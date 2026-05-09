@@ -3,14 +3,18 @@
   "version": "0.0.2",
   "license": "MIT",
   "packageManager": "pnpm@10.33.0",
-  "description": "A Template Language ⋈",
+  "description": "A Template Language \u22c8",
   "type": "module",
   "main": "./host/code/index.js",
   "exports": {
     ".": "./host/code/index.js",
     "./make": "./host/code/make/index.js"
   },
-  "files": ["host", "readme.md", "license.md"],
+  "files": [
+    "host",
+    "readme.md",
+    "license.md"
+  ],
   "scripts": {
     "test": "pnpm exec vitest run",
     "make:base": "pnpm exec tsx task/save.ts",
@@ -20,8 +24,6 @@
   "prettier": "@cluesurf/wash/flow.json",
   "dependencies": {
     "@formatjs/intl": "catalog:",
-    "@types/lodash-es": "catalog:",
-    "lodash-es": "catalog:",
     "p-limit": "catalog:",
     "prettier": "catalog:",
     "ts-morph": "catalog:",
@@ -48,7 +50,7 @@
   },
   "peerDependencies": {
     "react": "catalog:",
-    "zod": "catalog:"
+    "@cluesurf/kink": "catalog:"
   },
   "peerDependenciesMeta": {
     "react": {

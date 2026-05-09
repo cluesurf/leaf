@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { Base, make } from '../code'
+import { Base, cast } from '../code'
 import standard, { CodeLink, type Code } from '../code/book'
 import { castInline } from './helper'
 
@@ -17,45 +17,45 @@ describe('base.cast — bridge to make trees', () => {
 
   it('evaluates literal nodes directly', async () => {
     expect(castInline(base, 'hello')).toBe('hello')
-    expect(castInline(base, make.integer(42))).toBe(42)
-    expect(castInline(base, make.boolean(true))).toBe(true)
+    expect(castInline(base, cast.integer(42))).toBe(42)
+    expect(castInline(base, cast.boolean(true))).toBe(true)
   })
 
   it('evaluates a `make.weave` (string concatenation)', async () => {
-    const tree = make.text('a', 'b', 'c')
+    const tree = cast.text('a', 'b', 'c')
     expect(castInline(base, tree)).toBe('abc')
   })
 
   it('evaluates a path against scope', async () => {
-    const tree = make.path('user', 'name')
+    const tree = cast.path('user', 'name')
     expect(
       castInline(base, tree, { user: { name: 'Lance' } }),
     ).toBe('Lance')
   })
 
   it('dispatches a (name, base) call to a catalog hook', async () => {
-    const tree = make.call('format:capitalized', { text: 'hello' })
+    const tree = cast.call('format:capitalized', { text: 'hello' })
     expect(castInline(base, tree)).toBe('Hello')
   })
 
   it('dispatches a (name, base, case) call to a catalog hook', async () => {
-    const tree = make.call('is:ipa:broad', { text: 'fəˈnɛtɪk' })
+    const tree = cast.call('is:ipa:broad', { text: 'fəˈnɛtɪk' })
     expect(castInline(base, tree)).toBe(true)
   })
 
-  it('composes nested make.call within make.weave', async () => {
-    const tree = make.text(
+  it('composes nested cast.call within make.weave', async () => {
+    const tree = cast.text(
       'Hi, ',
-      make.call('format:capitalized', { text: 'world' }),
+      cast.call('format:capitalized', { text: 'world' }),
       '!',
     )
     expect(castInline(base, tree)).toBe('Hi, World!')
   })
 
   it('resolves scope-derived inputs inside take args', async () => {
-    const tree = make.call('format:truncated', {
-      text: make.path('message'),
-      length: make.integer(8),
+    const tree = cast.call('format:truncated', {
+      text: cast.path('message'),
+      length: cast.integer(8),
     })
     expect(
       castInline(base, tree, { message: 'hello world' }),
@@ -63,8 +63,8 @@ describe('base.cast — bridge to make trees', () => {
   })
 
   it('evaluates conditional forking', async () => {
-    const tree = make.fork(
-      make.gt(make.path('count'), make.integer(0)),
+    const tree = cast.fork(
+      cast.gt(cast.path('count'), cast.integer(0)),
       'items',
       'no items',
     )
@@ -73,10 +73,10 @@ describe('base.cast — bridge to make trees', () => {
   })
 
   it('catalog flows compose with make.* builtins', async () => {
-    const tree = make.text(
+    const tree = cast.text(
       'Items: ',
-      make.call('format:number', {
-        value: make.count(make.path('items')),
+      cast.call('format:number', {
+        value: cast.count(cast.path('items')),
       }),
     )
     expect(

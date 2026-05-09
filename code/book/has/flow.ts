@@ -2,7 +2,7 @@
  * Hook implementations for the `has` verb's Flow declarations.
  */
 
-export const hasKey = ({
+const hasKey = ({
   thing,
   key,
 }: {
@@ -11,7 +11,7 @@ export const hasKey = ({
 }): boolean =>
   typeof thing === 'object' && thing !== null && key in thing
 
-export const hasKeys = ({
+const hasKeys = ({
   thing,
   keys,
 }: {
@@ -22,7 +22,7 @@ export const hasKeys = ({
   thing !== null &&
   keys.every(k => k in thing)
 
-export const hasValue = ({
+const hasValue = ({
   thing,
   value,
 }: {
@@ -35,7 +35,7 @@ export const hasValue = ({
   )
 }
 
-export const hasItem = ({
+const hasItem = ({
   items,
   item,
 }: {
@@ -43,7 +43,7 @@ export const hasItem = ({
   item: unknown
 }): boolean => items.some(i => Object.is(i, item))
 
-export const hasPrefix = ({
+const hasPrefix = ({
   text,
   prefix,
 }: {
@@ -51,7 +51,7 @@ export const hasPrefix = ({
   prefix: string
 }): boolean => text.startsWith(prefix)
 
-export const hasSuffix = ({
+const hasSuffix = ({
   text,
   suffix,
 }: {
@@ -59,7 +59,7 @@ export const hasSuffix = ({
   suffix: string
 }): boolean => text.endsWith(suffix)
 
-export const hasSubstring = ({
+const hasSubstring = ({
   text,
   substring,
 }: {
@@ -67,10 +67,24 @@ export const hasSubstring = ({
   substring: string
 }): boolean => text.includes(substring)
 
-export const hasPattern = ({
+const hasPattern = ({
   text,
   pattern,
 }: {
   text: string
   pattern: string
 }): boolean => new RegExp(pattern).test(text)
+
+
+const flow = {
+  'has:key': hasKey,
+  'has:keys': hasKeys,
+  'has:value': hasValue,
+  'has:item': hasItem,
+  'has:prefix': hasPrefix,
+  'has:suffix': hasSuffix,
+  'has:substring': hasSubstring,
+  'has:pattern': hasPattern,
+}
+
+export default flow

@@ -1,5 +1,5 @@
 import { Base } from '../code'
-import type { Cast as FoldNode } from '../code/fold/types'
+import type { Cast as FoldNode } from '../code/cast'
 
 let foldCounter = 0
 
@@ -15,6 +15,6 @@ export function castInline(
   params: Record<string, unknown> = {},
 ): unknown {
   const name = `__test_${++foldCounter}`
-  base.load({ form: 'fold', case: name, tree: [tree] })
+  base.load({ form: 'fold', case: name, cast: [tree] })
   return base.cast(name, params)
 }

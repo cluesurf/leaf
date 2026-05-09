@@ -4,7 +4,7 @@
  * Array transforms — map / filter / reduce / flat-map. Each
  * takes an `items` list and a per-item lambda. The lambda
  * runs eagerly: callers pass an already-resolved value or use
- * the AST-side `walk` primitive (`make.walk` etc.) for true
+ * the AST-side `walk` primitive (`cast.walk` etc.) for true
  * scoped iteration.
  *
  * Naming note: there's both an AST `walk` primitive (a fold-
@@ -58,7 +58,7 @@ export const walkChunk: Flow = {
   case: 'chunk',
   take: {
     items: { like: 'unknown', list: true },
-    size: { like: 'natural_number' },
+    size: { like: 'number:natural' },
   },
   make: 'unknown',
 }

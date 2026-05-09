@@ -3,7 +3,7 @@ export * from './tool'
 export { Base } from './base'
 export type {
   BareFlowName,
-  BaseConfig,
+
   Code,
   FlowBaseValue,
   FlowCaseValue,
@@ -15,16 +15,8 @@ export type {
   FlowTake,
 } from './base'
 
-// `make` is the AST-builder namespace. Compile is the only
-// other public entry — used to bake authored trees into the
-// integer-keyed wake form before shipping.
-export {
-  make,
-  compile,
-  decompile,
-  buildDecodeTable,
-  RESERVED_CAST_KEYS,
-} from './fold'
+// `cast` is the AST-builder namespace.
+export { cast, RESERVED_CAST_KEYS } from './render'
 
 export type {
   Call,
@@ -34,10 +26,7 @@ export type {
   CaseTestArm,
   CaseValueArm,
   Cast,
-  CodeTable,
   ControlFlow,
-  DecodeEntry,
-  DecodeTable,
   FieldSeg,
   FindPrimitive,
   FoldPrimitive,
@@ -61,4 +50,4 @@ export type {
   VariableSeg,
   ViewPrimitive,
   WalkPrimitive,
-} from './fold'
+} from './render'

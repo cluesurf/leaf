@@ -1,24 +1,24 @@
 import { describe, it, expect } from 'vitest'
-import { Make } from '../code/make'
+import save from '../code/save'
 import standard from '../code/book'
 
 describe('standard catalog Book', () => {
   it('has a `host`, `name`, and a `cast` array of declarations', async () => {
     expect(standard.host).toBe('cluesurf')
     expect(standard.name).toBe('bead')
-    expect(Array.isArray(standard.cast)).toBe(true)
-    expect((standard.cast ?? []).length).toBeGreaterThan(0)
+    expect(Array.isArray(standard.make)).toBe(true)
+    expect((standard.make ?? []).length).toBeGreaterThan(0)
   })
 
   it('every entry is a Form / Flow / Fold / Hash / List', async () => {
     const allowed = new Set(['form', 'flow', 'make', 'hash', 'list'])
-    for (const cast of standard.cast ?? []) {
+    for (const cast of standard.make ?? []) {
       expect(allowed.has(cast.form)).toBe(true)
     }
   })
 
   it('Flow entries carry a (call, case?) identity', async () => {
-    const flows = (standard.cast ?? []).filter(c => c.form === 'flow')
+    const flows = (standard.make ?? []).filter(c => c.form === 'flow')
     expect(flows.length).toBeGreaterThan(0)
     for (const flow of flows) {
       const f = flow as { call: string; case?: string }
@@ -28,7 +28,7 @@ describe('standard catalog Book', () => {
   })
 
   it("includes `is_ipa_broad` as (call: 'is', case: 'ipa:broad')", async () => {
-    const flow = (standard.cast ?? []).find(
+    const flow = (standard.make ?? []).find(
       c => c.form === 'flow' && c.call === 'is' && c.case === 'ipa:broad',
     )
     expect(flow).toBeDefined()
@@ -40,11 +40,7 @@ describe('standard catalog Book', () => {
 
 describe('Make.save() — Code aggregate generation', () => {
   it('emits a `Code` type with one colon-keyed entry per Flow', async () => {
-    const make = new Make({ link: '.', dry: true })
-    make.load(standard)
-
-    const result = await make.save()
-
+    const result = await save({ link: '.', fake: true, book: standard })
     expect(result.code).toContain('export type Code = {')
     expect(result.code).toContain("'flow:is:string'")
     expect(result.code).toContain("'flow:is:ipa:broad'")
@@ -54,11 +50,7 @@ describe('Make.save() — Code aggregate generation', () => {
   })
 
   it('Flow take/make resolve via per-Flow type aliases in their save dirs', async () => {
-    const make = new Make({ link: '.', dry: true })
-    make.load(standard)
-
-    const result = await make.save()
-
+    const result = await save({ link: '.', fake: true, book: standard })
     // Per-Flow aliases land in their `save:` directory's
     // index.ts (e.g. is/index.ts, make/index.ts).
     expect(result.link.is).toContain(
@@ -96,7 +88,7 @@ describe('Make.save() — Code aggregate generation', () => {
     // `make` should generate code that uses the Form's
     // PascalCase TS type, not the raw string or `unknown`.
     const inline = {
-      cast: [
+      make: [
         {
           form: 'form' as const,
           name: 'language_request',
@@ -123,11 +115,7 @@ describe('Make.save() — Code aggregate generation', () => {
       ],
     }
 
-    const make = new Make({ link: '.', dry: true })
-    make.load(inline)
-
-    const result = await make.save()
-
+    const result = await save({ link: '.', fake: true, book: inline })
     // Forms get top-level type aliases in their save dir
     // (root `''` since the inline Book sets no `save:`).
     expect(result.link['']).toContain('export type LanguageRequest')
@@ -152,7 +140,7 @@ describe('Make.save() — Code aggregate generation', () => {
     const bookA = {
       host: 'org',
       name: 'a',
-      cast: [
+      make: [
         {
           form: 'flow' as const,
           call: 'is',
@@ -165,7 +153,7 @@ describe('Make.save() — Code aggregate generation', () => {
     const bookB = {
       host: 'org',
       name: 'b',
-      cast: [
+      make: [
         {
           form: 'flow' as const,
           call: 'is',
@@ -176,18 +164,14 @@ describe('Make.save() — Code aggregate generation', () => {
       ],
     }
 
-    const make = new Make({ link: '.', dry: true })
-    make.load(bookA)
-    make.load(bookB)
-
-    await expect(make.save()).rejects.toThrow(
-      /identity-tuple collisions/,
-    )
+    await expect(
+      save({ link: '.', fake: true, book: [bookA, bookB] }),
+    ).rejects.toThrow(/identity-tuple collisions/)
   })
 
   it('does not flag two Flows that differ in case as collisions', async () => {
     const inline = {
-      cast: [
+      make: [
         {
           form: 'flow' as const,
           call: 'is',
@@ -204,20 +188,14 @@ describe('Make.save() — Code aggregate generation', () => {
         },
       ],
     }
-    const make = new Make({ link: '.', dry: true })
-    make.load(inline)
+    const result = await save({ link: '.', fake: true, book: inline })
     // Should NOT throw — different `case` distinguishes them.
-    const result = await make.save()
     expect(result.code).toContain("'flow:is:ipa:broad'")
     expect(result.code).toContain("'flow:is:ipa:narrow'")
   })
 
   it('emits a CodeLink integer-id table inside code.ts', async () => {
-    const make = new Make({ link: '.', dry: true })
-    make.load(standard)
-
-    const result = await make.save()
-
+    const result = await save({ link: '.', fake: true, book: standard })
     expect(result.code).toContain('export const CodeLink = {')
     expect(result.code).toContain("'flow:is:ipa:broad':")
     expect(result.code).toContain("'flow:make:sum':")
@@ -225,9 +203,7 @@ describe('Make.save() — Code aggregate generation', () => {
 
     // Ids are stable across runs (sorted lex) — re-run and
     // compare:
-    const second = await new Make({ link: '.', dry: true })
-      .load(standard)
-      .save()
+    const second = await save({ link: '.', fake: true, book: standard })
     expect(second.code).toBe(result.code)
   })
 
@@ -238,7 +214,7 @@ describe('Make.save() — Code aggregate generation', () => {
     // makeCode emits the right *shape* for each kind by
     // running it against an inline Book.
     const inline = {
-      cast: [
+      make: [
         {
           form: 'form' as const,
           name: 'sample_form',
@@ -260,11 +236,7 @@ describe('Make.save() — Code aggregate generation', () => {
       ],
     }
 
-    const make = new Make({ link: '.', dry: true })
-    make.load(inline)
-
-    const result = await make.save()
-
+    const result = await save({ link: '.', fake: true, book: inline })
     // Type aliases live in dirs (root, since no `save:` set).
     expect(result.link['']).toContain(
       'export type SampleForm = { id: string; text?: string }',

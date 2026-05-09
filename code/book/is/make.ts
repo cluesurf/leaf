@@ -100,6 +100,15 @@ export const isBlank: Flow = {
   make: 'boolean',
 }
 
+export const isPresent: Flow = {
+  form: 'flow',
+  save: 'is',
+  call: 'is',
+  case: 'present',
+  take: { thing: { like: 'unknown' } },
+  make: 'boolean',
+}
+
 // ─── Equality / comparison ────────────────────────────────
 
 export const isEqual: Flow = {
@@ -108,8 +117,8 @@ export const isEqual: Flow = {
   call: 'is',
   case: 'equal',
   take: {
-    this: { like: 'unknown' },
-    that: { like: 'unknown' },
+    a: { like: 'unknown' },
+    b: { like: 'unknown' },
   },
   make: 'boolean',
 }
@@ -120,8 +129,8 @@ export const isAbove: Flow = {
   call: 'is',
   case: 'above',
   take: {
-    this: { like: 'unknown' },
-    that: { like: 'unknown' },
+    a: { like: 'unknown' },
+    b: { like: 'unknown' },
   },
   make: 'boolean',
 }
@@ -132,8 +141,8 @@ export const isBelow: Flow = {
   call: 'is',
   case: 'below',
   take: {
-    this: { like: 'unknown' },
-    that: { like: 'unknown' },
+    a: { like: 'unknown' },
+    b: { like: 'unknown' },
   },
   make: 'boolean',
 }
@@ -144,8 +153,8 @@ export const isMin: Flow = {
   call: 'is',
   case: 'min',
   take: {
-    this: { like: 'unknown' },
-    that: { like: 'unknown' },
+    a: { like: 'unknown' },
+    b: { like: 'unknown' },
   },
   make: 'boolean',
 }
@@ -156,8 +165,8 @@ export const isMax: Flow = {
   call: 'is',
   case: 'max',
   take: {
-    this: { like: 'unknown' },
-    that: { like: 'unknown' },
+    a: { like: 'unknown' },
+    b: { like: 'unknown' },
   },
   make: 'boolean',
 }

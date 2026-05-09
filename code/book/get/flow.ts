@@ -4,24 +4,24 @@
 
 // ─── Accessors ────────────────────────────────────────────
 
-export const getLength = ({ text }: { text: string }): number =>
+const getLength = ({ text }: { text: string }): number =>
   text.length
 
-export const getCount = ({ items }: { items: unknown[] }): number =>
+const getCount = ({ items }: { items: unknown[] }): number =>
   items.length
 
-export const getFirst = ({ items }: { items: unknown[] }): unknown =>
+const getFirst = ({ items }: { items: unknown[] }): unknown =>
   items[0]
 
-export const getLast = ({ items }: { items: unknown[] }): unknown =>
+const getLast = ({ items }: { items: unknown[] }): unknown =>
   items[items.length - 1]
 
 // ─── Aggregates ───────────────────────────────────────────
 
-export const getSum = ({ numbers }: { numbers: number[] }): number =>
+const getSum = ({ numbers }: { numbers: number[] }): number =>
   numbers.reduce((a, b) => a + b, 0)
 
-export const getAverage = ({
+const getAverage = ({
   numbers,
 }: {
   numbers: number[]
@@ -30,14 +30,28 @@ export const getAverage = ({
     ? 0
     : numbers.reduce((a, b) => a + b, 0) / numbers.length
 
-export const getSmallest = ({
+const getSmallest = ({
   numbers,
 }: {
   numbers: number[]
 }): number => Math.min(...numbers)
 
-export const getLargest = ({
+const getLargest = ({
   numbers,
 }: {
   numbers: number[]
 }): number => Math.max(...numbers)
+
+
+const flow = {
+  'get:length': getLength,
+  'get:count': getCount,
+  'get:first': getFirst,
+  'get:last': getLast,
+  'get:sum': getSum,
+  'get:average': getAverage,
+  'get:smallest': getSmallest,
+  'get:largest': getLargest,
+}
+
+export default flow
