@@ -10,7 +10,7 @@
   <img src='https://github.com/cluesurf/leaf/blob/make/view/leaf.svg?raw=true' height='256'/>
 </p>
 
-<h3 align='center'>@cluesurf/bead</h3>
+<h3 align='center'>@cluesurf/leaf</h3>
 <p align='center'>
   A Template Language ⋈
 </p>
@@ -19,9 +19,9 @@
 <br/>
 <br/>
 
-## What is bead
+## What is leaf
 
-Bead is a **JSON system for app features**. Author rich documents or
+Leaf is a **JSON system for app features**. Author rich documents or
 rules. Save them as JSON. The runtime renders that JSON to text or vdom.
 
 Trees are pure data. Same JSON renders many ways. Survives editor
@@ -32,7 +32,7 @@ Just JSON.
 
 ## Why you need this
 
-| building                                   | bead gives you                                                           |
+| building                                   | leaf gives you                                                           |
 | ------------------------------------------ | ------------------------------------------------------------------------ |
 | Notion-class doc editor                    | one tree shape for blocks / inline / embeds / database views             |
 | HTML + React + email + AMP from one source | author once. Text + element renderers share the tree                     |
@@ -44,17 +44,17 @@ Just JSON.
 ## Install
 
 ```sh
-pnpm add @cluesurf/bead
+pnpm add @cluesurf/leaf
 ```
 
 ## Hello world
 
 ```ts
-import { Base, make } from '@cluesurf/bead'
-import beadBook, { type Code } from '@cluesurf/bead/book'
+import { Base, make } from '@cluesurf/leaf'
+import leafBook, { type Code } from '@cluesurf/leaf/book'
 
 const base = new Base<Code>()
-base.load(beadBook)
+base.load(leafBook)
 
 base.load({
   make: [
@@ -74,8 +74,8 @@ base.cast('greeting', { name: 'Lance' })
 
 ```ts
 // code/book/email/make.ts
-import type { Flow, Fold } from '@cluesurf/bead'
-import { make } from '@cluesurf/bead'
+import type { Flow, Fold } from '@cluesurf/leaf'
+import { make } from '@cluesurf/leaf'
 
 export const isEmail: Flow = {
   form: 'flow',
@@ -114,7 +114,7 @@ export const isEmail = ({ text }: { text: string }): boolean =>
 
 ```ts
 // code/book/index.ts
-import type { Book } from '@cluesurf/bead'
+import type { Book } from '@cluesurf/leaf'
 import * as emailFlows from './email/make'
 import * as emailHooks from './email/flow'
 import { CodeLink } from './code' // generated
@@ -130,16 +130,16 @@ export default {
 
 ```ts
 // app entry
-import { Base } from '@cluesurf/bead'
+import { Base } from '@cluesurf/leaf'
 import emailBook, { type Code } from './book'
 
 const base = new Base<Code>()
 base.load(emailBook)
 
-base.cast('email:status', { input: 'hi@bead.dev' })
-// → 'Mail to hi@bead.dev is valid'
+base.cast('email:status', { input: 'hi@leaf.dev' })
+// → 'Mail to hi@leaf.dev is valid'
 
-base.call('is:email', { text: 'hi@bead.dev' })
+base.call('is:email', { text: 'hi@leaf.dev' })
 // → true (typed)
 ```
 
@@ -239,7 +239,7 @@ import { createElement, Fragment } from 'react'
 
 const base = new Base<Code>({ createElement })
 base.load({
-  ...beadBook,
+  ...leafBook,
   view: { fragment: Fragment, callout: Callout },
 })
 
@@ -253,17 +253,17 @@ is the fragment value the renderer uses for sibling wrapping.
 ## Make: the codegen
 
 ```ts
-import { Make } from '@cluesurf/bead'
+import { Make } from '@cluesurf/leaf'
 
 const make = new Make({ link: './host' }) // or wherever you want
 
-make.load(beadBook)
+make.load(leafBook)
 make.load(myAppBook)
 
 await make.save()
 ```
 
-`link` is **whatever path you choose**. Bead doesn't impose a directory
+`link` is **whatever path you choose**. Leaf doesn't impose a directory
 name. pick `host/`, `generated/`, `dist/types/`, or nest it inside an
 existing `code/` tree. The path is the root for all emitted files.
 
@@ -288,9 +288,9 @@ only pass is organize-imports. No bundled defaults.
 ## Compile: tree → wake
 
 ```ts
-import { compile } from '@cluesurf/bead'
+import { compile } from '@cluesurf/leaf'
 
-const wake = compile(tree, beadBook.code!)
+const wake = compile(tree, leafBook.code!)
 // every named call rewritten to { form: 'call', code: <int>, bind: {...} }
 ```
 
@@ -298,7 +298,7 @@ Wire-stable across catalog renames as long as `CodeLink` is stable.
 
 ## Standard book
 
-`@cluesurf/bead/book` ships verbs:
+`@cluesurf/leaf/book` ships verbs:
 
 `is`, `make`, `get`, `has`, `format`, `fork`, `bind`, `validate`,
 `walk`, `find`.
@@ -309,7 +309,7 @@ under `code/book/check/flow.ts`.
 Replace any handler by loading your own Book on top:
 
 ```ts
-base.load(beadBook)
+base.load(leafBook)
 base.load(myAppBook) // overrides matching keys
 ```
 

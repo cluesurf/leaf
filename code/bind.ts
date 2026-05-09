@@ -18,11 +18,53 @@
  * `path` / `note` / `link` info so failure detail is preserved.
  */
 
-import type { Form, Hash, Link, LinkMesh, List, Mold } from '@/form'
+import type {
+  Fold,
+  Form,
+  Hash,
+  Link,
+  LinkMesh,
+  List,
+  Mold,
+} from '@/form'
+import type { Cast } from '@/cast'
+import type { Scope } from '@/scope'
+import { makeScope } from '@/scope'
+import { evaluateText } from '@/render'
+import { renderElement, type ElementBuilder } from '@/render/element'
 
 export type Parser = (cast: unknown, path?: string) => unknown
 
 export type ParserStore = Map<string, Parser>
+
+/**
+ * A compiled Fold: closure that takes the live scope params
+ * plus the host `Base` and returns the rendered output (string
+ * in text mode, vdom in element mode).
+ */
+export type FoldRender = (
+  params: Record<string, unknown>,
+  base: BaseRenderContext,
+) => unknown
+
+/**
+ * Minimal slice of `Base` that compiled Fold closures need at
+ * render time. Decoupled so `bind.ts` doesn't import the full
+ * `Base` class (avoids a cycle).
+ */
+export type BaseRenderContext = {
+  resolveCall: (node: {
+    name?: string
+    base?: string
+    case?: string
+    code?: number
+  }) => ((args: unknown) => unknown) | undefined
+  resolveFold: (name: string) => FoldRender | undefined
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  castView?: ElementBuilder<any>
+  fragment?: unknown
+  component?: Record<string, unknown>
+}
 
 /**
  * Lookup helper passed into compiled closures. The closure
