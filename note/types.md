@@ -1,6 +1,6 @@
 # TypeScript types
 
-How calm exposes registered Flows as a fully-typed surface
+How bead exposes registered Flows as a fully-typed surface
 to host code. The strategy: codegen aggregates every Form
 and Flow across every registered Book into a single `Code`
 type, and the runtime class `Base` is generic over it.
@@ -12,7 +12,7 @@ then registers Flow handlers. TypeScript typechecks every
 call.
 
 ```typescript
-import { Base } from '@cluesurf/calm'
+import { Base } from '@cluesurf/bead'
 import type Code from './libs'   // generated
 
 const base = new Base<Code>()
@@ -49,7 +49,7 @@ type Code = {
 }
 ```
 
-Calm assumes globally unique entry names across all registered
+Bead assumes globally unique entry names across all registered
 Books — no host/name prefix on Code keys. Codegen errors at
 `make.save()` time if two Books contribute entries with
 colliding identity tuples.
@@ -182,7 +182,7 @@ type Code = {
   'flow:is:string': { take: ...; make: boolean }
   'flow:make:sum':  { take: ...; make: number }
 
-  // From @cluesurf/calm-linguistics
+  // From @cluesurf/bead-linguistics
   'flow:is:ipa:broad':  { take: ...; make: boolean }
   'list:ipa_symbols':   string[]
 
@@ -199,12 +199,12 @@ consumer's `MakeTake`. Upstream Books keep their own
 
 ## `declare module` augmentation (optional)
 
-Hosts that want to extend the canonical `@cluesurf/calm`
+Hosts that want to extend the canonical `@cluesurf/bead`
 exports (rather than passing a custom `Code` type as a
 generic) can use TypeScript module augmentation:
 
 ```typescript
-declare module '@cluesurf/calm' {
+declare module '@cluesurf/bead' {
   interface Code {
     'my-org:my-app:flow:foo': { take: ...; make: ... }
   }

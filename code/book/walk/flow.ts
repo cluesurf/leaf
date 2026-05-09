@@ -4,7 +4,7 @@
  * Eager-arg form: callers pass a parallel array of per-item
  * values (already resolved by the AST walker). For true
  * scoped iteration, use `make.walk(...)` / `make.walkSize` /
- * `make.walkTest` from `@cluesurf/calm`.
+ * `make.walkTest` from `@cluesurf/bead`.
  */
 
 export const walk_map = ({

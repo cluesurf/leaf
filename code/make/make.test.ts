@@ -106,7 +106,7 @@ describe('makeTree — task + flow + cast', () => {
 
     const baseOut = tree.base['~/hold/flow/base']!
     expect(baseOut).toContain(
-      `import type { Cast } from '@cluesurf/calm'`,
+      `import type { Cast } from '@cluesurf/bead'`,
     )
     expect(baseOut).toContain('export const MESSAGE_TREE: Cast[]')
     // Native string leaf serializes as a bare quoted string.

@@ -95,7 +95,7 @@ export function makeFlow({
   // The `Cast` type comes from the package root. Inlined because
   // there's no schema entry to thread through `hold.save`.
   list.push(``)
-  list.push(`import type { Cast } from '@cluesurf/calm'`)
+  list.push(`import type { Cast } from '@cluesurf/bead'`)
   list.push(``)
   list.push(
     `export const ${TYPE_NAME}: Cast[] = ` +

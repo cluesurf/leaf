@@ -1,7 +1,7 @@
 # Find / Test query filters
 
 How the existing find/test query-filter AST consolidates into
-Calm's Form + Flow primitives. Calm ships these as part of the
+Bead's Form + Flow primitives. Bead ships these as part of the
 standard catalog so hosts get filter-tree authoring with the
 same engine, registry, and editor as everything else.
 
@@ -41,7 +41,7 @@ A URL `?test=(language:english;text:hello*)` parses to a
 WHERE clause. The pattern was its own subsystem with its own
 types, parser, serializer, and walker.
 
-In calm, **the same shapes become Forms**, and the constraint
+In bead, **the same shapes become Forms**, and the constraint
 tree itself **becomes a Tree of Flow calls**.
 
 ## The Forms
@@ -230,7 +230,7 @@ const find_count: Flow = {
 Used in a Tree:
 
 ```typescript
-import { flow } from '@cluesurf/calm'
+import { flow } from '@cluesurf/bead'
 
 make.call('find', {
   base: 'list',
@@ -293,7 +293,7 @@ function lower(query: Cast): FlowTree { /* ... */ }
 A host can then iterate a list and apply the lowered Flow:
 
 ```typescript
-const filter_fn = calm.compile(lower(query))
+const filter_fn = bead.compile(lower(query))
 const matches = records.filter(record =>
   base.cast(filter_fn, { record }).output as boolean
 )
@@ -301,7 +301,7 @@ const matches = records.filter(record =>
 
 ## Why this matters
 
-Three benefits from consolidating find/test into calm:
+Three benefits from consolidating find/test into bead:
 
 1. **One AST.** Authoring a filter, validating data, rendering
    a document. All the same Tree-of-Calls shape. Editor
@@ -318,7 +318,7 @@ Three benefits from consolidating find/test into calm:
 The existing URL syntax (`?test=(language:english;text:hello*)`)
 still works at the resource boundary; the URL parser produces
 a `find` Cast. From the Cast onward, everything goes through
-calm.
+bead.
 
 ## Standard catalog entries
 
@@ -354,7 +354,7 @@ publishes.
 
 Filter Casts serialize to JSON for storage and to the URL
 syntax for transport. Both round-trippable per the existing
-spec. Within calm, they're just Casts of `find`, indistinguishable
+spec. Within bead, they're just Casts of `find`, indistinguishable
 from any other Cast.
 
 ## Related

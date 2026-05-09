@@ -34,6 +34,7 @@ import type {
   HashPrimitive,
   FindPrimitive,
   FoldPrimitive,
+  JoinPrimitive,
   ListPrimitive,
   MatchPrimitive,
   PickPrimitive,
@@ -57,7 +58,11 @@ export type DecodeTable = Record<number, DecodeEntry>
  * Mirrors `code/base/index.ts` `buildKey` so the runtime and
  * the compile pass agree byte-for-byte.
  */
-function callKey(name: string, base?: string, caseValue?: string): string {
+function callKey(
+  name: string,
+  base?: string,
+  caseValue?: string,
+): string {
   if (base == null) return `flow:${name}`
   if (caseValue == null) return `flow:${name}:${base}`
   return `flow:${name}:${base}:${caseValue}`
@@ -125,7 +130,9 @@ function walk(
     case 'read':
       return {
         ...node,
-        link: node.link.map(seg => walkSeg(seg, codeTable, decodeTable)),
+        link: node.link.map(seg =>
+          walkSeg(seg, codeTable, decodeTable),
+        ),
       } satisfies ReadPrimitive
 
     case 'fork':
@@ -167,7 +174,9 @@ function walk(
       return {
         ...node,
         test: walk(node.test, codeTable, decodeTable),
-        case: node.case.map(arm => walkCaseArm(arm, codeTable, decodeTable)),
+        case: node.case.map(arm =>
+          walkCaseArm(arm, codeTable, decodeTable),
+        ),
       } satisfies CasePrimitive
 
     case 'pick':
@@ -178,6 +187,12 @@ function walk(
 
     case 'walk':
       return walkWalk(node, codeTable, decodeTable)
+
+    case 'join':
+      return {
+        ...node,
+        list: node.list.map(c => walk(c, codeTable, decodeTable)),
+      } satisfies JoinPrimitive
 
     case 'find': {
       const out: FindPrimitive = { ...node }
@@ -272,7 +287,9 @@ function walkCall(
   for (const [k, v] of Object.entries(node)) {
     if (k === 'bind' && v != null && typeof v === 'object') {
       const inner: Record<string, unknown> = {}
-      for (const [bk, bv] of Object.entries(v as Record<string, unknown>)) {
+      for (const [bk, bv] of Object.entries(
+        v as Record<string, unknown>,
+      )) {
         inner[bk] = walkUnknown(bv, codeTable, decodeTable)
       }
       ;(out as Record<string, unknown>)[k] = inner
@@ -297,9 +314,10 @@ function walkSeg(
       typeof seg.value === 'number' || typeof seg.value === 'string'
         ? seg.value
         : walk(seg.value as Cast, codeTable, decodeTable)
-    return { ...seg, value: v as ReadLink extends { value: infer V }
-      ? V
-      : never }
+    return {
+      ...seg,
+      value: v as ReadLink extends { value: infer V } ? V : never,
+    }
   }
   if (seg.form === 'slice') {
     const out: ReadLink = { ...seg }
@@ -345,24 +363,18 @@ function walkWalk(
   codeTable: CodeTable | undefined,
   decodeTable: DecodeTable | undefined,
 ): WalkPrimitive {
-  const join =
-    node.join !== undefined
-      ? walk(node.join, codeTable, decodeTable)
-      : undefined
   switch (node.case) {
     case 'list':
       return {
         ...node,
         list: walk(node.list, codeTable, decodeTable),
         hook: walk(node.hook, codeTable, decodeTable),
-        ...(join !== undefined ? { join } : {}),
       }
     case 'test':
       return {
         ...node,
         test: walk(node.test, codeTable, decodeTable),
         hook: walk(node.hook, codeTable, decodeTable),
-        ...(join !== undefined ? { join } : {}),
       }
     case 'size':
       return {
@@ -370,7 +382,6 @@ function walkWalk(
         base: walk(node.base, codeTable, decodeTable),
         head: walk(node.head, codeTable, decodeTable),
         hook: walk(node.hook, codeTable, decodeTable),
-        ...(join !== undefined ? { join } : {}),
       }
   }
 }

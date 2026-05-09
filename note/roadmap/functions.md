@@ -1,6 +1,6 @@
 # Functions roadmap — read-only renderer
 
-What a Notion-class read-only renderer needs, in calm's verb-base-case
+What a Notion-class read-only renderer needs, in bead's verb-base-case
 shape. Single discriminated views over duplicated ones; standard verbs
 over bespoke flows.
 

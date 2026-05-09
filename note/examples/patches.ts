@@ -5,8 +5,8 @@
  * Three ops: `replace` / `remove` / `insert`.
  */
 
-import { make, makeScope, Base } from '@cluesurf/calm'
-import type { Cast } from '@cluesurf/calm'
+import { make, makeScope, Base } from '@cluesurf/bead'
+import type { Cast } from '@cluesurf/bead'
 
 const base = new Base()
 

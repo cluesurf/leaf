@@ -112,7 +112,7 @@ describe('codegen — makeTree pipeline', () => {
 describe('codegen — snapshot fidelity', () => {
   // The test/hold/, test/greet_user/, test/sum_numbers/ folders
   // hold the canonical generated output for the test fixtures.
-  // These tests guard against regressions during the calm
+  // These tests guard against regressions during the bead
   // migration: the form.js codegen pipeline keeps producing
   // byte-equal output as we restructure imports and folders.
 

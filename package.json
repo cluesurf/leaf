@@ -1,9 +1,9 @@
 {
-  "name": "@cluesurf/calm",
-  "version": "0.0.0",
+  "name": "@cluesurf/bead",
+  "version": "0.0.2",
   "license": "MIT",
   "packageManager": "pnpm@10.33.0",
-  "description": "",
+  "description": "A Template Language ⋈",
   "type": "module",
   "main": "./host/code/index.js",
   "exports": {

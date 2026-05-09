@@ -1,5 +1,5 @@
 /**
- * @cluesurf/calm fold-tree type definitions.
+ * @cluesurf/bead fold-tree type definitions.
  *
  * Scalar leaves are native JS values: `string`, `number`,
  * `boolean`, `Date`, `null`. Structural nodes carry a `form`
@@ -189,6 +189,30 @@ export type PickPrimitive = {
  *  - `walk(test)`  — while-style; loop while a test is truthy
  *  - `walk(size)`  — counted range (i = base..head step move)
  */
+/**
+ * Join — render each entry in `list` and concatenate them
+ * with `text` between adjacent items.
+ *
+ *   { form: 'join', list: [a, b, c], text: ', ' }   // → 'a, b, c'
+ *
+ * Walks inside `list` flatten in: each walk iteration's body
+ * becomes a separate join entry, so the separator slots
+ * between iterations naturally.
+ *
+ *   make.join(', ', make.walk(items, body))
+ *   // ≡ { form: 'join', list: [<walk>], text: ', ' }
+ *   // → 'body(items[0]), body(items[1]), …'
+ *
+ * `text` is a literal string (not a Cast) so the wire format
+ * stays predictable.
+ */
+export type JoinPrimitive = {
+  form: 'join'
+  list: Cast[]
+  text: string
+  mark?: string
+}
+
 export type WalkListPrimitive = {
   form: 'walk'
   case: 'list'
@@ -196,8 +220,6 @@ export type WalkListPrimitive = {
   item?: string
   index?: string
   hook: Cast
-  /** Separator inserted between iterations (text mode joins; element mode uses as a sibling). */
-  join?: Cast
   version?: number
   id?: string
   meta?: Meta
@@ -209,7 +231,6 @@ export type WalkTestPrimitive = {
   case: 'test'
   test: Cast
   hook: Cast
-  join?: Cast
   version?: number
   id?: string
   meta?: Meta
@@ -225,7 +246,6 @@ export type WalkSizePrimitive = {
   item?: string            // iterator binding name (default 'head')
   index?: string           // optional index binding
   hook: Cast
-  join?: Cast
   version?: number
   id?: string
   meta?: Meta
@@ -325,6 +345,7 @@ export type Structural =
   | HashPrimitive
   | FindPrimitive
   | FoldPrimitive
+  | JoinPrimitive
   | ViewPrimitive
 
 // ---------------------------------------------------------------------------

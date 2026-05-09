@@ -16,6 +16,7 @@ import type {
   CasePrimitive,
   CaseValueArm,
   Cast,
+  WalkPrimitive,
 } from '../types'
 import { evaluatePath } from './path'
 import {
@@ -129,75 +130,30 @@ function evaluateForm(node: Cast, context: TextContext): unknown {
       }
       return null
     }
-    case 'walk': {
+    case 'walk':
+      return walkItemsText(node, context).join('')
+
+    case 'join': {
       const out: string[] = []
-      const joinText =
-        node.join !== undefined ? renderText(node.join, context) : ''
-      switch (node.case) {
-        case 'list': {
-          const list = evaluateText(node.list, context) as
-            | unknown[]
-            | null
-            | undefined
-          if (!Array.isArray(list)) return ''
-          const itemName = node.item ?? 'item'
-          const indexName = node.index ?? 'index'
-          for (let i = 0; i < list.length; i += 1) {
-            const frame: Record<string, unknown> = {}
-            frame[itemName] = list[i]
-            frame[indexName] = i
-            const inner: TextContext = {
-              ...context,
-              scope: context.scope.push(frame),
-            }
-            out.push(renderText(node.hook, inner))
+      for (const item of node.list) {
+        // Walks flatten: each iteration becomes a separate join entry.
+        if (
+          item !== null &&
+          typeof item === 'object' &&
+          !(item instanceof Date) &&
+          (item as { form?: string }).form === 'walk'
+        ) {
+          for (const piece of walkItemsText(
+            item as WalkPrimitive,
+            context,
+          )) {
+            out.push(piece)
           }
-          return out.join(joinText)
-        }
-        case 'test': {
-          // While-style loop. Cap iterations to prevent
-          // accidental infinite loops in authored content.
-          const cap = 10_000
-          for (let i = 0; i < cap; i += 1) {
-            const t = evaluateText(node.test, context)
-            if (!t) break
-            out.push(renderText(node.hook, context))
-          }
-          return out.join(joinText)
-        }
-        case 'size': {
-          const base = Number(evaluateText(node.base, context))
-          const head = Number(evaluateText(node.head, context))
-          const move = node.move ?? 1
-          if (
-            !Number.isFinite(base) ||
-            !Number.isFinite(head) ||
-            move === 0
-          ) {
-            return ''
-          }
-          const itemName = node.item ?? 'head'
-          const indexName = node.index ?? 'index'
-          let step = 0
-          for (
-            let i = base;
-            move > 0 ? i < head : i > head;
-            i += move
-          ) {
-            const frame: Record<string, unknown> = {}
-            frame[itemName] = i
-            frame[indexName] = step
-            const inner: TextContext = {
-              ...context,
-              scope: context.scope.push(frame),
-            }
-            out.push(renderText(node.hook, inner))
-            step += 1
-          }
-          return out.join(joinText)
+        } else {
+          out.push(renderText(item, context))
         }
       }
-      return ''
+      return out.join(node.text)
     }
     // ----- find -----
     case 'find': {
@@ -270,6 +226,82 @@ function matchArm(
     case 'case-default':
       return true
   }
+}
+
+// ---------------------------------------------------------------------------
+// Walk → array of rendered iterations (used by both walk and
+// join arms). Returns one string per iteration; the caller
+// concatenates with the appropriate separator.
+// ---------------------------------------------------------------------------
+
+function walkItemsText(
+  node: WalkPrimitive,
+  context: TextContext,
+): string[] {
+  const out: string[] = []
+  switch (node.case) {
+    case 'list': {
+      const list = evaluateText(node.list, context) as
+        | unknown[]
+        | null
+        | undefined
+      if (!Array.isArray(list)) return out
+      const itemName = node.item ?? 'item'
+      const indexName = node.index ?? 'index'
+      for (let i = 0; i < list.length; i += 1) {
+        const frame: Record<string, unknown> = {}
+        frame[itemName] = list[i]
+        frame[indexName] = i
+        const inner: TextContext = {
+          ...context,
+          scope: context.scope.push(frame),
+        }
+        out.push(renderText(node.hook, inner))
+      }
+      return out
+    }
+    case 'test': {
+      const cap = 10_000
+      for (let i = 0; i < cap; i += 1) {
+        const t = evaluateText(node.test, context)
+        if (!t) break
+        out.push(renderText(node.hook, context))
+      }
+      return out
+    }
+    case 'size': {
+      const base = Number(evaluateText(node.base, context))
+      const head = Number(evaluateText(node.head, context))
+      const move = node.move ?? 1
+      if (
+        !Number.isFinite(base) ||
+        !Number.isFinite(head) ||
+        move === 0
+      ) {
+        return out
+      }
+      const itemName = node.item ?? 'head'
+      const indexName = node.index ?? 'index'
+      let step = 0
+      for (
+        let i = base;
+        move > 0 ? i < head : i > head;
+        i += move
+      ) {
+        const frame: Record<string, unknown> = {}
+        frame[itemName] = i
+        frame[indexName] = step
+        const inner: TextContext = {
+          ...context,
+          scope: context.scope.push(frame),
+        }
+        out.push(renderText(node.hook, inner))
+        step += 1
+      }
+      return out
+    }
+  }
+  return out
 }
 
 // ---------------------------------------------------------------------------

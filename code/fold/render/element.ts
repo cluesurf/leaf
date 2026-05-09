@@ -5,7 +5,7 @@
  * vdom you pass in (React, Preact, h-script, anything with the
  * `(type, props, ...children) => element` shape).
  *
- *   import { renderElement } from '@cluesurf/calm/make/render/element'
+ *   import { renderElement } from '@cluesurf/bead/make/render/element'
  *   import { createElement, Fragment } from 'react'
  *
  *   renderElement(tree, {
@@ -41,6 +41,7 @@ import type {
   CaseValueArm,
   Cast,
   ViewPrimitive,
+  WalkPrimitive,
 } from '../types'
 import { evaluatePath } from './path'
 import {
@@ -169,77 +170,28 @@ function walkElement(node: Cast, context: ElementContext): unknown {
       }
       return null
     }
-    case 'walk': {
+    case 'walk':
+      return wrapFragment(
+        context,
+        walkItemsElement(node, context).map((v, i) => keyed(v, i)),
+      )
+
+    case 'join': {
       const out: unknown[] = []
-      const pushItem = (rendered: unknown, key: number) => {
-        if (out.length > 0 && node.join !== undefined) {
-          out.push(keyed(walkElement(node.join, context), key * 2 - 1))
-        }
-        out.push(keyed(rendered, key * 2))
-      }
-      switch (node.case) {
-        case 'list': {
-          const list = walkValue(node.list, context) as
-            | unknown[]
-            | null
-            | undefined
-          if (!Array.isArray(list)) return null
-          const itemName = node.item ?? 'item'
-          const indexName = node.index ?? 'index'
-          for (let i = 0; i < list.length; i += 1) {
-            const frame: Record<string, unknown> = {}
-            frame[itemName] = list[i]
-            frame[indexName] = i
-            const inner: ElementContext = {
-              ...context,
-              scope: context.scope.push(frame),
-            }
-            pushItem(walkElement(node.hook, inner), i)
-          }
-          break
-        }
-        case 'test': {
-          const cap = 10_000
-          for (let i = 0; i < cap; i += 1) {
-            const t = walkValue(node.test, context)
-            if (!t) break
-            pushItem(walkElement(node.hook, context), i)
-          }
-          break
-        }
-        case 'size': {
-          const base = Number(walkValue(node.base, context))
-          const head = Number(walkValue(node.head, context))
-          const move = node.move ?? 1
-          if (
-            !Number.isFinite(base) ||
-            !Number.isFinite(head) ||
-            move === 0
-          ) {
-            return null
-          }
-          const itemName = node.item ?? 'head'
-          const indexName = node.index ?? 'index'
-          let step = 0
-          for (
-            let i = base;
-            move > 0 ? i < head : i > head;
-            i += move
-          ) {
-            const frame: Record<string, unknown> = {}
-            frame[itemName] = i
-            frame[indexName] = step
-            const inner: ElementContext = {
-              ...context,
-              scope: context.scope.push(frame),
-            }
-            pushItem(walkElement(node.hook, inner), step)
-            step += 1
-          }
-          break
+      const sep = node.text
+      for (const item of node.list) {
+        const pieces = isWalkCast(item)
+          ? walkItemsElement(item, context)
+          : [walkElement(item, context)]
+        for (const piece of pieces) {
+          if (out.length > 0 && sep) out.push(sep)
+          out.push(piece)
         }
       }
-      return wrapFragment(context, out)
+      return wrapFragment(
+        context,
+        out.map((v, i) => keyed(v, i)),
+      )
     }
     // ----- find -----
     case 'find': {
@@ -325,6 +277,91 @@ function walkValue(node: Cast, context: ElementContext): unknown {
       // to the element walker.
       return walkElement(node, context)
   }
+}
+
+// ---------------------------------------------------------------------------
+// Walk → array of rendered iterations (used by both walk and
+// join arms). One element per iteration; the caller wraps in a
+// fragment.
+// ---------------------------------------------------------------------------
+
+function isWalkCast(v: unknown): v is WalkPrimitive {
+  return (
+    v !== null &&
+    typeof v === 'object' &&
+    !(v instanceof Date) &&
+    (v as { form?: string }).form === 'walk'
+  )
+}
+
+function walkItemsElement(
+  node: WalkPrimitive,
+  context: ElementContext,
+): unknown[] {
+  const out: unknown[] = []
+  switch (node.case) {
+    case 'list': {
+      const list = walkValue(node.list, context) as
+        | unknown[]
+        | null
+        | undefined
+      if (!Array.isArray(list)) return out
+      const itemName = node.item ?? 'item'
+      const indexName = node.index ?? 'index'
+      for (let i = 0; i < list.length; i += 1) {
+        const frame: Record<string, unknown> = {}
+        frame[itemName] = list[i]
+        frame[indexName] = i
+        const inner: ElementContext = {
+          ...context,
+          scope: context.scope.push(frame),
+        }
+        out.push(walkElement(node.hook, inner))
+      }
+      return out
+    }
+    case 'test': {
+      const cap = 10_000
+      for (let i = 0; i < cap; i += 1) {
+        const t = walkValue(node.test, context)
+        if (!t) break
+        out.push(walkElement(node.hook, context))
+      }
+      return out
+    }
+    case 'size': {
+      const base = Number(walkValue(node.base, context))
+      const head = Number(walkValue(node.head, context))
+      const move = node.move ?? 1
+      if (
+        !Number.isFinite(base) ||
+        !Number.isFinite(head) ||
+        move === 0
+      ) {
+        return out
+      }
+      const itemName = node.item ?? 'head'
+      const indexName = node.index ?? 'index'
+      let step = 0
+      for (
+        let i = base;
+        move > 0 ? i < head : i > head;
+        i += move
+      ) {
+        const frame: Record<string, unknown> = {}
+        frame[itemName] = i
+        frame[indexName] = step
+        const inner: ElementContext = {
+          ...context,
+          scope: context.scope.push(frame),
+        }
+        out.push(walkElement(node.hook, inner))
+        step += 1
+      }
+      return out
+    }
+  }
+  return out
 }
 
 // ---------------------------------------------------------------------------

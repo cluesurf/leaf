@@ -5,7 +5,7 @@ import standard from '../code/book'
 describe('standard catalog Book', () => {
   it('has a `host`, `name`, and a `cast` array of declarations', () => {
     expect(standard.host).toBe('cluesurf')
-    expect(standard.name).toBe('calm')
+    expect(standard.name).toBe('bead')
     expect(Array.isArray(standard.cast)).toBe(true)
     expect((standard.cast ?? []).length).toBeGreaterThan(0)
   })

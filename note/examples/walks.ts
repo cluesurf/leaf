@@ -1,14 +1,17 @@
 /**
- * Walk variants — three case-discriminated iteration shapes.
+ * Walk variants — three case-discriminated iteration shapes,
+ * wrapped in `make.join` when a separator is needed.
  */
 
-import { make, makeScope, renderText } from '@cluesurf/calm'
+import { make, makeScope, renderText } from '@cluesurf/bead'
 
 // walk(list) — for-each over a collection.
-const listLine = make.walk(
-  make.read('items'),
-  make.templateString(make.read('index'), ':', make.read('item')),
-  { join: ' ' },
+const listLine = make.join(
+  ' ',
+  make.walk(
+    make.read('items'),
+    make.templateString(make.read('index'), ':', make.read('item')),
+  ),
 )
 
 renderText(listLine, {
@@ -18,11 +21,9 @@ renderText(listLine, {
 
 // walk(size) — counted range. `head` binding holds the
 // current value, `index` the 0-based step counter.
-const countdown = make.walkSize(
-  10,
-  0,
-  make.read('head'),
-  { move: -1, join: ', ' },
+const countdown = make.join(
+  ', ',
+  make.walkSize(10, 0, make.read('head'), { move: -1 }),
 )
 
 renderText(countdown, { scope: makeScope() })
@@ -34,7 +35,6 @@ let counter = 0
 const ticker = make.walkTest(
   make.lt(make.read('counter'), 5),
   make.templateString(make.read('counter'), '-'),
-  { join: '' },
 )
 
 renderText(ticker, {
@@ -54,17 +54,24 @@ renderText(ticker, {
 // → '1-2-3-4-5-'
 
 // Nested walks — frames stack independently. Outer scope
-// remains visible inside the body.
-const matrix = make.walkSize(
-  0,
-  3,
+// remains visible inside the body. Inner walk wrapped in
+// join for spaces; outer wrapped for newlines.
+const matrix = make.join(
+  '\n',
   make.walkSize(
     0,
     3,
-    make.templateString(make.read('row'), ',', make.read('col')),
-    { item: 'col', join: ' ' },
+    make.join(
+      ' ',
+      make.walkSize(
+        0,
+        3,
+        make.templateString(make.read('row'), ',', make.read('col')),
+        { item: 'col' },
+      ),
+    ),
+    { item: 'row' },
   ),
-  { item: 'row', join: '\n' },
 )
 
 renderText(matrix, { scope: makeScope() })
@@ -73,14 +80,16 @@ renderText(matrix, { scope: makeScope() })
 //    2,0 2,1 2,2'
 
 // Walk with an outer scope binding visible inside.
-const labelled = make.walk(
-  make.read('items'),
-  make.templateString(
-    make.read('prefix'), // outer
-    ':',
-    make.read('item'),    // inner
+const labelled = make.join(
+  ', ',
+  make.walk(
+    make.read('items'),
+    make.templateString(
+      make.read('prefix'), // outer
+      ':',
+      make.read('item'),    // inner
+    ),
   ),
-  { join: ', ' },
 )
 
 renderText(labelled, {

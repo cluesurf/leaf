@@ -1,5 +1,5 @@
 /**
- * React rendering with calm. Same trees, vdom output instead
+ * React rendering with bead. Same trees, vdom output instead
  * of strings. Works with any `createElement`-compatible
  * factory (Preact, h-script, etc.).
  */
@@ -10,7 +10,7 @@ import {
   makeScope,
   renderElement,
   type ElementBuilder,
-} from '@cluesurf/calm'
+} from '@cluesurf/bead'
 
 const REACT = {
   builder: createElement as unknown as ElementBuilder<ReactElement>,

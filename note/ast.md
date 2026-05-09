@@ -1,6 +1,6 @@
 # AST
 
-The JSON tree shape that calm authors, stores, compiles, and evaluates.
+The JSON tree shape that bead authors, stores, compiles, and evaluates.
 
 ## Reserved keys
 
@@ -104,7 +104,7 @@ lifecycle stage.
 that a Call authored against an older `mark` still typechecks against
 the current Flow registration.
 
-The whole point of calm. Calls compose by referencing other calls (or
+The whole point of bead. Calls compose by referencing other calls (or
 paths or literals) as arg values.
 
 ### `read`. Read from host
@@ -221,7 +221,7 @@ mistakenly stuck condition can't burn the renderer.
 | `walk(list)` | `for x in list`      | collection iteration |
 | `walk(size)` | `for i in 0..n`      | counted loop         |
 
-The `walk` family covers every iteration shape calm needs. There is no
+The `walk` family covers every iteration shape bead needs. There is no
 separate `loop` Cast form; numeric ranges are `walk` with
 `case: 'size'`.
 
@@ -356,7 +356,7 @@ simplifying the dispatch code.
 ## Builder API
 
 The runtime exposes builders under the `make` namespace from
-`@cluesurf/calm`. They produce the canonical Cast shape byte-for-byte
+`@cluesurf/bead`. They produce the canonical Cast shape byte-for-byte
 and accept native scalars (auto-promoted only where structurally
 necessary, i.e. arrays).
 

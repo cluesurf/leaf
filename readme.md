@@ -6,7 +6,7 @@
 <br/>
 <br/>
 
-<h3 align='center'>@cluesurf/calm</h3>
+<h3 align='center'>@cluesurf/bead</h3>
 <p align='center'>
   A Template Language ⋈
 </p>
@@ -15,9 +15,9 @@
 <br/>
 <br/>
 
-## What is calm
+## What is bead
 
-Calm is a JSON template language. You write trees of values, references,
+Bead is a JSON template language. You write trees of values, references,
 conditionals, loops, and views; the runtime renders them to text or to
 vdom elements (React, Preact, anything h-shaped).
 
@@ -31,7 +31,7 @@ safe to ship over the wire and store as JSON.
 
 ## Why you need this
 
-| building | what calm gives you |
+| building | what bead gives you |
 |---|---|
 | **Template docs editor** (Notion-class) | one tree shape for blocks, inline marks, embeds, and database views; per-mark patches via `bindPatch` so the editor updates in O(dirty) not O(tree) |
 | **Localization layer** | locale-aware `format(*)`, CLDR plural categories, gender select, RTL handling, runs through the same `make.render` |
@@ -46,7 +46,7 @@ safe to ship over the wire and store as JSON.
 | **Editor with undo / time-travel** | every Cast carries an optional `mark` (UUID v7); patches address by mark; cached outputs survive across patch chains |
 | **Wire-format-stable bytecode** | `compile(tree, codeTable)` rewrites string verbs to integer ids for fast dispatch; `decompile` reverses for editor inspection |
 
-You don't need calm for trivial templating (template literals will do).
+You don't need bead for trivial templating (template literals will do).
 Reach for it when the **same tree** has to render in multiple targets,
 ship over the wire, survive editor patches, and resolve verbs against a
 typed catalog.
@@ -54,9 +54,9 @@ typed catalog.
 ## Installation
 
 ```
-pnpm add @cluesurf/calm
-yarn add @cluesurf/calm
-npm i @cluesurf/calm
+pnpm add @cluesurf/bead
+yarn add @cluesurf/bead
+npm i @cluesurf/bead
 ```
 
 ## Example
@@ -66,7 +66,7 @@ dispatch flows through the typed runtime:
 
 ```ts
 // code/base/is/make.ts — authored declarations
-import type { Flow } from '@cluesurf/calm'
+import type { Flow } from '@cluesurf/bead'
 
 export const isIPABroad: Flow = {
   form: 'flow',
@@ -87,7 +87,7 @@ export const isIPABroad = ({ text }: { text: string }): boolean =>
 
 ```ts
 // app.ts — runtime
-import { Base } from '@cluesurf/calm'
+import { Base } from '@cluesurf/bead'
 import standard, { type Code } from './code/book'
 
 const base = new Base<Code>()
@@ -150,7 +150,7 @@ produce JSON ASTs; `make.renderText` turns them into strings,
 `createElement`-compatible factory).
 
 ```ts
-import { make } from '@cluesurf/calm'
+import { make } from '@cluesurf/bead'
 
 const tree = make.templateString(
   'You have ',
@@ -181,7 +181,7 @@ args) is what authors write and what's stored at rest. **Wake form**
 (`code: number`, `bind: {…args}`) is what the runtime evaluates.
 
 ```ts
-import { make } from '@cluesurf/calm'
+import { make } from '@cluesurf/bead'
 import { CodeLink } from './code/book'
 
 const authored = make.eq(make.read('status'), 'on')

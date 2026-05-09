@@ -265,7 +265,7 @@ node `mark`, and added to `BindResult.errors`. The rest of
 the tree continues; the failed node's evaluated value is
 `null`.
 
-There is no `attempt` / try-catch node in calm. Calm is a
+There is no `attempt` / try-catch node in bead. Bead is a
 templating / rendering engine, not an effect runtime. Code
 errors are surfaced as typed validation results, not caught
 and recovered in-tree. Hosts that need recovery handle it at

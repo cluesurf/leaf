@@ -71,7 +71,7 @@ export default async function makeTree({
     if (list?.length) {
       const castList = [
         `import { z } from 'zod'`,
-        `import { LOAD, MAKE, TEST } from '@cluesurf/calm'`,
+        `import { LOAD, MAKE, TEST } from '@cluesurf/bead'`,
         `import * as code from '${testLink}'`,
         ``,
         ...makeLoadList(hold, file),

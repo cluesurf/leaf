@@ -1,5 +1,5 @@
 /**
- * @cluesurf/calm fold tree — a unified AST for values,
+ * @cluesurf/bead fold tree — a unified AST for values,
  * computations, control flow, templates, and views.
  *
  * `make` is the **builder namespace**: every export is a pure
@@ -8,7 +8,7 @@
  * standalone functions on the package root so the `make`
  * surface stays focused on data construction:
  *
- *   import { make, makeScope, renderText, compile } from '@cluesurf/calm'
+ *   import { make, makeScope, renderText, compile } from '@cluesurf/bead'
  *
  *   const tree = make.fork(make.gt(make.read('count'), 0), 'on', 'off')
  *   const out  = renderText(tree, { scope: makeScope({ count: 5 }) })
@@ -91,6 +91,7 @@ export const make = {
   list: builders.list,
   templateString: builders.templateString,
   hash: builders.hash,
+  join: builders.join,
   find: builders.find,
   fold: builders.fold,
 

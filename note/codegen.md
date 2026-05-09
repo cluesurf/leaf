@@ -1,6 +1,6 @@
 # Codegen
 
-How calm generates TypeScript types and runtime artifacts from authored
+How bead generates TypeScript types and runtime artifacts from authored
 schemas. And how those concerns stay decoupled from where the generated
 code lives.
 
@@ -82,9 +82,9 @@ A consumer host writes one codegen script. The pattern is flat: register
 one or more Books with `make.load(...)`, then call `make.save()`.
 
 ```typescript
-import { Make } from '@cluesurf/calm/make'
-import linguistics from '@cluesurf/calm-linguistics'
-import standard from '@cluesurf/calm'
+import { Make } from '@cluesurf/bead/make'
+import linguistics from '@cluesurf/bead-linguistics'
+import standard from '@cluesurf/bead'
 import myApp from './my-app/source'
 
 const make = new Make({ link: './libs' })
@@ -99,7 +99,7 @@ await make.save()
 Each `make.load(book)` call registers the entire Book — every Form,
 Flow, Fold, Hash, and List the Book contains.
 
-Calm assumes **globally unique entry names** across every registered
+Bead assumes **globally unique entry names** across every registered
 Book. Code keys do not carry a host/name prefix; the codegen pass errors
 if two Books contribute entries with colliding identity tuples (see
 "Duplicate detection" below).
@@ -111,7 +111,7 @@ rename, drop, or replace specific entries from a published Book, the
 host composes a new Book value before passing it to `make.load(...)`:
 
 ```typescript
-import linguistics from '@cluesurf/calm-linguistics'
+import linguistics from '@cluesurf/bead-linguistics'
 
 // Drop one flow:
 const filtered: Book = {
@@ -211,7 +211,7 @@ throws; nothing is written.
 
 ### Duplicate detection
 
-Calm assumes globally unique entry identity across every registered
+Bead assumes globally unique entry identity across every registered
 Book. At `make.save()` time, codegen gathers every Form and Flow across
 every Book and looks for collisions:
 
@@ -265,11 +265,11 @@ export type SelectLanguageTake = { id: string }
 export type SelectLanguage = Language
 
 type Code = {
-  // From @cluesurf/calm-linguistics
+  // From @cluesurf/bead-linguistics
   'flow:is:ipa:broad': IsIpaBroad
   'list:ipa_symbols': string[]
 
-  // From @cluesurf/calm
+  // From @cluesurf/bead
   'flow:make:sum': MakeSum
 
   // From cluesurf:my-app (the consuming host)
@@ -481,7 +481,7 @@ types vs filesystem layout**.
 ### Libraries become reusable
 
 A library that exported `save: '~/code/form/object/...'` would force
-every consumer to adopt that directory tree. Calm Books ship pure
+every consumer to adopt that directory tree. Bead Books ship pure
 values; consumers compose them however their codebase prefers.
 
 ### One source of truth for the name

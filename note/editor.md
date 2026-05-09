@@ -177,8 +177,8 @@ unless the editor opts in via:
 base.bindPatch(prev, patch, { tiers: ['args', 'types', 'resolve', 'constraints'] })
 ```
 
-The editor can also call `calm.runConstraints(prev)` /
-`calm.runAsync(prev)` standalone to fire the deeper tiers when
+The editor can also call `bead.runConstraints(prev)` /
+`bead.runAsync(prev)` standalone to fire the deeper tiers when
 appropriate.
 
 ## Authorship widgets
@@ -298,7 +298,7 @@ loads the document.
 
 ## Multi-user / collaborative editing
 
-Out of host for the core spec. Calm deals with one editor
+Out of host for the core spec. Bead deals with one editor
 at a time. Hosts wanting collaborative editing layer
 operational-transform or CRDT logic between the editor and
 `bindPatch`. The patch protocol is OT-friendly: every patch is

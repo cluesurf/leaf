@@ -1,10 +1,10 @@
 /**
- * Validation trees with calm. Compose `is` predicates with
+ * Validation trees with bead. Compose `is` predicates with
  * the `validate` envelope flow to collect typed failures.
  */
 
-import { make, Base } from '@cluesurf/calm'
-import standard, { type Code } from '@cluesurf/calm/book'
+import { make, Base } from '@cluesurf/bead'
+import standard, { type Code } from '@cluesurf/bead/book'
 
 const base = new Base<Code>()
 base.load(standard)

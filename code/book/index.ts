@@ -70,7 +70,7 @@ const call = {
 
 const standard: Book = {
   host: 'cluesurf',
-  name: 'calm',
+  name: 'bead',
   cast,
   call,
   code: CodeLink,
@@ -90,8 +90,8 @@ export const hooks = call
 // Re-export the generated `Code` type and `CodeLink` integer-id
 // table from the same folder so consumers can:
 //
-//   import type { Code } from '@cluesurf/calm/book'
-//   import { CodeLink } from '@cluesurf/calm/book'
+//   import type { Code } from '@cluesurf/bead/book'
+//   import { CodeLink } from '@cluesurf/bead/book'
 export type { Code } from './code'
 export { CodeLink }
 export type { CodeLink as CodeLinkValue } from './code'

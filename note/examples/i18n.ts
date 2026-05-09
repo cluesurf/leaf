@@ -1,5 +1,5 @@
 /**
- * Localization templates with calm.
+ * Localization templates with bead.
  *
  * Per-locale trees, plural categories via the standard
  * catalog's `plural` flow, gender / select via `selectCases`.
@@ -11,8 +11,8 @@ import {
   renderText,
   Base,
   type Cast,
-} from '@cluesurf/calm'
-import standard, { type Code } from '@cluesurf/calm/book'
+} from '@cluesurf/bead'
+import standard, { type Code } from '@cluesurf/bead/book'
 
 const base = new Base<Code>()
 base.load(standard)
@@ -92,7 +92,7 @@ base.cast(make.fold('greeting', { name: 'World' }))
 // Walk a list with a join — render a list of items as comma-separated.
 const listLine = make.templateString(
   'Items: ',
-  make.walk(make.read('items'), make.read('item'), { join: ', ' }),
+  make.join(', ', make.walk(make.read('items'), make.read('item'))),
 )
 
 renderText(listLine, {

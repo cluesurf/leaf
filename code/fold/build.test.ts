@@ -457,34 +457,53 @@ describe('control flow', () => {
     expect(renderText(tree2, { scope })).toBe('A:1 A:2 B:3 ')
   })
 
-  it('walk — `join` separator slots between iterations (not after the last)', () => {
-    const tree = make.walk(
-      make.reference('items'),
-      make.reference('item'),
-      { join: ', ' },
+  it('join — separator slots between walk iterations (not after the last)', () => {
+    const tree = make.join(
+      ', ',
+      make.walk(make.reference('items'), make.reference('item')),
     )
     const scope = makeScope({ items: ['a', 'b', 'c'] })
     expect(renderText(tree, { scope })).toBe('a, b, c')
   })
 
-  it('walk — `join` empty string is a valid no-op separator', () => {
-    const tree = make.walk(
-      make.reference('items'),
-      make.reference('item'),
-      { join: '' },
+  it('join — empty separator is a valid no-op', () => {
+    const tree = make.join(
+      '',
+      make.walk(make.reference('items'), make.reference('item')),
     )
     const scope = makeScope({ items: ['x', 'y'] })
     expect(renderText(tree, { scope })).toBe('xy')
   })
 
-  it('walkSize — `join` works with counted ranges', () => {
-    const tree = make.walkSize(
-      0,
-      4,
-      make.reference('head'),
-      { join: '-' },
+  it('join — wraps a counted-range walk', () => {
+    const tree = make.join(
+      '-',
+      make.walkSize(0, 4, make.reference('head')),
     )
     expect(renderText(tree, { scope: makeScope({}) })).toBe('0-1-2-3')
+  })
+
+  it('join — explicit list of items', () => {
+    const tree = make.join(', ', 'a', 'b', 'c')
+    expect(tree).toEqual({
+      form: 'join',
+      text: ', ',
+      list: ['a', 'b', 'c'],
+    })
+    expect(renderText(tree, { scope: makeScope() })).toBe('a, b, c')
+  })
+
+  it('join — mixes items + walks; walk iterations flatten', () => {
+    const tree = make.join(
+      ', ',
+      'first',
+      make.walk(make.reference('items'), make.reference('item')),
+      'last',
+    )
+    const out = renderText(tree, {
+      scope: makeScope({ items: ['x', 'y'] }),
+    })
+    expect(out).toBe('first, x, y, last')
   })
 
   it('walk — outer scope visible inside the body', () => {

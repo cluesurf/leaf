@@ -4,7 +4,7 @@ What's done, what's left, and what's still vague in the spec.
 
 ## Where we are now
 
-- The form.js source has been migrated into `calm/code/`.
+- The form.js source has been migrated into `bead/code/`.
 - Folder structure: `form/`, `fold/`, `make/` (codegen), `base/` (runtime), `book/` (standard catalog).
 - `pnpm exec tsc --noEmit` is clean.
 - All 196 tests pass.
@@ -16,7 +16,7 @@ What's done, what's left, and what's still vague in the spec.
 ### Phase 1. AST shape (`fold/`) ✅
 
 - [x] `BranchPrimitive` → `ForkPrimitive`. `'branch'` → `'fork'`.
-- [x] `AttemptPrimitive` removed entirely. Calm has no try/catch.
+- [x] `AttemptPrimitive` removed entirely. Bead has no try/catch.
 - [x] `LoopPrimitive` collapsed into `WalkPrimitive` variants. Single `'walk'` discriminant with `case: 'test' | 'list' | 'size'`. (Spec teases a 4th `'form'` variant for object-entries-style; not implemented.)
 - [x] `PathPrimitive` → `ReadPrimitive`. `path: PathSeg[]` → `link: ReadLink[]`.
 - [x] Literal types collapsed to **bare native scalars** (`string` / `number` / `boolean` / `Date` / `null`). No `*Primitive` wrappers for scalars. Tagged structural nodes stay: `list`, `hash`, `template_string`, `read`, `reference`, `call`, `fork`, `switch`, `match`, `case`, `pick`, `walk`, `view`.
@@ -27,7 +27,7 @@ What's done, what's left, and what's still vague in the spec.
 
 ### Phase 2. Builder rename (`fold/build.ts`) ✅
 
-The namespace is now `make` (not `flow`). Calm spec names:
+The namespace is now `make` (not `flow`). Bead spec names:
 
 - [x] `make.fork(...)` (was `make.branch`).
 - [x] `make.read(...)` (was `make.path`). Internal field renamed too.
@@ -96,10 +96,10 @@ Areas the notes are vague or silent on. Should be filled before the correspondin
 
 ### Constraint grammar
 
-Notes mention `validate(...)` and constraint trees but don't have a dedicated `note/constraint.md`. The cluesurf monorepo's `note/platform/model/schema/` had the full grammar (8 families of predicates, `let` binding, async, locale, stage, suggestions, viewer authorization). That work isn't ported into calm yet.
+Notes mention `validate(...)` and constraint trees but don't have a dedicated `note/constraint.md`. The cluesurf monorepo's `note/platform/model/schema/` had the full grammar (8 families of predicates, `let` binding, async, locale, stage, suggestions, viewer authorization). That work isn't ported into bead yet.
 
-- [ ] Decide whether constraint grammar lives in calm spec or stays at the monorepo level.
-- [ ] If in calm: port `constraint-grammar.md`, `constraint-call-api.md`, `constraint-edge-cases.md`, `constraint-call-api-verbs.md` analogues.
+- [ ] Decide whether constraint grammar lives in bead spec or stays at the monorepo level.
+- [ ] If in bead: port `constraint-grammar.md`, `constraint-call-api.md`, `constraint-edge-cases.md`, `constraint-call-api-verbs.md` analogues.
 - [ ] If at monorepo level: link out from `note/catalog.md`'s `validate` entry.
 
 ### HTTP / network calls
@@ -145,7 +145,7 @@ Spec uses `mark` for per-call schema-version stamps but doesn't describe what ha
 
 ### Multi-runtime interop
 
-`note/goals.md` says calm is language-agnostic at the spec level. No formal interop doc.
+`note/goals.md` says bead is language-agnostic at the spec level. No formal interop doc.
 
 - [ ] Reference implementation contract (what every runtime must implement).
 - [ ] Test suite that any runtime can run against to claim conformance.
@@ -153,10 +153,10 @@ Spec uses `mark` for per-call schema-version stamps but doesn't describe what ha
 
 ### Editor implementation
 
-`note/editor.md` describes the protocol. The actual editor UI is out of scope for the calm package, but the protocol implementation is in scope.
+`note/editor.md` describes the protocol. The actual editor UI is out of scope for the bead package, but the protocol implementation is in scope.
 
 - [ ] Patch validation and conflict detection.
-- [ ] Editor primitives package (separate `@cluesurf/calm-editor`?).
+- [ ] Editor primitives package (separate `@cluesurf/bead-editor`?).
 - [ ] Render-diff emission.
 
 ### Find vs Fold distinction

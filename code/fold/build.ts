@@ -22,6 +22,7 @@ import type {
   FindPrimitive,
   FoldPrimitive,
   HashPrimitive,
+  JoinPrimitive,
   IndexSeg,
   ListPrimitive,
   MatchPrimitive,
@@ -48,6 +49,7 @@ export type Promotable =
   | boolean
   | Date
   | unknown[]
+  | Record<string, unknown>
 
 /**
  * Normalize a value for inclusion in a fold tree.
@@ -117,8 +119,29 @@ export function list(items: Cast[]): ListPrimitive {
   return { form: 'list', list: items }
 }
 
-export function templateString(...children: Promotable[]): TemplateStringPrimitive {
+export function templateString(
+  ...children: Promotable[]
+): TemplateStringPrimitive {
   return { form: 'template_string', flow: children.map(promote) }
+}
+
+/**
+ * Render every item with `text` slotted between adjacent
+ * items. Items can be any Cast; walks flatten in (each
+ * iteration becomes a separate join entry, so the separator
+ * lands between iterations naturally).
+ *
+ *   make.join(', ', 'a', 'b', 'c')
+ *   // → 'a, b, c'
+ *
+ *   make.join(', ', make.walk(items, body))
+ *   // → 'body(items[0]), body(items[1]), …'
+ */
+export function join(
+  text: string,
+  ...items: Promotable[]
+): JoinPrimitive {
+  return { form: 'join', text, list: items.map(promote) }
 }
 
 export function hash(base: Record<string, Promotable>): HashPrimitive {
@@ -296,10 +319,7 @@ export const lt = (a: Promotable, b: Promotable) => call('lt', { a, b })
 export const lte = (a: Promotable, b: Promotable) =>
   call('lte', { a, b })
 
-export function inOf(
-  value: Promotable,
-  listOf: Promotable[],
-): Call {
+export function inOf(value: Promotable, listOf: Promotable[]): Call {
   return call('in', { value, list: listOf })
 }
 
@@ -341,28 +361,36 @@ export const length = (value: Promotable) => call('length', { value })
 // computed options) or a plain options object — the walker
 // passes it through to the hook unchanged via `collectCallArgs`.
 
-export type FormatOptions =
-  | Promotable
-  | Record<string, unknown>
+export type FormatOptions = Promotable | Record<string, unknown>
 
-function withOptions(name: string, value: Promotable, options?: FormatOptions): Call {
+function withOptions(
+  name: string,
+  value: Promotable,
+  options?: FormatOptions,
+): Call {
   if (options === undefined) return call(name, { value })
-  return call(name, { value, options: options as Promotable })
+  return call(name, { value, options: options })
 }
 
-export const formatNumber = (value: Promotable, options?: FormatOptions) =>
-  withOptions('number', value, options)
+export const formatNumber = (
+  value: Promotable,
+  options?: FormatOptions,
+) => withOptions('number', value, options)
 
 export const currency = (value: Promotable, code: string) =>
   call('currency', { value, code })
 
 export const percent = (value: Promotable) => call('percent', { value })
 
-export const formatDate = (value: Promotable, options?: FormatOptions) =>
-  withOptions('date', value, options)
+export const formatDate = (
+  value: Promotable,
+  options?: FormatOptions,
+) => withOptions('date', value, options)
 
-export const formatTime = (value: Promotable, options?: FormatOptions) =>
-  withOptions('time', value, options)
+export const formatTime = (
+  value: Promotable,
+  options?: FormatOptions,
+) => withOptions('time', value, options)
 
 export const relative = (value: Promotable, unit: string) =>
   call('relative', { value, unit })
@@ -454,7 +482,10 @@ export function otherwise(flow: Cast[] | string): CaseDefaultArm {
   }
 }
 
-export function caseOf(test: Promotable, arms: CaseArm[]): CasePrimitive {
+export function caseOf(
+  test: Promotable,
+  arms: CaseArm[],
+): CasePrimitive {
   return { form: 'case', test: promote(test), case: arms }
 }
 
@@ -473,12 +504,13 @@ export function pick(...values: Promotable[]): PickPrimitive {
  * For-each over a collection. The body (`hook`) renders once
  * per item with `item` and `index` bound in scope.
  *
- * `join` is rendered between iterations (not after the last).
+ * For separator-between-iterations, wrap with `make.join`:
+ *   make.join(', ', make.walk(items, body))
  */
 export function walk(
   listOf: Promotable,
   hook: Promotable,
-  opts?: { item?: string; index?: string; join?: Promotable },
+  opts?: { item?: string; index?: string },
 ): WalkPrimitive {
   const node: WalkPrimitive = {
     form: 'walk',
@@ -488,47 +520,36 @@ export function walk(
   }
   if (opts?.item) node.item = opts.item
   if (opts?.index) node.index = opts.index
-  if (opts?.join !== undefined) node.join = promote(opts.join)
   return node
 }
 
 /**
  * While-style loop. Re-evaluate `test`; while truthy, render
- * `hook`. Body renders concatenated (text mode) or as a
- * fragment (element mode). `join` slots between iterations.
+ * `hook`. Wrap with `make.join` for separator semantics.
  */
 export function walkTest(
   test: Promotable,
   hook: Promotable,
-  opts?: { join?: Promotable },
 ): WalkPrimitive {
-  const node: WalkPrimitive = {
+  return {
     form: 'walk',
     case: 'test',
     test: promote(test),
     hook: promote(hook),
   }
-  if (opts?.join !== undefined) node.join = promote(opts.join)
-  return node
 }
 
 /**
  * Counted range. Iterates from `base` (inclusive) to `head`
  * (exclusive) by `move` (default 1). The current value is
  * bound under `item` (default `'head'`); `index` (default
- * `'index'`) carries the 0-based step counter. `join` slots
- * between iterations.
+ * `'index'`) carries the 0-based step counter.
  */
 export function walkSize(
   base: Promotable,
   head: Promotable,
   hook: Promotable,
-  opts?: {
-    move?: number
-    item?: string
-    index?: string
-    join?: Promotable
-  },
+  opts?: { move?: number; item?: string; index?: string },
 ): WalkPrimitive {
   const node: WalkPrimitive = {
     form: 'walk',
@@ -540,7 +561,6 @@ export function walkSize(
   if (opts?.move !== undefined) node.move = opts.move
   if (opts?.item) node.item = opts.item
   if (opts?.index) node.index = opts.index
-  if (opts?.join !== undefined) node.join = promote(opts.join)
   return node
 }
 

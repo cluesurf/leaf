@@ -1,6 +1,6 @@
-# `@cluesurf/calm`. Design notes
+# `@cluesurf/bead`. Design notes
 
-Spec docs for the calm runtime, schema vocabulary, and codegen
+Spec docs for the bead runtime, schema vocabulary, and codegen
 pipeline. Living docs — refine in place as decisions firm up.
 
 ## Canonical naming
@@ -17,7 +17,7 @@ pipeline. Living docs — refine in place as decisions firm up.
 
 ## Reading order
 
-1. [`goals.md`](./goals.md). The why. What `calm` is, what
+1. [`goals.md`](./goals.md). The why. What `bead` is, what
    problems it solves, the long-term vision (browser editor
    for end-users, MDX-but-JSON, sandboxed by construction).
 2. [`architecture.md`](./architecture.md). The four core

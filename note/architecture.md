@@ -1,6 +1,6 @@
 # Architecture
 
-The four core types/classes calm exposes, and how they relate.
+The four core types/classes bead exposes, and how they relate.
 
 ## The four pieces
 
@@ -35,7 +35,7 @@ Codegen dispatches each entry by its `form:` discriminant (`'form'` /
 matter; identity is in the reserved props.
 
 `host` + `name` are optional informational labels. They do NOT
-participate in colon-key generation. Calm assumes **globally unique
+participate in colon-key generation. Bead assumes **globally unique
 entry names** across all registered base; codegen errors if two base
 contribute entries with colliding identity tuples (see "Duplicate
 detection" below).
@@ -78,7 +78,7 @@ per-entry.
 
 ### Duplicate detection
 
-Calm assumes globally unique entry identity across every registered
+Bead assumes globally unique entry identity across every registered
 Book. At `make.save()` time, codegen checks for collisions:
 
 - **Forms** are identified by the tuple `(cast, call, case)`. Two Forms
@@ -118,7 +118,7 @@ inference on `flow(...)` and `call(...)` resolves the `Input` and
 
 ```typescript
 import type Code from './libs'   // generated
-import { Base }  from '@cluesurf/calm'
+import { Base }  from '@cluesurf/bead'
 
 const base = new Base<Code>()
 

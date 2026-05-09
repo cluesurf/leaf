@@ -21,7 +21,7 @@ dispatches each entry by its `form:` discriminant (`'form'` / `'flow'` /
 don't have to predict which bucket a declaration belongs in.
 
 `host` + `name` are informational only. They do **not** participate in
-colon-key generation — calm assumes globally unique entry names across
+colon-key generation — bead assumes globally unique entry names across
 all registered Books, with codegen-time duplicate detection if two Books
 contribute colliding entries (see [`codegen.md`](./codegen.md)). The
 labels are used in error messages to identify which Book a colliding
@@ -79,7 +79,7 @@ Three common sources:
 
 1. **Published packages.** A library author writes their schemas, runs
    their own codegen, and ships an `index.ts` that default-exports a
-   `Book`. Consumers `import standard from '@cluesurf/calm'` and pass it
+   `Book`. Consumers `import standard from '@cluesurf/bead'` and pass it
    to `make.load(...)`.
 2. **In-tree authoring.** A host application authors Forms and Flows in
    its own source tree, collects them into a Book, registers it with
@@ -115,7 +115,7 @@ losing information.)
 A small Book that ships one bare Form and one Flow:
 
 ```typescript
-import type { Book, Form, Flow } from '@cluesurf/calm'
+import type { Book, Form, Flow } from '@cluesurf/bead'
 
 const language: Form = {
   form: 'form',
@@ -144,8 +144,8 @@ export const myBook: Book = {
 Consumers register this with:
 
 ```typescript
-import { Make } from '@cluesurf/calm/make'
-import { myBook } from '@cluesurf/calm-languages'
+import { Make } from '@cluesurf/bead/make'
+import { myBook } from '@cluesurf/bead-languages'
 
 const make = new Make({ link: './libs' })
 

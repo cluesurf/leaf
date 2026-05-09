@@ -1,12 +1,12 @@
 # Structure
 
-How calm works, top to bottom. The vocabulary, the primitives,
+How bead works, top to bottom. The vocabulary, the primitives,
 the AST, and the lifecycle. Read this after `goals.md`; read
 it before the deeper specs.
 
 ## Vocabulary
 
-Calm has **two type/instance pairs** at the schema level,
+Bead has **two type/instance pairs** at the schema level,
 plus four core architectural pieces (two types, two classes)
 that frame the system end-to-end.
 
@@ -25,7 +25,7 @@ that frame the system end-to-end.
   optional make (output).
 - A **`Call`** is a node in the AST invoking a Flow.
 
-A **`Cast`** is the umbrella type for any JSON object calm
+A **`Cast`** is the umbrella type for any JSON object bead
 processes — whether a Form declaration, a Flow declaration,
 a Call AST node, a record instance, or a Fold. Every value
 in the system is a Cast of some kind, distinguished by its
@@ -99,7 +99,7 @@ Code, Base, Make). The spec doesn't introduce more.
 
 ## Keyword grammar
 
-Calm reuses the Seed-language vocabulary for declaring
+Bead reuses the Seed-language vocabulary for declaring
 schemas. Each keyword has one job:
 
 | keyword | role | used in |
@@ -122,15 +122,15 @@ schemas. Each keyword has one job:
 | `mark` | per-instance schema-version stamp (semver) | instances (compiled) |
 
 These words come from Seed and align with the data-modeling
-discipline calm inherits from it.
+discipline bead inherits from it.
 
 ## What you export
 
 Every authored module exports `const` declarations typed as one
-of the six primitive shapes calm understands:
+of the six primitive shapes bead understands:
 
 ```typescript
-import type { Form, Flow, Hash, List, Fold, Find } from '@cluesurf/calm'
+import type { Form, Flow, Hash, List, Fold, Find } from '@cluesurf/bead'
 
 export const language_string: Form = { /* ... */ }   // data-shape declaration
 export const is_ipa:          Flow = { /* ... */ }   // function declaration
@@ -153,7 +153,7 @@ Each export type has a clear role:
 
 `Fold` is what's currently called a `flow` tree in
 `@cluesurf/form`'s `make/flow` builders. The JSON node tree
-that the runtime evaluates. Renamed to `Fold` in calm.
+that the runtime evaluates. Renamed to `Fold` in bead.
 
 `Find` is the find / test query-filter shape consolidated from
 the existing query-system spec. See [`find.md`](./find.md).
@@ -161,7 +161,7 @@ the existing query-system spec. See [`find.md`](./find.md).
 A `Fold` is built with the `make.*` builder DSL:
 
 ```typescript
-import { make } from '@cluesurf/calm'
+import { make } from '@cluesurf/bead'
 
 export const default_filter: Find = make.call('find', {
   base: 'list',
@@ -180,9 +180,9 @@ declaration. Several concepts using flow/Flow/Fold/Find names
 
 Exports live wherever they make sense in the source tree. 
 spread across files, folders, decks, cards. **At compile time,
-calm aggregates every reachable export into a single flattened
+bead aggregates every reachable export into a single flattened
 module** that the runtime loads. The aggregation mechanism is
-plain `export * from './some/path'` re-exports; calm doesn't
+plain `export * from './some/path'` re-exports; bead doesn't
 introduce a new module-resolution layer.
 
 ```
@@ -231,7 +231,7 @@ top-level `code/index.ts`. The host imports the deck and gets
 one flattened namespace of every authored constant:
 
 ```typescript
-import * as base from '@cluesurf/calm/base'
+import * as base from '@cluesurf/bead/base'
 
 // base.language_string, standard.is_ipa, standard.welcome_guide, ...
 
@@ -267,7 +267,7 @@ A `Form` declares the shape of data. Fields, types, defaults,
 constraints. Pure declaration, no execution.
 
 ```typescript
-import type { Form } from '@cluesurf/calm'
+import type { Form } from '@cluesurf/bead'
 
 const language_string: Form = {
   form: 'form',
@@ -353,7 +353,7 @@ parser (Zod or equivalent).
 A `Flow` declares a function. Name, args, return type:
 
 ```typescript
-import type { Flow } from '@cluesurf/calm'
+import type { Flow } from '@cluesurf/bead'
 
 const is_ipa: Flow = {
   name: 'is',
@@ -559,7 +559,7 @@ Composition is type-checked: parent-arg expectations must
 match child-Flow `like` declarations.
 
 ```typescript
-import { flow } from '@cluesurf/calm'
+import { flow } from '@cluesurf/bead'
 
 make.call('is', {
   case: 'all',
@@ -585,7 +585,7 @@ Reads as: "is-all of [is-string(value), is-among(value, [...])]"
 Casts are constructed via `make` + `bind`, mirroring Seed:
 
 ```typescript
-import { make } from '@cluesurf/calm'
+import { make } from '@cluesurf/bead'
 
 const case_instance = make('language_string', {
   bind: {
@@ -674,7 +674,7 @@ base.flow('get', { case: 'length' }, ({ text }) => text.length)
 ### 3. User authors a Fold
 
 ```typescript
-import { flow } from '@cluesurf/calm'
+import { flow } from '@cluesurf/bead'
 
 const constraint = make.call('is', {
   case: 'all',
@@ -725,7 +725,7 @@ Flows, and Folds that belong together; the Book that
 collects them is what the runtime sees.
 
 ```
-deck/calm/code/
+deck/bead/code/
   form/                          # the schema DSL (Form-related machinery)
     type.ts                      # Form / link / like / head types
     build.ts                     # form / link / case builders
@@ -783,7 +783,7 @@ Three type/instance pairs, one runtime, one editor.
 
 ## Inheritance from Seed
 
-Calm's vocabulary is intentionally aligned with the Seed
+Bead's vocabulary is intentionally aligned with the Seed
 language. Where Seed says:
 
 ```tree
@@ -798,7 +798,7 @@ form user
       bind password, read password
 ```
 
-Calm in TypeScript / JSON says:
+Bead in TypeScript / JSON says:
 
 ```typescript
 // Form
@@ -830,7 +830,7 @@ make.call('login', {
 ```
 
 Same vocabulary (`form`, `link`, `like`, `take`, `call`,
-`bind`), same discipline. Calm is the JSON-tree counterpart to
+`bind`), same discipline. Bead is the JSON-tree counterpart to
 Seed's `.tree` source. When Seed matures, the two will likely
 share a compile target.
 

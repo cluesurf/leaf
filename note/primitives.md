@@ -1,6 +1,6 @@
 # Primitives: `Form` and `Flow`
 
-The whole spec reduces to these two. Every other concept in calm is one
+The whole spec reduces to these two. Every other concept in bead is one
 of them or made of them.
 
 ## Type vs instance, recap
@@ -257,7 +257,7 @@ flow through automatically.
 ## Why two primitives, not one
 
 A naive design might collapse Form and Flow into a single "schema"
-primitive. That hides the asymmetry that makes calm work:
+primitive. That hides the asymmetry that makes bead work:
 
 - A `Form` is **passive**. Describes data. No execution.
 - A `Flow` is **active**. Describes a function. Has an implementation.

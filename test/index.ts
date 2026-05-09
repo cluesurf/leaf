@@ -38,7 +38,7 @@ const HOOK: HookHash = TASK as HookHash
  */
 const TEST_BOOK: Book = {
   host: 'cluesurf',
-  name: 'calm-test',
+  name: 'bead-test',
   base: [
     ...(Object.values(MESH) as Cast[]),
     ...(Object.values(test) as Cast[]),

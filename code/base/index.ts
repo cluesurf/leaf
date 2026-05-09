@@ -8,7 +8,7 @@
  * against the registry and infers the Hook's args / return
  * type.
  *
- *   import { Base } from '@cluesurf/calm'
+ *   import { Base } from '@cluesurf/bead'
  *   import type Code from './libs'   // generated
  *
  *   const base = new Base<Code>()
@@ -62,7 +62,7 @@ export type {
  *    `new Base()` (with no explicit generic) sees the merged
  *    members:
  *
- *       declare module '@cluesurf/calm' {
+ *       declare module '@cluesurf/bead' {
  *         interface Code {
  *           'flow:select:language': { take: SelectLanguageTake; make: SelectLanguage }
  *           'form:language':        { cast: Language }
@@ -239,7 +239,7 @@ export class Base<R = Code> {
   /**
    * Bulk-register every Flow handler in a Book.
    *
-   *   import standard from '@cluesurf/calm/book'
+   *   import standard from '@cluesurf/bead/book'
    *   const base = new Base<Code>()
    *   base.load(standard)
    *
@@ -409,7 +409,12 @@ export class Base<R = Code> {
     const parents = new Map<string, string>()
     indexMarks(nextTree, undefined, parents)
 
-    const output = this.castWithCache(nextTree, prev.scope, cache, dirty)
+    const output = this.castWithCache(
+      nextTree,
+      prev.scope,
+      cache,
+      dirty,
+    )
 
     return { tree: nextTree, output, scope: prev.scope, cache, parents }
   }
@@ -520,7 +525,10 @@ function applyTreePatch(tree: FoldNode, patch: TreePatch): FoldNode {
     if (node instanceof Date) return node
 
     // Object-with-form. Test mark match against this node first.
-    const obj = node as { mark?: string; form?: string } & Record<string, unknown>
+    const obj = node as { mark?: string; form?: string } & Record<
+      string,
+      unknown
+    >
 
     if (patch.op === 'replace' && obj.mark === patch.mark) {
       return patch.value
@@ -567,7 +575,7 @@ function walkChildren(
       let arrChanged = false
       for (const item of v) {
         if (isCastLike(item)) {
-          const next = transform(item as FoldNode)
+          const next = transform(item)
           if (next === undefined) {
             arrChanged = true // dropped
             continue
@@ -581,7 +589,7 @@ function walkChildren(
       out[k] = arrChanged ? mapped : v
       if (arrChanged) changed = true
     } else if (isCastLike(v)) {
-      const next = transform(v as FoldNode)
+      const next = transform(v)
       if (next === undefined) {
         // remove a single-slot child by clearing the field
         out[k] = undefined
@@ -597,12 +605,12 @@ function walkChildren(
       !Array.isArray(v)
     ) {
       // Plain object (e.g. wake-form `bind: {...}`, hash `base: {...}`).
-      let inner = v as Record<string, unknown>
+      const inner = v as Record<string, unknown>
       let innerChanged = false
       const innerOut: Record<string, unknown> = {}
       for (const [ik, iv] of Object.entries(inner)) {
         if (isCastLike(iv)) {
-          const nextI = transform(iv as FoldNode)
+          const nextI = transform(iv)
           if (nextI === undefined) {
             innerChanged = true
             continue
@@ -663,11 +671,7 @@ function indexMarksDeep(
     for (const item of v) indexMarksDeep(item, ancestor, parents)
     return
   }
-  if (
-    v != null &&
-    typeof v === 'object' &&
-    !(v instanceof Date)
-  ) {
+  if (v != null && typeof v === 'object' && !(v instanceof Date)) {
     if ('form' in (v as Record<string, unknown>)) {
       indexMarks(v as FoldNode, ancestor, parents)
     } else {

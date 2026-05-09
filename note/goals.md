@@ -1,17 +1,17 @@
 # Goals
 
-The why and what of `@cluesurf/calm`. This is a **goals** doc,
+The why and what of `@cluesurf/bead`. This is a **goals** doc,
 not a design doc. It articulates the destination so design
 choices later can be evaluated against it.
 
-## What `calm` is, in one sentence
+## What `bead` is, in one sentence
 
 A JSON-only mini-language and runtime for **untrusted users to
 author rich, executable documents**, sandboxed by construction:
 the only things they can do are call functions the host
 explicitly registered.
 
-The shorthand: **calm is a JSON-structured template language**
+The shorthand: **bead is a JSON-structured template language**
 . Handlebars / Mustache / EJS in spirit, but the template
 isn't a string with embedded code. The template **is** the
 AST. You define the AST; the runtime walks it. No parser, no
@@ -20,7 +20,7 @@ JSON tree directly (through an editor that gives them a typed
 UI); the runtime evaluates it through a registered function
 catalog.
 
-## What `calm` is, expanded
+## What `bead` is, expanded
 
 The goal is a **complete runtime environment for sandboxed,
 simple code**. The kind of code that real applications need
@@ -45,7 +45,7 @@ All of it through the same primitives, the same registry, the
 same editor, the same runtime. **One mini-language; many
 shapes of use.**
 
-What calm deliberately is NOT:
+What bead deliberately is NOT:
 
 - Not a general-purpose programming language.
 - Not a JavaScript replacement.
@@ -57,14 +57,14 @@ The "complete environment" is everything an end-user needs to
 build rich content inside a host app, with zero host-code
 exposure.
 
-## What `calm` consolidates
+## What `bead` consolidates
 
-`calm` unifies three concepts that have lived as separate
+`bead` unifies three concepts that have lived as separate
 systems and packages until now:
 
 1. **Schema DSL**. The `Form` / `Hash` / `List` / `Mesh`
    builder language that describes data shapes. Currently lives
-   in a sibling package; **eventually copied into calm** so
+   in a sibling package; **eventually copied into bead** so
    the schema language and the runtime ship as one. Base becomes
    the home for the DSL, not just a consumer.
 
@@ -84,7 +84,7 @@ Three systems collapse into one, around two primitives.
 
 ## The two base primitives
 
-Everything in calm reduces to one of two things:
+Everything in bead reduces to one of two things:
 
 ### `Form`. Data model schemas
 
@@ -154,7 +154,7 @@ that, the AST becomes self-explanatory.
 Author (untrusted)              Host (trusted)
 ┌────────────────────┐          ┌────────────────────┐
 │ writes a JSON tree │  ──────► │ runs that tree     │
-│ in a browser editor│          │ via calm runtime   │
+│ in a browser editor│          │ via bead runtime   │
 └────────────────────┘          └────────────────────┘
                                          │
                                          ▼
@@ -165,7 +165,7 @@ Author (untrusted)              Host (trusted)
                                 └────────────────────┘
 ```
 
-Host installs `@cluesurf/calm`, registers the flows they want
+Host installs `@cluesurf/bead`, registers the flows they want
 their users to be able to call, and exposes an editor. Users
 compose documents from those flows. Nothing they write can
 escape into Node, the browser, the session, the network. Only
@@ -182,7 +182,7 @@ customers, end users). Embedding MDX-style authoring in a SaaS
 product means either trusting every author or sandboxing
 JavaScript. Neither is great.
 
-`calm` solves this by being **JSON-only**. There is no string
+`bead` solves this by being **JSON-only**. There is no string
 of code anywhere. There is no `eval`. There is no path from
 author input to host execution other than dispatching to a
 registered flow. The sandbox is the format, not a layer added
@@ -197,7 +197,7 @@ shape: a custom block editor, a custom JSON config, a
 proprietary template language. Each one re-solves storage,
 parsing, validation, rendering, editing, and security.
 
-`calm` is meant to be **the standard shape** for that document.
+`bead` is meant to be **the standard shape** for that document.
 One JSON AST. One runtime spec. One schema language for flows.
 Different products plug in different flow catalogs.
 
@@ -209,7 +209,7 @@ loops, computed fields, async data, validations, custom
 components. You outgrow the template engine and add
 JavaScript, which means losing the sandbox.
 
-`calm` is the missing middle: **expressive enough to handle
+`bead` is the missing middle: **expressive enough to handle
 real documents, restrictive enough to stay safe**. The author
 gets `if`, `walk`, `bind`, polymorphic dispatch, async data
 fetching, and component embedding. All expressed as JSON,
@@ -219,7 +219,7 @@ all dispatching through the host's registered flow catalog.
 
 Constraints (data validation rules) are also JSON trees of
 function calls. Building a separate engine for validation is
-duplication. `calm` is the **one runtime** that evaluates both
+duplication. `bead` is the **one runtime** that evaluates both
 documents and validations. Same AST, same registry, same
 editor.
 
@@ -236,7 +236,7 @@ a registered flow call.
 The spec. The AST shape, the dispatch rules, the standard flow
 catalog. Is independent of implementation language. Anyone can
 write a Rust or Python or Swift runtime that consumes the same
-trees. `@cluesurf/calm` is the **reference TypeScript runtime**,
+trees. `@cluesurf/bead` is the **reference TypeScript runtime**,
 not the only valid one.
 
 ### Must be small enough to internalize
@@ -416,7 +416,7 @@ own published handlers).
 
 ## Goal: standardized seed catalog
 
-`@cluesurf/calm` ships with a standard flow catalog covering
+`@cluesurf/bead` ships with a standard flow catalog covering
 nine verbs:
 
 - `is`. Boolean predicates
@@ -453,9 +453,9 @@ end-users. Not engineers. They build documents visually:
   flow catalog.
 - Save as a JSON tree that any compatible runtime can render.
 
-The output is a `calm` document. The same document renders in
+The output is a `bead` document. The same document renders in
 the host's app, a sibling product, an export-to-PDF flow, an
-RSS-style snippet. Anywhere a `calm` runtime exists.
+RSS-style snippet. Anywhere a `bead` runtime exists.
 
 ## Goal: portable across products
 
@@ -489,7 +489,7 @@ A constraint reads almost like English without translation.
 
 ## Goal: function-registry dispatch pattern
 
-`calm` follows a function-registry pattern:
+`bead` follows a function-registry pattern:
 
 - Source organized by **logical domain**, with each group
   carrying a `make.ts` (declarations) and `flow.ts`
@@ -500,7 +500,7 @@ A constraint reads almost like English without translation.
 - Schema-driven codegen. TypeScript types, Zod parsers, and
   the bundled `Code` type all derived from one source.
 
-| design point | calm |
+| design point | bead |
 |---|---|
 | source layout | logical-domain groups (`code/base/<group>/{make,flow}.ts`) |
 | call shape | `base.call('is', { base: 'ipa', case: 'broad', text })` |
@@ -517,7 +517,7 @@ and safe.
 
 ### Not a general-purpose programming language
 
-`calm` is for documents. It has the dynamism documents need. 
+`bead` is for documents. It has the dynamism documents need. 
 conditionals, loops, computed fields, polymorphic dispatch. 
 and stops there. It is not Turing-complete by design (recursion
 via `bind` has a depth cap), and it has no I/O outside what the
@@ -544,15 +544,15 @@ which the host implemented and audited.
 
 ### Not bound to TypeScript or the browser
 
-The spec is language-agnostic. `@cluesurf/calm` is one runtime;
+The spec is language-agnostic. `@cluesurf/bead` is one runtime;
 others can exist. The spec is the contract; the runtime is an
 implementation.
 
 ### Not a replacement for build-time codegen
 
-`calm` is for runtime, user-authored content. Schemas, types,
+`bead` is for runtime, user-authored content. Schemas, types,
 and pre-published content still go through the existing build-
-time codegen pipelines (form-DSL, `pnpm make:form`). `calm`
+time codegen pipelines (form-DSL, `pnpm make:form`). `bead`
 plugs in alongside them, not in their place.
 
 ## Goal: real-time validation
@@ -634,7 +634,7 @@ the same code path.
 
 ## Goal: first-class TypeScript type export
 
-Calm is not just a runtime. It's also a **type generator**.
+Bead is not just a runtime. It's also a **type generator**.
 
 Every flow's `take` schema and `like` return-type annotation
 compile to TypeScript types. Every `Form` schema compiles to
@@ -677,7 +677,7 @@ not stringly-typed argument names.
 ### Three flavors of consumer
 
 - **Host code** writes regular TypeScript. `import { Base }
-  from '@cluesurf/calm'` and use it; types flow through.
+  from '@cluesurf/bead'` and use it; types flow through.
 
 - **Editor UI** consumes the same types via a JSON Schema
   representation generated alongside, so it can render typed
@@ -698,7 +698,7 @@ language being authored by end users, the typed surface is
 also a security property: arguments that don't match the flow's
 input type can't even be authored, much less executed.
 
-This is why `form` is being absorbed into `calm` rather than
+This is why `form` is being absorbed into `bead` rather than
 left as a sibling package: the type generator and the runtime
 share so many concerns (schema parsing, type inference, codegen
 output) that splitting them is constant friction. Bundle them
@@ -806,10 +806,10 @@ always feel laggy no matter how clever the runtime is.
 | stage | host |
 |---|---|
 | **0. Spec** | This doc + AST + Flow + Base class definitions written down. |
-| **1. Runtime** | `@cluesurf/calm` reference TypeScript runtime: editable→compiled compiler, registry, `bind` evaluator. |
+| **1. Runtime** | `@cluesurf/bead` reference TypeScript runtime: editable→compiled compiler, registry, `bind` evaluator. |
 | **2. Seed catalog** | Standard flow catalog from constraint-call-api-verbs ported in, schemas + reference impls. |
 | **3. Editor primitives** | A small UI kit that renders an editable AST. Chip rows, input widgets per base/case, validation feedback. |
-| **4. Host integrations** | First production use: `mesh/site/word.surf` registers domain flows, ships a guide builder using calm. |
+| **4. Host integrations** | First production use: `mesh/site/word.surf` registers domain flows, ships a guide builder using bead. |
 | **5. Multi-runtime** | Spec frozen enough for a second-language runtime (likely Rust or WASM) to parse and evaluate the same trees. |
 | **6. Public API** | External hosts can build on top. Public docs site, plugin authoring guide. |
 
@@ -817,39 +817,39 @@ always feel laggy no matter how clever the runtime is.
 
 ### Inspiration: Fold
 
-Calm inherits a lot of its modeling vocabulary and design
+Bead inherits a lot of its modeling vocabulary and design
 intuition from **Seed**, the reactive programming and data
 modeling language at <https://github.com/cluesurf/seed>. Seed
 is the long-term work: a full language with a runtime,
 reactivity, and a rich type system. It still has a long way to
 go.
 
-Calm is the **near-term, more focused** sibling:
+Bead is the **near-term, more focused** sibling:
 
 - Seed: a general-purpose reactive programming language.
-- Calm: a **rendering / templating language** with the same
+- Bead: a **rendering / templating language** with the same
   data-modeling discipline, scoped tight enough to ship and to
   hand to end-users.
 
-Where Seed is the ambitious foundation, Calm is the practical
+Where Seed is the ambitious foundation, Bead is the practical
 runtime that lands now and keeps a clean migration path to
 Seed-shaped concepts later. The deck/card/flow vocabulary, the
 type-instance discipline (Form/Cast, Flow/Call), the form-DSL
 roots. All from Seed's design tradition.
 
-Eventually some of calm's runtime concerns may absorb into
-Seed when Seed is ready. For now, calm stands on its own as a
+Eventually some of bead's runtime concerns may absorb into
+Seed when Seed is ready. For now, bead stands on its own as a
 focused, JSON-only rendering engine.
 
 ### Sibling packages
 
 - **`@cluesurf/form`**. The schema DSL used in every flow's
   `take` field. Currently a separate package; **planned to be
-  copied into calm** so the schema language and the runtime
+  copied into bead** so the schema language and the runtime
   ship as one.
 - **`@cluesurf/flow`**. A sibling function registry for file
   conversion (`flow convert image -I png -O jpg`). Same
-  verb-first dispatch pattern, different domain. `calm` shares
+  verb-first dispatch pattern, different domain. `bead` shares
   the design discipline.
 
 ## Anti-goals to remember

@@ -19,7 +19,7 @@ export function save(name: string, bond: unknown) {
 
 export function LOAD(name: string): unknown {
   if (!(name in base)) {
-    throw new Error(`No '${name}' found in @cluesurf/calm`)
+    throw new Error(`No '${name}' found in @cluesurf/bead`)
   }
   return base[name]
 }

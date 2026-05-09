@@ -1,6 +1,6 @@
 # Standard catalog
 
-The seed Flow catalog that ships with `@cluesurf/calm`. Nine verbs cover
+The seed Flow catalog that ships with `@cluesurf/bead`. Nine verbs cover
 everything the runtime needs as a baseline; hosts extend with
 domain-specific flows via their own decks.
 
@@ -246,5 +246,5 @@ Impure flows must declare `pure: false`:
   none).
 
 Hosts adding impure flows should think hard about whether they belong in
-calm at all. The engine is for documents and validations, not for
+bead at all. The engine is for documents and validations, not for
 triggering effects.

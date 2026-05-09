@@ -3,7 +3,7 @@
  * through a host-provided data layer.
  */
 
-import { make, makeScope, renderText, Base } from '@cluesurf/calm'
+import { make, makeScope, renderText, Base } from '@cluesurf/bead'
 
 // AST-side: inline `find` Casts in templates.
 const recentArticlesPage = make.templateString(
