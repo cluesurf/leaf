@@ -7,7 +7,7 @@
 <br/>
 
 <p align='center'>
-  <img src='https://github.com/cluesurf/leaf/blob/make/view/leaf.svg?raw=true' height='312'/>
+  <img src='https://github.com/cluesurf/leaf/blob/make/view/leaf.svg?raw=true' height='256'/>
 </p>
 
 <h3 align='center'>@cluesurf/bead</h3>
