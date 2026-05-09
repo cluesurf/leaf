@@ -233,30 +233,25 @@ describe('control flow', () => {
     })
   })
 
-  it('case with arm helpers', () => {
-    const tree = cast.case(cast.plural(cast.reference('count')), [
+  it('case with arm helpers — compiles to a match AST with subject folded into each branch', () => {
+    const subject = cast.plural(cast.reference('count'))
+    const tree = cast.case(subject, [
       cast.value('one', 'message'),
       cast.otherwise('messages'),
     ])
-    expect(tree).toEqual({
-      form: 'case',
+    expect(tree.form).toBe('match')
+    expect(tree.branches).toHaveLength(1)
+    expect(tree.branches[0]).toEqual({
       test: {
         form: 'call',
-        name: 'plural',
-        value: { form: 'reference', name: 'count' },
+        name: 'is',
+        case: 'equal',
+        a: subject,
+        b: 'one',
       },
-      case: [
-        {
-          form: 'case-value',
-          value: 'one',
-          flow: ['message'],
-        },
-        {
-          form: 'case-default',
-          flow: ['messages'],
-        },
-      ],
+      then: 'message',
     })
+    expect(tree.fall).toBe('messages')
   })
 
   it('walk', () => {
@@ -341,6 +336,33 @@ describe('control flow', () => {
     expect(tree.form).toBe('match')
     expect(tree.branches).toHaveLength(2)
     expect(tree.fall).toBe('none')
+  })
+
+  it('match — accepts cast.when / cast.otherwise arms', () => {
+    const tree = cast.match([
+      cast.when(cast.gt(cast.reference('n'), 100), 'lots'),
+      cast.when(cast.gt(cast.reference('n'), 0), 'some'),
+      cast.otherwise('none'),
+    ])
+    expect(tree.form).toBe('match')
+    expect(tree.branches).toHaveLength(2)
+    expect(tree.fall).toBe('none')
+    expect(renderText(tree, { scope: makeScope({ n: 5 }) })).toBe('some')
+    expect(renderText(tree, { scope: makeScope({ n: 0 }) })).toBe('none')
+  })
+
+  it('walk — accepts object-arg form', () => {
+    const tree = cast.walk({
+      list: cast.reference('items'),
+      hook: cast.text(cast.read('item'), '|'),
+      item: 'item',
+    })
+    expect(tree.form).toBe('walk')
+    expect(tree.case).toBe('list')
+    expect(tree.item).toBe('item')
+    expect(
+      renderText(tree, { scope: makeScope({ items: ['a', 'b', 'c'] }) }),
+    ).toBe('a|b|c|')
   })
 
   it('match — first true branch wins', () => {
@@ -636,35 +658,33 @@ describe('views', () => {
 })
 
 describe('higher-order helpers', () => {
-  it('pluralCases', () => {
+  it('pluralCases — compiles to match AST with `is:equal` branches', () => {
     const tree = cast.pluralCases('count', {
       one: 'message',
       other: 'messages',
     })
-    expect(tree.form).toBe('case')
-    expect(tree.case).toHaveLength(2)
-    expect(tree.case[0]).toEqual({
-      form: 'case-value',
-      value: 'one',
-      flow: ['message'],
-    })
-    expect(tree.case[1]).toEqual({
-      form: 'case-default',
-      flow: ['messages'],
-    })
+    expect(tree.form).toBe('match')
+    expect(tree.branches).toHaveLength(1)
+    expect(tree.branches[0]?.then).toBe('message')
+    expect((tree.branches[0]?.test as { name: string }).name).toBe('is')
+    expect(tree.fall).toBe('messages')
   })
 
-  it('selectCases', () => {
+  it('selectCases — compiles to match AST keyed by `reference(gender)`', () => {
     const tree = cast.selectCases('gender', {
       male: 'Mr.',
       female: 'Mrs.',
       other: '',
     })
-    expect(tree.test).toEqual({ form: 'reference', name: 'gender' })
-    expect(tree.case).toHaveLength(3)
-    expect(tree.case[2]).toEqual({
-      form: 'case-default',
-      flow: [''],
-    })
+    expect(tree.form).toBe('match')
+    expect(tree.branches).toHaveLength(2)
+    expect(tree.fall).toBe('')
+    const firstTest = tree.branches[0]?.test as {
+      form: string
+      a: { form: string; name: string }
+      b: string
+    }
+    expect(firstTest.a).toEqual({ form: 'reference', name: 'gender' })
+    expect(firstTest.b).toBe('male')
   })
 })

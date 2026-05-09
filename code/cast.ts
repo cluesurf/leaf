@@ -171,15 +171,14 @@ export type CaseDefaultArm = {
   flow: Cast[]
 }
 
+/**
+ * Arm shape used by both `cast.match` (predicate-style) and
+ * `cast.case` (subject-style — `case` builds a `MatchPrimitive`
+ * by folding subject into each arm). The `case-*` discriminants
+ * exist as builder-input only; they're never present in the
+ * compiled tree.
+ */
 export type CaseArm = CaseValueArm | CaseTestArm | CaseDefaultArm
-
-export type CasePrimitive = {
-  form: 'case'
-  test: Cast
-  case: CaseArm[]
-  id?: string
-  meta?: Meta
-}
 
 export type PickPrimitive = {
   form: 'pick'
@@ -268,7 +267,6 @@ export type ControlFlow =
   | ForkPrimitive
   | SwitchPrimitive
   | MatchPrimitive
-  | CasePrimitive
   | PickPrimitive
   | WalkPrimitive
 
@@ -759,19 +757,74 @@ export function switchOn(
   return node
 }
 
+/**
+ * Predicate-style dispatch. Two arm shapes are accepted:
+ *
+ *   cast.match([
+ *     cast.when(pred, then),
+ *     cast.otherwise(then),
+ *   ])
+ *
+ *   cast.match([
+ *     { test: pred, then },
+ *   ], fallNode)
+ *
+ * Both compile to the same `MatchPrimitive`. The arm shape is
+ * the canonical one — it pairs naturally with `cast.case` (the
+ * subject-bound sibling). The legacy object-array form stays
+ * supported for back-compat.
+ */
+export function match(
+  arms: MatchArm[],
+  fall?: Promotable,
+): MatchPrimitive
 export function match(
   branches: { test: Promotable; then: Promotable }[],
   fall?: Promotable,
+): MatchPrimitive
+export function match(
+  input:
+    | MatchArm[]
+    | { test: Promotable; then: Promotable }[],
+  fall?: Promotable,
 ): MatchPrimitive {
-  const node: MatchPrimitive = {
-    form: 'match',
-    branches: branches.map(b => ({
-      test: promote(b.test),
-      then: promote(b.then),
-    })),
+  const branches: { test: Cast; then: Cast }[] = []
+  let armFall: Promotable | undefined = fall
+  for (const item of input) {
+    if (item && typeof item === 'object' && 'form' in item) {
+      // Arm-shape: when / otherwise / value
+      if (item.form === 'case-default') {
+        armFall = armBody(item.flow)
+      } else if (item.form === 'case-test') {
+        branches.push({
+          test: item.test as Cast,
+          then: armBody(item.flow),
+        })
+      } else if (item.form === 'case-value') {
+        throw new Error(
+          'cast.match: cast.value(...) is subject-bound. Use cast.when(...) or move into cast.case(subject, [...]).',
+        )
+      }
+    } else {
+      // Legacy {test, then} branch
+      branches.push({
+        test: promote(item.test),
+        then: promote(item.then),
+      })
+    }
   }
-  if (fall !== undefined) node.fall = promote(fall)
+  const node: MatchPrimitive = { form: 'match', branches }
+  if (armFall !== undefined) node.fall = promote(armFall)
   return node
+}
+
+/** Common arm shape that both `match` and `case` accept. */
+export type MatchArm = CaseTestArm | CaseDefaultArm | CaseValueArm
+
+/** Pull the single body Cast out of an arm's `flow:` array. */
+function armBody(flow: Cast[]): Cast {
+  if (flow.length === 1) return flow[0]!
+  return { form: 'text', flow }
 }
 
 // ----- case arms -----
@@ -798,6 +851,41 @@ export function testArm(
   }
 }
 
+/**
+ * Predicate arm. The canonical arm builder for both
+ * `cast.match` (predicate dispatch) and `cast.case` (the
+ * subject-bound sibling — `when` becomes a `case-test` evaluated
+ * against the subject when nested under `cast.case`).
+ *
+ *   cast.match([
+ *     cast.when(cast.gt(x, 100), 'big'),
+ *     cast.otherwise('small'),
+ *   ])
+ */
+export function when(
+  test: Promotable,
+  body: Cast | Cast[] | string,
+): CaseTestArm {
+  const promoted = promote(test)
+  // For case-context the `test` slot is typed as Call. When the
+  // user passes a non-Call promotion (literal, reference, etc.),
+  // wrap as `is:any:[promoted]` so the truthy semantics still
+  // apply. This keeps `cast.when` permissive while preserving
+  // the on-disk arm shape.
+  const testCall: Call =
+    promoted !== null &&
+    typeof promoted === 'object' &&
+    !(promoted instanceof Date) &&
+    (promoted as Cast & { form?: string }).form === 'call'
+      ? (promoted as Call)
+      : { form: 'call', name: 'is', case: 'any', things: [promoted] }
+  return {
+    form: 'case-test',
+    test: testCall,
+    flow: Array.isArray(body) ? body : [body],
+  }
+}
+
 export function otherwise(flow: Cast[] | string): CaseDefaultArm {
   return {
     form: 'case-default',
@@ -805,11 +893,57 @@ export function otherwise(flow: Cast[] | string): CaseDefaultArm {
   }
 }
 
+/**
+ * Subject-style dispatch.
+ *
+ *   cast.case(cast.read('role'), [
+ *     cast.value('admin', 'Welcome'),
+ *     cast.when(cast.eq(cast.read('role'), 'guest'), 'Hi'),
+ *     cast.otherwise('?'),
+ *   ])
+ *
+ * Compiles to a `MatchPrimitive` — same primitive `cast.match`
+ * produces — with each arm folded over the subject:
+ *
+ *   - `cast.value(literal, body)`   → `is:equal(subject, literal)`
+ *   - `cast.when(predicate, body)`  → predicate (subject injected
+ *                                     as `args.subject` for handlers
+ *                                     that read it).
+ *   - `cast.otherwise(body)`        → match `fall`.
+ */
 export function caseOf(
-  test: Promotable,
+  subject: Promotable,
   arms: CaseArm[],
-): CasePrimitive {
-  return { form: 'case', test: promote(test), case: arms }
+): MatchPrimitive {
+  const subjectNode = promote(subject)
+  const branches: { test: Cast; then: Cast }[] = []
+  let fall: Cast | undefined
+  for (const arm of arms) {
+    const body = armBody(arm.flow)
+    if (arm.form === 'case-default') {
+      fall = body
+    } else if (arm.form === 'case-value') {
+      branches.push({
+        test: {
+          form: 'call',
+          name: 'is',
+          case: 'equal',
+          a: subjectNode,
+          b: arm.value,
+        } as Call,
+        then: body,
+      })
+    } else {
+      // case-test: inject subject into the predicate's args bag.
+      branches.push({
+        test: { ...arm.test, subject: subjectNode } as Call,
+        then: body,
+      })
+    }
+  }
+  const node: MatchPrimitive = { form: 'match', branches }
+  if (fall !== undefined) node.fall = fall
+  return node
 }
 
 // ----- pick -----
@@ -827,23 +961,64 @@ export function pick(...values: Promotable[]): PickPrimitive {
  * For-each over a collection. The body (`hook`) renders once
  * per item with `item` and `index` bound in scope.
  *
+ * Two equivalent forms:
+ *
+ *   cast.walk(items, body, { item: 'tag' })
+ *   cast.walk({ list: items, hook: body, item: 'tag' })
+ *
  * For separator-between-iterations, wrap with `cast.join`:
  *   cast.join(', ', cast.walk(items, body))
  */
+export function walk(opts: {
+  list: Promotable
+  hook: Promotable
+  item?: string
+  index?: string
+}): WalkPrimitive
 export function walk(
   listOf: Promotable,
   hook: Promotable,
   opts?: { item?: string; index?: string },
+): WalkPrimitive
+export function walk(
+  listOrOpts:
+    | Promotable
+    | {
+        list: Promotable
+        hook: Promotable
+        item?: string
+        index?: string
+      },
+  hook?: Promotable,
+  opts?: { item?: string; index?: string },
 ): WalkPrimitive {
+  const o =
+    isWalkOpts(listOrOpts)
+      ? listOrOpts
+      : { list: listOrOpts, hook: hook!, item: opts?.item, index: opts?.index }
   const node: WalkPrimitive = {
     form: 'walk',
     case: 'list',
-    list: promote(listOf),
-    hook: promote(hook),
+    list: promote(o.list),
+    hook: promote(o.hook),
   }
-  if (opts?.item) node.item = opts.item
-  if (opts?.index) node.index = opts.index
+  if (o.item) node.item = o.item
+  if (o.index) node.index = o.index
   return node
+}
+
+function isWalkOpts(
+  v: unknown,
+): v is { list: Promotable; hook: Promotable; item?: string; index?: string } {
+  return (
+    v !== null &&
+    typeof v === 'object' &&
+    !Array.isArray(v) &&
+    !(v instanceof Date) &&
+    'list' in (v as Record<string, unknown>) &&
+    'hook' in (v as Record<string, unknown>) &&
+    !('form' in (v as Record<string, unknown>))
+  )
 }
 
 /**
@@ -938,7 +1113,7 @@ export function view(
 export function pluralCases(
   refName: string,
   arms: Record<string, Cast[] | string>,
-): CasePrimitive {
+): MatchPrimitive {
   const armsList: CaseArm[] = []
   for (const [k, v] of Object.entries(arms)) {
     if (k === 'other') continue
@@ -962,7 +1137,7 @@ export function pluralCases(
 export function selectCases(
   refName: string,
   arms: Record<string, Cast[] | string>,
-): CasePrimitive {
+): MatchPrimitive {
   const armsList: CaseArm[] = []
   for (const [k, v] of Object.entries(arms)) {
     if (k === 'other') continue
@@ -1044,6 +1219,7 @@ export const cast = {
   case: caseOf,
   value: valueArm,
   test: testArm,
+  when,
   otherwise,
   pick,
   walk,

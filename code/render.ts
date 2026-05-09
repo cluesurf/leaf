@@ -24,8 +24,6 @@
 
 import type {
   Call,
-  CaseArm,
-  CasePrimitive,
   Cast,
   FoldPrimitive,
   ForkPrimitive,
@@ -201,8 +199,6 @@ function compileBody(node: Cast, mode: Mode): Render {
       return compileSwitchNode(node, mode)
     case 'match':
       return compileMatchNode(node, mode)
-    case 'case':
-      return compileCaseNode(node, mode)
     case 'pick':
       return compilePickNode(node, mode)
     case 'walk':
@@ -412,26 +408,6 @@ function compileLazyBind(node: Call, mode: Mode): Render {
   return inner
 }
 
-/**
- * Specialized call closure for `case-test` arms: the case's
- * subject value gets injected as the `subject` arg when the
- * handler doesn't carry one of its own.
- */
-function compileCallWithSubject(
-  node: Call,
-): (subject: unknown, s: Scope, c: BaseRenderContext) => unknown {
-  const ident = identityOf(node)
-  const argEntries = compileArgEntries(node)
-  return (subject, s, c) => {
-    const handler = resolveCall(ident, c)
-    if (!handler) throw unknownOperator(ident)
-    const args: Record<string, unknown> = {}
-    for (const [k, get] of argEntries) args[k] = get(s, c)
-    if (args.subject === undefined) args.subject = subject
-    return handler(args, { ...c, scope: s })
-  }
-}
-
 const RESERVED_CALL_KEYS = new Set([
   'form',
   'name',
@@ -526,55 +502,6 @@ function compileMatchNode(node: MatchPrimitive, mode: Mode): Render {
       if (b.test(s, c)) return b.then(s, c)
     }
     return fall ? fall(s, c) : null
-  }
-}
-
-function compileCaseNode(node: CasePrimitive, mode: Mode): Render {
-  const subject = compile(node.test, 'text')
-  const arms = node.case.map(arm => compileCaseArm(arm, mode))
-  if (mode === 'element') {
-    return (s, c) => {
-      const subj = subject(s, c)
-      for (const arm of arms) {
-        if (arm.match(subj, s, c)) {
-          return wrapFragment(c, arm.flow.map((r, i) => keyed(r(s, c), i)))
-        }
-      }
-      return null
-    }
-  }
-  return (s, c) => {
-    const subj = subject(s, c)
-    for (const arm of arms) {
-      if (arm.match(subj, s, c)) {
-        return arm.flow.map(r => toText(r(s, c))).join('')
-      }
-    }
-    return ''
-  }
-}
-
-type CompiledArm = {
-  match: (subject: unknown, s: Scope, c: BaseRenderContext) => boolean
-  flow: Render[]
-}
-
-function compileCaseArm(arm: CaseArm, mode: Mode): CompiledArm {
-  const flow = arm.flow.map(n => compile(n, mode))
-  switch (arm.form) {
-    case 'case-value': {
-      const value = arm.value
-      return { flow, match: subject => deepEq(value, subject) }
-    }
-    case 'case-test': {
-      const test = compileCallWithSubject(arm.test)
-      return {
-        flow,
-        match: (subject, s, c) => Boolean(test(subject, s, c)),
-      }
-    }
-    case 'case-default':
-      return { flow, match: () => true }
   }
 }
 

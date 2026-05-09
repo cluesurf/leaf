@@ -21,7 +21,6 @@ export type {
   Call,
   CaseArm,
   CaseDefaultArm,
-  CasePrimitive,
   CaseTestArm,
   CaseValueArm,
   Cast,
