@@ -1,103 +1,96 @@
 /**
- * `base.cast(tree, scope?)` evaluates a make tree against
- * the Base's registered catalog handlers. Bridges authored
- * data-as-code (Cast trees) into the catalog runtime.
+ * `castInline` wraps a tree as a Fold + casts it. Bridges
+ * authored data-as-code (Cast trees) into the catalog runtime.
  *
- * Call shape mirrors `base.call`:
- *
- *   make.call('<verb>', { base: <noun>, case: <variant>, ...take })
- *
- * The runtime resolves `(name, base, case)` against the same
- * registry that backs `base.call(...)`, falling through to the
- * compiled `code:` integer id when present.
+ * Public API is `base.cast(name, params)` — tests use the
+ * inline helper to avoid declaring a Book per case.
  */
 
 import { describe, it, expect } from 'vitest'
-import { Base, make, makeScope } from '../code'
-import standard, { hooks, CodeLink, type Code } from '../code/book'
+import { Base, make } from '../code'
+import standard, { CodeLink, type Code } from '../code/book'
+import { castInline } from './helper'
 
 describe('base.cast — bridge to make trees', () => {
   const base = new Base<Code>()
   base.load(standard)
 
-  it('evaluates literal nodes directly', () => {
-    expect(base.cast('hello')).toBe('hello')
-    expect(base.cast(make.integer(42))).toBe(42)
-    expect(base.cast(make.boolean(true))).toBe(true)
+  it('evaluates literal nodes directly', async () => {
+    expect(castInline(base, 'hello')).toBe('hello')
+    expect(castInline(base, make.integer(42))).toBe(42)
+    expect(castInline(base, make.boolean(true))).toBe(true)
   })
 
-  it('evaluates a `make.weave` (string concatenation)', () => {
+  it('evaluates a `make.weave` (string concatenation)', async () => {
     const tree = make.text('a', 'b', 'c')
-    expect(base.cast(tree)).toBe('abc')
+    expect(castInline(base, tree)).toBe('abc')
   })
 
-  it('evaluates a path against scope', () => {
+  it('evaluates a path against scope', async () => {
     const tree = make.path('user', 'name')
-    expect(base.cast(tree, { user: { name: 'Lance' } })).toBe('Lance')
+    expect(
+      castInline(base, tree, { user: { name: 'Lance' } }),
+    ).toBe('Lance')
   })
 
-  it('dispatches a (name, base) call to a catalog hook', () => {
-    const tree = make.call('format:capitalized', {
-      text: 'hello',
-    })
-    expect(base.cast(tree)).toBe('Hello')
+  it('dispatches a (name, base) call to a catalog hook', async () => {
+    const tree = make.call('format:capitalized', { text: 'hello' })
+    expect(castInline(base, tree)).toBe('Hello')
   })
 
-  it('dispatches a (name, base, case) call to a catalog hook', () => {
-    const tree = make.call('is:ipa:broad', {
-      text: 'fəˈnɛtɪk',
-    })
-    expect(base.cast(tree)).toBe(true)
+  it('dispatches a (name, base, case) call to a catalog hook', async () => {
+    const tree = make.call('is:ipa:broad', { text: 'fəˈnɛtɪk' })
+    expect(castInline(base, tree)).toBe(true)
   })
 
-  it('composes nested make.call within make.weave', () => {
+  it('composes nested make.call within make.weave', async () => {
     const tree = make.text(
       'Hi, ',
       make.call('format:capitalized', { text: 'world' }),
       '!',
     )
-    expect(base.cast(tree)).toBe('Hi, World!')
+    expect(castInline(base, tree)).toBe('Hi, World!')
   })
 
-  it('resolves scope-derived inputs inside take args', () => {
+  it('resolves scope-derived inputs inside take args', async () => {
     const tree = make.call('format:truncated', {
       text: make.path('message'),
       length: make.integer(8),
     })
-    expect(base.cast(tree, { message: 'hello world' })).toBe('hello w…')
+    expect(
+      castInline(base, tree, { message: 'hello world' }),
+    ).toBe('hello w…')
   })
 
-  it('evaluates conditional forking', () => {
+  it('evaluates conditional forking', async () => {
     const tree = make.fork(
       make.gt(make.path('count'), make.integer(0)),
       'items',
       'no items',
     )
-    expect(base.cast(tree, { count: 5 })).toBe('items')
-    expect(base.cast(tree, { count: 0 })).toBe('no items')
+    expect(castInline(base, tree, { count: 5 })).toBe('items')
+    expect(castInline(base, tree, { count: 0 })).toBe('no items')
   })
 
-  it('catalog flows compose with make.* builtins', () => {
+  it('catalog flows compose with make.* builtins', async () => {
     const tree = make.text(
       'Items: ',
       make.call('format:number', {
         value: make.count(make.path('items')),
       }),
     )
-    expect(base.cast(tree, { items: [1, 2, 3, 4, 5] })).toBe('Items: 5')
+    expect(
+      castInline(base, tree, { items: [1, 2, 3, 4, 5] }),
+    ).toBe('Items: 5')
   })
 
-  it('honors compiled `code:` integer ids when present', () => {
-    // Authoring path: the codegen rewrite would set `code` to
-    // the CodeLink integer for the (name, base, case) triple.
-    // The runtime short-circuits straight to the integer id
-    // and ignores name / base / case.
+  it('honors compiled `code:` integer ids when present', async () => {
     const tree = {
       form: 'call' as const,
       name: 'IGNORED-AT-RUNTIME',
       code: CodeLink['flow:format:capitalized'],
       text: 'hello',
     }
-    expect(base.cast(tree as any)).toBe('Hello')
+    expect(castInline(base, tree as any)).toBe('Hello')
   })
 })

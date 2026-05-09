@@ -6,9 +6,6 @@ settings:
 
 catalogs:
   default:
-    '@cluesurf/wash':
-      specifier: 0.8.0
-      version: 0.8.0
     '@formatjs/intl':
       specifier: 3.1.6
       version: 3.1.6
@@ -87,9 +84,6 @@ catalogs:
     yargs:
       specifier: 18.0.0
       version: 18.0.0
-    zod:
-      specifier: 4.3.6
-      version: 4.3.6
 
 importers:
 
@@ -124,8 +118,8 @@ importers:
         version: 4.3.6
     devDependencies:
       '@cluesurf/wash':
-        specifier: 'catalog:'
-        version: 0.8.0(typescript@6.0.2)
+        specifier: ^0.9.0
+        version: 0.9.0(typescript@6.0.2)
       '@types/fs-extra':
         specifier: 'catalog:'
         version: 11.0.4
@@ -184,8 +178,8 @@ importers:
 
 packages:
 
-  '@cluesurf/wash@0.8.0':
-    resolution: {integrity: sha512-FJtmaZ301KzDgvFY897OWAeBWIldmkoq/8oGrCygljmCL/egD6vX+BATdtx2PoVig3U/T+cdJSeqSVCBDAPshw==}
+  '@cluesurf/wash@0.9.0':
+    resolution: {integrity: sha512-XNenkXNH/2ZsjKByQ9BCtSFCJECNibLW43nZgMe3FKHv4Y91d5gyeKGL5askmjHU08EdJPuhXkQ0JFQTGT9Gwg==}
     hasBin: true
 
   '@cspotcode/source-map-support@0.8.1':
@@ -1688,7 +1682,7 @@ packages:
 
 snapshots:
 
-  '@cluesurf/wash@0.8.0(typescript@6.0.2)':
+  '@cluesurf/wash@0.9.0(typescript@6.0.2)':
     dependencies:
       '@eslint/js': 9.39.4
       eslint: 9.39.4

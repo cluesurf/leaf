@@ -3,21 +3,21 @@ import { Make } from '../code/make'
 import standard from '../code/book'
 
 describe('standard catalog Book', () => {
-  it('has a `host`, `name`, and a `cast` array of declarations', () => {
+  it('has a `host`, `name`, and a `cast` array of declarations', async () => {
     expect(standard.host).toBe('cluesurf')
     expect(standard.name).toBe('bead')
     expect(Array.isArray(standard.cast)).toBe(true)
     expect((standard.cast ?? []).length).toBeGreaterThan(0)
   })
 
-  it('every entry is a Form / Flow / Fold / Hash / List', () => {
+  it('every entry is a Form / Flow / Fold / Hash / List', async () => {
     const allowed = new Set(['form', 'flow', 'make', 'hash', 'list'])
     for (const cast of standard.cast ?? []) {
       expect(allowed.has(cast.form)).toBe(true)
     }
   })
 
-  it('Flow entries carry a (call, case?) identity', () => {
+  it('Flow entries carry a (call, case?) identity', async () => {
     const flows = (standard.cast ?? []).filter(c => c.form === 'flow')
     expect(flows.length).toBeGreaterThan(0)
     for (const flow of flows) {
@@ -27,7 +27,7 @@ describe('standard catalog Book', () => {
     }
   })
 
-  it("includes `is_ipa_broad` as (call: 'is', case: 'ipa:broad')", () => {
+  it("includes `is_ipa_broad` as (call: 'is', case: 'ipa:broad')", async () => {
     const flow = (standard.cast ?? []).find(
       c => c.form === 'flow' && c.call === 'is' && c.case === 'ipa:broad',
     )
@@ -144,7 +144,7 @@ describe('Make.save() — Code aggregate generation', () => {
 
     // The Code aggregate references the per-Flow aliases:
     expect(result.code).toMatch(
-      /'flow:select:language':\s*\{\s*take:\s*SelectLanguageTake;\s*make:\s*SelectLanguage\s*\}/,
+      /'flow:select:language':\s*\{\s*take:\s*SelectLanguageTake[;,]?\s*make:\s*SelectLanguage[;,]?\s*\}/,
     )
   })
 

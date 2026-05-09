@@ -14,7 +14,6 @@ export type {
   FlowResolve,
   FlowTake,
 } from './base'
-export type { BindResult, TreePatch } from './base'
 
 // `make` is the AST-builder namespace. Compile is the only
 // other public entry — used to bake authored trees into the

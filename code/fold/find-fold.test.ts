@@ -17,7 +17,7 @@ import {
 import type { Cast } from './types'
 
 describe('find primitive', () => {
-  it('builds the canonical shape', () => {
+  it('builds the canonical shape', async () => {
     const tree = make.find('page', {
       where: make.eq(make.read('status'), 'on'),
       sort: ['title'],
@@ -37,7 +37,7 @@ describe('find primitive', () => {
     })
   })
 
-  it('resolves through context.find', () => {
+  it('resolves through context.find', async () => {
     const rows = [{ id: 1 }, { id: 2 }]
     const tree = make.find('page', { limit: 5 })
     const out = evaluateText(tree, {
@@ -51,12 +51,12 @@ describe('find primitive', () => {
     expect(out).toEqual(rows)
   })
 
-  it('returns null when no resolver is supplied', () => {
+  it('returns null when no resolver is supplied', async () => {
     const tree = make.find('page')
     expect(evaluateText(tree, { scope: makeScope({}) })).toBe(null)
   })
 
-  it('evaluates `where` and `sort` before passing to the resolver', () => {
+  it('evaluates `where` and `sort` before passing to the resolver', async () => {
     const tree = make.find('page', {
       where: make.read('filter'),
       sort: [make.read('order')],
@@ -75,7 +75,7 @@ describe('find primitive', () => {
 })
 
 describe('fold primitive', () => {
-  it('builds the canonical shape', () => {
+  it('builds the canonical shape', async () => {
     const tree = make.fold('greeting', { count: 3, name: 'Lance' })
     expect(tree).toEqual({
       form: 'fold',
@@ -84,7 +84,7 @@ describe('fold primitive', () => {
     })
   })
 
-  it('embeds a named template and renders it under a scope frame', () => {
+  it('embeds a named template and renders it under a scope frame', async () => {
     const greeting: Cast = make.text(
       'Hello, ',
       make.read('name'),
@@ -98,7 +98,7 @@ describe('fold primitive', () => {
     expect(out).toBe('Hello, Lance!')
   })
 
-  it('returns null when the named fold is unknown', () => {
+  it('returns null when the named fold is unknown', async () => {
     const tree = make.fold('missing')
     expect(
       evaluateText(tree, {
@@ -120,14 +120,12 @@ describe('fold primitive', () => {
       cast: [
         {
           form: 'fold',
-          name: 'greeting',
+          case: 'greeting',
           tree: [greetingTree],
         },
       ],
     })
-    const out = base.cast(
-      make.fold('greeting', { name: 'Lance' }),
-    )
+    const out = base.cast('greeting', { name: 'Lance' })
     expect(out).toBe('Hello, Lance!')
   })
 
@@ -138,7 +136,7 @@ describe('fold primitive', () => {
       cast: [
         {
           form: 'fold',
-          name: 'list',
+          case: 'list',
           tree: [
             'a-',
             { form: 'reference', name: 'item' },
@@ -147,7 +145,7 @@ describe('fold primitive', () => {
         },
       ],
     })
-    const out = base.cast(make.fold('list', { item: 'mid' }))
+    const out = base.cast('list', { item: 'mid' })
     expect(out).toBe('a-mid-z')
   })
 })
@@ -155,7 +153,7 @@ describe('fold primitive', () => {
 describe('compile pass walks find / fold subtrees', () => {
   const codeTable = { 'flow:eq': 1 }
 
-  it('compiles nested calls inside find.where', () => {
+  it('compiles nested calls inside find.where', async () => {
     const tree = make.find('page', {
       where: make.eq(make.read('status'), 'on'),
     })
@@ -171,7 +169,7 @@ describe('compile pass walks find / fold subtrees', () => {
     })
   })
 
-  it('compiles nested calls inside fold.bind', () => {
+  it('compiles nested calls inside fold.bind', async () => {
     const tree = make.fold('greeting', {
       ok: make.eq(make.read('flag'), true),
     })

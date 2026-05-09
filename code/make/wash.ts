@@ -1,76 +1,123 @@
-import os from 'os'
-import pLimit from 'p-limit'
 import prettier from 'prettier'
-// import path from 'path'
-// import { ESLint } from 'eslint'
-import { Project } from 'ts-morph' // npm i ts-morph
+import { Project } from 'ts-morph'
 
-// 1. Create a single ts-morph project once (cheap to reuse)
+/**
+ * Format generated TypeScript content the same way "Save" in
+ * VS Code would, against the host project's configs:
+ *
+ *   1. Organize imports (`source.organizeImports`)
+ *   2. ESLint auto-fix (`source.fixAll.eslint`)
+ *   3. Prettier format
+ *
+ * ESLint and Prettier each only run when the host project has
+ * a real config for the file. With no configs, the only pass
+ * is organize-imports.
+ */
+
 const project = new Project({
   useInMemoryFileSystem: true,
-  // avoid type-checking to keep it blazing fast
   compilerOptions: { allowJs: false, skipLibCheck: true },
 })
 
-// Your prettier options (no plugin loading on each call)
-const PRETTIER: prettier.Options = {
-  arrowParens: 'avoid',
-  bracketSpacing: true,
-  endOfLine: 'lf',
-  printWidth: 72,
-  proseWrap: 'always',
-  quoteProps: 'as-needed',
-  semi: false,
-  singleAttributePerLine: true,
-  singleQuote: true,
-  tabWidth: 2,
-  trailingComma: 'all',
-  useTabs: false,
-  parser: 'typescript',
+type EslintLike = {
+  lintText(
+    text: string,
+    options: { filePath: string },
+  ): Promise<{ output?: string }[]>
+  calculateConfigForFile(filePath: string): Promise<unknown>
 }
 
-export async function washFileList(
-  fileList: { file: string; text: string }[],
-) {
-  // 2. Concurrency ~ number of cores
-  const limit = pLimit(Math.max(2, Math.min(8, os.cpus().length)))
+let eslintPromise:
+  | Promise<EslintLike | undefined>
+  | undefined
 
-  // 3. Add all fileList to the in-memory project once
-  for (const f of fileList) {
-    project.createSourceFile(f.file, f.text, { overwrite: true })
+async function loadEslint(): Promise<EslintLike | undefined> {
+  if (eslintPromise) return eslintPromise
+  eslintPromise = (async () => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mod = (await import('eslint')) as any
+      const ESLintCtor = mod.ESLint ?? mod.default?.ESLint
+      if (typeof ESLintCtor !== 'function') return undefined
+      return new ESLintCtor({ fix: true }) as EslintLike
+    } catch {
+      return undefined
+    }
+  })()
+  return eslintPromise
+}
+
+const prettierConfigCache = new Map<
+  string,
+  prettier.Options | null
+>()
+
+async function resolvePrettierConfig(
+  filePath: string,
+): Promise<prettier.Options | null> {
+  const slash = filePath.lastIndexOf('/')
+  const dir = slash > -1 ? filePath.slice(0, slash) : '.'
+  if (prettierConfigCache.has(dir)) {
+    return prettierConfigCache.get(dir) ?? null
+  }
+  const config = await prettier.resolveConfig(filePath)
+  prettierConfigCache.set(dir, config)
+  return config
+}
+
+const eslintConfigCache = new Map<string, boolean>()
+
+async function hasEslintConfig(
+  eslint: EslintLike,
+  filePath: string,
+): Promise<boolean> {
+  const slash = filePath.lastIndexOf('/')
+  const dir = slash > -1 ? filePath.slice(0, slash) : '.'
+  if (eslintConfigCache.has(dir)) return eslintConfigCache.get(dir)!
+  let ok = true
+  try {
+    await eslint.calculateConfigForFile(filePath)
+  } catch {
+    ok = false
+  }
+  eslintConfigCache.set(dir, ok)
+  return ok
+}
+
+/**
+ * Format one generated file. Returns the formatted text.
+ *
+ * Mirrors VS Code "Save" with `formatOnSave` + standard
+ * `codeActionsOnSave` (`source.organizeImports`,
+ * `source.fixAll.eslint`).
+ */
+export async function wash(
+  filePath: string,
+  text: string,
+): Promise<string> {
+  const sourceFile = project.createSourceFile(filePath, text, {
+    overwrite: true,
+  })
+  sourceFile.organizeImports()
+  let next = sourceFile.getFullText()
+
+  const eslint = await loadEslint()
+  if (eslint && (await hasEslintConfig(eslint, filePath))) {
+    try {
+      const results = await eslint.lintText(next, { filePath })
+      next = results[0]?.output ?? next
+    } catch {
+      // Lint failure shouldn't block codegen output.
+    }
   }
 
-  // 4. Organize imports for each source file (very fast)
-  for (const sourceFile of project.getSourceFiles()) {
-    sourceFile.organizeImports()
+  const prettierConfig = await resolvePrettierConfig(filePath)
+  if (prettierConfig != null) {
+    next = await prettier.format(next, {
+      ...prettierConfig,
+      parser: 'typescript',
+    })
   }
 
-  // 5. Create ESLint instance
-  // const eslint = new ESLint({ fix: true })
-
-  // 6. Read back, ESLint + Prettier format in parallel (in-memory)
-  const taskList = fileList.map(({ file }) =>
-    limit(async () => {
-      const sf = project.getSourceFileOrThrow(file)
-      const organized = sf.getFullText()
-
-      // // Apply ESLint fixes for spacing
-      // const eslintResults = await eslint.lintText(organized, { filePath: file })
-      // const eslintFixed = eslintResults[0]?.output || organized
-
-      // Load prettier config from project
-      const prettierConfig =
-        (await prettier.resolveConfig(process.cwd())) || PRETTIER
-      const formatted = await prettier.format(organized, {
-        ...prettierConfig,
-        parser: 'typescript',
-      })
-      return {
-        file,
-        text: formatted,
-      }
-    }),
-  )
-
-  return Promise.all(taskList)
+  return next
 }

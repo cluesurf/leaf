@@ -16,57 +16,57 @@
 
 import type { Book, Cast } from '@/form'
 
-import * as is_flows from './is/make'
-import * as make_flows from './make/make'
-import * as get_flows from './get/make'
-import * as has_flows from './has/make'
-import * as format_flows from './format/make'
-import * as fork_flows from './fork/make'
-import * as bind_flows from './bind/make'
-import * as validate_flows from './validate/make'
-import * as walk_flows from './walk/make'
-import * as find_flows from './find/make'
+import * as isFlows from './is/make'
+import * as makeFlows from './make/make'
+import * as getFlows from './get/make'
+import * as hasFlows from './has/make'
+import * as formatFlows from './format/make'
+import * as forkFlows from './fork/make'
+import * as bindFlows from './bind/make'
+import * as validateFlows from './validate/make'
+import * as walkFlows from './walk/make'
+import * as findFlows from './find/make'
 
-import * as is_hooks from './is/flow'
-import * as make_hooks from './make/flow'
-import * as get_hooks from './get/flow'
-import * as has_hooks from './has/flow'
-import * as format_hooks from './format/flow'
-import * as fork_hooks from './fork/flow'
-import * as bind_hooks from './bind/flow'
-import * as validate_hooks from './validate/flow'
-import * as walk_hooks from './walk/flow'
-import * as find_hooks from './find/flow'
+import * as isHooks from './is/flow'
+import * as makeHooks from './make/flow'
+import * as getHooks from './get/flow'
+import * as hasHooks from './has/flow'
+import * as formatHooks from './format/flow'
+import * as forkHooks from './fork/flow'
+import * as bindHooks from './bind/flow'
+import * as validateHooks from './validate/flow'
+import * as walkHooks from './walk/flow'
+import * as findHooks from './find/flow'
 
 import { CodeLink } from './code'
 
 const cast: Cast[] = [
-  ...Object.values(is_flows),
-  ...Object.values(make_flows),
-  ...Object.values(get_flows),
-  ...Object.values(has_flows),
-  ...Object.values(format_flows),
-  ...Object.values(fork_flows),
-  ...Object.values(bind_flows),
-  ...Object.values(validate_flows),
-  ...Object.values(walk_flows),
-  ...Object.values(find_flows),
+  ...Object.values(isFlows),
+  ...Object.values(makeFlows),
+  ...Object.values(getFlows),
+  ...Object.values(hasFlows),
+  ...Object.values(formatFlows),
+  ...Object.values(forkFlows),
+  ...Object.values(bindFlows),
+  ...Object.values(validateFlows),
+  ...Object.values(walkFlows),
+  ...Object.values(findFlows),
 ]
 
 const call = {
-  ...is_hooks,
-  ...make_hooks,
-  ...get_hooks,
-  ...has_hooks,
-  ...format_hooks,
-  ...fork_hooks,
-  ...bind_hooks,
-  ...validate_hooks,
-  ...walk_hooks,
-  ...find_hooks,
+  ...isHooks,
+  ...makeHooks,
+  ...getHooks,
+  ...hasHooks,
+  ...formatHooks,
+  ...forkHooks,
+  ...bindHooks,
+  ...validateHooks,
+  ...walkHooks,
+  ...findHooks,
 } as const
 
-const standard: Book = {
+const beadBook: Book = {
   host: 'cluesurf',
   name: 'bead',
   cast,
@@ -74,16 +74,7 @@ const standard: Book = {
   code: CodeLink,
 }
 
-export default standard
-
-/**
- * The standard catalog's hook implementations, keyed by the
- * exported-constant name. Exported separately for consumers
- * that want to compose call tables; the same map is also on
- * `standard.call` so a single `base.load(standard)` is enough
- * for typical setups.
- */
-export const hooks = call
+export default beadBook
 
 // Re-export the generated `Code` type and `CodeLink` integer-id
 // table from the same folder so consumers can:

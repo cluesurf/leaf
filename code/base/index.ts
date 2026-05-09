@@ -3,19 +3,17 @@
  *
  * Construct with a `Code` type parameter (the bundled-type
  * aggregate of every authored Form / Flow / Fold / Hash / List
- * across every registered Book). Every `base.flow(...)`
- * registration typechecks the (name, base, case) triple
- * against the registry and infers the Hook's args / return
- * type.
+ * across every registered Book). `base.flow(...)` registrations
+ * typecheck the (name, base, case) triple against the registry.
  *
  *   import { Base } from '@cluesurf/bead'
- *   import type Code from './libs'   // generated
+ *   import type Code from './libs'
  *
- *   const base = new Base<Code>()
+ *   const base = new Base<Code>({ createElement: React.createElement })
+ *   base.load(emailBook)
  *
- *   base.flow('is', { base: 'ipa', case: 'broad' }, ({ text }) =>
- *     Array.from(text).every(is_ipa_symbol),
- *   )
+ *   base.cast('email:status', { input: 'hi@bead.dev' })
+ *   base.call('is:email', { text: 'hi@bead.dev' })
  */
 
 import type {
@@ -28,14 +26,10 @@ import type {
   FlowResolve,
   FlowTake,
 } from './types'
-import type { Book } from '@/form'
+import type { Book, Cast, Flow, Fold } from '@/form'
 import type { Cast as FoldNode } from '@/fold/types'
 import { evaluateText, makeScope } from '@/fold'
-import type { Scope } from '@/fold'
-import {
-  renderElement,
-  type ElementBuilder,
-} from '@/fold/element'
+import { renderElement, type ElementBuilder } from '@/fold/element'
 
 export type {
   BareFlowName,
@@ -50,38 +44,12 @@ export type {
 } from './types'
 
 /**
- * The default registry shape. Empty in the library; consumers
- * extend it via TypeScript declaration-merging on `interface`.
+ * Default Code-registry shape. Empty in the library; consumers
+ * extend via TS declaration-merging or by passing a host-specific
+ * Code as the `Base` class's generic parameter.
  *
- * Two ways to populate `Code`:
- *
- * 1) Pass a host-specific Code type as the `Base` class's
- *    generic parameter (pattern most hosts use):
- *
- *       import type Code from './libs'   // generated bundle
- *       const base = new Base<Code>()
- *
- * 2) Augment this interface globally from the consumer side
- *    via `declare module`. After this declaration, every
- *    `new Base()` (with no explicit generic) sees the merged
- *    members:
- *
- *       declare module '@cluesurf/bead' {
- *         interface Code {
- *           'flow:select:language': { take: SelectLanguageTake; make: SelectLanguage }
- *           'form:language':        { cast: Language }
- *         }
- *       }
- *
- * Mirrors kysely's `Database` extension pattern.
- *
- * Default entry-value shape: a Flow entry carries
- * `{ take, make }`; every other kind (Form / Fold / Hash /
- * List) carries `{ cast }`. The library's `Code` index
- * signature accepts both. Consumers narrow specific keys via
- * `declare module` augmentation — the augmented value must
- * remain assignable to this union, which any concrete
- * `{ take: T; make: M }` or `{ cast: T }` is.
+ *   import type Code from './libs'
+ *   const base = new Base<Code>()
  */
 export type CodeForm =
   | { take: unknown; make: unknown }
@@ -89,46 +57,36 @@ export type CodeForm =
 
 export type Code = Record<string, CodeForm>
 
-// Hook table is heterogeneous — each entry has a specific
-// (args, return) shape. Use `any` for input/return so the
-// dispatch table accepts every concrete signature
-// (contravariance on input, return widened by `any`). Callers
-// narrow at the call site via the typed `flow` / `call`
-// overloads above.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Hook = (args: any) => any
 
-type HookName = string | number
-
-function buildKey(
-  call: string,
-  caseValue?: string,
-): HookName {
+function buildKey(call: string, caseValue?: string): string {
   return caseValue ? `flow:${call}:${caseValue}` : `flow:${call}`
 }
 
 /**
- * Per-Base render configuration. Supply `createElement` (and
- * optionally `fragment` / `component`) to render to vdom; omit
- * for text-mode (the default).
+ * Reserved key in `book.view` that the renderer picks up as the
+ * fragment for sibling wrapping.
+ */
+const FRAGMENT_KEY = 'fragment'
+
+/**
+ * Per-Base render configuration. Supply `createElement` to
+ * render to vdom; omit for text mode (the default).
+ *
+ * View components and fragment come from the Book's `view:`
+ * field, registered via `base.load(book)`.
  */
 export type BaseConfig = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createElement?: ElementBuilder<any>
-  fragment?: unknown
-  component?: Record<string, unknown>
 }
 
 export class Base<R = Code> {
-  private hook = new Map<HookName, Hook>()
-  /**
-   * Registered Fold declarations keyed by `cast:` name. Loaded
-   * from `book.cast` entries with `form: 'fold'`. Looked up by
-   * `cast(tree)` when an AST `FoldPrimitive` is encountered, so
-   * `make.fold('greeting', { ... })` substitutes the named tree
-   * without needing a manual `context.fold` callback.
-   */
+  private hook = new Map<string | number, Hook>()
   private fold = new Map<string, FoldNode>()
+  private view = new Map<string, unknown>()
+  private code: Record<string, number> = {}
   private config: BaseConfig
 
   constructor(config: BaseConfig = {}) {
@@ -136,14 +94,13 @@ export class Base<R = Code> {
   }
 
   /**
-   * Register a Flow Hook. Three shapes:
+   * Register a Flow Hook directly. Three shapes:
    *
    *   base.flow('always-true', () => true)
-   *   base.flow('is', { base: 'string' }, ({ thing }) => ...)
-   *   base.flow('is', { base: 'ipa', case: 'broad' }, ({ text }) => ...)
+   *   base.flow('is', { case: 'string' }, ({ thing }) => ...)
+   *   base.flow('is', { case: 'ipa:broad' }, ({ text }) => ...)
    */
 
-  // (name, base, case)
   flow<
     N extends FlowName<R>,
     B extends FlowBaseValue<R, N>,
@@ -154,19 +111,18 @@ export class Base<R = Code> {
     Hook: FlowHook<R, N, B, C>,
   ): void
 
-  // (name, base)
   flow<N extends FlowName<R>, B extends FlowBaseValue<R, N>>(
     name: N,
     options: { base: B; case?: undefined },
     Hook: FlowHook<R, N, B, undefined>,
   ): void
 
-  // (name) — bare verb
   flow<N extends BareFlowName<R>>(
     name: N,
     Hook: FlowHook<R, N, undefined, undefined>,
   ): void
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   flow(name: string, ...rest: any[]): void {
     let options: { base?: string; case?: string } | undefined
     let hook: Hook
@@ -180,9 +136,7 @@ export class Base<R = Code> {
       throw new Error(`base.flow('${name}'): invalid arguments`)
     }
 
-    // `options` may carry the legacy `{ base, case }` split or
-    // the new colon-scoped `case`. Join into a single `case`.
-    const opts = (options ?? {}) as { base?: string; case?: string }
+    const opts = options ?? {}
     const caseValue =
       opts.base && opts.case
         ? `${opts.base}:${opts.case}`
@@ -192,27 +146,114 @@ export class Base<R = Code> {
   }
 
   /**
+   * Polymorphic load. Accepts a `Book`, a single `Cast`
+   * (Flow / Fold / Form / Hash / List), or an array of either.
+   * Idempotent: calling twice with the same input overwrites
+   * existing registrations, so editor hot-reload always reflects
+   * the latest state.
+   *
+   *   base.load(emailBook)
+   *   base.load(emailFlow)
+   *   base.load(emailFold)
+   */
+  load(input: Book | Cast | (Book | Cast)[]): void {
+    if (Array.isArray(input)) {
+      for (const item of input) this.load(item)
+      return
+    }
+    if (isCast(input)) {
+      this.loadCast(input)
+      return
+    }
+    this.loadBook(input)
+  }
+
+  /**
+   * Inverse of `load`. Removes registrations belonging to a
+   * Book, single Cast, or list of either. Idempotent.
+   */
+  toss(input: Book | Cast | (Book | Cast)[]): void {
+    if (Array.isArray(input)) {
+      for (const item of input) this.toss(item)
+      return
+    }
+    if (isCast(input)) {
+      this.tossCast(input)
+      return
+    }
+    this.tossBook(input)
+  }
+
+  private loadBook(book: Book): void {
+    if (book.code) {
+      for (const k in book.code) this.code[k] = book.code[k]!
+    }
+    if (book.view) {
+      for (const k in book.view) this.view.set(k, book.view[k])
+    }
+    const callTable = book.call ?? {}
+    for (const cast of book.cast ?? []) {
+      if (cast.form === 'flow') {
+        const flow = cast
+        const key = buildKey(flow.call, flow.case)
+        const exportName = exportNameFor(flow)
+        const handler = callTable[exportName]
+        if (handler != null) {
+          this.hook.set(key, handler)
+          const id = this.code[String(key)]
+          if (typeof id === 'number') this.hook.set(id, handler)
+        }
+      } else {
+        this.loadCast(cast)
+      }
+    }
+  }
+
+  private loadCast(cast: Cast): void {
+    if (cast.form === 'fold') {
+      const tree =
+        cast.tree.length === 1
+          ? cast.tree[0]!
+          : { form: 'text' as const, flow: cast.tree }
+      this.fold.set(cast.case, tree)
+    }
+    // Form / Hash / List don't register runtime state — they're
+    // codegen-time declarations. Registering them is a no-op so
+    // callers can pass them uniformly.
+  }
+
+  private tossBook(book: Book): void {
+    if (book.code) {
+      for (const k in book.code) delete this.code[k]
+    }
+    if (book.view) {
+      for (const k in book.view) this.view.delete(k)
+    }
+    for (const cast of book.cast ?? []) {
+      if (cast.form === 'flow') {
+        const key = buildKey(cast.call, cast.case)
+        this.hook.delete(key)
+      } else {
+        this.tossCast(cast)
+      }
+    }
+  }
+
+  private tossCast(cast: Cast): void {
+    if (cast.form === 'fold') this.fold.delete(cast.case)
+    if (cast.form === 'flow') {
+      const key = buildKey(cast.call, cast.case)
+      this.hook.delete(key)
+    }
+  }
+
+  /**
    * Invoke a registered Flow.
    *
-   * Mirrors `flow(...)` registration shape: pass the verb
-   * as the first arg and an object combining `base` / `case`
-   * discriminators with the take-side payload as the second.
-   *
-   *   base.call('is',   { base: 'ipa', case: 'broad', text: 'foo' })
-   *   base.call('is',   { base: 'string', thing: 'hello' })
-   *   base.call('make', { base: 'sum', a: 2, b: 3 })
-   *   base.call('always_true', {})
-   *
-   * The runtime extracts `base` / `case` to build the
-   * dispatch key, strips them, and passes the remaining
-   * take payload to the handler.
-   *
-   * Codegen rewrites every typed string-form call site into
-   * the numeric-id form below at build time for fast
-   * dispatch.
+   *   base.call('is:email', { text: 'hi@bead.dev' })
+   *   base.call('is:ipa:broad', { text: 'foo' })
    */
 
-  // (name, base, case)
   call<
     N extends FlowName<R>,
     B extends FlowBaseValue<R, N>,
@@ -222,7 +263,6 @@ export class Base<R = Code> {
     args: { base: B; case: C } & FlowTake<FlowResolve<R, N, B, C>>,
   ): FlowLike<FlowResolve<R, N, B, C>>
 
-  // (name, base)
   call<N extends FlowName<R>, B extends FlowBaseValue<R, N>>(
     name: N,
     args: { base: B; case?: undefined } & FlowTake<
@@ -230,119 +270,26 @@ export class Base<R = Code> {
     >,
   ): FlowLike<FlowResolve<R, N, B, undefined>>
 
-  // (name) — bare verb
   call<N extends BareFlowName<R>>(
     name: N,
     args: FlowTake<FlowResolve<R, N, undefined, undefined>>,
   ): FlowLike<FlowResolve<R, N, undefined, undefined>>
 
-  // Compiled form: numeric id + bind. Untyped — codegen target.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   call(id: number, bind: any): any
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   call(pathOrId: string | number, args: any): any {
-    if (typeof pathOrId === 'number') {
-      const hook = this.hook.get(pathOrId)
-      if (hook == null) {
-        throw new Error(
-          `base.call: no flow registered for code '${pathOrId}'`,
-        )
-      }
-      return hook(args)
-    }
-
-    // String path: split on first `:` into verb + case.
-    const key = `flow:${pathOrId}`
+    const key =
+      typeof pathOrId === 'number' ? pathOrId : `flow:${pathOrId}`
     const hook = this.hook.get(key)
     if (hook == null) {
       throw new Error(
-        `base.call: no flow registered for code '${key}'`,
+        `base.call: no flow registered for code '${String(key)}'`,
       )
     }
     return hook(args ?? {})
   }
 
-  /**
-   * Bulk-register every Flow handler in a Book.
-   *
-   *   import standard from '@cluesurf/bead/book'
-   *   const base = new Base<Code>()
-   *   base.load(standard)
-   *
-   *   // Both forms now work and dispatch to the same handler:
-   *   base.call('is', { base: 'string', thing: 'hello' })
-   *   base.call(standard.code!['flow:is:string'], { thing: 'hello' })
-   *
-   * The `book.cast` array carries declarations with their
-   * identity tuples. `book.call` is the name → handler map
-   * keyed by each Flow's exported-constant name (e.g.
-   * `is_ipa_broad`). When `book.code` is supplied (the
-   * generated `CodeLink` integer-id table), handlers also
-   * register under their integer ids — enables the compiled
-   * call form `base.call(<id>, bind)`.
-   */
-  load(book: Book): void {
-    const callTable = book.call ?? {}
-    const codeTable = book.code
-
-    for (const cast of book.cast ?? []) {
-      // Top-level Fold declarations: index by `case` for
-      // string lookups via `base.cast(name, params)` and AST
-      // `make.fold(name, ...)`.
-      if (cast.form === 'fold') {
-        const fold = cast as { case: string; tree: FoldNode[] }
-        const tree: FoldNode =
-          fold.tree.length === 1
-            ? fold.tree[0]!
-            : { form: 'text', flow: fold.tree }
-        this.fold.set(fold.case, tree)
-        continue
-      }
-
-      if (cast.form !== 'flow') continue
-      const flow = cast as { call: string; case?: string }
-      const key = buildKey(flow.call, flow.case)
-
-      // The export name is the segments camelCase-joined
-      // (e.g. `flow:is:ipa:broad` → `isIpaBroad`).
-      const segs = String(key).replace(/^flow:/, '').split(':')
-      const exportName = segs
-        .map((s, i) =>
-          i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1),
-        )
-        .join('')
-
-      const hook = callTable[exportName]
-      if (hook == null) continue
-      this.hook.set(key, hook)
-
-      // When a code table is supplied, mirror the handler
-      // under its integer id so the compiled-call form
-      // `base.call(<id>, bind)` resolves to the same handler.
-      const id = codeTable?.[String(key)]
-      if (typeof id === 'number') this.hook.set(id, hook)
-    }
-  }
-
-  /**
-   * Cast a make tree (a `make.*` AST) into a value, resolving
-   * every `make.call(...)` node against this Base's registered
-   * catalog handlers and reading paths from the optional
-   * `scope`.
-   *
-   * Use cases:
-   *   - Run constraint trees authored as data
-   *   - Cast i18n / template tree expressions
-   *   - Compose multi-step derivations using `make.call(...)`
-   *     nodes that resolve through the catalog
-   *
-   *   const tree = make.call('format_capitalized', { text: 'hi' })
-   *   base.cast(tree)              // → 'Hi'
-   *   base.cast(tree, { x: 1 })    // params bind into scope
-   *
-   * The runtime auto-resolves catalog calls + named Folds
-   * through the loaded Book; supply ad-hoc hooks / find /
-   * react via the constructor `BaseConfig`.
-   */
   /**
    * Cast a registered Fold by name with `params` bound into
    * scope. Returns whatever the renderer produces (string in
@@ -350,98 +297,28 @@ export class Base<R = Code> {
    *
    *   base.cast('email:status', { input: 'hi@bead.dev' })
    *
-   * The first arg is always a Fold's `case:` (its colon-scoped
-   * lookup name). Trees come from `Fold` declarations
-   * registered via `base.load(book)` — never inline.
+   * Trees come from `Fold` declarations registered via
+   * `base.load(book)`. Never inline.
    */
-  cast(name: string, params: Record<string, unknown> = {}): unknown {
+  cast(
+    name: string,
+    params: Record<string, unknown> = {},
+  ): unknown {
     const tree = this.fold.get(name)
     if (tree == null) {
       throw new Error(`base.cast: no Fold registered for '${name}'`)
     }
-    return this.evaluateAt(tree, makeScope(params), undefined, undefined)
+    return this.evaluate(tree, params)
   }
 
-  /**
-   * Evaluate a tree to a `BindResult` envelope, capturing the
-   * tree (for later patching) alongside the produced output
-   * and a per-mark output cache for memoized re-evaluation.
-   *
-   *   const result = base.bind(tree, scope)
-   *   result.output   // the rendered value
-   *   base.bindPatch(result, [{ op: 'replace', mark: '01h…', value: 'new' }])
-   */
-  bind(
+  private evaluate(
     tree: FoldNode,
-    params: Record<string, unknown> = {},
-  ): BindResult {
-    const usedScope = makeScope(params)
-    const cache = new Map<string, unknown>()
-    const parents = new Map<string, string>()
-
-    // Pre-walk: index marks → parent-mark for fast ancestor
-    // chasing on patch. Per-mark caches enable subtree reuse.
-    indexMarks(tree, undefined, parents)
-
-    const output = this.evaluateAt(tree, usedScope, cache, undefined)
-
-    return { tree, output, scope: usedScope, cache, parents }
-  }
-
-  /**
-   * Apply a list of mark-targeted patches to the tree from a
-   * previous `bind` and re-evaluate. Memoized: nodes whose
-   * marks are NOT in the dirty set return their cached output
-   * without re-walking.
-   *
-   *   const r0 = base.bind(initial)
-   *   const r1 = base.bindPatch(r0, [
-   *     { op: 'replace', mark: 'abc', value: 'updated' },
-   *   ])
-   *
-   * Dirty propagation: a patch targeting mark M dirties M and
-   * every ancestor mark (transitively up the marked-node
-   * chain). Any subtree containing a dirty descendant
-   * re-evaluates fresh; pure-side subtrees reuse cache hits.
-   */
-  bindPatch(prev: BindResult, patches: TreePatch[]): BindResult {
-    const dirty = new Set<string>()
-    for (const patch of patches) {
-      const target = patch.op === 'insert' ? patch.parent : patch.mark
-      dirtyAncestors(target, prev.parents, dirty)
-    }
-
-    const nextTree = patches.reduce(
-      (tree, patch) => applyTreePatch(tree, patch),
-      prev.tree,
-    )
-
-    const cache = new Map(prev.cache)
-    // Drop dirty entries so re-walk recomputes them.
-    for (const m of dirty) cache.delete(m)
-    // Rebuild parent index for the new tree (cheap walk).
-    const parents = new Map<string, string>()
-    indexMarks(nextTree, undefined, parents)
-
-    const output = this.evaluateAt(nextTree, prev.scope, cache, dirty)
-
-    return { tree: nextTree, output, scope: prev.scope, cache, parents }
-  }
-
-  /**
-   * Internal evaluator. Threads scope + per-mark cache + dirty
-   * marks into the renderer. Picks text vs element mode based
-   * on `this.config.react`. Returns whatever the renderer
-   * produces (string in text mode, vdom in element mode).
-   */
-  private evaluateAt(
-    tree: FoldNode,
-    scope: Scope,
-    cache: Map<string, unknown> | undefined,
-    dirty: Set<string> | undefined,
+    params: Record<string, unknown>,
   ): unknown {
+    const scope = makeScope(params)
     const hookStore = this.hook
     const foldStore = this.fold
+    const viewStore = this.view
     const config = this.config
 
     const callResolver = (node: {
@@ -451,39 +328,35 @@ export class Base<R = Code> {
       code?: number
     }) => {
       if (typeof node.code === 'number') {
-        return hookStore.get(node.code) as
-          | ((input: any) => unknown)
-          | undefined
+        return hookStore.get(node.code)
       }
       if (typeof node.name !== 'string') return undefined
-      // Call AST nodes may carry legacy `{ base, case }` split.
       const caseValue =
         node.base && node.case
           ? `${node.base}:${node.case}`
           : (node.base ?? node.case)
       const key = buildKey(node.name, caseValue)
-      return hookStore.get(key) as
-        | ((input: any) => unknown)
-        | undefined
+      return hookStore.get(key)
     }
 
     if (config.createElement) {
+      const component = Object.fromEntries(viewStore)
       return renderElement(tree, {
         scope,
-        cache,
-        dirty,
+        cache: undefined,
+        dirty: undefined,
         call: callResolver,
         fold: name => foldStore.get(name),
         builder: config.createElement,
-        fragment: config.fragment,
-        component: config.component,
+        fragment: viewStore.get(FRAGMENT_KEY),
+        component,
       })
     }
 
     return evaluateText(tree, {
       scope,
-      cache,
-      dirty,
+      cache: undefined,
+      dirty: undefined,
       call: callResolver,
       fold: name => foldStore.get(name),
     })
@@ -500,248 +373,24 @@ export class Base<R = Code> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Bind / patch types
-// ---------------------------------------------------------------------------
-
-/**
- * Envelope produced by `base.bind(tree, scope?)`. Captures the
- * evaluated tree, its output, the scope used, and a per-mark
- * output cache + parent-mark index so a later `bindPatch` can
- * re-evaluate only the dirty subtrees.
- */
-export type BindResult = {
-  tree: FoldNode
-  output: unknown
-  scope: Scope
-  /** mark → cached output of the subtree rooted at that mark. */
-  cache: Map<string, unknown>
-  /** mark → nearest enclosing marked ancestor's mark. */
-  parents: Map<string, string>
+function isCast(value: unknown): value is Cast {
+  if (value == null || typeof value !== 'object') return false
+  const form = (value as { form?: unknown }).form
+  return (
+    form === 'flow' ||
+    form === 'fold' ||
+    form === 'form' ||
+    form === 'hash' ||
+    form === 'list'
+  )
 }
 
-/**
- * Patch operations addressed by `mark` (the per-Cast UUID v7).
- * The runtime walks the previous tree, finds the node carrying
- * the matching mark, and applies the op.
- */
-export type TreePatch =
-  | { op: 'replace'; mark: string; value: FoldNode }
-  | { op: 'remove'; mark: string }
-  | {
-      op: 'insert'
-      /** Mark of the parent node to insert into. */
-      parent: string
-      /**
-       * Where in the parent the new node lives. For list-shaped
-       * children (`list.list[]`, `template_string.flow[]`,
-       * `view.nest[]`, `walk.list` items, etc.), this is the
-       * field name; the value is appended to the list.
-       */
-      key: string
-      value: FoldNode
-    }
-
-// ---------------------------------------------------------------------------
-// Patch application
-// ---------------------------------------------------------------------------
-
-/**
- * Walk the tree, locate the node with the matching `mark`,
- * and apply the patch. Returns a new tree (does not mutate).
- *
- * This is the simple O(N) fallback. A future memoized version
- * keyed by mark → path is planned (per `note/runtime.md`).
- */
-function applyTreePatch(tree: FoldNode, patch: TreePatch): FoldNode {
-  const transform = (node: FoldNode): FoldNode | undefined => {
-    if (node === null || node === undefined) return node
-    if (typeof node !== 'object') return node
-    if (node instanceof Date) return node
-
-    // Object-with-form. Test mark match against this node first.
-    const obj = node as { mark?: string; form?: string } & Record<
-      string,
-      unknown
-    >
-
-    if (patch.op === 'replace' && obj.mark === patch.mark) {
-      return patch.value
-    }
-    if (patch.op === 'remove' && obj.mark === patch.mark) {
-      return undefined
-    }
-    if (patch.op === 'insert' && obj.mark === patch.parent) {
-      const child = obj[patch.key]
-      const out = { ...obj }
-      if (Array.isArray(child)) {
-        out[patch.key] = [...child, patch.value]
-      } else if (child === undefined) {
-        out[patch.key] = [patch.value]
-      } else {
-        // Single-Cast slot — replace.
-        out[patch.key] = patch.value
-      }
-      return out as FoldNode
-    }
-
-    // Recurse into structural children.
-    return walkChildren(obj, transform) as FoldNode
-  }
-
-  const out = transform(tree)
-  return out === undefined ? tree : out
-}
-
-/**
- * Visit every direct Cast child of `node` and rebuild the
- * parent if any child changed. Lists drop `undefined` results
- * (used for `remove`).
- */
-function walkChildren(
-  node: Record<string, unknown>,
-  transform: (n: FoldNode) => FoldNode | undefined,
-): unknown {
-  let changed = false
-  const out: Record<string, unknown> = {}
-  for (const [k, v] of Object.entries(node)) {
-    if (Array.isArray(v)) {
-      const mapped: FoldNode[] = []
-      let arrChanged = false
-      for (const item of v) {
-        if (isCastLike(item)) {
-          const next = transform(item)
-          if (next === undefined) {
-            arrChanged = true // dropped
-            continue
-          }
-          if (next !== item) arrChanged = true
-          mapped.push(next)
-        } else {
-          mapped.push(item)
-        }
-      }
-      out[k] = arrChanged ? mapped : v
-      if (arrChanged) changed = true
-    } else if (isCastLike(v)) {
-      const next = transform(v)
-      if (next === undefined) {
-        // remove a single-slot child by clearing the field
-        out[k] = undefined
-        changed = true
-      } else {
-        out[k] = next
-        if (next !== v) changed = true
-      }
-    } else if (
-      v != null &&
-      typeof v === 'object' &&
-      !(v instanceof Date) &&
-      !Array.isArray(v)
-    ) {
-      // Plain object (e.g. wake-form `bind: {...}`, hash `base: {...}`).
-      const inner = v as Record<string, unknown>
-      let innerChanged = false
-      const innerOut: Record<string, unknown> = {}
-      for (const [ik, iv] of Object.entries(inner)) {
-        if (isCastLike(iv)) {
-          const nextI = transform(iv)
-          if (nextI === undefined) {
-            innerChanged = true
-            continue
-          }
-          innerOut[ik] = nextI
-          if (nextI !== iv) innerChanged = true
-        } else {
-          innerOut[ik] = iv
-        }
-      }
-      out[k] = innerChanged ? innerOut : inner
-      if (innerChanged) changed = true
-    } else {
-      out[k] = v
-    }
-  }
-  return changed ? out : node
-}
-
-// ---------------------------------------------------------------------------
-// Mark indexing for memoized bindPatch
-// ---------------------------------------------------------------------------
-
-/**
- * Walk the tree depth-first and populate `parents`: for each
- * marked descendant, record the closest marked ancestor's
- * mark. Unmarked nodes are bridged through.
- */
-function indexMarks(
-  node: FoldNode,
-  ancestor: string | undefined,
-  parents: Map<string, string>,
-): void {
-  if (
-    node === null ||
-    node === undefined ||
-    typeof node !== 'object' ||
-    node instanceof Date
-  ) {
-    return
-  }
-  const obj = node as { mark?: string } & Record<string, unknown>
-  const myMark = obj.mark
-  const childAncestor = myMark ?? ancestor
-  if (myMark && ancestor) parents.set(myMark, ancestor)
-
-  for (const v of Object.values(obj)) {
-    indexMarksDeep(v, childAncestor, parents)
-  }
-}
-
-function indexMarksDeep(
-  v: unknown,
-  ancestor: string | undefined,
-  parents: Map<string, string>,
-): void {
-  if (Array.isArray(v)) {
-    for (const item of v) indexMarksDeep(item, ancestor, parents)
-    return
-  }
-  if (v != null && typeof v === 'object' && !(v instanceof Date)) {
-    if ('form' in (v as Record<string, unknown>)) {
-      indexMarks(v as FoldNode, ancestor, parents)
-    } else {
-      // Plain object — recurse into its values (handles
-      // wake-form `bind: {…}`, fold's `bind: {…}`, hash's
-      // `base: {…}`).
-      for (const inner of Object.values(v as Record<string, unknown>)) {
-        indexMarksDeep(inner, ancestor, parents)
-      }
-    }
-  }
-}
-
-/**
- * Add `mark` and every ancestor mark (per `parents`) to the
- * dirty set. Idempotent.
- */
-function dirtyAncestors(
-  mark: string,
-  parents: Map<string, string>,
-  dirty: Set<string>,
-): void {
-  let cursor: string | undefined = mark
-  while (cursor && !dirty.has(cursor)) {
-    dirty.add(cursor)
-    cursor = parents.get(cursor)
-  }
-}
-
-function isCastLike(v: unknown): v is FoldNode {
-  if (v === null) return false
-  const t = typeof v
-  if (t === 'string' || t === 'number' || t === 'boolean') return false
-  if (t !== 'object') return false
-  if (v instanceof Date) return false
-  if (Array.isArray(v)) return false
-  return 'form' in (v as Record<string, unknown>)
+function exportNameFor(flow: Flow): string {
+  const segs = [flow.call]
+  if (flow.case) segs.push(...flow.case.split(':'))
+  return segs
+    .map((s, i) =>
+      i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1),
+    )
+    .join('')
 }

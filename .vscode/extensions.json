@@ -1,6 +1,32 @@
 {
   "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "editorconfig.editorconfig",
     "ms-vscode.vscode-typescript-next",
-    "bradlc.vscode-tailwindcss"
+    "usernamehw.errorlens",
+    "yoavbls.pretty-ts-errors",
+    "wix.vscode-import-cost",
+    "bradlc.vscode-tailwindcss",
+    "dsznajder.es7-react-js-snippets",
+    "redhat.vscode-yaml",
+    "tamasfe.even-better-toml",
+    "mikestead.dotenv",
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-pg",
+    "ms-azuretools.vscode-containers",
+    "hashicorp.terraform",
+    "eamodio.gitlens",
+    "github.vscode-pull-request-github",
+    "bierner.markdown-mermaid",
+    "yzhang.markdown-all-in-one",
+    "streetsidesoftware.code-spell-checker",
+    "christian-kohler.path-intellisense",
+    "aaron-bond.better-comments",
+    "gruntfuggly.todo-tree"
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.vscode-typescript-tslint-plugin",
+    "yarn.yarn-lock-syntax"
   ]
 }

@@ -6,7 +6,7 @@
  * context's `hook` map — the same `HookHash` shape as
  * `Base.hook` at codegen time.
  *
- * Built-in operators live in `code/make/hook.ts` as named
+ * Built-in operators live in `code/book/check/flow.ts` as named
  * exports; `DEFAULT_HOOK` below merges them and remaps the few
  * names that ship as kebab-case in flow trees (`is-null`, `in`)
  * but cannot be JS identifiers.
@@ -30,7 +30,7 @@
  */
 
 import type { Form, HookHash } from '@/form'
-import * as builtIn from '@/make/hook'
+import * as builtIn from '@/book/check/flow'
 import type { Cast } from './types'
 import type { Scope } from './scope'
 
@@ -218,7 +218,7 @@ export function deepEq(a: unknown, b: unknown): boolean {
 // ---------------------------------------------------------------------------
 
 /**
- * Merge of every named export from `code/make/hook.ts`, with
+ * Merge of every named export from `code/book/check/flow.ts`, with
  * remaps for the few kebab-case call names that show up in
  * flow trees but cannot be JS identifiers.
  */

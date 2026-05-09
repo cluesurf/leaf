@@ -1,30 +1,97 @@
 {
-  "typescript.preferences.includePackageJsonAutoImports": "auto",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "typescript.suggest.autoImports": true,
-  "typescript.preferences.allowIncompleteCompletions": true,
-  "typescript.workspaceSymbols.scope": "allOpenProjects",
-  "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
-  "typescript.tsc.autoDetect": "on",
-  "typescript.preferences.useLabelDetailsInCompletionEntries": true,
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  "typescript.validate.enable": true,
-  "typescript.suggest.completeFunctionCalls": true,
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.rulers": [
+    72
+  ],
+  "editor.quickSuggestions": {
+    "other": "on",
+    "comments": "off",
+    "strings": "on"
   },
-  "css.lint.unknownAtRules": "ignore",
-  "scss.lint.unknownAtRules": "ignore",
-  "less.lint.unknownAtRules": "ignore",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
   "files.associations": {
     "*.css": "tailwindcss"
   },
+  "files.eol": "\n",
+  "search.exclude": {
+    "**/.next/**": true,
+    "**/.turbo/**": true,
+    "**/dist/**": true,
+    "**/host/**": true,
+    "**/node_modules/**": true,
+    "**/pnpm-lock.yaml": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "on"
+  },
+  "typescript.tsc.autoDetect": "on",
+  "typescript.validate.enable": true,
+  "typescript.suggest.autoImports": true,
+  "typescript.suggest.completeFunctionCalls": true,
+  "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
+  "typescript.preferences.allowIncompleteCompletions": true,
+  "typescript.preferences.importModuleSpecifier": "shortest",
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.workspaceSymbols.scope": "allOpenProjects",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "eslint.format.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "javascriptreact",
+    "typescriptreact"
+  ],
+  "eslint.nodePath": "./node_modules/eslint",
+  "emmet.showExpandedAbbreviation": "never",
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore",
   "workbench.editorAssociations": {
     "*.md": "vscode.markdown.preview.editor"
-  }
+  },
+  "yaml.customTags": [
+    "!!map scalar",
+    "!!seq scalar",
+    "tag:yaml.org,2002:map",
+    "tag:yaml.org,2002:seq",
+    "!Base64",
+    "!And",
+    "!If",
+    "!Not",
+    "!Equals",
+    "!Or",
+    "!FindInMap",
+    "!ImportValue",
+    "!GetAtt",
+    "!GetAZs",
+    "!Join",
+    "!Select",
+    "!Split",
+    "!Sub",
+    "!Ref",
+    "!Condition",
+    "!GetParam",
+    "!Include",
+    "!Ref scalar",
+    "!Sub scalar",
+    "!GetAtt scalar",
+    "!GetParam scalar"
+  ],
+  "typescript.preferences.useLabelDetailsInCompletionEntries": true
 }
