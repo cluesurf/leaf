@@ -15,7 +15,7 @@ const NOT_IMPLEMENTED = (verb: string) => () => {
   )
 }
 
-export const find_record = NOT_IMPLEMENTED('record')
-export const find_list = NOT_IMPLEMENTED('list')
-export const find_count = NOT_IMPLEMENTED('count')
-export const find_enum = NOT_IMPLEMENTED('enum')
+export const findRecord = NOT_IMPLEMENTED('record')
+export const findList = NOT_IMPLEMENTED('list')
+export const findCount = NOT_IMPLEMENTED('count')
+export const findEnum = NOT_IMPLEMENTED('enum')

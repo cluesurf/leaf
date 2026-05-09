@@ -13,11 +13,11 @@
 
 import type { Flow } from '@/form'
 
-export const find_record: Flow = {
+export const findRecord: Flow = {
   form: 'flow',
   save: 'find',
   call: 'find',
-  base: 'record',
+  case: 'record',
   take: {
     resource: { like: 'string' },
     id: { like: 'string' },
@@ -25,11 +25,11 @@ export const find_record: Flow = {
   make: 'unknown',
 }
 
-export const find_list: Flow = {
+export const findList: Flow = {
   form: 'flow',
   save: 'find',
   call: 'find',
-  base: 'list',
+  case: 'list',
   take: {
     resource: { like: 'string' },
     where: { like: 'unknown', need: false },
@@ -39,11 +39,11 @@ export const find_list: Flow = {
   make: 'unknown',
 }
 
-export const find_count: Flow = {
+export const findCount: Flow = {
   form: 'flow',
   save: 'find',
   call: 'find',
-  base: 'count',
+  case: 'count',
   take: {
     resource: { like: 'string' },
     where: { like: 'unknown', need: false },
@@ -51,11 +51,11 @@ export const find_count: Flow = {
   make: 'natural_number',
 }
 
-export const find_enum: Flow = {
+export const findEnum: Flow = {
   form: 'flow',
   save: 'find',
   call: 'find',
-  base: 'enum',
+  case: 'enum',
   take: {
     name: { like: 'string' },
   },

@@ -42,7 +42,7 @@ import type {
   ReadLink,
   Reference,
   SwitchPrimitive,
-  TemplateStringPrimitive,
+  TextPrimitive,
   ViewPrimitive,
   WalkPrimitive,
 } from './types'
@@ -60,12 +60,18 @@ export type DecodeTable = Record<number, DecodeEntry>
  */
 function callKey(
   name: string,
-  base?: string,
-  caseValue?: string,
+  base: string | undefined,
+  caseValue: string | undefined,
 ): string {
-  if (base == null) return `flow:${name}`
-  if (caseValue == null) return `flow:${name}:${base}`
-  return `flow:${name}:${base}:${caseValue}`
+  // Legacy callers pass `(name, base, case)`. New callers pass
+  // `(name, undefined, case)` where `case` is colon-scoped.
+  // Join base+case if both present; otherwise use whichever
+  // is set.
+  const tail =
+    base && caseValue
+      ? `${base}:${caseValue}`
+      : (base ?? caseValue)
+  return tail ? `flow:${name}:${tail}` : `flow:${name}`
 }
 
 // ---------------------------------------------------------------------------
@@ -110,11 +116,11 @@ function walk(
         list: node.list.map(c => walk(c, codeTable, decodeTable)),
       } satisfies ListPrimitive
 
-    case 'template_string':
+    case 'text':
       return {
         ...node,
         flow: node.flow.map(c => walk(c, codeTable, decodeTable)),
-      } satisfies TemplateStringPrimitive
+      } satisfies TextPrimitive
 
     case 'hash': {
       const out: Record<string, Cast> = {}

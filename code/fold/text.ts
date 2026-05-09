@@ -17,7 +17,7 @@ import type {
   CaseValueArm,
   Cast,
   WalkPrimitive,
-} from '../types'
+} from './types'
 import { evaluatePath } from './path'
 import {
   collectCallArgs,
@@ -76,7 +76,7 @@ function evaluateForm(node: Cast, context: TextContext): unknown {
   switch (node.form) {
     case 'list':
       return node.list.map(n => evaluateText(n, context))
-    case 'template_string':
+    case 'text':
       return node.flow.map(n => renderText(n, context)).join('')
     case 'hash': {
       const out: Record<string, unknown> = {}
@@ -172,7 +172,7 @@ function evaluateForm(node: Cast, context: TextContext): unknown {
 
     // ----- fold (template embed) -----
     case 'fold': {
-      const inner = context.fold?.(node.cast)
+      const inner = context.fold?.(node.name)
       if (inner == null) return null
       const frame: Record<string, unknown> = {}
       if (node.bind) {

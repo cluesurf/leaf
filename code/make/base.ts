@@ -67,7 +67,7 @@ export default function make(base: Base, hold: Hold) {
  * Emit the `Fold` node tree as a const so consumers can do:
  *
  *   import { MESSAGE_COUNT_FLOW } from './hold/flow/base'
- *   flow.renderText({ form: 'template_string', flow: MESSAGE_COUNT_FLOW }, context)
+ *   flow.renderText({ form: 'text', flow: MESSAGE_COUNT_FLOW }, context)
  *
  * The `flow:` payload is plain data; `JSON.stringify` round-trips
  * cleanly because builders only emit literal node objects.

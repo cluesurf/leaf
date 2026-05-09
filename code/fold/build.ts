@@ -35,7 +35,7 @@ import type {
   VariableSeg,
   ViewPrimitive,
   WalkPrimitive,
-  TemplateStringPrimitive,
+  TextPrimitive,
 } from './types'
 
 // ---------------------------------------------------------------------------
@@ -91,10 +91,6 @@ export function promote(value: Promotable): Cast {
 // they're identity functions that return the input native value.
 // ---------------------------------------------------------------------------
 
-export function text(s: string): string {
-  return s
-}
-
 export function integer(n: number): number {
   return n
 }
@@ -119,10 +115,10 @@ export function list(items: Cast[]): ListPrimitive {
   return { form: 'list', list: items }
 }
 
-export function templateString(
+export function text(
   ...children: Promotable[]
-): TemplateStringPrimitive {
-  return { form: 'template_string', flow: children.map(promote) }
+): TextPrimitive {
+  return { form: 'text', flow: children.map(promote) }
 }
 
 /**
@@ -184,10 +180,10 @@ export function find(
  *   make.fold('greeting', { count: 5, name: 'Lance' })
  */
 export function fold(
-  cast: string,
+  name: string,
   bind?: Record<string, Promotable>,
 ): FoldPrimitive {
-  const node: FoldPrimitive = { form: 'fold', cast }
+  const node: FoldPrimitive = { form: 'fold', name }
   if (bind) {
     const out: Record<string, Cast> = {}
     for (const [k, v] of Object.entries(bind)) {
@@ -288,21 +284,33 @@ export const path = read
 // Calls
 // ---------------------------------------------------------------------------
 
+/**
+ * Build a Call node. The first arg is a colon-scoped action
+ * path:
+ *
+ *   make.call('eq', { a, b })
+ *   make.call('format:capitalized', { text: 'hi' })
+ *   make.call('is:ipa:broad', { text: 'fəˈnɛtɪk' })
+ *
+ * The leading segment is the verb (`call`); the rest is the
+ * `case` (a single colon-joined string).
+ */
 export function call(
-  name: string,
+  path: string,
   args?: Record<string, Promotable>,
 ): Call {
-  const node: Call = { form: 'call', name }
+  const colon = path.indexOf(':')
+  const node: Call =
+    colon < 0
+      ? { form: 'call', name: path }
+      : {
+          form: 'call',
+          name: path.slice(0, colon),
+          case: path.slice(colon + 1),
+        }
   if (args) {
     for (const [k, v] of Object.entries(args)) {
-      // `base` and `case` are part of the call's identity
-      // tuple — keep them as bare strings on the node, not
-      // wrapped as literal AST nodes.
-      if ((k === 'base' || k === 'case') && typeof v === 'string') {
-        ;(node as Record<string, unknown>)[k] = v
-      } else {
-        ;(node as Record<string, unknown>)[k] = promote(v)
-      }
+      ;(node as Record<string, unknown>)[k] = promote(v)
     }
   }
   return node
@@ -460,7 +468,7 @@ export function valueArm(
   return {
     form: 'case-value',
     value,
-    flow: typeof flow === 'string' ? [text(flow)] : flow,
+    flow: typeof flow === 'string' ? [flow] : flow,
   }
 }
 
@@ -471,14 +479,14 @@ export function testArm(
   return {
     form: 'case-test',
     test: testCall,
-    flow: typeof flow === 'string' ? [text(flow)] : flow,
+    flow: typeof flow === 'string' ? [flow] : flow,
   }
 }
 
 export function otherwise(flow: Cast[] | string): CaseDefaultArm {
   return {
     form: 'case-default',
-    flow: typeof flow === 'string' ? [text(flow)] : flow,
+    flow: typeof flow === 'string' ? [flow] : flow,
   }
 }
 

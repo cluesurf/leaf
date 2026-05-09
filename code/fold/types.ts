@@ -27,8 +27,8 @@ export type ListPrimitive = {
   meta?: Meta
 }
 
-export type TemplateStringPrimitive = {
-  form: 'template_string'
+export type TextPrimitive = {
+  form: 'text'
   flow: Cast[]
   id?: string
   meta?: Meta
@@ -310,7 +310,7 @@ export type FindPrimitive = {
 export type FoldPrimitive = {
   form: 'fold'
   /** Name of the Fold declaration to embed. */
-  cast: string
+  name: string
   /** Template parameter bindings (snake_case → Cast). */
   bind?: Record<string, Cast>
   mark?: string
@@ -337,7 +337,7 @@ export type ViewPrimitive = {
 
 export type Structural =
   | ListPrimitive
-  | TemplateStringPrimitive
+  | TextPrimitive
   | Reference
   | ReadPrimitive
   | Call

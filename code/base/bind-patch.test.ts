@@ -19,8 +19,8 @@ import type { Cast } from '@/fold/types'
 describe('base.bind — captures tree + output', () => {
   it('returns the tree, the rendered output, and the scope', () => {
     const base = new Base()
-    const tree: Cast = make.templateString('hi ', make.reference('name'))
-    const result = base.bind(tree, makeScope({ name: 'Lance' }))
+    const tree: Cast = make.text('hi ', make.reference('name'))
+    const result = base.bind(tree, { name: 'Lance' })
     expect(result.tree).toBe(tree)
     expect(result.output).toBe('hi Lance')
   })
@@ -30,10 +30,10 @@ describe('base.bindPatch — replace by mark', () => {
   it('replaces the marked node and re-evaluates', () => {
     const base = new Base()
     const tree: Cast = {
-      form: 'template_string',
+      form: 'text',
       flow: ['hello ', { form: 'reference', name: 'name', mark: 'M-name' }],
     }
-    const r0 = base.bind(tree, makeScope({ name: 'A' }))
+    const r0 = base.bind(tree, { name: 'A' })
     expect(r0.output).toBe('hello A')
 
     const r1 = base.bindPatch(r0, [
@@ -71,7 +71,7 @@ describe('base.bindPatch — insert into a list-shaped child', () => {
   it('appends to template_string.flow', () => {
     const base = new Base()
     const tree: Cast = {
-      form: 'template_string',
+      form: 'text',
       mark: 'M-root',
       flow: ['a'],
     }
@@ -88,14 +88,14 @@ describe('base.bindPatch — remove by mark', () => {
   it('drops a list-element child', () => {
     const base = new Base()
     const tree: Cast = {
-      form: 'template_string',
+      form: 'text',
       flow: [
         'a',
         { form: 'reference', name: 'x', mark: 'M-x' },
         'c',
       ],
     }
-    const r0 = base.bind(tree, makeScope({ x: 'b' }))
+    const r0 = base.bind(tree, { x: 'b' })
     expect(r0.output).toBe('abc')
     const r1 = base.bindPatch(r0, [
       { op: 'remove', mark: 'M-x' },
@@ -109,7 +109,7 @@ describe('memoization — cache + dirty propagation', () => {
     const base = new Base()
     let evalCount = 0
     const tree: Cast = {
-      form: 'template_string',
+      form: 'text',
       flow: [
         {
           form: 'call',
@@ -133,7 +133,7 @@ describe('memoization — cache + dirty propagation', () => {
     // Wire the side-effect hook. Because catalog `sideEffect`
     // isn't registered, supply via base.flow. Use bare verb.
     base.flow('sideEffect', ctx.sideEffect)
-    const r0 = base.bind(tree, makeScope({ x: '1' }))
+    const r0 = base.bind(tree, { x: '1' })
     expect(r0.output).toBe('A1')
     expect(evalCount).toBe(1)
 
@@ -162,7 +162,7 @@ describe('memoization — cache + dirty propagation', () => {
       outerEvals += 1
       return `<${inner}>`
     })
-    const r0 = base.bind(tree, makeScope({ value: 'x' }))
+    const r0 = base.bind(tree, { value: 'x' })
     expect(r0.output).toBe('<x>')
     expect(outerEvals).toBe(1)
 
@@ -179,7 +179,7 @@ describe('memoization — cache + dirty propagation', () => {
     const base = new Base()
     let leftEvals = 0
     const tree: Cast = {
-      form: 'template_string',
+      form: 'text',
       flow: [
         {
           form: 'call',
@@ -198,7 +198,7 @@ describe('memoization — cache + dirty propagation', () => {
       leftEvals += 1
       return 'L'
     })
-    const r0 = base.bind(tree, makeScope({ right: 'R0' }))
+    const r0 = base.bind(tree, { right: 'R0' })
     expect(r0.output).toBe('L / R0')
     expect(leftEvals).toBe(1)
 
@@ -214,10 +214,10 @@ describe('mark stays stable across patch + compile round-trip', () => {
   it('replace preserves the patched node\'s own mark', () => {
     const base = new Base()
     const tree: Cast = {
-      form: 'template_string',
+      form: 'text',
       flow: [{ form: 'reference', name: 'x', mark: 'X' }],
     }
-    const r0 = base.bind(tree, makeScope({ x: 1 }))
+    const r0 = base.bind(tree, { x: 1 })
     const replacement: Cast = {
       form: 'reference',
       name: 'y',

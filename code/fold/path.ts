@@ -3,7 +3,7 @@
  * scope, applies optional-chain (`safe`) short-circuiting.
  */
 
-import type { Cast, ReadPrimitive, ReadLink } from '../types'
+import type { Cast, ReadPrimitive, ReadLink } from './types'
 import type { BaseContext } from './registry'
 
 /**

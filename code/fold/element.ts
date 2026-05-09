@@ -42,7 +42,7 @@ import type {
   Cast,
   ViewPrimitive,
   WalkPrimitive,
-} from '../types'
+} from './types'
 import { evaluatePath } from './path'
 import {
   collectCallArgs,
@@ -107,7 +107,7 @@ function walkElement(node: Cast, context: ElementContext): unknown {
         context,
         node.list.map((n, i) => keyed(walkElement(n, context), i)),
       )
-    case 'template_string':
+    case 'text':
       return wrapFragment(
         context,
         node.flow.map((n, i) => keyed(walkElement(n, context), i)),
@@ -211,7 +211,7 @@ function walkElement(node: Cast, context: ElementContext): unknown {
 
     // ----- fold (template embed) -----
     case 'fold': {
-      const inner = context.fold?.(node.cast)
+      const inner = context.fold?.(node.name)
       if (inner == null) return null
       const frame: Record<string, unknown> = {}
       if (node.bind) {
@@ -253,7 +253,7 @@ function walkValue(node: Cast, context: ElementContext): unknown {
   switch (node.form) {
     case 'list':
       return node.list.map(n => walkValue(n, context))
-    case 'template_string':
+    case 'text':
       return node.flow.map(n => walkValue(n, context)).join('')
     case 'hash': {
       const out: Record<string, unknown> = {}

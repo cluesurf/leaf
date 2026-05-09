@@ -48,7 +48,7 @@ describe('hook (call operators)', () => {
   })
 
   it('overrides built-ins via context.hook', () => {
-    const tree = make.count(make.list([make.text('a'), make.text('b')]))
+    const tree = make.count(make.list(['a', 'b']))
     expect(
       renderText(tree, {
         scope: makeScope(),

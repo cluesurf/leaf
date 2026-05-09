@@ -7,7 +7,7 @@
  * `make.walkTest` from `@cluesurf/bead`.
  */
 
-export const walk_map = ({
+export const walkMap = ({
   yield: values,
 }: {
   items: unknown[]
@@ -16,7 +16,7 @@ export const walk_map = ({
   return Array.isArray(values) ? values : []
 }
 
-export const walk_filter = ({
+export const walkFilter = ({
   items,
   test,
 }: {
@@ -31,7 +31,7 @@ export const walk_filter = ({
   return out
 }
 
-export const walk_reduce = ({
+export const walkReduce = ({
   yield: stepResult,
 }: {
   items: unknown[]
@@ -44,7 +44,7 @@ export const walk_reduce = ({
   return stepResult
 }
 
-export const walk_chunk = ({
+export const walkChunk = ({
   items,
   size,
 }: {
@@ -59,7 +59,7 @@ export const walk_chunk = ({
   return out
 }
 
-export const walk_distinct = ({
+export const walkDistinct = ({
   items,
 }: {
   items: unknown[]

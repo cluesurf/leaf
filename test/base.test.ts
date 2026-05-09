@@ -26,7 +26,7 @@ describe('Base runtime — typed flow registration', () => {
     )
 
     expect(
-      base.call('is', { base: 'ipa', case: 'broad', text: 'fəˈnɛtɪk' }),
+      base.call('is:ipa:broad', { text: 'fəˈnɛtɪk' }),
     ).toBe(true)
   })
 
@@ -36,8 +36,8 @@ describe('Base runtime — typed flow registration', () => {
     base.flow('is', { base: 'string' }, ({ thing }) => typeof thing === 'string')
 
     expect(base.test('flow:is:string')).toBe(true)
-    expect(base.call('is', { base: 'string', thing: 'hello' })).toBe(true)
-    expect(base.call('is', { base: 'string', thing: 42 })).toBe(false)
+    expect(base.call('is:string', { thing: 'hello' })).toBe(true)
+    expect(base.call('is:string', { thing: 42 })).toBe(false)
   })
 
   it('registers a bare verb (no base / no case)', () => {
@@ -53,7 +53,7 @@ describe('Base runtime — typed flow registration', () => {
     const base = new Base<Code>()
 
     expect(() =>
-      base.call('is', { base: 'ipa', case: 'broad', text: 'x' }),
+      base.call('is:ipa:broad', { text: 'x' }),
     ).toThrow(/no flow registered/)
   })
 
@@ -70,8 +70,8 @@ describe('Base runtime — typed flow registration', () => {
     base.flow('get', { base: 'length' }, ({ text }) => text.length)
 
     expect(base.size).toBe(4)
-    expect(base.call('make', { base: 'sum', a: 2, b: 3 })).toBe(5)
-    expect(base.call('get', { base: 'length', text: 'hello' })).toBe(5)
+    expect(base.call('make:sum', { a: 2, b: 3 })).toBe(5)
+    expect(base.call('get:length', { text: 'hello' })).toBe(5)
   })
 })
 
@@ -136,15 +136,15 @@ describe('Base runtime — type inference', () => {
 
     // Calling registered flows mirrors the registration shape:
     // verb + { base, case?, ...takeArgs }.
-    expect(base.call('is', { base: 'string', thing: 'hello' })).toBe(true)
-    expect(base.call('is', { base: 'string', thing: 42 })).toBe(false)
-    expect(base.call('make', { base: 'sum', a: 2, b: 3 })).toBe(5)
-    expect(base.call('get', { base: 'length', text: 'hello' })).toBe(5)
+    expect(base.call('is:string', { thing: 'hello' })).toBe(true)
+    expect(base.call('is:string', { thing: 42 })).toBe(false)
+    expect(base.call('make:sum', { a: 2, b: 3 })).toBe(5)
+    expect(base.call('get:length', { text: 'hello' })).toBe(5)
     expect(
-      base.call('has', { base: 'prefix', text: 'foobar', prefix: 'foo' }),
+      base.call('has:prefix', { text: 'foobar', prefix: 'foo' }),
     ).toBe(true)
     expect(
-      base.call('is', { base: 'ipa', case: 'broad', text: 'fəˈnɛtɪk' }),
+      base.call('is:ipa:broad', { text: 'fəˈnɛtɪk' }),
     ).toBe(true)
   })
 
@@ -152,9 +152,9 @@ describe('Base runtime — type inference', () => {
     const base = new Base<Code>()
     base.load({ ...standard, code: undefined })
 
-    // `if` — value selector
-    expect(base.call('if', { test: true, then: 'yes', else: 'no' })).toBe('yes')
-    expect(base.call('if', { test: false, then: 'yes', else: 'no' })).toBe('no')
+    // `fork` — value selector
+    expect(base.call('fork', { test: true, then: 'yes', else: 'no' })).toBe('yes')
+    expect(base.call('fork', { test: false, then: 'yes', else: 'no' })).toBe('no')
 
     // `validate` — wraps a test in a result envelope
     expect(base.call('validate', { test: true })).toEqual({ ok: true })
@@ -164,12 +164,12 @@ describe('Base runtime — type inference', () => {
 
     // `walk(chunk)` — array transform
     expect(
-      base.call('walk', { base: 'chunk', items: [1, 2, 3, 4, 5], size: 2 }),
+      base.call('walk:chunk', { items: [1, 2, 3, 4, 5], size: 2 }),
     ).toEqual([[1, 2], [3, 4], [5]])
 
     // `walk(distinct)`
     expect(
-      base.call('walk', { base: 'distinct', items: [1, 2, 2, 3, 1] }),
+      base.call('walk:distinct', { items: [1, 2, 2, 3, 1] }),
     ).toEqual([1, 2, 3])
   })
 
@@ -185,7 +185,7 @@ describe('Base runtime — type inference', () => {
     const base = new Base<Code>()
     base.load({ ...standard, code: undefined })
     expect(() =>
-      base.call('find', { base: 'record', resource: 'page', id: '1' }),
+      base.call('find:record', { resource: 'page', id: '1' }),
     ).toThrow(/no handler registered/)
   })
 
@@ -209,7 +209,7 @@ describe('Base runtime — type inference', () => {
     ).toBe(true)
 
     // The typed string form keeps working alongside it.
-    expect(base.call('is', { base: 'string', thing: 'hello' })).toBe(true)
+    expect(base.call('is:string', { thing: 'hello' })).toBe(true)
   })
 
 })

@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { make, makeScope, renderText, evaluateText } from '..'
+import { make, makeScope, renderText, evaluateText } from '.'
 
 describe('literal rendering', () => {
   it('renders text', () => {
-    expect(renderText(make.text('hello'), { scope: makeScope() })).toBe('hello')
+    expect(renderText('hello', { scope: makeScope() })).toBe('hello')
   })
 
   it('renders integer', () => {
@@ -15,12 +15,12 @@ describe('literal rendering', () => {
   })
 
   it('list literal evaluates to a JS array', () => {
-    const tree = make.list([make.text('a'), make.text('b'), make.text('c')])
+    const tree = make.list(['a', 'b', 'c'])
     expect(evaluateText(tree, { scope: makeScope() })).toEqual(['a', 'b', 'c'])
   })
 
   it('renders line as woven sequence', () => {
-    const tree = make.templateString('I am ', make.reference('status'), '.')
+    const tree = make.text('I am ', make.reference('status'), '.')
     const out = renderText(tree, {
       scope: makeScope({ status: 'fine' }),
     })
@@ -272,7 +272,7 @@ describe('control flow rendering', () => {
     const scope = makeScope({ items: ['a', 'b', 'c'] })
     const tree = make.walk(
       make.reference('items'),
-      make.templateString(make.reference('item'), '|'),
+      make.text(make.reference('item'), '|'),
     )
     expect(renderText(tree, { scope })).toBe('a|b|c|')
   })
@@ -281,7 +281,7 @@ describe('control flow rendering', () => {
     const scope = makeScope({ items: ['x', 'y'] })
     const tree = make.walk(
       make.reference('items'),
-      make.templateString(make.reference('index'), ':', make.reference('item'), ' '),
+      make.text(make.reference('index'), ':', make.reference('item'), ' '),
     )
     expect(renderText(tree, { scope })).toBe('0:x 1:y ')
   })
@@ -291,7 +291,7 @@ describe('control flow rendering', () => {
 describe('localization template — full integration', () => {
   it('renders the greeting example', () => {
     const greeting = {
-      form: 'template_string' as const,
+      form: 'text' as const,
       flow: [
         'You have ',
         { form: 'reference' as const, name: 'count' },

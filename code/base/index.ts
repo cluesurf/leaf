@@ -30,8 +30,12 @@ import type {
 } from './types'
 import type { Book } from '@/form'
 import type { Cast as FoldNode } from '@/fold/types'
-import { evaluateText, makeScope } from '@/fold/render'
-import type { Scope } from '@/fold/render'
+import { evaluateText, makeScope } from '@/fold'
+import type { Scope } from '@/fold'
+import {
+  renderElement,
+  type ElementBuilder,
+} from '@/fold/element'
 
 export type {
   BareFlowName,
@@ -97,13 +101,22 @@ type Hook = (args: any) => any
 type HookName = string | number
 
 function buildKey(
-  name: string,
-  base: string | undefined,
-  caseValue: string | undefined,
+  call: string,
+  caseValue?: string,
 ): HookName {
-  if (base == null) return `flow:${name}`
-  if (caseValue == null) return `flow:${name}:${base}`
-  return `flow:${name}:${base}:${caseValue}`
+  return caseValue ? `flow:${call}:${caseValue}` : `flow:${call}`
+}
+
+/**
+ * Per-Base render configuration. Supply `createElement` (and
+ * optionally `fragment` / `component`) to render to vdom; omit
+ * for text-mode (the default).
+ */
+export type BaseConfig = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  createElement?: ElementBuilder<any>
+  fragment?: unknown
+  component?: Record<string, unknown>
 }
 
 export class Base<R = Code> {
@@ -116,6 +129,11 @@ export class Base<R = Code> {
    * without needing a manual `context.fold` callback.
    */
   private fold = new Map<string, FoldNode>()
+  private config: BaseConfig
+
+  constructor(config: BaseConfig = {}) {
+    this.config = config
+  }
 
   /**
    * Register a Flow Hook. Three shapes:
@@ -162,7 +180,14 @@ export class Base<R = Code> {
       throw new Error(`base.flow('${name}'): invalid arguments`)
     }
 
-    const key = buildKey(name, options?.base, options?.case)
+    // `options` may carry the legacy `{ base, case }` split or
+    // the new colon-scoped `case`. Join into a single `case`.
+    const opts = (options ?? {}) as { base?: string; case?: string }
+    const caseValue =
+      opts.base && opts.case
+        ? `${opts.base}:${opts.case}`
+        : (opts.base ?? opts.case)
+    const key = buildKey(name, caseValue)
     this.hook.set(key, hook)
   }
 
@@ -214,26 +239,26 @@ export class Base<R = Code> {
   // Compiled form: numeric id + bind. Untyped — codegen target.
   call(id: number, bind: any): any
 
-  call(nameOrId: string | number, args: any): any {
-    if (typeof nameOrId === 'number') {
-      const hook = this.hook.get(nameOrId)
+  call(pathOrId: string | number, args: any): any {
+    if (typeof pathOrId === 'number') {
+      const hook = this.hook.get(pathOrId)
       if (hook == null) {
         throw new Error(
-          `base.call: no flow registered for code '${nameOrId}'`,
+          `base.call: no flow registered for code '${pathOrId}'`,
         )
       }
       return hook(args)
     }
 
-    const { base: argBase, case: argCase, ...take } = args ?? {}
-    const key = buildKey(nameOrId, argBase, argCase)
+    // String path: split on first `:` into verb + case.
+    const key = `flow:${pathOrId}`
     const hook = this.hook.get(key)
     if (hook == null) {
       throw new Error(
-        `base.call: no flow registered for code '${String(key)}'`,
+        `base.call: no flow registered for code '${key}'`,
       )
     }
-    return hook(take)
+    return hook(args ?? {})
   }
 
   /**
@@ -260,35 +285,31 @@ export class Base<R = Code> {
     const codeTable = book.code
 
     for (const cast of book.cast ?? []) {
-      // Top-level Fold declarations: index by name for AST
-      // `make.fold(name, ...)` resolution at render time.
+      // Top-level Fold declarations: index by `case` for
+      // string lookups via `base.cast(name, params)` and AST
+      // `make.fold(name, ...)`.
       if (cast.form === 'fold') {
-        const fold = cast as { cast: string; tree: FoldNode[] }
-        // Wrap multi-node trees in a template_string so the
-        // single-Cast resolver contract holds. Renderers
-        // concatenate (text) or fragment (element).
+        const fold = cast as { case: string; tree: FoldNode[] }
         const tree: FoldNode =
           fold.tree.length === 1
             ? fold.tree[0]!
-            : { form: 'template_string', flow: fold.tree }
-        this.fold.set(fold.cast, tree)
+            : { form: 'text', flow: fold.tree }
+        this.fold.set(fold.case, tree)
         continue
       }
 
       if (cast.form !== 'flow') continue
-      const flow = cast as {
-        call: string
-        base?: string
-        case?: string
-      }
-      const key = buildKey(flow.call, flow.base, flow.case)
+      const flow = cast as { call: string; case?: string }
+      const key = buildKey(flow.call, flow.case)
 
-      // The export name is the segments joined by underscore
-      // (e.g. `flow:is:ipa:broad` → `is_ipa_broad`).
-      const exportName = String(key)
-        .replace(/^flow:/, '')
-        .split(':')
-        .join('_')
+      // The export name is the segments camelCase-joined
+      // (e.g. `flow:is:ipa:broad` → `isIpaBroad`).
+      const segs = String(key).replace(/^flow:/, '').split(':')
+      const exportName = segs
+        .map((s, i) =>
+          i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1),
+        )
+        .join('')
 
       const hook = callTable[exportName]
       if (hook == null) continue
@@ -315,37 +336,30 @@ export class Base<R = Code> {
    *     nodes that resolve through the catalog
    *
    *   const tree = make.call('format_capitalized', { text: 'hi' })
-   *   const result = base.cast(tree)
-   *   // → 'Hi'
+   *   base.cast(tree)              // → 'Hi'
+   *   base.cast(tree, { x: 1 })    // params bind into scope
    *
-   * Pass `scope` (made via `makeScope({...})` or `makeScope`)
-   * when the tree reads from variables via `make.path(...)`.
+   * The runtime auto-resolves catalog calls + named Folds
+   * through the loaded Book; supply ad-hoc hooks / find /
+   * react via the constructor `BaseConfig`.
    */
-  cast(tree: FoldNode, scope?: Scope): unknown {
-    // The runtime's hook map is keyed by colon-namespace
-    // (`flow:<name>:<base>:<case>`) AND by integer id from
-    // CodeLink. The make renderer's BaseContext.call hook
-    // gives us the full Call node, so we can build the right
-    // lookup key from `(node.name, node.base, node.case)` or
-    // short-circuit via `node.code` when present.
-    const hookStore = this.hook
-    const foldStore = this.fold
-    return evaluateText(tree, {
-      scope: scope ?? makeScope(),
-      call: node => {
-        if (typeof node.code === 'number') {
-          return hookStore.get(node.code) as
-            | ((input: any) => unknown)
-            | undefined
-        }
-        if (typeof node.name !== 'string') return undefined
-        const key = buildKey(node.name, node.base, node.case)
-        return hookStore.get(key) as
-          | ((input: any) => unknown)
-          | undefined
-      },
-      fold: name => foldStore.get(name),
-    })
+  /**
+   * Cast a registered Fold by name with `params` bound into
+   * scope. Returns whatever the renderer produces (string in
+   * text mode, vdom in element mode).
+   *
+   *   base.cast('email:status', { input: 'hi@bead.dev' })
+   *
+   * The first arg is always a Fold's `case:` (its colon-scoped
+   * lookup name). Trees come from `Fold` declarations
+   * registered via `base.load(book)` — never inline.
+   */
+  cast(name: string, params: Record<string, unknown> = {}): unknown {
+    const tree = this.fold.get(name)
+    if (tree == null) {
+      throw new Error(`base.cast: no Fold registered for '${name}'`)
+    }
+    return this.evaluateAt(tree, makeScope(params), undefined, undefined)
   }
 
   /**
@@ -357,19 +371,19 @@ export class Base<R = Code> {
    *   result.output   // the rendered value
    *   base.bindPatch(result, [{ op: 'replace', mark: '01h…', value: 'new' }])
    */
-  bind(tree: FoldNode, scope?: Scope): BindResult {
-    const usedScope = scope ?? makeScope()
+  bind(
+    tree: FoldNode,
+    params: Record<string, unknown> = {},
+  ): BindResult {
+    const usedScope = makeScope(params)
     const cache = new Map<string, unknown>()
     const parents = new Map<string, string>()
 
-    // Pre-walk: index marks → parent-mark + per-mark output.
+    // Pre-walk: index marks → parent-mark for fast ancestor
+    // chasing on patch. Per-mark caches enable subtree reuse.
     indexMarks(tree, undefined, parents)
 
-    // Evaluate every marked subtree once and cache. The full
-    // tree itself doesn't need a cache slot — the root output
-    // is on `result.output`. Per-mark caches enable subtree
-    // reuse in `bindPatch`.
-    const output = this.castWithCache(tree, usedScope, cache, undefined)
+    const output = this.evaluateAt(tree, usedScope, cache, undefined)
 
     return { tree, output, scope: usedScope, cache, parents }
   }
@@ -409,47 +423,68 @@ export class Base<R = Code> {
     const parents = new Map<string, string>()
     indexMarks(nextTree, undefined, parents)
 
-    const output = this.castWithCache(
-      nextTree,
-      prev.scope,
-      cache,
-      dirty,
-    )
+    const output = this.evaluateAt(nextTree, prev.scope, cache, dirty)
 
     return { tree: nextTree, output, scope: prev.scope, cache, parents }
   }
 
   /**
-   * Internal `cast` variant that threads a per-mark cache
-   * and a dirty-marks set into the renderer context. The
-   * walker (`evaluateText`) consults them at every marked
-   * node — cache hits short-circuit the deeper walk.
+   * Internal evaluator. Threads scope + per-mark cache + dirty
+   * marks into the renderer. Picks text vs element mode based
+   * on `this.config.react`. Returns whatever the renderer
+   * produces (string in text mode, vdom in element mode).
    */
-  private castWithCache(
+  private evaluateAt(
     tree: FoldNode,
     scope: Scope,
-    cache: Map<string, unknown>,
+    cache: Map<string, unknown> | undefined,
     dirty: Set<string> | undefined,
   ): unknown {
     const hookStore = this.hook
     const foldStore = this.fold
+    const config = this.config
+
+    const callResolver = (node: {
+      name?: string
+      base?: string
+      case?: string
+      code?: number
+    }) => {
+      if (typeof node.code === 'number') {
+        return hookStore.get(node.code) as
+          | ((input: any) => unknown)
+          | undefined
+      }
+      if (typeof node.name !== 'string') return undefined
+      // Call AST nodes may carry legacy `{ base, case }` split.
+      const caseValue =
+        node.base && node.case
+          ? `${node.base}:${node.case}`
+          : (node.base ?? node.case)
+      const key = buildKey(node.name, caseValue)
+      return hookStore.get(key) as
+        | ((input: any) => unknown)
+        | undefined
+    }
+
+    if (config.createElement) {
+      return renderElement(tree, {
+        scope,
+        cache,
+        dirty,
+        call: callResolver,
+        fold: name => foldStore.get(name),
+        builder: config.createElement,
+        fragment: config.fragment,
+        component: config.component,
+      })
+    }
 
     return evaluateText(tree, {
       scope,
       cache,
       dirty,
-      call: node => {
-        if (typeof node.code === 'number') {
-          return hookStore.get(node.code) as
-            | ((input: any) => unknown)
-            | undefined
-        }
-        if (typeof node.name !== 'string') return undefined
-        const key = buildKey(node.name, node.base, node.case)
-        return hookStore.get(key) as
-          | ((input: any) => unknown)
-          | undefined
-      },
+      call: callResolver,
       fold: name => foldStore.get(name),
     })
   }

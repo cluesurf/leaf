@@ -16,7 +16,7 @@ const REACT = {
 
 describe('renderElement', () => {
   it('renders text literals', () => {
-    const out = renderElement(make.text('hello'), {
+    const out = renderElement('hello', {
       scope: makeScope(),
       ...REACT,
     })
@@ -24,7 +24,7 @@ describe('renderElement', () => {
   })
 
   it('renders a weave as a fragment', () => {
-    const tree = make.templateString('I am ', make.reference('status'), '.')
+    const tree = make.text('I am ', make.reference('status'), '.')
     const out = renderElement(tree, {
       scope: makeScope({ status: 'fine' }),
       ...REACT,
@@ -51,7 +51,7 @@ describe('renderElement', () => {
   it('renders walk over a list', () => {
     const tree = make.walk(
       make.reference('items'),
-      make.templateString(make.reference('item'), '|'),
+      make.text(make.reference('item'), '|'),
     )
     const out = renderElement(tree, {
       scope: makeScope({ items: ['a', 'b', 'c'] }),
@@ -139,7 +139,7 @@ describe('renderElement', () => {
       ...children: unknown[]
     ): Tup => [type, props, children]
 
-    const tree = make.templateString('a', 'b', 'c')
+    const tree = make.text('a', 'b', 'c')
     const out = renderElement<Tup>(tree, {
       scope: makeScope(),
       builder: tup,

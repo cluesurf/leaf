@@ -2,8 +2,9 @@ export * from './form'
 export * from './tool'
 export { Base } from './base'
 export type {
-  Code,
   BareFlowName,
+  BaseConfig,
+  Code,
   FlowBaseValue,
   FlowCaseValue,
   FlowHook,
@@ -13,62 +14,52 @@ export type {
   FlowResolve,
   FlowTake,
 } from './base'
+export type { BindResult, TreePatch } from './base'
+
+// `make` is the AST-builder namespace. Compile is the only
+// other public entry — used to bake authored trees into the
+// integer-keyed wake form before shipping.
 export {
   make,
-  makeScope,
-  renderText,
-  evaluateText,
-  renderElement,
   compile,
   decompile,
   buildDecodeTable,
-  isCast,
-  deepEq,
-  getCall,
-  DEFAULT_HOOK,
   RESERVED_CAST_KEYS,
 } from './fold'
+
 export type {
-  CodeTable,
-  DecodeEntry,
-  DecodeTable,
-  FindPrimitive,
-  FoldPrimitive,
-} from './fold'
-export type {
-  BaseContext,
-  ForkPrimitive,
   Call,
-  CallEntry,
-  CallHandler,
   CaseArm,
   CaseDefaultArm,
   CasePrimitive,
   CaseTestArm,
   CaseValueArm,
   Cast,
+  CodeTable,
   ControlFlow,
-  ElementBuilder,
-  ElementContext,
+  DecodeEntry,
+  DecodeTable,
   FieldSeg,
+  FindPrimitive,
+  FoldPrimitive,
+  ForkPrimitive,
   HashPrimitive,
   IndexSeg,
+  JoinPrimitive,
   ListPrimitive,
   Literal,
   MatchPrimitive,
   Meta,
-  ReadPrimitive,
-  ReadLink,
   PickPrimitive,
   Promotable,
+  ReadLink,
+  ReadPrimitive,
   Reference,
-  Scope,
   SliceSeg,
   Structural,
   SwitchPrimitive,
-  TextContext,
+  TextPrimitive,
   VariableSeg,
   ViewPrimitive,
   WalkPrimitive,
-  TemplateStringPrimitive,
 } from './fold'

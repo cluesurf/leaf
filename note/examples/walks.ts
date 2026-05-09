@@ -10,7 +10,7 @@ const listLine = make.join(
   ' ',
   make.walk(
     make.read('items'),
-    make.templateString(make.read('index'), ':', make.read('item')),
+    make.text(make.read('index'), ':', make.read('item')),
   ),
 )
 
@@ -34,7 +34,7 @@ renderText(countdown, { scope: makeScope() })
 let counter = 0
 const ticker = make.walkTest(
   make.lt(make.read('counter'), 5),
-  make.templateString(make.read('counter'), '-'),
+  make.text(make.read('counter'), '-'),
 )
 
 renderText(ticker, {
@@ -66,7 +66,7 @@ const matrix = make.join(
       make.walkSize(
         0,
         3,
-        make.templateString(make.read('row'), ',', make.read('col')),
+        make.text(make.read('row'), ',', make.read('col')),
         { item: 'col' },
       ),
     ),
@@ -84,7 +84,7 @@ const labelled = make.join(
   ', ',
   make.walk(
     make.read('items'),
-    make.templateString(
+    make.text(
       make.read('prefix'), // outer
       ':',
       make.read('item'),    // inner

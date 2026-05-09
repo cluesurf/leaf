@@ -34,7 +34,7 @@ The namespace is now `make` (not `flow`). Bead spec names:
 - [x] `make.walk(...)` for the list case; `make.walkTest(...)` for while-style; `make.walkSize(...)` for counted ranges.
 - [x] `make.attempt(...)` dropped.
 - [x] `make.loop(...)` dropped. Use `make.walkSize(...)`.
-- [x] `make.templateString(...)` (was `make.weave`).
+- [x] `make.text(...)` (was `make.weave`).
 - [x] `make.hash(...)` added.
 - [ ] Add `make.find(...)` for filter authoring.
 - [ ] Add `make.fold(...)` for document trees (or reuse the tree-of-calls shape).

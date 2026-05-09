@@ -4,21 +4,21 @@
 
 // ─── String transforms ────────────────────────────────────
 
-export const make_lowercase = ({ text }: { text: string }): string =>
+export const makeLowercase = ({ text }: { text: string }): string =>
   text.toLowerCase()
 
-export const make_uppercase = ({ text }: { text: string }): string =>
+export const makeUppercase = ({ text }: { text: string }): string =>
   text.toUpperCase()
 
-export const make_trimmed = ({ text }: { text: string }): string =>
+export const makeTrimmed = ({ text }: { text: string }): string =>
   text.trim()
 
 // ─── Numeric transforms ───────────────────────────────────
 
-export const make_sum = ({ a, b }: { a: number; b: number }): number =>
+export const makeSum = ({ a, b }: { a: number; b: number }): number =>
   a + b
 
-export const make_difference = ({
+export const makeDifference = ({
   a,
   b,
 }: {
@@ -26,7 +26,7 @@ export const make_difference = ({
   b: number
 }): number => a - b
 
-export const make_product = ({
+export const makeProduct = ({
   a,
   b,
 }: {
@@ -34,7 +34,7 @@ export const make_product = ({
   b: number
 }): number => a * b
 
-export const make_quotient = ({
+export const makeQuotient = ({
   a,
   b,
 }: {

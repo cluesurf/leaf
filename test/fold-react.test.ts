@@ -1,87 +1,59 @@
 /**
- * Smoke test that the existing make/render React surface
- * still works alongside the new `Base<Code>` catalog runtime.
- *
- * The two systems live in parallel today:
- *   - `make.*` builders + `renderText` / `renderElement` for
- *     authored render trees (the FOLD AST)
- *   - `Base<Code>` + `base.call(...)` for the catalog runtime
- *     (Form / Flow declarations)
- *
- * They share vocabulary (`form` discriminant, `hook` registry
- * shape) but operate on different inputs. This test pins both
- * paths to a single fixture.
+ * `Base` runs in two render modes from one API:
+ *   - text mode (default): `base.cast(tree, params)` returns a string
+ *   - React mode: pass `createElement` / `fragment` / `component` to
+ *     the `Base` constructor; `base.cast` returns vdom
  */
 
 import { describe, it, expect } from 'vitest'
 import { createElement, Fragment } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import {
-  make,
-  makeScope,
-  renderElement,
-  renderText,
-  Base,
-} from '../code'
-import standard, { hooks, CodeLink, type Code } from '../code/book'
+import { make, Base } from '../code'
+import standard, { type Code } from '../code/book'
 
-describe('make + Base catalog: parallel runtimes', () => {
-  it('renders a flow text tree with locale + scope', () => {
-    const tree = make.templateString(
-      make.text('Hello, '),
+describe('Base render modes', () => {
+  it('text mode renders a tree against scope params', () => {
+    const tree = make.text(
+      'Hello, ',
       make.path('user', 'name'),
-      make.text('!'),
+      '!',
     )
 
-    const out = renderText(tree, {
-      scope: makeScope({ user: { name: 'Lance' } }),
-    })
-
-    expect(out).toBe('Hello, Lance!')
+    const base = new Base<Code>()
+    base.load(standard)
+    expect(base.cast(tree, { user: { name: 'Lance' } })).toBe(
+      'Hello, Lance!',
+    )
   })
 
-  it('renders a flow element tree through React', () => {
+  it('React mode renders a view tree through createElement', () => {
     const tree = make.view('section', { className: 'greeting' }, [
-      make.view('p', {}, [make.text('hi')]),
+      make.view('p', {}, ['hi']),
     ])
 
-    const element = renderElement(tree, {
-      scope: makeScope(),
-      builder: createElement,
+    const base = new Base<Code>({
+      createElement,
       fragment: Fragment,
-      component: {},
     })
+    base.load(standard)
 
+    const element = base.cast(tree)
     const html = renderToStaticMarkup(element as React.ReactElement)
-    expect(html).toBe(
-      '<section class="greeting"><p>hi</p></section>',
-    )
+    expect(html).toBe('<section class="greeting"><p>hi</p></section>')
   })
 
-  it('Base catalog runs in parallel with the make renderer', () => {
-    // Set up the catalog runtime.
+  it('catalog flows compose with make.* builders inside the same Base', () => {
     const base = new Base<Code>()
     base.load(standard)
 
     // Use a catalog flow to derive a value.
-    const upper = base.call('format', {
-      base: 'capitalized',
-      text: 'hello',
-    })
+    const upper = base.call('format:capitalized', { text: 'hello' })
 
-    // Then render that value through the make tree.
-    const tree = make.templateString(make.text('Greeting: '), make.text(upper))
-
-    expect(renderText(tree, { scope: makeScope() })).toBe(
-      'Greeting: Hello',
-    )
+    const tree = make.text('Greeting: ', upper as string)
+    expect(base.cast(tree)).toBe('Greeting: Hello')
   })
 
-  it('a make call node dispatches via Base.cast through (name, base) lookup', () => {
-    // The runtime resolves `make.call('format', { base: 'capitalized', text })`
-    // against the catalog by building the colon-key from the
-    // node's (name, base, case) and looking it up in the
-    // registered hook map.
+  it('a make call node dispatches via base.cast through (name, base) lookup', () => {
     const base = new Base<Code>()
     base.load(standard)
 

@@ -2,8 +2,16 @@ import { describe, it, expect } from 'vitest'
 import { make, makeScope, renderText } from '.'
 
 describe('literals', () => {
-  it('text literal — bare string', () => {
-    expect(make.text('hello')).toBe('hello')
+  it('bare strings are first-class leaves (no builder needed)', () => {
+    // 'hello' is already a Cast — render it directly.
+    expect('hello').toBe('hello')
+  })
+
+  it('make.text(...) builds a tagged text node', () => {
+    expect(make.text('a', 'b')).toEqual({
+      form: 'text',
+      flow: ['a', 'b'],
+    })
   })
 
   it('integer literal — bare number', () => {
@@ -29,15 +37,15 @@ describe('literals', () => {
   })
 
   it('list literal — tagged with form', () => {
-    expect(make.list([make.text('a'), make.text('b')])).toEqual({
+    expect(make.list(['a', 'b'])).toEqual({
       form: 'list',
       list: ['a', 'b'],
     })
   })
 
   it('weave — woven sequence with bare-string leaves', () => {
-    expect(make.templateString('I am ', make.reference('status'), '.')).toEqual({
-      form: 'template_string',
+    expect(make.text('I am ', make.reference('status'), '.')).toEqual({
+      form: 'text',
       flow: ['I am ', { form: 'reference', name: 'status' }, '.'],
     })
   })
@@ -360,7 +368,7 @@ describe('control flow', () => {
   it('walk — iterates and weaves item / index per element', () => {
     const tree = make.walk(
       make.reference('items'),
-      make.templateString(make.reference('index'), ':', make.reference('item'), ' '),
+      make.text(make.reference('index'), ':', make.reference('item'), ' '),
     )
     const scope = makeScope({ items: ['a', 'b', 'c'] })
     expect(renderText(tree, { scope })).toBe('0:a 1:b 2:c ')
@@ -369,7 +377,7 @@ describe('control flow', () => {
   it('walk — custom item / index names', () => {
     const tree = make.walk(
       make.reference('rows'),
-      make.templateString(make.reference('i'), '-', make.reference('row'), ' '),
+      make.text(make.reference('i'), '-', make.reference('row'), ' '),
       { item: 'row', index: 'i' },
     )
     const scope = makeScope({ rows: ['x', 'y'] })
@@ -379,7 +387,7 @@ describe('control flow', () => {
   it('walk — empty list produces empty output', () => {
     const tree = make.walk(
       make.reference('items'),
-      make.templateString(make.reference('item'), ' '),
+      make.text(make.reference('item'), ' '),
     )
     expect(renderText(tree, { scope: makeScope({ items: [] }) })).toBe('')
   })
@@ -387,7 +395,7 @@ describe('control flow', () => {
   it('walk — non-array input falls back to empty', () => {
     const tree = make.walk(
       make.reference('items'),
-      make.templateString(make.reference('item'), ' '),
+      make.text(make.reference('item'), ' '),
     )
     expect(renderText(tree, { scope: makeScope({ items: null }) })).toBe('')
   })
@@ -396,7 +404,7 @@ describe('control flow', () => {
     const tree = make.walkSize(
       0,
       4,
-      make.templateString(make.reference('head'), ' '),
+      make.text(make.reference('head'), ' '),
     )
     expect(tree.form).toBe('walk')
     expect(tree.case).toBe('size')
@@ -407,7 +415,7 @@ describe('control flow', () => {
     const tree = make.walkSize(
       10,
       0,
-      make.templateString(make.reference('i'), ' '),
+      make.text(make.reference('i'), ' '),
       { move: -2, item: 'i' },
     )
     expect(tree.move).toBe(-2)
@@ -421,7 +429,7 @@ describe('control flow', () => {
       make.reference('rows'),
       make.walk(
         make.read('row', 'cells'),
-        make.templateString(
+        make.text(
           make.reference('rowLabel'),
           ':',
           make.reference('cell'),
@@ -438,7 +446,7 @@ describe('control flow', () => {
       make.reference('rows'),
       make.walk(
         make.read('row', 'cells'),
-        make.templateString(
+        make.text(
           make.read('row', 'label'),
           ':',
           make.reference('cell'),
@@ -510,7 +518,7 @@ describe('control flow', () => {
     // The walk frame is pushed; outer bindings remain visible.
     const tree = make.walk(
       make.reference('items'),
-      make.templateString(
+      make.text(
         make.reference('prefix'),
         ':',
         make.reference('item'),
@@ -522,7 +530,7 @@ describe('control flow', () => {
   })
 
   it('walk — frame does NOT leak after iteration', () => {
-    const tree = make.templateString(
+    const tree = make.text(
       make.walk(
         make.reference('items'),
         make.reference('item'),
@@ -543,7 +551,7 @@ describe('control flow', () => {
       make.walkSize(
         0,
         3,
-        make.templateString(
+        make.text(
           make.reference('row'),
           ',',
           make.reference('col'),
@@ -567,7 +575,7 @@ describe('control flow', () => {
     // Body increments via host-side hook; test checks counter.
     const tree = make.walkTest(
       make.lt(make.reference('counter'), 3),
-      make.templateString(make.reference('counter'), '-'),
+      make.text(make.reference('counter'), '-'),
     )
     // Build a child scope that exposes counter via getter.
     const innerScope = scope.push({

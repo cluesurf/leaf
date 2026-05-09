@@ -4,7 +4,7 @@
 
 // ─── Number formatting ────────────────────────────────────
 
-export const format_number = ({
+export const formatNumber = ({
   value,
   locale,
   minimum,
@@ -20,7 +20,7 @@ export const format_number = ({
     maximumFractionDigits: maximum,
   }).format(value)
 
-export const format_currency = ({
+export const formatCurrency = ({
   value,
   currency,
   locale,
@@ -33,7 +33,7 @@ export const format_currency = ({
     value,
   )
 
-export const format_percent = ({
+export const formatPercent = ({
   value,
   locale,
   minimum,
@@ -54,7 +54,7 @@ export const format_percent = ({
 
 type DateStyle = 'full' | 'long' | 'medium' | 'short'
 
-export const format_date = ({
+export const formatDate = ({
   value,
   locale,
   style,
@@ -67,7 +67,7 @@ export const format_date = ({
     value,
   )
 
-export const format_time = ({
+export const formatTime = ({
   value,
   locale,
   style,
@@ -80,7 +80,7 @@ export const format_time = ({
     value,
   )
 
-export const format_relative = ({
+export const formatRelative = ({
   value,
   locale,
   now,
@@ -122,13 +122,13 @@ export const format_relative = ({
 
 // ─── Text shaping / joining ───────────────────────────────
 
-export const format_capitalized = ({ text }: { text: string }): string =>
+export const formatCapitalized = ({ text }: { text: string }): string =>
   text.length === 0 ? text : text[0]!.toUpperCase() + text.slice(1)
 
-export const format_reversed = ({ text }: { text: string }): string =>
+export const formatReversed = ({ text }: { text: string }): string =>
   Array.from(text).reverse().join('')
 
-export const format_joined = ({
+export const formatJoined = ({
   parts,
   separator,
 }: {
@@ -136,7 +136,7 @@ export const format_joined = ({
   separator?: string
 }): string => parts.join(separator ?? '')
 
-export const format_split = ({
+export const formatSplit = ({
   text,
   separator,
 }: {
@@ -144,7 +144,7 @@ export const format_split = ({
   separator: string
 }): { value: string[] } => ({ value: text.split(separator) })
 
-export const format_replaced = ({
+export const formatReplaced = ({
   text,
   pattern,
   replacement,
@@ -154,7 +154,7 @@ export const format_replaced = ({
   replacement: string
 }): string => text.split(pattern).join(replacement)
 
-export const format_truncated = ({
+export const formatTruncated = ({
   text,
   length,
   suffix,
@@ -170,7 +170,7 @@ export const format_truncated = ({
 
 // ─── Plural-aware formatting ──────────────────────────────
 
-export const format_plural = ({
+export const formatPlural = ({
   count,
   singular,
   plural,

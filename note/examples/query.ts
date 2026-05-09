@@ -6,7 +6,7 @@
 import { make, makeScope, renderText, Base } from '@cluesurf/bead'
 
 // AST-side: inline `find` Casts in templates.
-const recentArticlesPage = make.templateString(
+const recentArticlesPage = make.text(
   'Latest: ',
   make.walk(
     make.find('article', {

@@ -7,11 +7,11 @@
 
 import type { Flow } from '@/form'
 
-export const has_key: Flow = {
+export const hasKey: Flow = {
   form: 'flow',
   save: 'has',
   call: 'has',
-  base: 'key',
+  case: 'key',
   take: {
     thing: { like: 'unknown' },
     key:   { like: 'string' },
@@ -19,11 +19,11 @@ export const has_key: Flow = {
   make: 'boolean',
 }
 
-export const has_keys: Flow = {
+export const hasKeys: Flow = {
   form: 'flow',
   save: 'has',
   call: 'has',
-  base: 'keys',
+  case: 'keys',
   take: {
     thing: { like: 'unknown' },
     keys:  { like: 'string', list: true },
@@ -31,11 +31,11 @@ export const has_keys: Flow = {
   make: 'boolean',
 }
 
-export const has_value: Flow = {
+export const hasValue: Flow = {
   form: 'flow',
   save: 'has',
   call: 'has',
-  base: 'value',
+  case: 'value',
   take: {
     thing: { like: 'unknown' },
     value: { like: 'unknown' },
@@ -43,11 +43,11 @@ export const has_value: Flow = {
   make: 'boolean',
 }
 
-export const has_item: Flow = {
+export const hasItem: Flow = {
   form: 'flow',
   save: 'has',
   call: 'has',
-  base: 'item',
+  case: 'item',
   take: {
     items: { like: 'unknown', list: true },
     item:  { like: 'unknown' },
@@ -55,11 +55,11 @@ export const has_item: Flow = {
   make: 'boolean',
 }
 
-export const has_prefix: Flow = {
+export const hasPrefix: Flow = {
   form: 'flow',
   save: 'has',
   call: 'has',
-  base: 'prefix',
+  case: 'prefix',
   take: {
     text:   { like: 'string' },
     prefix: { like: 'string' },
@@ -67,11 +67,11 @@ export const has_prefix: Flow = {
   make: 'boolean',
 }
 
-export const has_suffix: Flow = {
+export const hasSuffix: Flow = {
   form: 'flow',
   save: 'has',
   call: 'has',
-  base: 'suffix',
+  case: 'suffix',
   take: {
     text:   { like: 'string' },
     suffix: { like: 'string' },
@@ -79,11 +79,11 @@ export const has_suffix: Flow = {
   make: 'boolean',
 }
 
-export const has_substring: Flow = {
+export const hasSubstring: Flow = {
   form: 'flow',
   save: 'has',
   call: 'has',
-  base: 'substring',
+  case: 'substring',
   take: {
     text:      { like: 'string' },
     substring: { like: 'string' },
@@ -91,11 +91,11 @@ export const has_substring: Flow = {
   make: 'boolean',
 }
 
-export const has_pattern: Flow = {
+export const hasPattern: Flow = {
   form: 'flow',
   save: 'has',
   call: 'has',
-  base: 'pattern',
+  case: 'pattern',
   take: {
     text:    { like: 'string' },
     pattern: { like: 'string' },

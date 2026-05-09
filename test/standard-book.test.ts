@@ -17,26 +17,24 @@ describe('standard catalog Book', () => {
     }
   })
 
-  it('Flow entries carry a (call, base?, case?) identity', () => {
+  it('Flow entries carry a (call, case?) identity', () => {
     const flows = (standard.cast ?? []).filter(c => c.form === 'flow')
     expect(flows.length).toBeGreaterThan(0)
     for (const flow of flows) {
-      const f = flow as { call: string; base?: string; case?: string }
+      const f = flow as { call: string; case?: string }
       expect(typeof f.call).toBe('string')
       expect(f.call.length).toBeGreaterThan(0)
     }
   })
 
-  it("includes `is_ipa_broad` as (call: 'is', base: 'ipa', case: 'broad')", () => {
+  it("includes `is_ipa_broad` as (call: 'is', case: 'ipa:broad')", () => {
     const flow = (standard.cast ?? []).find(
-      c =>
-        c.form === 'flow' &&
-        (c as any).call === 'is' &&
-        (c as any).base === 'ipa' &&
-        (c as any).case === 'broad',
+      c => c.form === 'flow' && c.call === 'is' && c.case === 'ipa:broad',
     )
     expect(flow).toBeDefined()
-    expect((flow as any).make).toBe('boolean')
+    if (flow?.form === 'flow') {
+      expect(flow.make).toBe('boolean')
+    }
   })
 })
 
@@ -101,7 +99,7 @@ describe('Make.save() — Code aggregate generation', () => {
       cast: [
         {
           form: 'form' as const,
-          cast: 'language_request',
+          name: 'language_request',
           like: {
             id:     { like: 'string' },
             locale: { like: 'string', need: false },
@@ -109,7 +107,7 @@ describe('Make.save() — Code aggregate generation', () => {
         },
         {
           form: 'form' as const,
-          cast: 'language',
+          name: 'language',
           like: {
             id:        { like: 'string' },
             iso_639_3: { like: 'string' },
@@ -118,7 +116,7 @@ describe('Make.save() — Code aggregate generation', () => {
         {
           form: 'flow' as const,
           call: 'select',
-          base: 'language',
+          case: 'language',
           take: 'language_request',
           make: 'language',
         },
@@ -193,16 +191,14 @@ describe('Make.save() — Code aggregate generation', () => {
         {
           form: 'flow' as const,
           call: 'is',
-          base: 'ipa',
-          case: 'broad',
+          case: 'ipa:broad',
           take: { text: { like: 'string' } },
           make: 'boolean',
         },
         {
           form: 'flow' as const,
           call: 'is',
-          base: 'ipa',
-          case: 'narrow',
+          case: 'ipa:narrow',
           take: { text: { like: 'string' } },
           make: 'boolean',
         },
@@ -245,7 +241,7 @@ describe('Make.save() — Code aggregate generation', () => {
       cast: [
         {
           form: 'form' as const,
-          cast: 'sample_form',
+          name: 'sample_form',
           like: {
             id:   { like: 'string' },
             text: { like: 'string', need: false },
@@ -253,12 +249,12 @@ describe('Make.save() — Code aggregate generation', () => {
         },
         {
           form: 'list' as const,
-          cast: 'sample_list',
+          name: 'sample_list',
           like: { like: 'string' },
         },
         {
           form: 'hash' as const,
-          cast: 'sample_hash',
+          name: 'sample_hash',
           like: { like: 'string' },
         },
       ],

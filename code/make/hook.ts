@@ -25,7 +25,7 @@ import {
   type FormatRelativeTimeOptions,
   type IntlShape,
 } from '@formatjs/intl'
-import type { BaseContext } from '@/fold/render/registry'
+import type { BaseContext } from '@/fold/registry'
 import { deepEq } from '@/fold/task'
 
 // ---------------------------------------------------------------------------

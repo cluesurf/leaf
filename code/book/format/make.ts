@@ -10,11 +10,11 @@ import type { Flow } from '@/form'
 
 // ─── Number formatting ────────────────────────────────────
 
-export const format_number: Flow = {
+export const formatNumber: Flow = {
   form: 'flow',
   save: 'format',
   call: 'format',
-  base: 'number',
+  case: 'number',
   take: {
     value:    { like: 'number' },
     locale:   { like: 'string', need: false },
@@ -24,11 +24,11 @@ export const format_number: Flow = {
   make: 'string',
 }
 
-export const format_currency: Flow = {
+export const formatCurrency: Flow = {
   form: 'flow',
   save: 'format',
   call: 'format',
-  base: 'currency',
+  case: 'currency',
   take: {
     value:    { like: 'number' },
     currency: { like: 'string' },
@@ -37,11 +37,11 @@ export const format_currency: Flow = {
   make: 'string',
 }
 
-export const format_percent: Flow = {
+export const formatPercent: Flow = {
   form: 'flow',
   save: 'format',
   call: 'format',
-  base: 'percent',
+  case: 'percent',
   take: {
     value:   { like: 'number' },
     locale:  { like: 'string', need: false },
@@ -53,11 +53,11 @@ export const format_percent: Flow = {
 
 // ─── Date / time formatting ───────────────────────────────
 
-export const format_date: Flow = {
+export const formatDate: Flow = {
   form: 'flow',
   save: 'format',
   call: 'format',
-  base: 'date',
+  case: 'date',
   take: {
     value:  { like: 'date' },
     locale: { like: 'string', need: false },
@@ -70,11 +70,11 @@ export const format_date: Flow = {
   make: 'string',
 }
 
-export const format_time: Flow = {
+export const formatTime: Flow = {
   form: 'flow',
   save: 'format',
   call: 'format',
-  base: 'time',
+  case: 'time',
   take: {
     value:  { like: 'date' },
     locale: { like: 'string', need: false },
@@ -87,11 +87,11 @@ export const format_time: Flow = {
   make: 'string',
 }
 
-export const format_relative: Flow = {
+export const formatRelative: Flow = {
   form: 'flow',
   save: 'format',
   call: 'format',
-  base: 'relative',
+  case: 'relative',
   take: {
     value:  { like: 'date' },
     locale: { like: 'string', need: false },
@@ -102,29 +102,29 @@ export const format_relative: Flow = {
 
 // ─── Text shaping / joining ───────────────────────────────
 
-export const format_capitalized: Flow = {
+export const formatCapitalized: Flow = {
   form: 'flow',
   save: 'format',
   call: 'format',
-  base: 'capitalized',
+  case: 'capitalized',
   take: { text: { like: 'string' } },
   make: 'string',
 }
 
-export const format_reversed: Flow = {
+export const formatReversed: Flow = {
   form: 'flow',
   save: 'format',
   call: 'format',
-  base: 'reversed',
+  case: 'reversed',
   take: { text: { like: 'string' } },
   make: 'string',
 }
 
-export const format_joined: Flow = {
+export const formatJoined: Flow = {
   form: 'flow',
   save: 'format',
   call: 'format',
-  base: 'joined',
+  case: 'joined',
   take: {
     parts:     { like: 'string', list: true },
     separator: { like: 'string', need: false },
@@ -132,11 +132,11 @@ export const format_joined: Flow = {
   make: 'string',
 }
 
-export const format_split: Flow = {
+export const formatSplit: Flow = {
   form: 'flow',
   save: 'format',
   call: 'format',
-  base: 'split',
+  case: 'split',
   take: {
     text:      { like: 'string' },
     separator: { like: 'string' },
@@ -144,11 +144,11 @@ export const format_split: Flow = {
   make: { value: { like: 'string', list: true } },
 }
 
-export const format_replaced: Flow = {
+export const formatReplaced: Flow = {
   form: 'flow',
   save: 'format',
   call: 'format',
-  base: 'replaced',
+  case: 'replaced',
   take: {
     text:        { like: 'string' },
     pattern:     { like: 'string' },
@@ -157,11 +157,11 @@ export const format_replaced: Flow = {
   make: 'string',
 }
 
-export const format_truncated: Flow = {
+export const formatTruncated: Flow = {
   form: 'flow',
   save: 'format',
   call: 'format',
-  base: 'truncated',
+  case: 'truncated',
   take: {
     text:    { like: 'string' },
     length:  { like: 'integer' },
@@ -172,11 +172,11 @@ export const format_truncated: Flow = {
 
 // ─── Plural-aware formatting ──────────────────────────────
 
-export const format_plural: Flow = {
+export const formatPlural: Flow = {
   form: 'flow',
   save: 'format',
   call: 'format',
-  base: 'plural',
+  case: 'plural',
   take: {
     count:    { like: 'integer' },
     singular: { like: 'string' },

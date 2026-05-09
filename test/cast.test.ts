@@ -21,78 +21,70 @@ describe('base.cast — bridge to make trees', () => {
   base.load(standard)
 
   it('evaluates literal nodes directly', () => {
-    expect(base.cast(make.text('hello'))).toBe('hello')
+    expect(base.cast('hello')).toBe('hello')
     expect(base.cast(make.integer(42))).toBe(42)
     expect(base.cast(make.boolean(true))).toBe(true)
   })
 
   it('evaluates a `make.weave` (string concatenation)', () => {
-    const tree = make.templateString(make.text('a'), make.text('b'), make.text('c'))
+    const tree = make.text('a', 'b', 'c')
     expect(base.cast(tree)).toBe('abc')
   })
 
   it('evaluates a path against scope', () => {
     const tree = make.path('user', 'name')
-    const scope = makeScope({ user: { name: 'Lance' } })
-    expect(base.cast(tree, scope)).toBe('Lance')
+    expect(base.cast(tree, { user: { name: 'Lance' } })).toBe('Lance')
   })
 
   it('dispatches a (name, base) call to a catalog hook', () => {
-    const tree = make.call('format', {
-      base: 'capitalized',
+    const tree = make.call('format:capitalized', {
       text: 'hello',
     })
     expect(base.cast(tree)).toBe('Hello')
   })
 
   it('dispatches a (name, base, case) call to a catalog hook', () => {
-    const tree = make.call('is', {
-      base: 'ipa',
-      case: 'broad',
+    const tree = make.call('is:ipa:broad', {
       text: 'fəˈnɛtɪk',
     })
     expect(base.cast(tree)).toBe(true)
   })
 
   it('composes nested make.call within make.weave', () => {
-    const tree = make.templateString(
-      make.text('Hi, '),
-      make.call('format', { base: 'capitalized', text: 'world' }),
-      make.text('!'),
+    const tree = make.text(
+      'Hi, ',
+      make.call('format:capitalized', { text: 'world' }),
+      '!',
     )
     expect(base.cast(tree)).toBe('Hi, World!')
   })
 
   it('resolves scope-derived inputs inside take args', () => {
-    const tree = make.call('format', {
-      base: 'truncated',
+    const tree = make.call('format:truncated', {
       text: make.path('message'),
       length: make.integer(8),
     })
-    const scope = makeScope({ message: 'hello world' })
-    expect(base.cast(tree, scope)).toBe('hello w…')
+    expect(base.cast(tree, { message: 'hello world' })).toBe('hello w…')
   })
 
   it('evaluates conditional forking', () => {
     const tree = make.fork(
       make.gt(make.path('count'), make.integer(0)),
-      make.text('items'),
-      make.text('no items'),
+      'items',
+      'no items',
     )
-    expect(base.cast(tree, makeScope({ count: 5 }))).toBe('items')
-    expect(base.cast(tree, makeScope({ count: 0 }))).toBe('no items')
+    expect(base.cast(tree, { count: 5 })).toBe('items')
+    expect(base.cast(tree, { count: 0 })).toBe('no items')
   })
 
   it('catalog flows compose with make.* builtins', () => {
-    const tree = make.templateString(
-      make.text('Items: '),
-      make.call('format', {
-        base: 'number',
+    const tree = make.text(
+      'Items: ',
+      make.call('format:number', {
         value: make.count(make.path('items')),
       }),
     )
-    const scope = makeScope({ items: [1, 2, 3, 4, 5] })
-    expect(base.cast(tree, scope)).toBe('Items: 5')
+    expect(base.cast(tree, { items: [1, 2, 3, 4, 5] })).toBe('Items: 5')
   })
 
   it('honors compiled `code:` integer ids when present', () => {

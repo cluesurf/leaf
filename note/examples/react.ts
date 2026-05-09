@@ -114,7 +114,7 @@ const tup = (
   ...children: unknown[]
 ): Tup => [type, props, children]
 
-renderElement<Tup>(make.templateString('a', 'b', 'c'), {
+renderElement<Tup>(make.text('a', 'b', 'c'), {
   scope: makeScope(),
   builder: tup,
 })

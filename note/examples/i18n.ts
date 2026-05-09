@@ -18,13 +18,13 @@ const base = new Base<Code>()
 base.load(standard)
 
 // Simple interpolation.
-const greeting = make.templateString('Hello, ', make.read('name'), '!')
+const greeting = make.text('Hello, ', make.read('name'), '!')
 
 renderText(greeting, { scope: makeScope({ name: 'world' }) })
 // → 'Hello, world!'
 
 // Plural categories (CLDR `one` / `other` / `few` / `many`).
-const inboxLabel = make.templateString(
+const inboxLabel = make.text(
   'You have ',
   make.read('count'),
   ' ',
@@ -39,7 +39,7 @@ renderText(inboxLabel, {
 // → 'You have 1 message.'
 
 // Select by literal value (gender, status, …).
-const titleLine = make.templateString(
+const titleLine = make.text(
   make.selectCases('gender', {
     male: 'Mr.',
     female: 'Ms.',
@@ -60,11 +60,11 @@ const localized = make.match(
     { test: make.eq(make.read('locale'), 'en'), then: greeting },
     {
       test: make.eq(make.read('locale'), 'es'),
-      then: make.templateString('¡Hola, ', make.read('name'), '!'),
+      then: make.text('¡Hola, ', make.read('name'), '!'),
     },
     {
       test: make.eq(make.read('locale'), 'ja'),
-      then: make.templateString(make.read('name'), 'さん、こんにちは!'),
+      then: make.text(make.read('name'), 'さん、こんにちは!'),
     },
   ],
   greeting,
@@ -76,7 +76,7 @@ renderText(localized, {
 // → '¡Hola, Mundo!'
 
 // Ship templates as a Book — register once, reference by name.
-const namedGreeting: Cast = make.templateString(
+const namedGreeting: Cast = make.text(
   'Hello, ',
   make.read('name'),
   '!',
@@ -90,7 +90,7 @@ base.cast(make.fold('greeting', { name: 'World' }))
 // → 'Hello, World!'
 
 // Walk a list with a join — render a list of items as comma-separated.
-const listLine = make.templateString(
+const listLine = make.text(
   'Items: ',
   make.join(', ', make.walk(make.read('items'), make.read('item'))),
 )

@@ -12,7 +12,7 @@ const base = new Base()
 
 // Author with stable marks — typically auto-assigned by an editor.
 const tree: Cast = {
-  form: 'template_string',
+  form: 'text',
   flow: [
     'Hello, ',
     { form: 'reference', name: 'name', mark: 'M-name' },
@@ -32,7 +32,7 @@ const r1 = base.bindPatch(r0, [
 
 // Insert into a list-shaped child.
 const tree2: Cast = {
-  form: 'template_string',
+  form: 'text',
   mark: 'M-root',
   flow: ['a'],
 }
@@ -47,7 +47,7 @@ const s1 = base.bindPatch(s0, [
 
 // Remove by mark — drops the node from its parent's list slot.
 const tree3: Cast = {
-  form: 'template_string',
+  form: 'text',
   flow: ['a', { form: 'reference', name: 'x', mark: 'M-x' }, 'c'],
 }
 

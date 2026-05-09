@@ -2,7 +2,7 @@
  * Hook implementations for the `has` verb's Flow declarations.
  */
 
-export const has_key = ({
+export const hasKey = ({
   thing,
   key,
 }: {
@@ -11,7 +11,7 @@ export const has_key = ({
 }): boolean =>
   typeof thing === 'object' && thing !== null && key in thing
 
-export const has_keys = ({
+export const hasKeys = ({
   thing,
   keys,
 }: {
@@ -22,7 +22,7 @@ export const has_keys = ({
   thing !== null &&
   keys.every(k => k in thing)
 
-export const has_value = ({
+export const hasValue = ({
   thing,
   value,
 }: {
@@ -35,7 +35,7 @@ export const has_value = ({
   )
 }
 
-export const has_item = ({
+export const hasItem = ({
   items,
   item,
 }: {
@@ -43,7 +43,7 @@ export const has_item = ({
   item: unknown
 }): boolean => items.some(i => Object.is(i, item))
 
-export const has_prefix = ({
+export const hasPrefix = ({
   text,
   prefix,
 }: {
@@ -51,7 +51,7 @@ export const has_prefix = ({
   prefix: string
 }): boolean => text.startsWith(prefix)
 
-export const has_suffix = ({
+export const hasSuffix = ({
   text,
   suffix,
 }: {
@@ -59,7 +59,7 @@ export const has_suffix = ({
   suffix: string
 }): boolean => text.endsWith(suffix)
 
-export const has_substring = ({
+export const hasSubstring = ({
   text,
   substring,
 }: {
@@ -67,7 +67,7 @@ export const has_substring = ({
   substring: string
 }): boolean => text.includes(substring)
 
-export const has_pattern = ({
+export const hasPattern = ({
   text,
   pattern,
 }: {

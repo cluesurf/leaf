@@ -10,103 +10,103 @@ import type { Flow } from '@/form'
 
 // ─── Always-true / always-false ───────────────────────────
 
-export const always_true: Flow = {
+export const alwaysTrue: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'always_true',
+  case: 'always_true',
   make: 'boolean',
 }
 
-export const always_false: Flow = {
+export const alwaysFalse: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'always_false',
+  case: 'always_false',
   make: 'boolean',
 }
 
 // ─── Type predicates ──────────────────────────────────────
 
-export const is_string: Flow = {
+export const isString: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'string',
+  case: 'string',
   take: { thing: { like: 'unknown' } },
   make: 'boolean',
 }
 
-export const is_integer: Flow = {
+export const isInteger: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'integer',
+  case: 'integer',
   take: { thing: { like: 'unknown' } },
   make: 'boolean',
 }
 
-export const is_decimal: Flow = {
+export const isDecimal: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'decimal',
+  case: 'decimal',
   take: { thing: { like: 'unknown' } },
   make: 'boolean',
 }
 
-export const is_boolean: Flow = {
+export const isBoolean: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'boolean',
+  case: 'boolean',
   take: { thing: { like: 'unknown' } },
   make: 'boolean',
 }
 
-export const is_list: Flow = {
+export const isList: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'list',
+  case: 'list',
   take: { thing: { like: 'unknown' } },
   make: 'boolean',
 }
 
-export const is_map: Flow = {
+export const isMap: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'map',
+  case: 'map',
   take: { thing: { like: 'unknown' } },
   make: 'boolean',
 }
 
-export const is_null: Flow = {
+export const isNull: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'null',
+  case: 'null',
   take: { thing: { like: 'unknown' } },
   make: 'boolean',
 }
 
-export const is_blank: Flow = {
+export const isBlank: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'blank',
+  case: 'blank',
   take: { thing: { like: 'unknown' } },
   make: 'boolean',
 }
 
 // ─── Equality / comparison ────────────────────────────────
 
-export const is_equal: Flow = {
+export const isEqual: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'equal',
+  case: 'equal',
   take: {
     this: { like: 'unknown' },
     that: { like: 'unknown' },
@@ -114,11 +114,11 @@ export const is_equal: Flow = {
   make: 'boolean',
 }
 
-export const is_above: Flow = {
+export const isAbove: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'above',
+  case: 'above',
   take: {
     this: { like: 'unknown' },
     that: { like: 'unknown' },
@@ -126,11 +126,11 @@ export const is_above: Flow = {
   make: 'boolean',
 }
 
-export const is_below: Flow = {
+export const isBelow: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'below',
+  case: 'below',
   take: {
     this: { like: 'unknown' },
     that: { like: 'unknown' },
@@ -138,11 +138,11 @@ export const is_below: Flow = {
   make: 'boolean',
 }
 
-export const is_min: Flow = {
+export const isMin: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'min',
+  case: 'min',
   take: {
     this: { like: 'unknown' },
     that: { like: 'unknown' },
@@ -150,11 +150,11 @@ export const is_min: Flow = {
   make: 'boolean',
 }
 
-export const is_max: Flow = {
+export const isMax: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'max',
+  case: 'max',
   take: {
     this: { like: 'unknown' },
     that: { like: 'unknown' },
@@ -162,11 +162,11 @@ export const is_max: Flow = {
   make: 'boolean',
 }
 
-export const is_between: Flow = {
+export const isBetween: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'between',
+  case: 'between',
   take: {
     thing: { like: 'unknown' },
     min:   { like: 'unknown' },
@@ -175,11 +175,11 @@ export const is_between: Flow = {
   make: 'boolean',
 }
 
-export const is_among: Flow = {
+export const isAmong: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'among',
+  case: 'among',
   take: {
     thing:   { like: 'unknown' },
     choices: { like: 'unknown', list: true },
@@ -189,44 +189,44 @@ export const is_among: Flow = {
 
 // ─── Logical composition ──────────────────────────────────
 
-export const is_all: Flow = {
+export const isAll: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'all',
+  case: 'all',
   take: {
     things: { like: 'boolean', list: true },
   },
   make: 'boolean',
 }
 
-export const is_any: Flow = {
+export const isAny: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'any',
+  case: 'any',
   take: {
     things: { like: 'boolean', list: true },
   },
   make: 'boolean',
 }
 
-export const is_one: Flow = {
+export const isOne: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'one',
+  case: 'one',
   take: {
     things: { like: 'boolean', list: true },
   },
   make: 'boolean',
 }
 
-export const is_not: Flow = {
+export const isNot: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'not',
+  case: 'not',
   take: {
     thing: { like: 'boolean' },
   },
@@ -235,134 +235,132 @@ export const is_not: Flow = {
 
 // ─── String shape ─────────────────────────────────────────
 
-export const is_lowercase: Flow = {
+export const isLowercase: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'lowercase',
+  case: 'lowercase',
   take: { text: { like: 'string' } },
   make: 'boolean',
 }
 
-export const is_uppercase: Flow = {
+export const isUppercase: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'uppercase',
+  case: 'uppercase',
   take: { text: { like: 'string' } },
   make: 'boolean',
 }
 
-export const is_slug: Flow = {
+export const isSlug: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'slug',
+  case: 'slug',
   take: { text: { like: 'string' } },
   make: 'boolean',
 }
 
-export const is_uuid: Flow = {
+export const isUuid: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'uuid',
+  case: 'uuid',
   take: { text: { like: 'string' } },
   make: 'boolean',
 }
 
-export const is_email: Flow = {
+export const isEmail: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'email',
+  case: 'email',
   take: { text: { like: 'string' } },
   make: 'boolean',
 }
 
-export const is_url: Flow = {
+export const isUrl: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'url',
+  case: 'url',
   take: { text: { like: 'string' } },
   make: 'boolean',
 }
 
 // ─── Linguistic format predicates ─────────────────────────
 
-export const is_ipa: Flow = {
+export const isIpa: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'ipa',
+  case: 'ipa',
   take: { text: { like: 'string' } },
   make: 'boolean',
 }
 
-export const is_ipa_broad: Flow = {
+export const isIpaBroad: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'ipa',
-  case: 'broad',
+  case: 'ipa:broad',
   take: { text: { like: 'string' } },
   make: 'boolean',
 }
 
-export const is_ipa_narrow: Flow = {
+export const isIpaNarrow: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'ipa',
-  case: 'narrow',
+  case: 'ipa:narrow',
   take: { text: { like: 'string' } },
   make: 'boolean',
 }
 
 // ─── Numeric predicates ───────────────────────────────────
 
-export const is_positive: Flow = {
+export const isPositive: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'positive',
+  case: 'positive',
   take: { number: { like: 'number' } },
   make: 'boolean',
 }
 
-export const is_negative: Flow = {
+export const isNegative: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'negative',
+  case: 'negative',
   take: { number: { like: 'number' } },
   make: 'boolean',
 }
 
-export const is_zero: Flow = {
+export const isZero: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'zero',
+  case: 'zero',
   take: { number: { like: 'number' } },
   make: 'boolean',
 }
 
-export const is_finite: Flow = {
+export const isFinite: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'finite',
+  case: 'finite',
   take: { number: { like: 'number' } },
   make: 'boolean',
 }
 
-export const is_whole: Flow = {
+export const isWhole: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
-  base: 'whole',
+  case: 'whole',
   take: { number: { like: 'number' } },
   make: 'boolean',
 }

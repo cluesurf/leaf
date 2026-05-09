@@ -8,38 +8,38 @@
 
 // ─── Always-true / always-false ───────────────────────────
 
-export const always_true = (): boolean => true
-export const always_false = (): boolean => false
+export const alwaysTrue = (): boolean => true
+export const alwaysFalse = (): boolean => false
 
 // ─── Type predicates ──────────────────────────────────────
 
-export const is_string = ({ thing }: { thing: unknown }): boolean =>
+export const isString = ({ thing }: { thing: unknown }): boolean =>
   typeof thing === 'string'
 
-export const is_integer = ({ thing }: { thing: unknown }): boolean =>
+export const isInteger = ({ thing }: { thing: unknown }): boolean =>
   Number.isInteger(thing)
 
-export const is_decimal = ({ thing }: { thing: unknown }): boolean =>
+export const isDecimal = ({ thing }: { thing: unknown }): boolean =>
   typeof thing === 'number' && !Number.isInteger(thing)
 
-export const is_boolean = ({ thing }: { thing: unknown }): boolean =>
+export const isBoolean = ({ thing }: { thing: unknown }): boolean =>
   typeof thing === 'boolean'
 
-export const is_list = ({ thing }: { thing: unknown }): boolean =>
+export const isList = ({ thing }: { thing: unknown }): boolean =>
   Array.isArray(thing)
 
-export const is_map = ({ thing }: { thing: unknown }): boolean =>
+export const isMap = ({ thing }: { thing: unknown }): boolean =>
   typeof thing === 'object' && thing !== null && !Array.isArray(thing)
 
-export const is_null = ({ thing }: { thing: unknown }): boolean =>
+export const isNull = ({ thing }: { thing: unknown }): boolean =>
   thing == null
 
-export const is_blank = ({ thing }: { thing: unknown }): boolean =>
+export const isBlank = ({ thing }: { thing: unknown }): boolean =>
   thing == null || thing === ''
 
 // ─── Equality / comparison ────────────────────────────────
 
-export const is_equal = ({
+export const isEqual = ({
   this: a,
   that: b,
 }: {
@@ -47,7 +47,7 @@ export const is_equal = ({
   that: unknown
 }): boolean => Object.is(a, b)
 
-export const is_above = ({
+export const isAbove = ({
   this: a,
   that: b,
 }: {
@@ -55,7 +55,7 @@ export const is_above = ({
   that: any
 }): boolean => a > b
 
-export const is_below = ({
+export const isBelow = ({
   this: a,
   that: b,
 }: {
@@ -63,7 +63,7 @@ export const is_below = ({
   that: any
 }): boolean => a < b
 
-export const is_min = ({
+export const isMin = ({
   this: a,
   that: b,
 }: {
@@ -71,7 +71,7 @@ export const is_min = ({
   that: any
 }): boolean => a >= b
 
-export const is_max = ({
+export const isMax = ({
   this: a,
   that: b,
 }: {
@@ -79,7 +79,7 @@ export const is_max = ({
   that: any
 }): boolean => a <= b
 
-export const is_between = ({
+export const isBetween = ({
   thing,
   min,
   max,
@@ -89,7 +89,7 @@ export const is_between = ({
   max: any
 }): boolean => thing >= min && thing <= max
 
-export const is_among = ({
+export const isAmong = ({
   thing,
   choices,
 }: {
@@ -99,37 +99,37 @@ export const is_among = ({
 
 // ─── Logical composition ──────────────────────────────────
 
-export const is_all = ({ things }: { things: boolean[] }): boolean =>
+export const isAll = ({ things }: { things: boolean[] }): boolean =>
   things.every(Boolean)
 
-export const is_any = ({ things }: { things: boolean[] }): boolean =>
+export const isAny = ({ things }: { things: boolean[] }): boolean =>
   things.some(Boolean)
 
-export const is_one = ({ things }: { things: boolean[] }): boolean =>
+export const isOne = ({ things }: { things: boolean[] }): boolean =>
   things.filter(Boolean).length === 1
 
-export const is_not = ({ thing }: { thing: boolean }): boolean => !thing
+export const isNot = ({ thing }: { thing: boolean }): boolean => !thing
 
 // ─── String shape ─────────────────────────────────────────
 
-export const is_lowercase = ({ text }: { text: string }): boolean =>
+export const isLowercase = ({ text }: { text: string }): boolean =>
   text === text.toLowerCase()
 
-export const is_uppercase = ({ text }: { text: string }): boolean =>
+export const isUppercase = ({ text }: { text: string }): boolean =>
   text === text.toUpperCase()
 
-export const is_slug = ({ text }: { text: string }): boolean =>
+export const isSlug = ({ text }: { text: string }): boolean =>
   /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(text)
 
-export const is_uuid = ({ text }: { text: string }): boolean =>
+export const isUuid = ({ text }: { text: string }): boolean =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
     text,
   )
 
-export const is_email = ({ text }: { text: string }): boolean =>
+export const isEmail = ({ text }: { text: string }): boolean =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)
 
-export const is_url = ({ text }: { text: string }): boolean => {
+export const isUrl = ({ text }: { text: string }): boolean => {
   try {
     new URL(text)
     return true
@@ -142,28 +142,28 @@ export const is_url = ({ text }: { text: string }): boolean => {
 
 const IPA_PATTERN = /^[\p{L}\p{M}ˈˌːʼʰ]+$/u
 
-export const is_ipa = ({ text }: { text: string }): boolean =>
+export const isIpa = ({ text }: { text: string }): boolean =>
   IPA_PATTERN.test(text)
 
-export const is_ipa_broad = ({ text }: { text: string }): boolean =>
+export const isIpaBroad = ({ text }: { text: string }): boolean =>
   IPA_PATTERN.test(text)
 
-export const is_ipa_narrow = ({ text }: { text: string }): boolean =>
+export const isIpaNarrow = ({ text }: { text: string }): boolean =>
   IPA_PATTERN.test(text)
 
 // ─── Numeric predicates ───────────────────────────────────
 
-export const is_positive = ({ number }: { number: number }): boolean =>
+export const isPositive = ({ number }: { number: number }): boolean =>
   number > 0
 
-export const is_negative = ({ number }: { number: number }): boolean =>
+export const isNegative = ({ number }: { number: number }): boolean =>
   number < 0
 
-export const is_zero = ({ number }: { number: number }): boolean =>
+export const isZero = ({ number }: { number: number }): boolean =>
   number === 0
 
-export const is_finite = ({ number }: { number: number }): boolean =>
+export const isFinite = ({ number }: { number: number }): boolean =>
   Number.isFinite(number)
 
-export const is_whole = ({ number }: { number: number }): boolean =>
+export const isWhole = ({ number }: { number: number }): boolean =>
   Number.isInteger(number)

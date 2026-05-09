@@ -79,13 +79,13 @@ describe('fold primitive', () => {
     const tree = make.fold('greeting', { count: 3, name: 'Lance' })
     expect(tree).toEqual({
       form: 'fold',
-      cast: 'greeting',
+      name: 'greeting',
       bind: { count: 3, name: 'Lance' },
     })
   })
 
   it('embeds a named template and renders it under a scope frame', () => {
-    const greeting: Cast = make.templateString(
+    const greeting: Cast = make.text(
       'Hello, ',
       make.read('name'),
       '!',
@@ -110,7 +110,7 @@ describe('fold primitive', () => {
 
   it('auto-resolves through a Book registered on Base', async () => {
     const { Base } = await import('@/base')
-    const greetingTree = make.templateString(
+    const greetingTree = make.text(
       'Hello, ',
       make.read('name'),
       '!',
@@ -120,7 +120,7 @@ describe('fold primitive', () => {
       cast: [
         {
           form: 'fold',
-          cast: 'greeting',
+          name: 'greeting',
           tree: [greetingTree],
         },
       ],
@@ -138,7 +138,7 @@ describe('fold primitive', () => {
       cast: [
         {
           form: 'fold',
-          cast: 'list',
+          name: 'list',
           tree: [
             'a-',
             { form: 'reference', name: 'item' },

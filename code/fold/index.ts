@@ -32,6 +32,7 @@ export type {
   FoldPrimitive,
   HashPrimitive,
   IndexSeg,
+  JoinPrimitive,
   ListPrimitive,
   Literal,
   MatchPrimitive,
@@ -46,7 +47,7 @@ export type {
   VariableSeg,
   ViewPrimitive,
   WalkPrimitive,
-  TemplateStringPrimitive,
+  TextPrimitive,
 } from './types'
 
 export { RESERVED_CAST_KEYS } from './types'
@@ -57,22 +58,17 @@ export type {
   BaseContext,
   CallEntry,
   CallHandler,
-  Scope,
-  TextContext,
-} from './render'
+} from './registry'
+export { DEFAULT_HOOK, deepEq, getCall, isCast } from './registry'
 
-export {
-  DEFAULT_HOOK,
-  deepEq,
-  evaluateText,
-  getCall,
-  isCast,
-  makeScope,
-  renderText,
-} from './render'
+export type { Scope } from './scope'
+export { makeScope } from './scope'
 
-export type { ElementBuilder, ElementContext } from './render/element'
-export { renderElement } from './render/element'
+export type { TextContext } from './text'
+export { evaluateText, renderText } from './text'
+
+export type { ElementBuilder, ElementContext } from './element'
+export { renderElement } from './element'
 
 export type { CodeTable, DecodeEntry, DecodeTable } from './compile'
 export { compile, decompile, buildDecodeTable } from './compile'
@@ -81,15 +77,14 @@ export const make = {
   // promotion
   promote: builders.promote,
 
-  // literals
-  text: builders.text,
+  // literals + structural
   integer: builders.integer,
   naturalNumber: builders.naturalNumber,
   number: builders.number,
   boolean: builders.boolean,
   date: builders.date,
   list: builders.list,
-  templateString: builders.templateString,
+  text: builders.text,
   hash: builders.hash,
   join: builders.join,
   find: builders.find,

@@ -247,7 +247,7 @@ type HashPrimitive = { form: 'hash'; base: Record<string, Cast> }
 And one structural concatenation node, used in template-style trees:
 
 ```typescript
-type TemplateStringPrimitive = { form: 'template_string'; flow: Cast[] }
+type TextPrimitive = { form: 'text'; flow: Cast[] }
 ```
 
 `template_string` joins its children's rendered output. The text
@@ -262,7 +262,7 @@ type Cast = Literal | Structural
 type Structural =
   | ListPrimitive
   | HashPrimitive
-  | TemplateStringPrimitive
+  | TextPrimitive
   | Reference
   | ReadPrimitive
   | Call
@@ -364,7 +364,7 @@ necessary, i.e. arrays).
 | ------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | `make.list([...])`                          | `{ form: 'list', list }`                                                                  |
 | `make.hash({ k: v })`                       | `{ form: 'hash', base: { k: v } }`                                                        |
-| `make.templateString(...children)`          | `{ form: 'template_string', flow }`                                                       |
+| `make.text(...children)`          | `{ form: 'text', flow }`                                                       |
 | `make.read(seg, seg, ...)`                  | `{ form: 'read', link: [...] }` (single bare-variable normalizes to `reference`)          |
 | `make.reference(name)`                      | `{ form: 'reference', name }`                                                             |
 | `make.variable / .field / .idx / .slice`    | typed `ReadLink` segments                                                                 |

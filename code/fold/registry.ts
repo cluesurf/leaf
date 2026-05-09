@@ -31,7 +31,7 @@
 
 import type { Form, HookHash } from '@/form'
 import * as builtIn from '@/make/hook'
-import type { Cast } from '../types'
+import type { Cast } from './types'
 import type { Scope } from './scope'
 
 // ---------------------------------------------------------------------------

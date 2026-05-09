@@ -324,7 +324,7 @@ function makeCode(books: Book[]): {
   const formRegistry = new Map<string, Form>()
   for (const book of books) {
     for (const cast of book.cast ?? []) {
-      if (cast.form === 'form') formRegistry.set(cast.cast, cast)
+      if (cast.form === 'form') formRegistry.set(cast.name, cast)
     }
   }
 
@@ -352,7 +352,7 @@ function makeCode(books: Book[]): {
     for (const cast of casts) {
       switch (cast.form) {
         case 'form': {
-          const tsName = toPascalCase(cast.cast)
+          const tsName = toPascalCase(cast.name)
           blocks.push([
             `export type ${tsName} = ${renderShape(cast.like, ctx)}`,
           ])
@@ -367,7 +367,7 @@ function makeCode(books: Book[]): {
           break
         }
         case 'hash': {
-          const tsName = toPascalCase(cast.cast)
+          const tsName = toPascalCase(cast.name)
           const itemType = renderLink(cast.like, ctx)
           blocks.push([
             `export type ${tsName} = Record<string, ${itemType}>`,
@@ -375,13 +375,13 @@ function makeCode(books: Book[]): {
           break
         }
         case 'list': {
-          const tsName = toPascalCase(cast.cast)
+          const tsName = toPascalCase(cast.name)
           const itemType = renderLink(cast.like, ctx)
           blocks.push([`export type ${tsName} = ${itemType}[]`])
           break
         }
         case 'fold': {
-          const tsName = toPascalCase(cast.cast)
+          const tsName = toPascalCase(cast.case)
           blocks.push([`export type ${tsName} = unknown`])
           break
         }
@@ -420,7 +420,6 @@ function makeCode(books: Book[]): {
       switch (cast.form) {
         case 'flow': {
           const segments = ['flow', cast.call]
-          if (cast.base) segments.push(cast.base)
           if (cast.case) segments.push(cast.case)
           const key = segments.join(':')
           colonKeys.push(key)
@@ -433,36 +432,36 @@ function makeCode(books: Book[]): {
           break
         }
         case 'form': {
-          const segments = ['form', cast.cast]
-          if (cast.call) segments.push(cast.call)
-          if (cast.case) segments.push(cast.case)
+          const segments = ['form', cast.name]
+          if (cast.flow) segments.push(cast.flow)
+          if (cast.name) segments.push(cast.name)
           const key = segments.join(':')
           colonKeys.push(key)
-          const tsName = toPascalCase(cast.cast)
+          const tsName = toPascalCase(cast.name)
           ensureImport(save, tsName)
           codeBodyLines.push(`  '${key}': { cast: ${tsName} }`)
           break
         }
         case 'fold': {
-          const key = `fold:${cast.cast}`
+          const key = `fold:${cast.case}`
           colonKeys.push(key)
-          const tsName = toPascalCase(cast.cast)
+          const tsName = toPascalCase(cast.case)
           ensureImport(save, tsName)
           codeBodyLines.push(`  '${key}': { cast: ${tsName} }`)
           break
         }
         case 'hash': {
-          const key = `hash:${cast.cast}`
+          const key = `hash:${cast.name}`
           colonKeys.push(key)
-          const tsName = toPascalCase(cast.cast)
+          const tsName = toPascalCase(cast.name)
           ensureImport(save, tsName)
           codeBodyLines.push(`  '${key}': { cast: ${tsName} }`)
           break
         }
         case 'list': {
-          const key = `list:${cast.cast}`
+          const key = `list:${cast.name}`
           colonKeys.push(key)
-          const tsName = toPascalCase(cast.cast)
+          const tsName = toPascalCase(cast.name)
           ensureImport(save, tsName)
           codeBodyLines.push(`  '${key}': { cast: ${tsName} }`)
           break
@@ -541,7 +540,7 @@ function collectCollisions(books: Book[]): string[] {
       switch (cast.form) {
         case 'form': {
           const c = cast as Form
-          key = `form:(cast=${c.cast}, call=${c.call ?? ''}, case=${c.case ?? ''})`
+          key = `form:(name=${c.name}, flow=${c.flow ?? ''}, case=${c.case ?? ''})`
           break
         }
         case 'flow': {
@@ -552,17 +551,17 @@ function collectCollisions(books: Book[]): string[] {
           // each other).
           const takeSig = JSON.stringify(f.take ?? null)
           const makeSig = JSON.stringify(f.make ?? null)
-          key = `flow:(call=${f.call}, base=${f.base ?? ''}, case=${f.case ?? ''}, take=${takeSig}, make=${makeSig})`
+          key = `flow:(call=${f.call}, case=${f.case ?? ''}, take=${takeSig}, make=${makeSig})`
           break
         }
         case 'fold':
-          key = `fold:(cast=${(cast as Fold).cast})`
+          key = `fold:(name=${(cast as Fold).case})`
           break
         case 'hash':
-          key = `hash:(cast=${(cast as Hash).cast})`
+          key = `hash:(name=${(cast as Hash).name})`
           break
         case 'list':
-          key = `list:(cast=${(cast as List).cast})`
+          key = `list:(name=${(cast as List).name})`
           break
       }
       const entry = seen.get(key) ?? { count: 0, from: [] }
@@ -583,10 +582,12 @@ function collectCollisions(books: Book[]): string[] {
 
 /** PascalCase compound name for a Flow's per-take/make alias. */
 function flowTsBase(flow: Flow): string {
+  // `case` may itself be colon-scoped (`'string:lowercase'`).
+  // Split + PascalCase each segment for stable identifier names.
+  const caseParts = flow.case ? flow.case.split(':') : []
   return (
     toPascalCase(flow.call) +
-    (flow.base ? toPascalCase(flow.base) : '') +
-    (flow.case ? toPascalCase(flow.case) : '')
+    caseParts.map(p => toPascalCase(p)).join('')
   )
 }
 
@@ -700,7 +701,7 @@ function makeForm(books: Book[]): Record<string, string> {
   const formRegistry = new Map<string, Form>()
   for (const book of books) {
     for (const cast of book.cast ?? []) {
-      if (cast.form === 'form') formRegistry.set(cast.cast, cast)
+      if (cast.form === 'form') formRegistry.set(cast.name, cast)
     }
   }
   const ctx: RenderContext = { forms: formRegistry }
@@ -729,7 +730,7 @@ function makeForm(books: Book[]): Record<string, string> {
     for (const cast of casts) {
       switch (cast.form) {
         case 'form': {
-          const tsName = toPascalCase(cast.cast)
+          const tsName = toPascalCase(cast.name)
           typeImports.add(tsName)
           blocks.push([
             `export const ${tsName}Form = ${zodShape(cast.like, ctx)} satisfies z.ZodType<${tsName}>`,
@@ -747,7 +748,7 @@ function makeForm(books: Book[]): Record<string, string> {
           break
         }
         case 'hash': {
-          const tsName = toPascalCase(cast.cast)
+          const tsName = toPascalCase(cast.name)
           typeImports.add(tsName)
           blocks.push([
             `export const ${tsName}Form = z.record(z.string(), ${zodLink(cast.like, ctx)}) satisfies z.ZodType<${tsName}>`,
@@ -755,7 +756,7 @@ function makeForm(books: Book[]): Record<string, string> {
           break
         }
         case 'list': {
-          const tsName = toPascalCase(cast.cast)
+          const tsName = toPascalCase(cast.name)
           typeImports.add(tsName)
           blocks.push([
             `export const ${tsName}Form = z.array(${zodLink(cast.like, ctx)}) satisfies z.ZodType<${tsName}>`,
@@ -872,7 +873,7 @@ function makeBase(books: Book[]): Record<string, string> {
         (cast.form === 'list' || cast.form === 'hash') &&
         cast.load != null
       ) {
-        const tsName = toPascalCase(cast.cast)
+        const tsName = toPascalCase(cast.name)
         blocks.push(
           `export const ${tsName}Base = ${JSON.stringify(cast.load, null, 2)} as const`,
         )

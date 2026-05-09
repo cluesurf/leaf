@@ -19,10 +19,16 @@ export type Book = {
   cast?: Cast[]
   // Input + context positions use `any` so concrete handlers
   // `(args: { text }) => ...` remain assignable (contravariance).
-  // Return is `unknown` — callers must narrow.
+  // Return is `unknown`. Callers must narrow.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   call?: Record<string, (input: any, context?: any) => unknown>
   code?: Record<string, number>
+  /**
+   * View components keyed by view name (`'callout'`, `'page'`,
+   * etc.). Wired into element-mode rendering when the Base is
+   * configured with `createElement`.
+   */
+  view?: Record<string, unknown>
 }
 
 /**
@@ -48,18 +54,15 @@ export type Cast = Form | Flow | Fold | Hash | List
  */
 export type Form = {
   form: 'form'
-  cast: string
-  call?: string
+  /** Resource name (`'language'`, `'language_string'`, …). */
+  name: string
+  /** Action context — the verb this Form serves as input/output for. */
+  flow?: string
+  /** Variant within an action context. */
   case?: string
   like: LinkMesh | LinkMesh[]
   head?: string[]
-  /**
-   * Output sub-directory under `MakeTake.link`. Convention:
-   * `'<verb>'` or `'<verb>/<base>'` (`'is'`, `'is/ipa'`,
-   * `'make'`, `'language'`). When absent, the cast's
-   * generated TS / Zod / data files land directly in the
-   * `link` root.
-   */
+  /** Output sub-directory under `MakeTake.link`. */
   save?: string
 }
 
@@ -79,17 +82,23 @@ export type Form = {
  */
 export type Flow = {
   form: 'flow'
+  /** Verb (`'is'`, `'make'`, `'get'`, …). */
   call: string
-  base?: string
+  /**
+   * Colon-scoped case path. Together with `call`, forms the
+   * dispatch identity: `'<call>:<case>'`. Examples:
+   *
+   *   `case: 'string'`              → invoke as `'is:string'`
+   *   `case: 'string:lowercase'`    → invoke as `'is:string:lowercase'`
+   *   `case: 'ipa:broad'`           → invoke as `'is:ipa:broad'`
+   *
+   * The colon nesting is convention; the runtime treats the
+   * whole `case` value as one opaque key segment after `call`.
+   */
   case?: string
   take?: string | LinkMesh | (string | LinkMesh)[]
   make?: string | LinkMesh | (string | LinkMesh)[]
-  /**
-   * Output sub-directory under `MakeTake.link`. Convention:
-   * `'<verb>'` or `'<verb>/<base>'`. When absent, the cast's
-   * generated TS / Zod / data files land directly in the
-   * `link` root.
-   */
+  /** Output sub-directory under `MakeTake.link`. */
   save?: string
 }
 
@@ -99,7 +108,8 @@ export type Flow = {
  */
 export type Fold = {
   form: 'fold'
-  cast: string
+  /** Colon-scoped lookup name (`'email:status'`, `'page:render'`). */
+  case: string
   take?: string | LinkMesh
   tree: FoldNode[]
   /** @internal codegen output path. */
@@ -112,7 +122,7 @@ export type Fold = {
  */
 export type Hash = {
   form: 'hash'
-  cast: string
+  name: string
   like: Link
   load?: Record<string, unknown>
   /** @internal codegen output path. */
@@ -131,7 +141,7 @@ export type Hash = {
  */
 export type List = {
   form: 'list'
-  cast: string
+  name: string
   like: Link
   load?: unknown[]
   /** @internal codegen output path. */

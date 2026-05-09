@@ -14,11 +14,11 @@
 
 import type { Flow } from '@/form'
 
-export const walk_map: Flow = {
+export const walkMap: Flow = {
   form: 'flow',
   save: 'walk',
   call: 'walk',
-  base: 'map',
+  case: 'map',
   take: {
     items: { like: 'unknown', list: true },
     yield: { like: 'unknown' },     // pre-resolved per-item value
@@ -26,11 +26,11 @@ export const walk_map: Flow = {
   make: 'unknown',
 }
 
-export const walk_filter: Flow = {
+export const walkFilter: Flow = {
   form: 'flow',
   save: 'walk',
   call: 'walk',
-  base: 'filter',
+  case: 'filter',
   take: {
     items: { like: 'unknown', list: true },
     test: { like: 'unknown' },      // pre-resolved per-item boolean (or boolean[])
@@ -38,11 +38,11 @@ export const walk_filter: Flow = {
   make: 'unknown',
 }
 
-export const walk_reduce: Flow = {
+export const walkReduce: Flow = {
   form: 'flow',
   save: 'walk',
   call: 'walk',
-  base: 'reduce',
+  case: 'reduce',
   take: {
     items: { like: 'unknown', list: true },
     initial: { like: 'unknown' },
@@ -51,11 +51,11 @@ export const walk_reduce: Flow = {
   make: 'unknown',
 }
 
-export const walk_chunk: Flow = {
+export const walkChunk: Flow = {
   form: 'flow',
   save: 'walk',
   call: 'walk',
-  base: 'chunk',
+  case: 'chunk',
   take: {
     items: { like: 'unknown', list: true },
     size: { like: 'natural_number' },
@@ -63,11 +63,11 @@ export const walk_chunk: Flow = {
   make: 'unknown',
 }
 
-export const walk_distinct: Flow = {
+export const walkDistinct: Flow = {
   form: 'flow',
   save: 'walk',
   call: 'walk',
-  base: 'distinct',
+  case: 'distinct',
   take: {
     items: { like: 'unknown', list: true },
   },

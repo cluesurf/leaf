@@ -10,40 +10,40 @@ import type { Flow } from '@/form'
 
 // ─── String transforms ────────────────────────────────────
 
-export const make_lowercase: Flow = {
+export const makeLowercase: Flow = {
   form: 'flow',
   save: 'make',
   call: 'make',
-  base: 'lowercase',
+  case: 'lowercase',
   take: { text: { like: 'string' } },
   make: 'string',
 }
 
-export const make_uppercase: Flow = {
+export const makeUppercase: Flow = {
   form: 'flow',
   save: 'make',
   call: 'make',
-  base: 'uppercase',
+  case: 'uppercase',
   take: { text: { like: 'string' } },
   make: 'string',
 }
 
-export const make_trimmed: Flow = {
+export const makeTrimmed: Flow = {
   form: 'flow',
   save: 'make',
   call: 'make',
-  base: 'trimmed',
+  case: 'trimmed',
   take: { text: { like: 'string' } },
   make: 'string',
 }
 
 // ─── Numeric transforms ───────────────────────────────────
 
-export const make_sum: Flow = {
+export const makeSum: Flow = {
   form: 'flow',
   save: 'make',
   call: 'make',
-  base: 'sum',
+  case: 'sum',
   take: {
     a: { like: 'number' },
     b: { like: 'number' },
@@ -51,11 +51,11 @@ export const make_sum: Flow = {
   make: 'number',
 }
 
-export const make_difference: Flow = {
+export const makeDifference: Flow = {
   form: 'flow',
   save: 'make',
   call: 'make',
-  base: 'difference',
+  case: 'difference',
   take: {
     a: { like: 'number' },
     b: { like: 'number' },
@@ -63,11 +63,11 @@ export const make_difference: Flow = {
   make: 'number',
 }
 
-export const make_product: Flow = {
+export const makeProduct: Flow = {
   form: 'flow',
   save: 'make',
   call: 'make',
-  base: 'product',
+  case: 'product',
   take: {
     a: { like: 'number' },
     b: { like: 'number' },
@@ -75,11 +75,11 @@ export const make_product: Flow = {
   make: 'number',
 }
 
-export const make_quotient: Flow = {
+export const makeQuotient: Flow = {
   form: 'flow',
   save: 'make',
   call: 'make',
-  base: 'quotient',
+  case: 'quotient',
   take: {
     a: { like: 'number' },
     b: { like: 'number' },

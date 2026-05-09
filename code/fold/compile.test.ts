@@ -46,7 +46,7 @@ describe('compile — make → wake', () => {
   })
 
   it('handles base + case identity tuples', () => {
-    const tree = make.call('format', { base: 'capitalized', text: 'hi' })
+    const tree = make.call('format:capitalized', { text: 'hi' })
     const wake = compile(tree, codeTable)
     expect(wake).toEqual({
       form: 'call',
@@ -97,15 +97,15 @@ describe('compile — make → wake', () => {
   })
 
   it('walks Calls inside template_string children', () => {
-    const tree = make.templateString(
+    const tree = make.text(
       'You have ',
       make.plural(make.reference('count')),
     )
     const wake = compile(tree, codeTable) as {
-      form: 'template_string'
+      form: 'text'
       flow: Cast[]
     }
-    expect(wake.form).toBe('template_string')
+    expect(wake.form).toBe('text')
     expect(wake.flow[1]).toEqual({
       form: 'call',
       code: 4,
@@ -161,7 +161,7 @@ describe('round-trip — compile then decompile', () => {
   it('returns the original tree for a complex shape', () => {
     const original = make.fork(
       make.eq(make.reference('status'), 'on'),
-      make.templateString('on (', make.reference('user'), ')'),
+      make.text('on (', make.reference('user'), ')'),
       'off',
     )
     const wake = compile(original, codeTable)

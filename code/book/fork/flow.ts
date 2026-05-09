@@ -6,7 +6,7 @@
  * (AST-side) for short-circuiting.
  */
 
-export const if_ = ({
+export const fork = ({
   test,
   then,
   else: elseValue,

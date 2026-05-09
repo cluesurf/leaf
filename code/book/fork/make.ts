@@ -11,10 +11,10 @@
 
 import type { Flow } from '@/form'
 
-export const if_: Flow = {
+export const fork: Flow = {
   form: 'flow',
-  save: 'if',
-  call: 'if',
+  save: 'fork',
+  call: 'fork',
   take: {
     test: { like: 'boolean' },
     then: { like: 'unknown' },

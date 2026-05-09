@@ -76,7 +76,7 @@ describe('lazy `bind`', () => {
   it('pushes names into a scope frame visible inside `then`', () => {
     const tree = make.call('bind', {
       names: { greeting: 'Hello', subject: 'World' },
-      then: make.templateString(
+      then: make.text(
         make.read('greeting'),
         ', ',
         make.read('subject'),
@@ -94,7 +94,7 @@ describe('lazy `bind`', () => {
       names: {
         doubled: make.call('multiply', { value: make.read('count') }),
       },
-      then: make.templateString('count×2 = ', make.read('doubled')),
+      then: make.text('count×2 = ', make.read('doubled')),
     })
     const out = evaluateText(tree, {
       scope: makeScope({ count: 7 }),
@@ -115,7 +115,7 @@ describe('lazy `bind`', () => {
   })
 
   it('inner frame does NOT leak after `then` returns', () => {
-    const tree = make.templateString(
+    const tree = make.text(
       make.call('bind', {
         names: { x: 'temp' },
         then: make.read('x'),

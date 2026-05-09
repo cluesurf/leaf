@@ -10,76 +10,76 @@ import type { Flow } from '@/form'
 
 // ─── Accessors ────────────────────────────────────────────
 
-export const get_length: Flow = {
+export const getLength: Flow = {
   form: 'flow',
   save: 'get',
   call: 'get',
-  base: 'length',
+  case: 'length',
   take: { text: { like: 'string' } },
   make: 'number',
 }
 
-export const get_count: Flow = {
+export const getCount: Flow = {
   form: 'flow',
   save: 'get',
   call: 'get',
-  base: 'count',
+  case: 'count',
   take: { items: { like: 'unknown', list: true } },
   make: 'number',
 }
 
-export const get_first: Flow = {
+export const getFirst: Flow = {
   form: 'flow',
   save: 'get',
   call: 'get',
-  base: 'first',
+  case: 'first',
   take: { items: { like: 'unknown', list: true } },
   make: 'unknown',
 }
 
-export const get_last: Flow = {
+export const getLast: Flow = {
   form: 'flow',
   save: 'get',
   call: 'get',
-  base: 'last',
+  case: 'last',
   take: { items: { like: 'unknown', list: true } },
   make: 'unknown',
 }
 
 // ─── Aggregates ───────────────────────────────────────────
 
-export const get_sum: Flow = {
+export const getSum: Flow = {
   form: 'flow',
   save: 'get',
   call: 'get',
-  base: 'sum',
+  case: 'sum',
   take: { numbers: { like: 'number', list: true } },
   make: 'number',
 }
 
-export const get_average: Flow = {
+export const getAverage: Flow = {
   form: 'flow',
   save: 'get',
   call: 'get',
-  base: 'average',
+  case: 'average',
   take: { numbers: { like: 'number', list: true } },
   make: 'number',
 }
 
-export const get_smallest: Flow = {
+export const getSmallest: Flow = {
   form: 'flow',
   save: 'get',
   call: 'get',
-  base: 'smallest',
+  case: 'smallest',
   take: { numbers: { like: 'number', list: true } },
   make: 'number',
 }
 
-export const get_largest: Flow = {
+export const getLargest: Flow = {
   form: 'flow',
   save: 'get',
   call: 'get',
-  base: 'largest',
+  case: 'largest',
   take: { numbers: { like: 'number', list: true } },
   make: 'number',
 }
