@@ -19,6 +19,8 @@ import type {
   CaseValueArm,
   Cast,
   FieldSeg,
+  FindPrimitive,
+  FoldPrimitive,
   HashPrimitive,
   IndexSeg,
   ListPrimitive,
@@ -121,6 +123,52 @@ export function hash(base: Record<string, Promotable>): HashPrimitive {
     out[k] = promote(v)
   }
   return { form: 'hash', base: out }
+}
+
+/**
+ * Query expression. Resolves through a host-supplied `find`
+ * resolver — typically batched and async. Renderers that don't
+ * supply a resolver render `find` as `null`.
+ *
+ *   make.find('page', { where: ..., sort: [...], limit: 20 })
+ */
+export function find(
+  resource: string,
+  options?: {
+    where?: Promotable
+    sort?: Promotable[]
+    limit?: number
+    offset?: number
+    kind?: string
+  },
+): FindPrimitive {
+  const node: FindPrimitive = { form: 'find', resource }
+  if (options?.where !== undefined) node.where = promote(options.where)
+  if (options?.sort !== undefined) node.sort = options.sort.map(promote)
+  if (options?.limit !== undefined) node.limit = options.limit
+  if (options?.offset !== undefined) node.offset = options.offset
+  if (options?.kind !== undefined) node.kind = options.kind
+  return node
+}
+
+/**
+ * Embed a named Fold declaration with optional bindings.
+ *
+ *   make.fold('greeting', { count: 5, name: 'Lance' })
+ */
+export function fold(
+  cast: string,
+  bind?: Record<string, Promotable>,
+): FoldPrimitive {
+  const node: FoldPrimitive = { form: 'fold', cast }
+  if (bind) {
+    const out: Record<string, Cast> = {}
+    for (const [k, v] of Object.entries(bind)) {
+      out[k] = promote(v)
+    }
+    node.bind = out
+  }
+  return node
 }
 
 // ---------------------------------------------------------------------------
@@ -420,11 +468,13 @@ export function pick(...values: Promotable[]): PickPrimitive {
 /**
  * For-each over a collection. The body (`hook`) renders once
  * per item with `item` and `index` bound in scope.
+ *
+ * `join` is rendered between iterations (not after the last).
  */
 export function walk(
   listOf: Promotable,
   hook: Promotable,
-  opts?: { item?: string; index?: string },
+  opts?: { item?: string; index?: string; join?: Promotable },
 ): WalkPrimitive {
   const node: WalkPrimitive = {
     form: 'walk',
@@ -434,37 +484,47 @@ export function walk(
   }
   if (opts?.item) node.item = opts.item
   if (opts?.index) node.index = opts.index
+  if (opts?.join !== undefined) node.join = promote(opts.join)
   return node
 }
 
 /**
  * While-style loop. Re-evaluate `test`; while truthy, render
  * `hook`. Body renders concatenated (text mode) or as a
- * fragment (element mode).
+ * fragment (element mode). `join` slots between iterations.
  */
 export function walkTest(
   test: Promotable,
   hook: Promotable,
+  opts?: { join?: Promotable },
 ): WalkPrimitive {
-  return {
+  const node: WalkPrimitive = {
     form: 'walk',
     case: 'test',
     test: promote(test),
     hook: promote(hook),
   }
+  if (opts?.join !== undefined) node.join = promote(opts.join)
+  return node
 }
 
 /**
  * Counted range. Iterates from `base` (inclusive) to `head`
  * (exclusive) by `move` (default 1). The current value is
  * bound under `item` (default `'head'`); `index` (default
- * `'index'`) carries the 0-based step counter.
+ * `'index'`) carries the 0-based step counter. `join` slots
+ * between iterations.
  */
 export function walkSize(
   base: Promotable,
   head: Promotable,
   hook: Promotable,
-  opts?: { move?: number; item?: string; index?: string },
+  opts?: {
+    move?: number
+    item?: string
+    index?: string
+    join?: Promotable
+  },
 ): WalkPrimitive {
   const node: WalkPrimitive = {
     form: 'walk',
@@ -476,6 +536,7 @@ export function walkSize(
   if (opts?.move !== undefined) node.move = opts.move
   if (opts?.item) node.item = opts.item
   if (opts?.index) node.index = opts.index
+  if (opts?.join !== undefined) node.join = promote(opts.join)
   return node
 }
 

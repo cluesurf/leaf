@@ -47,6 +47,8 @@ export type {
   Cast,
   ControlFlow,
   FieldSeg,
+  FindPrimitive,
+  FoldPrimitive,
   HashPrimitive,
   IndexSeg,
   ListPrimitive,
@@ -108,6 +110,8 @@ export const make = {
   list: builders.list,
   templateString: builders.templateString,
   hash: builders.hash,
+  find: builders.find,
+  fold: builders.fold,
 
   // reads
   reference: builders.reference,

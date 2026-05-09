@@ -21,12 +21,22 @@ import * as make_flows from './make/make'
 import * as get_flows from './get/make'
 import * as has_flows from './has/make'
 import * as format_flows from './format/make'
+import * as if_flows from './if/make'
+import * as bind_flows from './bind/make'
+import * as validate_flows from './validate/make'
+import * as walk_flows from './walk/make'
+import * as find_flows from './find/make'
 
 import * as is_hooks from './is/flow'
 import * as make_hooks from './make/flow'
 import * as get_hooks from './get/flow'
 import * as has_hooks from './has/flow'
 import * as format_hooks from './format/flow'
+import * as if_hooks from './if/flow'
+import * as bind_hooks from './bind/flow'
+import * as validate_hooks from './validate/flow'
+import * as walk_hooks from './walk/flow'
+import * as find_hooks from './find/flow'
 
 import { CodeLink } from './code'
 
@@ -36,6 +46,11 @@ const cast: Cast[] = [
   ...Object.values(get_flows),
   ...Object.values(has_flows),
   ...Object.values(format_flows),
+  ...Object.values(if_flows),
+  ...Object.values(bind_flows),
+  ...Object.values(validate_flows),
+  ...Object.values(walk_flows),
+  ...Object.values(find_flows),
 ]
 
 const call = {
@@ -44,6 +59,13 @@ const call = {
   ...get_hooks,
   ...has_hooks,
   ...format_hooks,
+  // The catalog `if` flow exports as `if_` because `if` is a
+  // JS keyword; rename to `if` (the runtime lookup key).
+  if: if_hooks.if_,
+  ...bind_hooks,
+  ...validate_hooks,
+  ...walk_hooks,
+  ...find_hooks,
 } as const
 
 const standard: Book = {

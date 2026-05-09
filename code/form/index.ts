@@ -17,7 +17,11 @@ export type Book = {
   host?: string
   name?: string
   cast?: Cast[]
-  call?: Record<string, (input: any, context?: any) => any>
+  // Input + context positions use `any` so concrete handlers
+  // `(args: { text }) => ...` remain assignable (contravariance).
+  // Return is `unknown` — callers must narrow.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  call?: Record<string, (input: any, context?: any) => unknown>
   code?: Record<string, number>
 }
 
@@ -114,7 +118,7 @@ export type Hash = {
   /** @internal codegen output path. */
   save?: string
   /** @internal legacy: literal hash data, used by codegen. */
-  hash?: Record<string, any>
+  hash?: Record<string, unknown>
   /** @internal legacy: declared field name for hash entries. */
   link?: string
   /** @internal legacy: per-value type. */
@@ -133,7 +137,7 @@ export type List = {
   /** @internal codegen output path. */
   save?: string
   /** @internal legacy: literal list data, used by codegen. */
-  list?: any[]
+  list?: unknown[]
 }
 
 /**
@@ -154,7 +158,7 @@ export type Link = {
   like?: string | string[] | LinkMesh | LinkMesh[]
   need?: boolean
   base?: unknown
-  take?: string[] | any[]
+  take?: string[] | unknown[]
   test?: Cast | string
   list?: boolean
 
@@ -174,7 +178,7 @@ export type Link = {
   /** @internal legacy. */
   bond?: Link
   /** @internal legacy: required-by-default trait bound. */
-  fall?: any
+  fall?: unknown
   /** @internal legacy. */
   head?: string
   /** @internal legacy. */
@@ -217,7 +221,8 @@ export type NameHash = Record<string, string>
 
 export type HookHash = Record<
   string,
-  (input: any, context?: any) => any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (input: any, context?: any) => unknown
 >
 
 /**
@@ -261,7 +266,7 @@ export type FormBond = string | number | boolean | null
 /** @deprecated A Form variant member shape used by the legacy codegen. */
 export type FormLike = {
   like: string
-  test?: (bond: any, link?: any) => boolean
+  test?: (bond: unknown, link?: unknown) => boolean
   note?: string
 }
 
@@ -281,19 +286,19 @@ export type FormLikeCase = {
 export type TestBack = {
   message?: string
   path?: string[]
-  params?: any
+  params?: unknown
 }
 
 /** @deprecated Use `Flow` directly. */
 export type Test = {
   form: 'test'
   save: string
-  test: (bond: any, name: string) => boolean | string | TestBack
+  test: (bond: unknown, name: string) => boolean | string | TestBack
 }
 
 /** @deprecated Use `Flow` directly. */
 export type Make = {
   form: 'make'
   save: string
-  make: (bond: any, context: any, name: string) => any
+  make: (bond: unknown, context: unknown, name: string) => unknown
 }

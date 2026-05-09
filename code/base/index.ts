@@ -85,6 +85,13 @@ export type CodeForm =
 
 export type Code = Record<string, CodeForm>
 
+// Hook table is heterogeneous — each entry has a specific
+// (args, return) shape. Use `any` for input/return so the
+// dispatch table accepts every concrete signature
+// (contravariance on input, return widened by `any`). Callers
+// narrow at the call site via the typed `flow` / `call`
+// overloads above.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Hook = (args: any) => any
 
 type HookName = string | number
@@ -316,6 +323,44 @@ export class Base<R = Code> {
     })
   }
 
+  /**
+   * Evaluate a tree to a `BindResult` envelope, capturing the
+   * tree (for later patching) alongside the produced output.
+   *
+   *   const result = base.bind(tree, scope)
+   *   result.output   // the rendered value
+   *   base.bindPatch(result, [{ op: 'replace', mark: '01h…', value: 'new' }])
+   */
+  bind(tree: FoldNode, scope?: Scope): BindResult {
+    return {
+      tree,
+      output: this.cast(tree, scope),
+      scope: scope ?? makeScope(),
+    }
+  }
+
+  /**
+   * Apply a list of mark-targeted patches to the tree from a
+   * previous `bind` and re-evaluate.
+   *
+   *   const r0 = base.bind(initial)
+   *   const r1 = base.bindPatch(r0, [
+   *     { op: 'replace', mark: 'abc', value: 'updated' },
+   *   ])
+   *
+   * Current implementation re-runs `cast` on the patched tree.
+   * Memoized partial-recomputation (per `note/runtime.md`) is
+   * planned future work — when it lands, this method's
+   * signature stays the same and only the internals change.
+   */
+  bindPatch(prev: BindResult, patches: TreePatch[]): BindResult {
+    const nextTree = patches.reduce(
+      (tree, patch) => applyTreePatch(tree, patch),
+      prev.tree,
+    )
+    return this.bind(nextTree, prev.scope)
+  }
+
   /** Number of registered Flows (debugging). */
   get size(): number {
     return this.hook.size
@@ -325,4 +370,171 @@ export class Base<R = Code> {
   test(code: string): boolean {
     return this.hook.has(code)
   }
+}
+
+// ---------------------------------------------------------------------------
+// Bind / patch types
+// ---------------------------------------------------------------------------
+
+/**
+ * Envelope produced by `base.bind(tree, scope?)`. Captures the
+ * evaluated tree, its output, and the scope used so a later
+ * `bindPatch` can re-evaluate against the same host bindings.
+ */
+export type BindResult = {
+  tree: FoldNode
+  output: unknown
+  scope: Scope
+}
+
+/**
+ * Patch operations addressed by `mark` (the per-Cast UUID v7).
+ * The runtime walks the previous tree, finds the node carrying
+ * the matching mark, and applies the op.
+ */
+export type TreePatch =
+  | { op: 'replace'; mark: string; value: FoldNode }
+  | { op: 'remove'; mark: string }
+  | {
+      op: 'insert'
+      /** Mark of the parent node to insert into. */
+      parent: string
+      /**
+       * Where in the parent the new node lives. For list-shaped
+       * children (`list.list[]`, `template_string.flow[]`,
+       * `view.nest[]`, `walk.list` items, etc.), this is the
+       * field name; the value is appended to the list.
+       */
+      key: string
+      value: FoldNode
+    }
+
+// ---------------------------------------------------------------------------
+// Patch application
+// ---------------------------------------------------------------------------
+
+/**
+ * Walk the tree, locate the node with the matching `mark`,
+ * and apply the patch. Returns a new tree (does not mutate).
+ *
+ * This is the simple O(N) fallback. A future memoized version
+ * keyed by mark → path is planned (per `note/runtime.md`).
+ */
+function applyTreePatch(tree: FoldNode, patch: TreePatch): FoldNode {
+  const transform = (node: FoldNode): FoldNode | undefined => {
+    if (node === null || node === undefined) return node
+    if (typeof node !== 'object') return node
+    if (node instanceof Date) return node
+
+    // Object-with-form. Test mark match against this node first.
+    const obj = node as { mark?: string; form?: string } & Record<string, unknown>
+
+    if (patch.op === 'replace' && obj.mark === patch.mark) {
+      return patch.value
+    }
+    if (patch.op === 'remove' && obj.mark === patch.mark) {
+      return undefined
+    }
+    if (patch.op === 'insert' && obj.mark === patch.parent) {
+      const child = obj[patch.key]
+      const out = { ...obj }
+      if (Array.isArray(child)) {
+        out[patch.key] = [...child, patch.value]
+      } else if (child === undefined) {
+        out[patch.key] = [patch.value]
+      } else {
+        // Single-Cast slot — replace.
+        out[patch.key] = patch.value
+      }
+      return out as FoldNode
+    }
+
+    // Recurse into structural children.
+    return walkChildren(obj, transform) as FoldNode
+  }
+
+  const out = transform(tree)
+  return out === undefined ? tree : out
+}
+
+/**
+ * Visit every direct Cast child of `node` and rebuild the
+ * parent if any child changed. Lists drop `undefined` results
+ * (used for `remove`).
+ */
+function walkChildren(
+  node: Record<string, unknown>,
+  transform: (n: FoldNode) => FoldNode | undefined,
+): unknown {
+  let changed = false
+  const out: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(node)) {
+    if (Array.isArray(v)) {
+      const mapped: FoldNode[] = []
+      let arrChanged = false
+      for (const item of v) {
+        if (isCastLike(item)) {
+          const next = transform(item as FoldNode)
+          if (next === undefined) {
+            arrChanged = true // dropped
+            continue
+          }
+          if (next !== item) arrChanged = true
+          mapped.push(next)
+        } else {
+          mapped.push(item)
+        }
+      }
+      out[k] = arrChanged ? mapped : v
+      if (arrChanged) changed = true
+    } else if (isCastLike(v)) {
+      const next = transform(v as FoldNode)
+      if (next === undefined) {
+        // remove a single-slot child by clearing the field
+        out[k] = undefined
+        changed = true
+      } else {
+        out[k] = next
+        if (next !== v) changed = true
+      }
+    } else if (
+      v != null &&
+      typeof v === 'object' &&
+      !(v instanceof Date) &&
+      !Array.isArray(v)
+    ) {
+      // Plain object (e.g. wake-form `bind: {...}`, hash `base: {...}`).
+      let inner = v as Record<string, unknown>
+      let innerChanged = false
+      const innerOut: Record<string, unknown> = {}
+      for (const [ik, iv] of Object.entries(inner)) {
+        if (isCastLike(iv)) {
+          const nextI = transform(iv as FoldNode)
+          if (nextI === undefined) {
+            innerChanged = true
+            continue
+          }
+          innerOut[ik] = nextI
+          if (nextI !== iv) innerChanged = true
+        } else {
+          innerOut[ik] = iv
+        }
+      }
+      out[k] = innerChanged ? innerOut : inner
+      if (innerChanged) changed = true
+    } else {
+      out[k] = v
+    }
+  }
+  return changed ? out : node
+}
+
+function isCastLike(v: unknown): v is FoldNode {
+  if (v === null) return false
+  const t = typeof v
+  if (t === 'string' || t === 'number' || t === 'boolean') return false
+  if (t !== 'object') return false
+  if (v instanceof Date) return false
+  if (Array.isArray(v)) return false
+  return 'form' in (v as Record<string, unknown>)
 }

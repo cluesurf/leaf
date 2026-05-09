@@ -62,6 +62,28 @@ export type BaseContext = {
     case?: string
     code?: number
   }) => CallHandler | undefined
+  /**
+   * Resolver for `find` AST nodes. Receives the FindPrimitive
+   * (with `where` / `sort` / `limit` / `offset` / `kind` already
+   * evaluated) and returns the row list (or aggregate value).
+   * Typically batched and async on the host side; the walker
+   * awaits the resolved value before passing it down.
+   */
+  find?: (query: {
+    resource: string
+    where?: unknown
+    sort?: unknown[]
+    limit?: number
+    offset?: number
+    kind?: string
+  }) => unknown
+  /**
+   * Resolver for `fold` AST nodes. Looks up the named Fold and
+   * returns its tree (renderer then walks the inner tree with a
+   * scope frame populated from `bind`). Returns `undefined` if
+   * the name is unknown — walker renders as `null` in that case.
+   */
+  fold?: (name: string) => Cast | undefined
 }
 
 // ---------------------------------------------------------------------------

@@ -414,6 +414,131 @@ describe('control flow', () => {
     expect(make.render(tree, { scope: make.scope({}) })).toBe('10 8 6 4 2 ')
   })
 
+  it('walk — nested walks compose scope frames', () => {
+    // Outer: walk rows. Inner: walk cells of each row.
+    // Body reads both outer.item (row label) and inner.item (cell).
+    const tree = make.walk(
+      make.reference('rows'),
+      make.walk(
+        make.read('row', 'cells'),
+        make.templateString(
+          make.reference('rowLabel'),
+          ':',
+          make.reference('cell'),
+          ' ',
+        ),
+        { item: 'cell' },
+      ),
+      { item: 'row' },
+    )
+    // Need an outer-scope alias so the inner template can read the
+    // row label without a `read('row', 'label')`. Easiest: have
+    // each row carry its own label, and override item names.
+    const tree2 = make.walk(
+      make.reference('rows'),
+      make.walk(
+        make.read('row', 'cells'),
+        make.templateString(
+          make.read('row', 'label'),
+          ':',
+          make.reference('cell'),
+          ' ',
+        ),
+        { item: 'cell' },
+      ),
+      { item: 'row' },
+    )
+    const scope = make.scope({
+      rows: [
+        { label: 'A', cells: [1, 2] },
+        { label: 'B', cells: [3] },
+      ],
+    })
+    expect(make.render(tree2, { scope })).toBe('A:1 A:2 B:3 ')
+  })
+
+  it('walk — `join` separator slots between iterations (not after the last)', () => {
+    const tree = make.walk(
+      make.reference('items'),
+      make.reference('item'),
+      { join: ', ' },
+    )
+    const scope = make.scope({ items: ['a', 'b', 'c'] })
+    expect(make.render(tree, { scope })).toBe('a, b, c')
+  })
+
+  it('walk — `join` empty string is a valid no-op separator', () => {
+    const tree = make.walk(
+      make.reference('items'),
+      make.reference('item'),
+      { join: '' },
+    )
+    const scope = make.scope({ items: ['x', 'y'] })
+    expect(make.render(tree, { scope })).toBe('xy')
+  })
+
+  it('walkSize — `join` works with counted ranges', () => {
+    const tree = make.walkSize(
+      0,
+      4,
+      make.reference('head'),
+      { join: '-' },
+    )
+    expect(make.render(tree, { scope: make.scope({}) })).toBe('0-1-2-3')
+  })
+
+  it('walk — outer scope visible inside the body', () => {
+    // The walk frame is pushed; outer bindings remain visible.
+    const tree = make.walk(
+      make.reference('items'),
+      make.templateString(
+        make.reference('prefix'),
+        ':',
+        make.reference('item'),
+        ' ',
+      ),
+    )
+    const scope = make.scope({ prefix: 'item', items: ['a', 'b'] })
+    expect(make.render(tree, { scope })).toBe('item:a item:b ')
+  })
+
+  it('walk — frame does NOT leak after iteration', () => {
+    const tree = make.templateString(
+      make.walk(
+        make.reference('items'),
+        make.reference('item'),
+      ),
+      ' / after-loop: ',
+      // After the walk completes, `item` should no longer be bound.
+      make.reference('item'),
+    )
+    const scope = make.scope({ items: ['x', 'y'] })
+    // The trailing reference resolves to undefined → renders as ''.
+    expect(make.render(tree, { scope })).toBe('xy / after-loop: ')
+  })
+
+  it('walkSize — nested counted ranges produce a 2-D fan-out', () => {
+    const tree = make.walkSize(
+      0,
+      2,
+      make.walkSize(
+        0,
+        3,
+        make.templateString(
+          make.reference('row'),
+          ',',
+          make.reference('col'),
+          ' ',
+        ),
+        { item: 'col' },
+      ),
+      { item: 'row' },
+    )
+    expect(make.render(tree, { scope: make.scope({}) })).toBe(
+      '0,0 0,1 0,2 1,0 1,1 1,2 ',
+    )
+  })
+
   it('walkTest — while-style loop with mutable scope', () => {
     // Mutate a counter from the host so the test eventually flips.
     const counter = { n: 0 }

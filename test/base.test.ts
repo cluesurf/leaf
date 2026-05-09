@@ -148,6 +148,47 @@ describe('Base runtime — type inference', () => {
     ).toBe(true)
   })
 
+  it('catalog verbs `if`, `validate`, `walk` are registered', () => {
+    const base = new Base<Code>()
+    base.load({ ...standard, code: undefined })
+
+    // `if` — value selector
+    expect(base.call('if', { test: true, then: 'yes', else: 'no' })).toBe('yes')
+    expect(base.call('if', { test: false, then: 'yes', else: 'no' })).toBe('no')
+
+    // `validate` — wraps a test in a result envelope
+    expect(base.call('validate', { test: true })).toEqual({ ok: true })
+    expect(
+      base.call('validate', { test: false, message: 'bad', kind: 'data' }),
+    ).toEqual({ ok: false, message: 'bad', kind: 'data' })
+
+    // `walk(chunk)` — array transform
+    expect(
+      base.call('walk', { base: 'chunk', items: [1, 2, 3, 4, 5], size: 2 }),
+    ).toEqual([[1, 2], [3, 4], [5]])
+
+    // `walk(distinct)`
+    expect(
+      base.call('walk', { base: 'distinct', items: [1, 2, 2, 3, 1] }),
+    ).toEqual([1, 2, 3])
+  })
+
+  it('`bind` returns the body unchanged (eager-arg form)', () => {
+    const base = new Base<Code>()
+    base.load({ ...standard, code: undefined })
+    expect(
+      base.call('bind', { names: { x: 1 }, then: 'value' }),
+    ).toBe('value')
+  })
+
+  it('`find` defaults throw — host must override', () => {
+    const base = new Base<Code>()
+    base.load({ ...standard, code: undefined })
+    expect(() =>
+      base.call('find', { base: 'record', resource: 'page', id: '1' }),
+    ).toThrow(/no handler registered/)
+  })
+
   it('base.call(<id>, bind) dispatches via CodeLink integer ids', () => {
     const base = new Base<Code>()
     base.load(standard)

@@ -196,6 +196,8 @@ export type WalkListPrimitive = {
   item?: string
   index?: string
   hook: Cast
+  /** Separator inserted between iterations (text mode joins; element mode uses as a sibling). */
+  join?: Cast
   version?: number
   id?: string
   meta?: Meta
@@ -207,6 +209,7 @@ export type WalkTestPrimitive = {
   case: 'test'
   test: Cast
   hook: Cast
+  join?: Cast
   version?: number
   id?: string
   meta?: Meta
@@ -222,6 +225,7 @@ export type WalkSizePrimitive = {
   item?: string            // iterator binding name (default 'head')
   index?: string           // optional index binding
   hook: Cast
+  join?: Cast
   version?: number
   id?: string
   meta?: Meta
@@ -253,6 +257,46 @@ export type HashPrimitive = {
 }
 
 // ---------------------------------------------------------------------------
+// Find — query expression. Resolved by a host-supplied `find`
+// resolver (typically batched, async).
+// ---------------------------------------------------------------------------
+
+export type FindPrimitive = {
+  form: 'find'
+  /** Resource to query (`'language_string'`, `'page'`, …). */
+  resource: string
+  /** Filter expression. Tree of predicates; resolver-defined. */
+  where?: Cast
+  /** Ordering — list of `{ field, direction }` Casts. */
+  sort?: Cast[]
+  /** Page size. */
+  limit?: number
+  /** Page offset. */
+  offset?: number
+  /**
+   * Aggregation kind: when set, returns the aggregate instead
+   * of the row list (`'count' | 'sum' | 'mean' | 'first' | …`).
+   */
+  kind?: string
+  mark?: string
+}
+
+// ---------------------------------------------------------------------------
+// Fold — embedded template reference. Resolves the named Fold
+// declaration through a host-supplied `fold` resolver and
+// renders its tree with the supplied bindings.
+// ---------------------------------------------------------------------------
+
+export type FoldPrimitive = {
+  form: 'fold'
+  /** Name of the Fold declaration to embed. */
+  cast: string
+  /** Template parameter bindings (snake_case → Cast). */
+  bind?: Record<string, Cast>
+  mark?: string
+}
+
+// ---------------------------------------------------------------------------
 // Views
 // ---------------------------------------------------------------------------
 
@@ -279,6 +323,8 @@ export type Structural =
   | Call
   | ControlFlow
   | HashPrimitive
+  | FindPrimitive
+  | FoldPrimitive
   | ViewPrimitive
 
 // ---------------------------------------------------------------------------

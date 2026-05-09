@@ -108,6 +108,8 @@ export function evaluateText(node: Cast, context: TextContext): unknown {
     }
     case 'walk': {
       const out: string[] = []
+      const joinText =
+        node.join !== undefined ? renderText(node.join, context) : ''
       switch (node.case) {
         case 'list': {
           const list = evaluateText(node.list, context) as
@@ -127,7 +129,7 @@ export function evaluateText(node: Cast, context: TextContext): unknown {
             }
             out.push(renderText(node.hook, inner))
           }
-          return out.join('')
+          return out.join(joinText)
         }
         case 'test': {
           // While-style loop. Cap iterations to prevent
@@ -138,7 +140,7 @@ export function evaluateText(node: Cast, context: TextContext): unknown {
             if (!t) break
             out.push(renderText(node.hook, context))
           }
-          return out.join('')
+          return out.join(joinText)
         }
         case 'size': {
           const base = Number(evaluateText(node.base, context))
@@ -169,11 +171,43 @@ export function evaluateText(node: Cast, context: TextContext): unknown {
             out.push(renderText(node.hook, inner))
             step += 1
           }
-          return out.join('')
+          return out.join(joinText)
         }
       }
       return ''
     }
+    // ----- find -----
+    case 'find': {
+      if (!context.find) return null
+      return context.find({
+        resource: node.resource,
+        where: node.where !== undefined
+          ? evaluateText(node.where, context)
+          : undefined,
+        sort: node.sort?.map(s => evaluateText(s, context)),
+        limit: node.limit,
+        offset: node.offset,
+        kind: node.kind,
+      })
+    }
+
+    // ----- fold (template embed) -----
+    case 'fold': {
+      const inner = context.fold?.(node.cast)
+      if (inner == null) return null
+      const frame: Record<string, unknown> = {}
+      if (node.bind) {
+        for (const [k, v] of Object.entries(node.bind)) {
+          frame[k] = evaluateText(v, context)
+        }
+      }
+      const childContext: TextContext = {
+        ...context,
+        scope: context.scope.push(frame),
+      }
+      return evaluateText(inner, childContext)
+    }
+
     // ----- views (placeholder in text mode) -----
     case 'view':
       return `[view:${node.name}]`

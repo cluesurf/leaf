@@ -1,19 +1,32 @@
 /**
  * Scope chain shared by every renderer.
  *
- * Each renderer pushes a frame for iterators (`walk`, `loop`)
- * and reads named bindings via `get`. Inner stack shadow outer
- * ones — a `get` walks from the most recently pushed frame back
- * to the initial one.
+ * Each renderer pushes a frame for iterators (`walk`, fold
+ * embeds, future `bind`) and reads named bindings via `get`.
+ * Inner frames shadow outer ones — `get` walks from the most
+ * recently pushed frame back to the initial one.
+ *
+ * `push(frame)` returns a NEW Scope with the extended chain;
+ * the original is untouched. This matters: the walker pushes a
+ * per-iteration frame and discards the inner scope when the
+ * iteration ends. If `push` mutated the chain, the outer
+ * walker would see the inner frame after the iteration
+ * completes.
  */
 
 export type Mesh = Record<string, unknown>
 
 export class Scope {
-  private stack: Mesh[]
+  private stack: ReadonlyArray<Mesh>
 
   constructor(initial: Mesh = {}) {
     this.stack = [initial]
+  }
+
+  private static fromStack(stack: ReadonlyArray<Mesh>): Scope {
+    const out = new Scope()
+    ;(out as unknown as { stack: ReadonlyArray<Mesh> }).stack = stack
+    return out
   }
 
   get(name: string): unknown {
@@ -26,9 +39,12 @@ export class Scope {
     return undefined
   }
 
+  /**
+   * Returns a NEW Scope with `frame` pushed on top. The
+   * original Scope is unchanged.
+   */
   push(frame: Mesh): Scope {
-    this.stack.push(frame)
-    return this
+    return Scope.fromStack([...this.stack, frame])
   }
 }
 

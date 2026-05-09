@@ -171,6 +171,12 @@ function walkElement(node: Cast, context: ElementContext): unknown {
     }
     case 'walk': {
       const out: unknown[] = []
+      const pushItem = (rendered: unknown, key: number) => {
+        if (out.length > 0 && node.join !== undefined) {
+          out.push(keyed(walkElement(node.join, context), key * 2 - 1))
+        }
+        out.push(keyed(rendered, key * 2))
+      }
       switch (node.case) {
         case 'list': {
           const list = walkValue(node.list, context) as
@@ -188,7 +194,7 @@ function walkElement(node: Cast, context: ElementContext): unknown {
               ...context,
               scope: context.scope.push(frame),
             }
-            out.push(keyed(walkElement(node.hook, inner), i))
+            pushItem(walkElement(node.hook, inner), i)
           }
           break
         }
@@ -197,7 +203,7 @@ function walkElement(node: Cast, context: ElementContext): unknown {
           for (let i = 0; i < cap; i += 1) {
             const t = walkValue(node.test, context)
             if (!t) break
-            out.push(keyed(walkElement(node.hook, context), i))
+            pushItem(walkElement(node.hook, context), i)
           }
           break
         }
@@ -227,7 +233,7 @@ function walkElement(node: Cast, context: ElementContext): unknown {
               ...context,
               scope: context.scope.push(frame),
             }
-            out.push(keyed(walkElement(node.hook, inner), step))
+            pushItem(walkElement(node.hook, inner), step)
             step += 1
           }
           break
@@ -235,6 +241,39 @@ function walkElement(node: Cast, context: ElementContext): unknown {
       }
       return wrapFragment(context, out)
     }
+    // ----- find -----
+    case 'find': {
+      if (!context.find) return null
+      const rows = context.find({
+        resource: node.resource,
+        where: node.where !== undefined
+          ? walkValue(node.where, context)
+          : undefined,
+        sort: node.sort?.map(s => walkValue(s, context)),
+        limit: node.limit,
+        offset: node.offset,
+        kind: node.kind,
+      })
+      return toElementChild(rows)
+    }
+
+    // ----- fold (template embed) -----
+    case 'fold': {
+      const inner = context.fold?.(node.cast)
+      if (inner == null) return null
+      const frame: Record<string, unknown> = {}
+      if (node.bind) {
+        for (const [k, v] of Object.entries(node.bind)) {
+          frame[k] = walkValue(v, context)
+        }
+      }
+      const childContext: ElementContext = {
+        ...context,
+        scope: context.scope.push(frame),
+      }
+      return walkElement(inner, childContext)
+    }
+
     // ----- views -----
     case 'view':
       return walkView(node, context)

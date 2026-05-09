@@ -32,6 +32,8 @@ import type {
   CasePrimitive,
   ForkPrimitive,
   HashPrimitive,
+  FindPrimitive,
+  FoldPrimitive,
   ListPrimitive,
   MatchPrimitive,
   PickPrimitive,
@@ -177,6 +179,29 @@ function walk(
     case 'walk':
       return walkWalk(node, codeTable, decodeTable)
 
+    case 'find': {
+      const out: FindPrimitive = { ...node }
+      if (node.where !== undefined) {
+        out.where = walk(node.where, codeTable, decodeTable)
+      }
+      if (node.sort !== undefined) {
+        out.sort = node.sort.map(s => walk(s, codeTable, decodeTable))
+      }
+      return out
+    }
+
+    case 'fold': {
+      const out: FoldPrimitive = { ...node }
+      if (node.bind != null) {
+        const inner: Record<string, Cast> = {}
+        for (const [k, v] of Object.entries(node.bind)) {
+          inner[k] = walk(v, codeTable, decodeTable)
+        }
+        out.bind = inner
+      }
+      return out
+    }
+
     case 'view':
       return walkView(node, codeTable, decodeTable)
 
@@ -320,18 +345,24 @@ function walkWalk(
   codeTable: CodeTable | undefined,
   decodeTable: DecodeTable | undefined,
 ): WalkPrimitive {
+  const join =
+    node.join !== undefined
+      ? walk(node.join, codeTable, decodeTable)
+      : undefined
   switch (node.case) {
     case 'list':
       return {
         ...node,
         list: walk(node.list, codeTable, decodeTable),
         hook: walk(node.hook, codeTable, decodeTable),
+        ...(join !== undefined ? { join } : {}),
       }
     case 'test':
       return {
         ...node,
         test: walk(node.test, codeTable, decodeTable),
         hook: walk(node.hook, codeTable, decodeTable),
+        ...(join !== undefined ? { join } : {}),
       }
     case 'size':
       return {
@@ -339,6 +370,7 @@ function walkWalk(
         base: walk(node.base, codeTable, decodeTable),
         head: walk(node.head, codeTable, decodeTable),
         hook: walk(node.hook, codeTable, decodeTable),
+        ...(join !== undefined ? { join } : {}),
       }
   }
 }
