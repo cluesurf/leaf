@@ -32,14 +32,14 @@ Just JSON.
 
 ## Why you need this
 
-| building                                   | leaf gives you                                                                     |
-| ------------------------------------------ | ---------------------------------------------------------------------------------- |
-| Notion-class doc editor                    | one tree shape for blocks / inline / embeds / database views                       |
-| HTML + React + email + AMP from one source | author once. Text + element renderers share the tree                               |
-| Localization                               | locale-aware `format(*)`, CLDR plurals, gender select, RTL                         |
-| User- or AI-supplied logic, sandboxed      | rules + formulas run against a host scope. No `eval`, no DOM, no network           |
-| Reusable fragments                         | `Fold` declarations registered in the Book                                         |
-| Data-shape validation + normalization      | `Form` + `Mold` compile to per-field closures at load time. Fast under bulk import |
+| building                              | leaf gives you                                                                     |
+| ------------------------------------- | ---------------------------------------------------------------------------------- |
+| Notion-class doc editor               | one tree shape for blocks / inline / embeds / database views                       |
+| HTML + React + email                  | author once. Text + element renderers share the tree                               |
+| Localization                          | locale-aware `format(*)`, CLDR plurals, gender select, RTL                         |
+| User- or AI-supplied logic, sandboxed | rules + formulas run against a host scope. No `eval`, no DOM, no network           |
+| Reusable fragments                    | `Fold` declarations registered in the Book                                         |
+| Data-shape validation + normalization | `Form` + `Mold` compile to per-field closures at load time. Fast under bulk import |
 
 ## Install
 
