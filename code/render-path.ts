@@ -4,7 +4,7 @@
  */
 
 import type { Cast, ReadPrimitive, ReadLink } from '@/cast'
-import type { BaseContext } from './registry'
+import type { BaseContext } from '@/render-context'
 
 /**
  * Resolve a read node to its value. The renderer passes a

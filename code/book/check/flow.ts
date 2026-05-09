@@ -92,7 +92,7 @@ const length = ({ value }: Record<string, unknown>) =>
 // AST primitive used by `cast.plural(value)` and `cast.match(...)`
 // arms keyed on plural categories.
 
-import type { BaseContext } from '@/render'
+import type { BaseContext } from '@/render-context'
 
 const DEFAULT_LOCALE = 'en'
 

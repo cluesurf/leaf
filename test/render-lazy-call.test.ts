@@ -13,7 +13,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { cast, makeScope, renderText, evaluateText } from '.'
+import { cast, makeScope, renderText, evaluateText } from '@/render'
 
 describe('lazy `if`', () => {
   it('evaluates only the selected branch', () => {

@@ -7,7 +7,7 @@
 import { createElement, Fragment } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, it, expect } from 'vitest'
-import { cast, makeScope, renderElement, type ElementBuilder } from '.'
+import { cast, makeScope, renderElement, type ElementBuilder } from '@/render'
 
 const REACT = {
   builder: createElement as unknown as ElementBuilder<unknown>,

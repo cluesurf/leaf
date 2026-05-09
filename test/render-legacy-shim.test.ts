@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cast, makeScope, renderText, evaluateText } from '.'
+import { cast, makeScope, renderText, evaluateText } from '@/render'
 
 describe('literal rendering', () => {
   it('renders text', () => {

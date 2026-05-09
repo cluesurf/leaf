@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cast, makeScope, renderText } from '.'
+import { cast, makeScope, renderText } from '@/render'
 
 describe('literals', () => {
   it('bare strings are first-class leaves (no builder needed)', () => {

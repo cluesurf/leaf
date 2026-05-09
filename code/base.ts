@@ -33,14 +33,17 @@ import type {
 } from '@/form'
 import type { Book, Make, Fold, Mold } from '@/form'
 import {
+  compileFold,
   compileForm,
   compileHash,
   compileList,
+  type FoldRender,
   type Parser,
 } from '@/bind'
 import type { Cast as FoldNode } from '@/cast'
-import { evaluateText, makeScope } from '@/render'
-import { renderElement, type ElementBuilder } from '@/render'
+import { evaluateText } from '@/render'
+import { makeScope } from '@/scope'
+import { renderElement, type ElementBuilder } from '@/render-element'
 
 export type {
   BareFlowName,
@@ -98,7 +101,7 @@ const CREATE_ELEMENT_KEY = 'flow:create:element'
 
 export class Base<R = Code> {
   private hook = new Map<string | number, Hook>()
-  private fold = new Map<string, FoldNode>()
+  private fold = new Map<string, FoldRender>()
   private view = new Map<string, unknown>()
   private code: Record<string, number> = {}
   /**
@@ -243,11 +246,7 @@ export class Base<R = Code> {
       return
     }
     if (cast.form === 'fold') {
-      const tree =
-        cast.cast.length === 1
-          ? cast.cast[0]!
-          : { form: 'text' as const, flow: cast.cast }
-      this.fold.set(cast.case, tree)
+      this.fold.set(cast.case, compileFold(cast))
     }
     // Form / Hash / List don't register runtime state — they're
     // codegen-time declarations. Registering them is a no-op so
@@ -360,11 +359,44 @@ export class Base<R = Code> {
   ): unknown
   cast(name: string, params?: Record<string, unknown>): unknown
   cast(name: string, params: Record<string, unknown> = {}): unknown {
-    const tree = this.fold.get(name)
-    if (tree == null) {
+    const render = this.fold.get(name)
+    if (render == null) {
       throw new Error(`base.cast: no Fold registered for '${name}'`)
     }
-    return this.evaluate(tree, params)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const castView = this.hook.get(CREATE_ELEMENT_KEY) as
+      | ElementBuilder<any>
+      | undefined
+    return render(params, {
+      resolveCall: this.callResolver,
+      resolveFold: name => this.fold.get(name),
+      castView,
+      fragment: this.view.get(FRAGMENT_KEY),
+      component: castView ? Object.fromEntries(this.view) : undefined,
+    })
+  }
+
+  // Pre-bound for capture in closures.
+  private callResolver = (node: {
+    name?: string
+    base?: string
+    case?: string
+    code?: number
+  }): ((args: unknown) => unknown) | undefined => {
+    if (typeof node.code === 'number') {
+      return this.hook.get(node.code) as
+        | ((args: unknown) => unknown)
+        | undefined
+    }
+    if (typeof node.name !== 'string') return undefined
+    const caseValue =
+      node.base && node.case
+        ? `${node.base}:${node.case}`
+        : (node.base ?? node.case)
+    const key = buildKey(node.name, caseValue)
+    return this.hook.get(key) as
+      | ((args: unknown) => unknown)
+      | undefined
   }
 
   /**
@@ -429,7 +461,7 @@ export class Base<R = Code> {
         cache: undefined,
         dirty: undefined,
         call: callResolver,
-        fold: name => foldStore.get(name),
+        fold: () => undefined,
         builder: castView,
         fragment: viewStore.get(FRAGMENT_KEY),
         component,
@@ -441,7 +473,7 @@ export class Base<R = Code> {
       cache: undefined,
       dirty: undefined,
       call: callResolver,
-      fold: name => foldStore.get(name),
+      fold: () => undefined,
     })
   }
 

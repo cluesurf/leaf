@@ -12,7 +12,7 @@
 
 <h3 align='center'>@cluesurf/leaf</h3>
 <p align='center'>
-  A Template Language ⋈
+  A Template Language ᛉ
 </p>
 
 <br/>

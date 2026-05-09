@@ -1026,3 +1026,5 @@ export function selectCases(
   }
   return caseOf(reference(refName), armsList)
 }
+
+// ---------------------------------------------------------------------------

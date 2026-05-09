@@ -18,14 +18,14 @@ import type {
   Cast,
   WalkPrimitive,
 } from '@/cast'
-import { evaluatePath } from './path'
+import { evaluatePath } from '@/render-path'
 import {
   collectCallArgs,
   deepEq,
   getCall,
   type BaseContext,
   type CallHandler,
-} from './registry'
+} from '@/render-context'
 import { type Scope } from '@/scope'
 
 export type TextContext = BaseContext

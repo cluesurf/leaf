@@ -43,14 +43,14 @@ import type {
   ViewPrimitive,
   WalkPrimitive,
 } from '@/cast'
-import { evaluatePath } from './path'
+import { evaluatePath } from '@/render-path'
 import {
   collectCallArgs,
   deepEq,
   getCall,
   isCast,
   type BaseContext,
-} from './registry'
+} from '@/render-context'
 import type { Scope } from '@/scope'
 
 export type ElementBuilder<T> = (

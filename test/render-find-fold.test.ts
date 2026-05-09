@@ -13,7 +13,7 @@ import {
   renderText,
   evaluateText,
   compile,
-} from '.'
+} from '@/render'
 import type { Cast } from '@/cast'
 
 describe('find primitive', () => {
