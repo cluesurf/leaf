@@ -4,51 +4,9 @@ import {
   snakeCase,
   startCase,
 } from 'lodash-es'
-import { TestBack } from './form'
-import { RefinementCtx } from 'zod'
 
 export function toPascalCase(text: string) {
   return startCase(camelCase(text)).replace(/ /g, '')
-}
-
-const base: Record<string, unknown> = {}
-
-export function save(name: string, bond: unknown) {
-  base[name] = bond
-}
-
-export function LOAD(name: string): unknown {
-  if (!(name in base)) {
-    throw new Error(`No '${name}' found in @cluesurf/bead`)
-  }
-  return base[name]
-}
-
-export function MAKE(
-  name: string,
-  fn: (bond: unknown, context: RefinementCtx, name: string) => unknown,
-): (bond: unknown, context: RefinementCtx) => unknown {
-  return (bond: unknown, context: RefinementCtx): unknown => {
-    return fn(bond, context, name)
-  }
-}
-
-export function TEST(
-  name: string,
-  fn: (bond: unknown, name: string) => boolean | string | TestBack,
-): (bond: unknown) => boolean | TestBack {
-  return (bond: unknown): boolean | TestBack => {
-    const back = fn(bond, name)
-    if (typeof back === 'string') {
-      return {
-        message: back,
-      }
-    } else if (typeof back === 'boolean' || back == null) {
-      return !!back
-    } else {
-      return back
-    }
-  }
 }
 
 export type StringCase = 'snakeCase' | 'camelCase' | 'pascalCase'

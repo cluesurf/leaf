@@ -29,10 +29,21 @@
  * resolved values, never raw flow nodes.
  */
 
-import type { Form, HookHash } from '@/form'
+import type { Form } from '@/form'
 import * as builtIn from '@/book/check/flow'
 import type { Cast } from './types'
 import type { Scope } from './scope'
+
+/**
+ * Operator / task hook table. Keyed by call name. Each entry
+ * receives a pre-evaluated args object and an optional context;
+ * returns whatever the call should resolve to.
+ */
+export type HookHash = Record<
+  string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (input: any, context?: any) => unknown
+>
 
 // ---------------------------------------------------------------------------
 // Context

@@ -7,11 +7,11 @@
  */
 
 import { Make } from '../code/make'
-import standard from '../code/base'
+import beadBook from '../code/book'
 
 async function main() {
   const make = new Make({ link: 'code/base' })
-  make.book(standard)
+  make.load(beadBook)
 
   const result = await make.save()
 
@@ -22,8 +22,8 @@ async function main() {
   )
   for (const [stream, bundle] of [
     ['index.ts', result.link],
-    ['form.ts',  result.form],
-    ['base.ts',  result.base],
+    ['form.ts', result.form],
+    ['base.ts', result.base],
   ] as const) {
     for (const [save, content] of Object.entries(bundle)) {
       const dir = save || '(root)'

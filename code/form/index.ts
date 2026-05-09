@@ -127,12 +127,6 @@ export type Hash = {
   load?: Record<string, unknown>
   /** @internal codegen output path. */
   save?: string
-  /** @internal legacy: literal hash data, used by codegen. */
-  hash?: Record<string, unknown>
-  /** @internal legacy: declared field name for hash entries. */
-  link?: string
-  /** @internal legacy: per-value type. */
-  bond?: FormLike
 }
 
 /**
@@ -146,8 +140,6 @@ export type List = {
   load?: unknown[]
   /** @internal codegen output path. */
   save?: string
-  /** @internal legacy: literal list data, used by codegen. */
-  list?: unknown[]
 }
 
 /**
@@ -171,137 +163,7 @@ export type Link = {
   take?: string[] | unknown[]
   test?: Cast | string
   list?: boolean
-
-  // ─── Legacy fields used by the existing codegen ───
-  // Kept optional so the codegen continues to compile;
-  // remove once the codegen is rewritten against the
-  // simplified Link shape.
-
-  /** @internal legacy: nested record (use `like: LinkMesh` going forward). */
-  link?: LinkMesh
-  /** @internal legacy: enum members or sub-variant union. */
-  case?: Record<string, Link> | Link[]
-  /** @internal legacy: variant union members. */
-  fuse?: Link[]
-  /** @internal legacy: literal default-value or guide-system flag. */
-  bind?: FormBond | Record<string, FormBond> | FormBond[] | boolean
-  /** @internal legacy. */
-  bond?: Link
-  /** @internal legacy: required-by-default trait bound. */
-  fall?: unknown
-  /** @internal legacy. */
-  head?: string
-  /** @internal legacy. */
-  note?: string
-  /** @internal legacy. */
-  back?: string
-  /** @internal legacy. */
-  fill?: boolean
-  /** @internal legacy. */
-  hold?: boolean
-  /** @internal legacy. */
-  trim?: boolean
-  /** @internal legacy. */
-  load?: boolean
-  /** @internal legacy. */
-  name?: { base?: string; mark?: string }
-  /** @internal legacy. */
-  size?:
-    | number
-    | {
-        fall?: number
-        fall_meet?: number
-        rise?: number
-        rise_meet?: number
-      }
-  /** @internal legacy. View-tree extensions. */
-  slot?: string
-  view?: boolean
-  pick?: string
-  tags?: string[]
 }
 
 export type LinkMesh = Record<string, Link>
 
-// ─── Codegen-config types (consumed by `Make`) ────────────
-
-export type BaseHash = Record<string, Cast>
-
-export type NameHash = Record<string, string>
-
-export type HookHash = Record<
-  string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (input: any, context?: any) => unknown
->
-
-/**
- * Codegen overrides for the built-in `like` → output
- * mappings.
- *
- *  - `form` overrides TypeScript type emission.
- *  - `take` overrides Zod parser emission.
- */
-export type CastHash = {
-  form?: Record<string, string>
-  take?: Record<string, string>
-}
-
-export type MakeTake = {
-  mesh: BaseHash
-  link: BaseHash
-  name: NameHash
-  hook?: HookHash
-  cast?: CastHash
-}
-
-export type Load = MakeTake & {
-  testLink: string
-  codeLink: string
-}
-
-// ─── Legacy compat aliases ────────────────────────────────
-//
-// The existing codegen pipeline (`code/make/{base,form,take}.ts`)
-// imports several type names from the older form-DSL shape.
-// Aliased here as no-op shims so the codegen still compiles
-// while we migrate it onto the simplified Form/Flow/Link
-// types above.
-
-/** @deprecated The codegen-config type is now `MakeTake`. */
-export type Base = MakeTake
-
-export type FormBond = string | number | boolean | null
-
-/** @deprecated A Form variant member shape used by the legacy codegen. */
-export type FormLike = {
-  like: string
-  test?: (bond: unknown, link?: unknown) => boolean
-  note?: string
-}
-
-/** @deprecated Legacy. */
-export type FormLikeCase = {
-  case: FormLike[]
-}
-
-/** @deprecated Legacy back-pointer record used by codegen sweeps. */
-export type TestBack = {
-  message?: string
-  path?: string[]
-  params?: unknown
-}
-
-/** @deprecated Use `Flow` directly. */
-export type Test = {
-  form: 'test'
-  save: string
-  test: (bond: unknown, name: string) => boolean | string | TestBack
-}
-
-/** @deprecated Use `Flow` directly. */
-export type Make = {
-  form: 'make'
-  save: string
-  make: (bond: unknown, context: unknown, name: string) => unknown
-}
