@@ -12,7 +12,14 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { make } from './index'
+import {
+  make,
+  makeScope,
+  renderText,
+  compile,
+  decompile,
+  buildDecodeTable,
+} from '.'
 import type { Cast } from './types'
 
 const codeTable = {
@@ -22,12 +29,12 @@ const codeTable = {
   'flow:plural': 4,
 }
 
-const decodeTable = make.buildDecodeTable(codeTable)
+const decodeTable = buildDecodeTable(codeTable)
 
 describe('compile — make → wake', () => {
   it('lifts flat args into bind, replaces (name, base, case) with code', () => {
     const tree = make.eq(make.reference('status'), 'on')
-    const wake = make.compile(tree, codeTable)
+    const wake = compile(tree, codeTable)
     expect(wake).toEqual({
       form: 'call',
       code: 1,
@@ -40,7 +47,7 @@ describe('compile — make → wake', () => {
 
   it('handles base + case identity tuples', () => {
     const tree = make.call('format', { base: 'capitalized', text: 'hi' })
-    const wake = make.compile(tree, codeTable)
+    const wake = compile(tree, codeTable)
     expect(wake).toEqual({
       form: 'call',
       code: 3,
@@ -55,7 +62,7 @@ describe('compile — make → wake', () => {
       mark: '01h-stable-id',
       value: 7,
     }
-    const wake = make.compile(tree, codeTable)
+    const wake = compile(tree, codeTable)
     expect(wake).toEqual({
       form: 'call',
       code: 4,
@@ -70,7 +77,7 @@ describe('compile — make → wake', () => {
       'positive',
       'zero or less',
     )
-    const wake = make.compile(tree, codeTable) as {
+    const wake = compile(tree, codeTable) as {
       form: 'fork'
       test: { form: 'call'; code: number }
       then: string
@@ -94,7 +101,7 @@ describe('compile — make → wake', () => {
       'You have ',
       make.plural(make.reference('count')),
     )
-    const wake = make.compile(tree, codeTable) as {
+    const wake = compile(tree, codeTable) as {
       form: 'template_string'
       flow: Cast[]
     }
@@ -108,7 +115,7 @@ describe('compile — make → wake', () => {
 
   it('throws when an identity tuple has no code id', () => {
     const tree = make.call('unknown_verb', { x: 1 })
-    expect(() => make.compile(tree, codeTable)).toThrow(/no code id/)
+    expect(() => compile(tree, codeTable)).toThrow(/no code id/)
   })
 })
 
@@ -119,7 +126,7 @@ describe('decompile — wake → make', () => {
       code: 3,
       bind: { text: 'hi' },
     }
-    const back = make.decompile(wake, decodeTable)
+    const back = decompile(wake, decodeTable)
     expect(back).toEqual({
       form: 'call',
       name: 'format',
@@ -135,7 +142,7 @@ describe('decompile — wake → make', () => {
       mark: '01h-stable-id',
       bind: { value: 7 },
     }
-    const back = make.decompile(wake, decodeTable)
+    const back = decompile(wake, decodeTable)
     expect(back).toEqual({
       form: 'call',
       name: 'plural',
@@ -146,7 +153,7 @@ describe('decompile — wake → make', () => {
 
   it('throws on unknown code', () => {
     const wake: Cast = { form: 'call', code: 999, bind: {} }
-    expect(() => make.decompile(wake, decodeTable)).toThrow(/unknown code/)
+    expect(() => decompile(wake, decodeTable)).toThrow(/unknown code/)
   })
 })
 
@@ -157,8 +164,8 @@ describe('round-trip — compile then decompile', () => {
       make.templateString('on (', make.reference('user'), ')'),
       'off',
     )
-    const wake = make.compile(original, codeTable)
-    const back = make.decompile(wake, decodeTable)
+    const wake = compile(original, codeTable)
+    const back = decompile(wake, decodeTable)
     expect(back).toEqual(original)
   })
 
@@ -175,18 +182,18 @@ describe('round-trip — compile then decompile', () => {
       },
       b: 1,
     }
-    const wake = make.compile(original, codeTable)
-    const back = make.decompile(wake, decodeTable)
+    const wake = compile(original, codeTable)
+    const back = decompile(wake, decodeTable)
     expect(back).toEqual(original)
   })
 })
 
 describe('runtime accepts both flavors equivalently', () => {
-  const scope = make.scope({ count: 5 })
+  const scope = makeScope({ count: 5 })
 
   it('make form renders via name lookup', () => {
     const tree = make.gt(make.reference('count'), 3)
-    expect(make.render(tree, { scope })).toBe('true')
+    expect(renderText(tree, { scope })).toBe('true')
   })
 
   it('wake form renders via code (when the resolver knows code → handler)', () => {
@@ -194,8 +201,8 @@ describe('runtime accepts both flavors equivalently', () => {
     // — fall back to hook[name] still won't work because name
     // is gone. Instead, supply a context.call resolver that
     // honors `code`. This mirrors `Base.cast` behavior.
-    const wake = make.compile(make.gt(make.reference('count'), 3), codeTable)
-    const out = make.render(wake, {
+    const wake = compile(make.gt(make.reference('count'), 3), codeTable)
+    const out = renderText(wake, {
       scope,
       call: node => {
         if (node.code === 2) {

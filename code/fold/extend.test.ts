@@ -14,14 +14,14 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { make, renderText } from '.'
+import { make, makeScope, renderText } from '.'
 
 describe('hook (call operators)', () => {
   it('adds a new call operator via context.hook', () => {
     const tree = make.call('reverse', { value: 'hello' })
     expect(
       renderText(tree, {
-        scope: make.scope(),
+        scope: makeScope(),
         hook: {
           reverse: ({ value }) =>
             String(value).split('').reverse().join(''),
@@ -39,7 +39,7 @@ describe('hook (call operators)', () => {
     })
     expect(
       renderText(tree, {
-        scope: make.scope({ msg: 'hi' }),
+        scope: makeScope({ msg: 'hi' }),
         hook: {
           shout: ({ value }) => `${String(value).toUpperCase()}!`,
         },
@@ -51,7 +51,7 @@ describe('hook (call operators)', () => {
     const tree = make.count(make.list([make.text('a'), make.text('b')]))
     expect(
       renderText(tree, {
-        scope: make.scope(),
+        scope: makeScope(),
         hook: { count: () => 999 },
       }),
     ).toBe('999')
@@ -66,7 +66,7 @@ describe('hook (call operators)', () => {
     })
     expect(
       renderText(tree, {
-        scope: make.scope({ greeting: 'good morning' }),
+        scope: makeScope({ greeting: 'good morning' }),
         hook: {
           upper: ({ text }: { text: string }) =>
             text.toLocaleUpperCase(),

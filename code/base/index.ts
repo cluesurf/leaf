@@ -318,7 +318,7 @@ export class Base<R = Code> {
    *   const result = base.cast(tree)
    *   // → 'Hi'
    *
-   * Pass `scope` (made via `make.scope({...})` or `makeScope`)
+   * Pass `scope` (made via `makeScope({...})` or `makeScope`)
    * when the tree reads from variables via `make.path(...)`.
    */
   cast(tree: FoldNode, scope?: Scope): unknown {
@@ -350,40 +350,103 @@ export class Base<R = Code> {
 
   /**
    * Evaluate a tree to a `BindResult` envelope, capturing the
-   * tree (for later patching) alongside the produced output.
+   * tree (for later patching) alongside the produced output
+   * and a per-mark output cache for memoized re-evaluation.
    *
    *   const result = base.bind(tree, scope)
    *   result.output   // the rendered value
    *   base.bindPatch(result, [{ op: 'replace', mark: '01h…', value: 'new' }])
    */
   bind(tree: FoldNode, scope?: Scope): BindResult {
-    return {
-      tree,
-      output: this.cast(tree, scope),
-      scope: scope ?? makeScope(),
-    }
+    const usedScope = scope ?? makeScope()
+    const cache = new Map<string, unknown>()
+    const parents = new Map<string, string>()
+
+    // Pre-walk: index marks → parent-mark + per-mark output.
+    indexMarks(tree, undefined, parents)
+
+    // Evaluate every marked subtree once and cache. The full
+    // tree itself doesn't need a cache slot — the root output
+    // is on `result.output`. Per-mark caches enable subtree
+    // reuse in `bindPatch`.
+    const output = this.castWithCache(tree, usedScope, cache, undefined)
+
+    return { tree, output, scope: usedScope, cache, parents }
   }
 
   /**
    * Apply a list of mark-targeted patches to the tree from a
-   * previous `bind` and re-evaluate.
+   * previous `bind` and re-evaluate. Memoized: nodes whose
+   * marks are NOT in the dirty set return their cached output
+   * without re-walking.
    *
    *   const r0 = base.bind(initial)
    *   const r1 = base.bindPatch(r0, [
    *     { op: 'replace', mark: 'abc', value: 'updated' },
    *   ])
    *
-   * Current implementation re-runs `cast` on the patched tree.
-   * Memoized partial-recomputation (per `note/runtime.md`) is
-   * planned future work — when it lands, this method's
-   * signature stays the same and only the internals change.
+   * Dirty propagation: a patch targeting mark M dirties M and
+   * every ancestor mark (transitively up the marked-node
+   * chain). Any subtree containing a dirty descendant
+   * re-evaluates fresh; pure-side subtrees reuse cache hits.
    */
   bindPatch(prev: BindResult, patches: TreePatch[]): BindResult {
+    const dirty = new Set<string>()
+    for (const patch of patches) {
+      const target = patch.op === 'insert' ? patch.parent : patch.mark
+      dirtyAncestors(target, prev.parents, dirty)
+    }
+
     const nextTree = patches.reduce(
       (tree, patch) => applyTreePatch(tree, patch),
       prev.tree,
     )
-    return this.bind(nextTree, prev.scope)
+
+    const cache = new Map(prev.cache)
+    // Drop dirty entries so re-walk recomputes them.
+    for (const m of dirty) cache.delete(m)
+    // Rebuild parent index for the new tree (cheap walk).
+    const parents = new Map<string, string>()
+    indexMarks(nextTree, undefined, parents)
+
+    const output = this.castWithCache(nextTree, prev.scope, cache, dirty)
+
+    return { tree: nextTree, output, scope: prev.scope, cache, parents }
+  }
+
+  /**
+   * Internal `cast` variant that threads a per-mark cache
+   * and a dirty-marks set into the renderer context. The
+   * walker (`evaluateText`) consults them at every marked
+   * node — cache hits short-circuit the deeper walk.
+   */
+  private castWithCache(
+    tree: FoldNode,
+    scope: Scope,
+    cache: Map<string, unknown>,
+    dirty: Set<string> | undefined,
+  ): unknown {
+    const hookStore = this.hook
+    const foldStore = this.fold
+
+    return evaluateText(tree, {
+      scope,
+      cache,
+      dirty,
+      call: node => {
+        if (typeof node.code === 'number') {
+          return hookStore.get(node.code) as
+            | ((input: any) => unknown)
+            | undefined
+        }
+        if (typeof node.name !== 'string') return undefined
+        const key = buildKey(node.name, node.base, node.case)
+        return hookStore.get(key) as
+          | ((input: any) => unknown)
+          | undefined
+      },
+      fold: name => foldStore.get(name),
+    })
   }
 
   /** Number of registered Flows (debugging). */
@@ -403,13 +466,18 @@ export class Base<R = Code> {
 
 /**
  * Envelope produced by `base.bind(tree, scope?)`. Captures the
- * evaluated tree, its output, and the scope used so a later
- * `bindPatch` can re-evaluate against the same host bindings.
+ * evaluated tree, its output, the scope used, and a per-mark
+ * output cache + parent-mark index so a later `bindPatch` can
+ * re-evaluate only the dirty subtrees.
  */
 export type BindResult = {
   tree: FoldNode
   output: unknown
   scope: Scope
+  /** mark → cached output of the subtree rooted at that mark. */
+  cache: Map<string, unknown>
+  /** mark → nearest enclosing marked ancestor's mark. */
+  parents: Map<string, string>
 }
 
 /**
@@ -552,6 +620,81 @@ function walkChildren(
     }
   }
   return changed ? out : node
+}
+
+// ---------------------------------------------------------------------------
+// Mark indexing for memoized bindPatch
+// ---------------------------------------------------------------------------
+
+/**
+ * Walk the tree depth-first and populate `parents`: for each
+ * marked descendant, record the closest marked ancestor's
+ * mark. Unmarked nodes are bridged through.
+ */
+function indexMarks(
+  node: FoldNode,
+  ancestor: string | undefined,
+  parents: Map<string, string>,
+): void {
+  if (
+    node === null ||
+    node === undefined ||
+    typeof node !== 'object' ||
+    node instanceof Date
+  ) {
+    return
+  }
+  const obj = node as { mark?: string } & Record<string, unknown>
+  const myMark = obj.mark
+  const childAncestor = myMark ?? ancestor
+  if (myMark && ancestor) parents.set(myMark, ancestor)
+
+  for (const v of Object.values(obj)) {
+    indexMarksDeep(v, childAncestor, parents)
+  }
+}
+
+function indexMarksDeep(
+  v: unknown,
+  ancestor: string | undefined,
+  parents: Map<string, string>,
+): void {
+  if (Array.isArray(v)) {
+    for (const item of v) indexMarksDeep(item, ancestor, parents)
+    return
+  }
+  if (
+    v != null &&
+    typeof v === 'object' &&
+    !(v instanceof Date)
+  ) {
+    if ('form' in (v as Record<string, unknown>)) {
+      indexMarks(v as FoldNode, ancestor, parents)
+    } else {
+      // Plain object — recurse into its values (handles
+      // wake-form `bind: {…}`, fold's `bind: {…}`, hash's
+      // `base: {…}`).
+      for (const inner of Object.values(v as Record<string, unknown>)) {
+        indexMarksDeep(inner, ancestor, parents)
+      }
+    }
+  }
+}
+
+/**
+ * Add `mark` and every ancestor mark (per `parents`) to the
+ * dirty set. Idempotent.
+ */
+function dirtyAncestors(
+  mark: string,
+  parents: Map<string, string>,
+  dirty: Set<string>,
+): void {
+  let cursor: string | undefined = mark
+  while (cursor && !dirty.has(cursor)) {
+    dirty.add(cursor)
+    cursor = parents.get(cursor)
+  }
 }
 
 function isCastLike(v: unknown): v is FoldNode {

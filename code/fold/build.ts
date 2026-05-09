@@ -67,10 +67,14 @@ export function promote(value: Promotable): Cast {
   if (Array.isArray(value)) {
     return list(value.map(v => promote(v as Promotable)))
   }
-  if (
-    typeof value === 'object' &&
-    'form' in (value as Record<string, unknown>)
-  ) {
+  if (typeof value === 'object') {
+    // Tagged structural Cast — pass through unchanged.
+    if ('form' in (value as Record<string, unknown>)) {
+      return value as Cast
+    }
+    // Plain object — treat as a record literal. Used by lazy
+    // verbs like `make.call('bind', { names: { x: 1 } })` and
+    // anywhere a Cast field accepts an inline mapping.
     return value as Cast
   }
   throw new Error(`make.promote: unsupported value ${String(value)}`)

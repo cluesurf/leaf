@@ -1,40 +1,21 @@
 /**
- * @cluesurf/flow — a unified AST for values, computations,
- * control flow, templates, and views.
+ * @cluesurf/calm fold tree — a unified AST for values,
+ * computations, control flow, templates, and views.
  *
- * Spec: note/library/flow/.
+ * `make` is the **builder namespace**: every export is a pure
+ * function that constructs a Cast (JSON node). It does not
+ * include rendering, scope, or compile — those live as
+ * standalone functions on the package root so the `make`
+ * surface stays focused on data construction:
  *
- * The `flow` namespace export bundles every builder helper
- * and renderer entry under one import:
+ *   import { make, makeScope, renderText, compile } from '@cluesurf/calm'
  *
- *   import { make } from '@cluesurf/calm'
- *   const tree = make.branch(make.gt(make.path('count'), 0), ...)
- *   const out = make.renderText(tree, { scope: make.scope({ count: 5 }) })
- *
- * Extension via the render context:
- *
- *   make.renderText(tree, {
- *     scope: make.scope({ count: 5 }),
- *     hook: {
- *       reverse: ({ value }) =>
- *         String(value).split('').reverse().join(''),
- *     },
- *   })
- *
- * `hook` is the same `HookHash` used by `Base.hook` at codegen
- * time — one name → function table covers built-in operators,
- * custom call operators, and task implementations. Custom
- * transformations show up in the tree as `make.call('reverse',
- * { value: ... })` and resolve through the same dispatch path.
+ *   const tree = make.fork(make.gt(make.read('count'), 0), 'on', 'off')
+ *   const out  = renderText(tree, { scope: makeScope({ count: 5 }) })
+ *   const wake = compile(tree, codeTable)
  */
 
 import * as builders from './build'
-import { evaluateText, makeScope, renderText } from './render'
-import {
-  buildDecodeTable as buildDecodeTableImpl,
-  compile as compileImpl,
-  decompile as decompileImpl,
-} from './compile'
 
 export type {
   ForkPrimitive,
@@ -173,17 +154,4 @@ export const make = {
   // higher-order
   pluralCases: builders.pluralCases,
   selectCases: builders.selectCases,
-
-  // evaluation
-  scope: makeScope,
-  renderText,
-  evaluate: evaluateText,
-
-  // make/wake compile pass
-  compile: compileImpl,
-  decompile: decompileImpl,
-  buildDecodeTable: buildDecodeTableImpl,
-
-  // back-compat alias
-  render: renderText,
 } as const

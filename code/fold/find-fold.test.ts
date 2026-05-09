@@ -7,7 +7,13 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { make } from './index'
+import {
+  make,
+  makeScope,
+  renderText,
+  evaluateText,
+  compile,
+} from '.'
 import type { Cast } from './types'
 
 describe('find primitive', () => {
@@ -34,8 +40,8 @@ describe('find primitive', () => {
   it('resolves through context.find', () => {
     const rows = [{ id: 1 }, { id: 2 }]
     const tree = make.find('page', { limit: 5 })
-    const out = make.evaluate(tree, {
-      scope: make.scope({}),
+    const out = evaluateText(tree, {
+      scope: makeScope({}),
       find: ({ resource, limit }) => {
         expect(resource).toBe('page')
         expect(limit).toBe(5)
@@ -47,7 +53,7 @@ describe('find primitive', () => {
 
   it('returns null when no resolver is supplied', () => {
     const tree = make.find('page')
-    expect(make.evaluate(tree, { scope: make.scope({}) })).toBe(null)
+    expect(evaluateText(tree, { scope: makeScope({}) })).toBe(null)
   })
 
   it('evaluates `where` and `sort` before passing to the resolver', () => {
@@ -56,8 +62,8 @@ describe('find primitive', () => {
       sort: [make.read('order')],
     })
     let captured: { where?: unknown; sort?: unknown[] } = {}
-    make.evaluate(tree, {
-      scope: make.scope({ filter: { status: 'on' }, order: 'title' }),
+    evaluateText(tree, {
+      scope: makeScope({ filter: { status: 'on' }, order: 'title' }),
       find: ({ where, sort }) => {
         captured = { where, sort }
         return []
@@ -85,8 +91,8 @@ describe('fold primitive', () => {
       '!',
     )
     const tree = make.fold('greeting', { name: 'Lance' })
-    const out = make.render(tree, {
-      scope: make.scope({}),
+    const out = renderText(tree, {
+      scope: makeScope({}),
       fold: name => (name === 'greeting' ? greeting : undefined),
     })
     expect(out).toBe('Hello, Lance!')
@@ -95,8 +101,8 @@ describe('fold primitive', () => {
   it('returns null when the named fold is unknown', () => {
     const tree = make.fold('missing')
     expect(
-      make.evaluate(tree, {
-        scope: make.scope({}),
+      evaluateText(tree, {
+        scope: makeScope({}),
         fold: () => undefined,
       }),
     ).toBe(null)
@@ -153,7 +159,7 @@ describe('compile pass walks find / fold subtrees', () => {
     const tree = make.find('page', {
       where: make.eq(make.read('status'), 'on'),
     })
-    const wake = make.compile(tree, codeTable) as {
+    const wake = compile(tree, codeTable) as {
       form: 'find'
       where: { form: 'call'; code: number; bind: Record<string, unknown> }
     }
@@ -169,7 +175,7 @@ describe('compile pass walks find / fold subtrees', () => {
     const tree = make.fold('greeting', {
       ok: make.eq(make.read('flag'), true),
     })
-    const wake = make.compile(tree, codeTable) as {
+    const wake = compile(tree, codeTable) as {
       form: 'fold'
       bind: Record<string, { form: 'call'; code: number }>
     }

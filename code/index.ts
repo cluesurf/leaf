@@ -15,8 +15,25 @@ export type {
 } from './base'
 export {
   make,
-  RESERVED_CAST_KEYS,
+  makeScope,
+  renderText,
+  evaluateText,
   renderElement,
+  compile,
+  decompile,
+  buildDecodeTable,
+  isCast,
+  deepEq,
+  getCall,
+  DEFAULT_HOOK,
+  RESERVED_CAST_KEYS,
+} from './fold'
+export type {
+  CodeTable,
+  DecodeEntry,
+  DecodeTable,
+  FindPrimitive,
+  FoldPrimitive,
 } from './fold'
 export type {
   BaseContext,

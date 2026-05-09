@@ -16,10 +16,13 @@
 import { describe, it, expect } from 'vitest'
 import { createElement, Fragment } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { make, renderElement } from '../code'
-
-const { renderText } = make
-import { Base } from '../code'
+import {
+  make,
+  makeScope,
+  renderElement,
+  renderText,
+  Base,
+} from '../code'
 import standard, { hooks, CodeLink, type Code } from '../code/book'
 
 describe('make + Base catalog: parallel runtimes', () => {
@@ -31,7 +34,7 @@ describe('make + Base catalog: parallel runtimes', () => {
     )
 
     const out = renderText(tree, {
-      scope: make.scope({ user: { name: 'Lance' } }),
+      scope: makeScope({ user: { name: 'Lance' } }),
     })
 
     expect(out).toBe('Hello, Lance!')
@@ -43,7 +46,7 @@ describe('make + Base catalog: parallel runtimes', () => {
     ])
 
     const element = renderElement(tree, {
-      scope: make.scope(),
+      scope: makeScope(),
       builder: createElement,
       fragment: Fragment,
       component: {},
@@ -69,7 +72,7 @@ describe('make + Base catalog: parallel runtimes', () => {
     // Then render that value through the make tree.
     const tree = make.templateString(make.text('Greeting: '), make.text(upper))
 
-    expect(renderText(tree, { scope: make.scope() })).toBe(
+    expect(renderText(tree, { scope: makeScope() })).toBe(
       'Greeting: Hello',
     )
   })

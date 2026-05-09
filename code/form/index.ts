@@ -270,13 +270,6 @@ export type FormLike = {
   note?: string
 }
 
-/** @deprecated Legacy Form-with-cases variant used by the codegen. */
-export type FormBaseCase = {
-  form: 'form'
-  save: string
-  case: FormLike[]
-}
-
 /** @deprecated Legacy. */
 export type FormLikeCase = {
   case: FormLike[]

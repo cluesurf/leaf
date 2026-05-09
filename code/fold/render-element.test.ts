@@ -7,7 +7,7 @@
 import { createElement, Fragment } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, it, expect } from 'vitest'
-import { make, renderElement, type ElementBuilder } from './index'
+import { make, makeScope, renderElement, type ElementBuilder } from '.'
 
 const REACT = {
   builder: createElement as unknown as ElementBuilder<unknown>,
@@ -17,7 +17,7 @@ const REACT = {
 describe('renderElement', () => {
   it('renders text literals', () => {
     const out = renderElement(make.text('hello'), {
-      scope: make.scope(),
+      scope: makeScope(),
       ...REACT,
     })
     expect(out).toBe('hello')
@@ -26,7 +26,7 @@ describe('renderElement', () => {
   it('renders a weave as a fragment', () => {
     const tree = make.templateString('I am ', make.reference('status'), '.')
     const out = renderElement(tree, {
-      scope: make.scope({ status: 'fine' }),
+      scope: makeScope({ status: 'fine' }),
       ...REACT,
     })
     expect(renderToStaticMarkup(out as never)).toBe('I am fine.')
@@ -41,7 +41,7 @@ describe('renderElement', () => {
     expect(
       renderToStaticMarkup(
         renderElement(tree, {
-          scope: make.scope({ x: 5 }),
+          scope: makeScope({ x: 5 }),
           ...REACT,
         }) as never,
       ),
@@ -54,7 +54,7 @@ describe('renderElement', () => {
       make.templateString(make.reference('item'), '|'),
     )
     const out = renderElement(tree, {
-      scope: make.scope({ items: ['a', 'b', 'c'] }),
+      scope: makeScope({ items: ['a', 'b', 'c'] }),
       ...REACT,
     })
     expect(renderToStaticMarkup(out as never)).toBe('a|b|c|')
@@ -74,7 +74,7 @@ describe('renderElement', () => {
     })
 
     const out = renderElement(tree, {
-      scope: make.scope(),
+      scope: makeScope(),
       ...REACT,
       component: { callout: Callout as never },
     })
@@ -105,7 +105,7 @@ describe('renderElement', () => {
     )
 
     const out = renderElement(tree, {
-      scope: make.scope(),
+      scope: makeScope(),
       ...REACT,
       component: {
         section: Section as never,
@@ -121,7 +121,7 @@ describe('renderElement', () => {
   it('falls back to the bare view name when no component is registered', () => {
     const tree = make.view('span', { className: 'note' }, ['hi'])
     const out = renderElement(tree, {
-      scope: make.scope(),
+      scope: makeScope(),
       ...REACT,
     })
     expect(renderToStaticMarkup(out as never)).toBe(
@@ -141,7 +141,7 @@ describe('renderElement', () => {
 
     const tree = make.templateString('a', 'b', 'c')
     const out = renderElement<Tup>(tree, {
-      scope: make.scope(),
+      scope: makeScope(),
       builder: tup,
       // no fragment → renderer returns the child array directly
     })

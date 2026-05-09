@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { make } from './index'
+import { make, makeScope, renderText } from '.'
 
 describe('literals', () => {
   it('text literal — bare string', () => {
@@ -309,10 +309,10 @@ describe('control flow', () => {
       ],
       'Visitor',
     )
-    expect(make.render(tree, { scope: make.scope({ role: 'editor' }) })).toBe(
+    expect(renderText(tree, { scope: makeScope({ role: 'editor' }) })).toBe(
       'Editor',
     )
-    expect(make.render(tree, { scope: make.scope({ role: 'unknown' }) })).toBe(
+    expect(renderText(tree, { scope: makeScope({ role: 'unknown' }) })).toBe(
       'Visitor',
     )
   })
@@ -338,9 +338,9 @@ describe('control flow', () => {
       ],
       'zero',
     )
-    expect(make.render(tree, { scope: make.scope({ n: 50 }) })).toBe('big')
-    expect(make.render(tree, { scope: make.scope({ n: 5 }) })).toBe('small')
-    expect(make.render(tree, { scope: make.scope({ n: 0 }) })).toBe('zero')
+    expect(renderText(tree, { scope: makeScope({ n: 50 }) })).toBe('big')
+    expect(renderText(tree, { scope: makeScope({ n: 5 }) })).toBe('small')
+    expect(renderText(tree, { scope: makeScope({ n: 0 }) })).toBe('zero')
   })
 
   it('fork — renders then / fall by predicate', () => {
@@ -349,10 +349,10 @@ describe('control flow', () => {
       'lit',
       'dark',
     )
-    expect(make.render(tree, { scope: make.scope({ status: 'on' }) })).toBe(
+    expect(renderText(tree, { scope: makeScope({ status: 'on' }) })).toBe(
       'lit',
     )
-    expect(make.render(tree, { scope: make.scope({ status: 'off' }) })).toBe(
+    expect(renderText(tree, { scope: makeScope({ status: 'off' }) })).toBe(
       'dark',
     )
   })
@@ -362,8 +362,8 @@ describe('control flow', () => {
       make.reference('items'),
       make.templateString(make.reference('index'), ':', make.reference('item'), ' '),
     )
-    const scope = make.scope({ items: ['a', 'b', 'c'] })
-    expect(make.render(tree, { scope })).toBe('0:a 1:b 2:c ')
+    const scope = makeScope({ items: ['a', 'b', 'c'] })
+    expect(renderText(tree, { scope })).toBe('0:a 1:b 2:c ')
   })
 
   it('walk — custom item / index names', () => {
@@ -372,8 +372,8 @@ describe('control flow', () => {
       make.templateString(make.reference('i'), '-', make.reference('row'), ' '),
       { item: 'row', index: 'i' },
     )
-    const scope = make.scope({ rows: ['x', 'y'] })
-    expect(make.render(tree, { scope })).toBe('0-x 1-y ')
+    const scope = makeScope({ rows: ['x', 'y'] })
+    expect(renderText(tree, { scope })).toBe('0-x 1-y ')
   })
 
   it('walk — empty list produces empty output', () => {
@@ -381,7 +381,7 @@ describe('control flow', () => {
       make.reference('items'),
       make.templateString(make.reference('item'), ' '),
     )
-    expect(make.render(tree, { scope: make.scope({ items: [] }) })).toBe('')
+    expect(renderText(tree, { scope: makeScope({ items: [] }) })).toBe('')
   })
 
   it('walk — non-array input falls back to empty', () => {
@@ -389,7 +389,7 @@ describe('control flow', () => {
       make.reference('items'),
       make.templateString(make.reference('item'), ' '),
     )
-    expect(make.render(tree, { scope: make.scope({ items: null }) })).toBe('')
+    expect(renderText(tree, { scope: makeScope({ items: null }) })).toBe('')
   })
 
   it('walkSize — counted range with default item / index names', () => {
@@ -400,7 +400,7 @@ describe('control flow', () => {
     )
     expect(tree.form).toBe('walk')
     expect(tree.case).toBe('size')
-    expect(make.render(tree, { scope: make.scope({}) })).toBe('0 1 2 3 ')
+    expect(renderText(tree, { scope: makeScope({}) })).toBe('0 1 2 3 ')
   })
 
   it('walkSize — custom move and bindings', () => {
@@ -411,7 +411,7 @@ describe('control flow', () => {
       { move: -2, item: 'i' },
     )
     expect(tree.move).toBe(-2)
-    expect(make.render(tree, { scope: make.scope({}) })).toBe('10 8 6 4 2 ')
+    expect(renderText(tree, { scope: makeScope({}) })).toBe('10 8 6 4 2 ')
   })
 
   it('walk — nested walks compose scope frames', () => {
@@ -448,13 +448,13 @@ describe('control flow', () => {
       ),
       { item: 'row' },
     )
-    const scope = make.scope({
+    const scope = makeScope({
       rows: [
         { label: 'A', cells: [1, 2] },
         { label: 'B', cells: [3] },
       ],
     })
-    expect(make.render(tree2, { scope })).toBe('A:1 A:2 B:3 ')
+    expect(renderText(tree2, { scope })).toBe('A:1 A:2 B:3 ')
   })
 
   it('walk — `join` separator slots between iterations (not after the last)', () => {
@@ -463,8 +463,8 @@ describe('control flow', () => {
       make.reference('item'),
       { join: ', ' },
     )
-    const scope = make.scope({ items: ['a', 'b', 'c'] })
-    expect(make.render(tree, { scope })).toBe('a, b, c')
+    const scope = makeScope({ items: ['a', 'b', 'c'] })
+    expect(renderText(tree, { scope })).toBe('a, b, c')
   })
 
   it('walk — `join` empty string is a valid no-op separator', () => {
@@ -473,8 +473,8 @@ describe('control flow', () => {
       make.reference('item'),
       { join: '' },
     )
-    const scope = make.scope({ items: ['x', 'y'] })
-    expect(make.render(tree, { scope })).toBe('xy')
+    const scope = makeScope({ items: ['x', 'y'] })
+    expect(renderText(tree, { scope })).toBe('xy')
   })
 
   it('walkSize — `join` works with counted ranges', () => {
@@ -484,7 +484,7 @@ describe('control flow', () => {
       make.reference('head'),
       { join: '-' },
     )
-    expect(make.render(tree, { scope: make.scope({}) })).toBe('0-1-2-3')
+    expect(renderText(tree, { scope: makeScope({}) })).toBe('0-1-2-3')
   })
 
   it('walk — outer scope visible inside the body', () => {
@@ -498,8 +498,8 @@ describe('control flow', () => {
         ' ',
       ),
     )
-    const scope = make.scope({ prefix: 'item', items: ['a', 'b'] })
-    expect(make.render(tree, { scope })).toBe('item:a item:b ')
+    const scope = makeScope({ prefix: 'item', items: ['a', 'b'] })
+    expect(renderText(tree, { scope })).toBe('item:a item:b ')
   })
 
   it('walk — frame does NOT leak after iteration', () => {
@@ -512,9 +512,9 @@ describe('control flow', () => {
       // After the walk completes, `item` should no longer be bound.
       make.reference('item'),
     )
-    const scope = make.scope({ items: ['x', 'y'] })
+    const scope = makeScope({ items: ['x', 'y'] })
     // The trailing reference resolves to undefined → renders as ''.
-    expect(make.render(tree, { scope })).toBe('xy / after-loop: ')
+    expect(renderText(tree, { scope })).toBe('xy / after-loop: ')
   })
 
   it('walkSize — nested counted ranges produce a 2-D fan-out', () => {
@@ -534,7 +534,7 @@ describe('control flow', () => {
       ),
       { item: 'row' },
     )
-    expect(make.render(tree, { scope: make.scope({}) })).toBe(
+    expect(renderText(tree, { scope: makeScope({}) })).toBe(
       '0,0 0,1 0,2 1,0 1,1 1,2 ',
     )
   })
@@ -542,7 +542,7 @@ describe('control flow', () => {
   it('walkTest — while-style loop with mutable scope', () => {
     // Mutate a counter from the host so the test eventually flips.
     const counter = { n: 0 }
-    const scope = make.scope({
+    const scope = makeScope({
       done: false,
     })
     // Body increments via host-side hook; test checks counter.
@@ -557,7 +557,7 @@ describe('control flow', () => {
       },
     } as unknown as Record<string, unknown>)
     // Each iteration bumps the counter from the test side.
-    const out = make.render(tree, {
+    const out = renderText(tree, {
       scope: innerScope,
       hook: {
         lt: ({ a, b }: { a: unknown; b: unknown }) => {

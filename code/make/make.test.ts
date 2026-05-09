@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import makeTree from './index'
+import makeTree from '.'
 import type { Fold, Form, Hash, List, Flow } from '@/form'
 import { make as flowNs } from '@/fold'
 

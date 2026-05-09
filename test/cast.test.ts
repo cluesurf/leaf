@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { Base, make } from '../code'
+import { Base, make, makeScope } from '../code'
 import standard, { hooks, CodeLink, type Code } from '../code/book'
 
 describe('base.cast — bridge to make trees', () => {
@@ -33,7 +33,7 @@ describe('base.cast — bridge to make trees', () => {
 
   it('evaluates a path against scope', () => {
     const tree = make.path('user', 'name')
-    const scope = make.scope({ user: { name: 'Lance' } })
+    const scope = makeScope({ user: { name: 'Lance' } })
     expect(base.cast(tree, scope)).toBe('Lance')
   })
 
@@ -69,7 +69,7 @@ describe('base.cast — bridge to make trees', () => {
       text: make.path('message'),
       length: make.integer(8),
     })
-    const scope = make.scope({ message: 'hello world' })
+    const scope = makeScope({ message: 'hello world' })
     expect(base.cast(tree, scope)).toBe('hello w…')
   })
 
@@ -79,8 +79,8 @@ describe('base.cast — bridge to make trees', () => {
       make.text('items'),
       make.text('no items'),
     )
-    expect(base.cast(tree, make.scope({ count: 5 }))).toBe('items')
-    expect(base.cast(tree, make.scope({ count: 0 }))).toBe('no items')
+    expect(base.cast(tree, makeScope({ count: 5 }))).toBe('items')
+    expect(base.cast(tree, makeScope({ count: 0 }))).toBe('no items')
   })
 
   it('catalog flows compose with make.* builtins', () => {
@@ -91,7 +91,7 @@ describe('base.cast — bridge to make trees', () => {
         value: make.count(make.path('items')),
       }),
     )
-    const scope = make.scope({ items: [1, 2, 3, 4, 5] })
+    const scope = makeScope({ items: [1, 2, 3, 4, 5] })
     expect(base.cast(tree, scope)).toBe('Items: 5')
   })
 

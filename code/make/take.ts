@@ -494,38 +494,6 @@ export function makeLinkList({
             )}])${aE}${oE},`,
           )
         }
-      } else if (link.fuse) {
-        const likeFuse: string[] = []
-        link.fuse.forEach((c, i) => {
-          if (c.like) {
-            let type = castType(base, c.like)
-            const r = c.test
-              ? `.refine(TEST('${name}', code.${c.test}.test))`
-              : ''
-            if (type) {
-              likeFuse.push(`${type}${r}`)
-            } else {
-              type = `${toPascalCase(c.like as string)}Parser`
-              if (base.mesh[c.like]) {
-                load[type] = true
-                likeFuse.push(`z.lazy(() => ${type})${r}`)
-              } else {
-                type = `z.instanceof(${findAndLinkName({
-                  like: c.like as string,
-                  base,
-                  file,
-                  hold,
-                })})`
-                likeFuse.push(`${type}${r}`)
-              }
-            }
-          }
-        })
-        list.push(
-          `  ${name}: ${oS}${aS}z.intersection([${likeFuse.join(
-            ', ',
-          )}])${aE}${oE},`,
-        )
       } else if (link.link) {
         const enumStyle = detectEnumStyleNesting(link.link)
         if (enumStyle.isEnum) {
@@ -617,18 +585,6 @@ export function makeLinkList({
       formList.length === 1 && baseSite
         ? baseSite
         : `z.union([${formList.join(', ')}])`
-    list.push(formSite)
-  } else if ('fuse' in form) {
-    const formList: string[] = []
-    const fuse = form.fuse as unknown as FormLike[]
-
-    fuse.forEach(item => {
-      const itemModelName = `${item.like}Parser`
-      load[itemModelName] = true
-      formList.push(`z.lazy(() => ${itemModelName})`)
-    })
-
-    const formSite = `z.intersection([${formList.join(', ')}])`
     list.push(formSite)
   }
 

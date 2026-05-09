@@ -84,6 +84,18 @@ export type BaseContext = {
    * the name is unknown — walker renders as `null` in that case.
    */
   fold?: (name: string) => Cast | undefined
+  /**
+   * Per-mark output cache. When present, the walker returns
+   * cached values for marked nodes whose mark is NOT in
+   * `dirty`. Used by `Base.bindPatch` for partial re-eval.
+   */
+  cache?: Map<string, unknown>
+  /**
+   * Set of marks whose cached entries are stale and must
+   * re-evaluate. Built by walking up the parent-mark chain
+   * from each patch target.
+   */
+  dirty?: Set<string>
 }
 
 // ---------------------------------------------------------------------------

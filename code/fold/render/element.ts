@@ -394,6 +394,11 @@ function matchArm(
 // ---------------------------------------------------------------------------
 
 function evaluateCall(node: Call, context: ElementContext): unknown {
+  if (typeof node.name === 'string') {
+    if (node.name === 'if') return evaluateIfLazyEl(node, context)
+    if (node.name === 'bind') return evaluateBindLazyEl(node, context)
+  }
+
   const handler = getCall(context, node.name)
   if (!handler) {
     throw new Error(`flow.call: unknown operator '${node.name}'`)
@@ -404,6 +409,38 @@ function evaluateCall(node: Call, context: ElementContext): unknown {
     walkValue as (n: Cast, c: BaseContext) => unknown,
   )
   return handler(args, context)
+}
+
+function evaluateIfLazyEl(node: Call, context: ElementContext): unknown {
+  const test = evalArgEl(node.test, context)
+  if (test) return evalArgEl(node.then, context)
+  return evalArgEl(node.else, context) ?? null
+}
+
+function evaluateBindLazyEl(node: Call, context: ElementContext): unknown {
+  const names = node.names
+  if (names == null || typeof names !== 'object' || Array.isArray(names)) {
+    return evalArgEl(node.then, context)
+  }
+  const frame: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(names as Record<string, unknown>)) {
+    frame[k] = evalArgEl(v, context)
+  }
+  const inner: ElementContext = {
+    ...context,
+    scope: context.scope.push(frame),
+  }
+  return evalArgEl(node.then, inner)
+}
+
+function evalArgEl(value: unknown, context: ElementContext): unknown {
+  if (value === null || value === undefined) return value
+  if (typeof value !== 'object') return value
+  if (value instanceof Date) return value
+  if ('form' in (value as Record<string, unknown>)) {
+    return walkElement(value as Cast, context)
+  }
+  return value
 }
 
 function evaluateCallWithSubject(

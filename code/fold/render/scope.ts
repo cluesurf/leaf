@@ -17,15 +17,15 @@
 export type Mesh = Record<string, unknown>
 
 export class Scope {
-  private stack: ReadonlyArray<Mesh>
+  private stack: readonly Mesh[]
 
   constructor(initial: Mesh = {}) {
     this.stack = [initial]
   }
 
-  private static fromStack(stack: ReadonlyArray<Mesh>): Scope {
+  private static fromStack(stack: readonly Mesh[]): Scope {
     const out = new Scope()
-    ;(out as unknown as { stack: ReadonlyArray<Mesh> }).stack = stack
+    ;(out as unknown as { stack: readonly Mesh[] }).stack = stack
     return out
   }
 

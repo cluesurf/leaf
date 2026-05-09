@@ -6,7 +6,6 @@ import {
   Hash,
   List,
   Base,
-  FormBaseCase,
   FormLikeCase,
 } from '@/form'
 import { detectEnumStyleNesting } from './shared'
@@ -123,22 +122,9 @@ export function makeForm({
   const formName = makePascalName(name, need)
 
   if ('link' in form) {
-    let base
-    // `base` (parent-Form extension) was a legacy field on
-    // FormBaseLink; new-shape Forms don't have it. Cast through
-    // any to keep the legacy-fixture path working until those
-    // fixtures migrate to the new shape.
-    const legacyBase = (form as any).base as string | undefined
-    if (legacyBase) {
-      const name = makePascalName(legacyBase, need)
-      base = `${name} & `
-      load[name] = true
-    } else {
-      base = ``
-    }
     hold.save[formName] ??= { file, form: 'form' }
-    list.push(`export type ${formName} = ${base}{`)
-  } else if ('case' in form || 'fuse' in form) {
+    list.push(`export type ${formName} = {`)
+  } else if ('case' in form) {
     hold.save[formName] ??= { file, form: 'form' }
     list.push(`export type ${formName} =`)
   }
@@ -354,23 +340,6 @@ export function makeLinkList({
             `  ${name}${optional}: ${aS}${likeCase.join(' | ')}${aE}`,
           )
         }
-      } else if (link.fuse) {
-        const likeFuse: string[] = []
-        link.fuse.forEach(c => {
-          if (c.like) {
-            const type = findAndLinkName({
-              like: c.like as string,
-              base,
-              file,
-              hold,
-              need,
-            })
-            likeFuse.push(type)
-          }
-        })
-        list.push(
-          `  ${name}${optional}: ${aS}${likeFuse.join(' & ')}${aE}`,
-        )
       } else if (link.link) {
         const enumStyle = detectEnumStyleNesting(link.link)
         if (enumStyle.isEnum) {
@@ -401,7 +370,7 @@ export function makeLinkList({
     }
   } else if ('case' in form) {
     makeFormCase({
-      form: form as unknown as FormBaseCase,
+      form: form as unknown as FormLikeCase,
       base,
       file,
       hold,
@@ -409,23 +378,6 @@ export function makeLinkList({
     }).forEach(line => {
       list.push(line)
     })
-  } else if ('fuse' in form) {
-    const formList: string[] = []
-    const fuse = form.fuse as unknown as FormLike[]
-
-    fuse.forEach(item => {
-      const type = findAndLinkName({
-        like: item.like,
-        base,
-        file,
-        hold,
-        need,
-      })
-      formList.push(type)
-    })
-
-    const formSite = `${formList.join(' & ')}`
-    list.push(formSite)
   }
 
   return list

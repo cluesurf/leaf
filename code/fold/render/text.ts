@@ -49,6 +49,29 @@ export function evaluateText(node: Cast, context: TextContext): unknown {
   if (typeof node === 'boolean') return node
   if (node instanceof Date) return node
 
+  // ----- per-mark memoization (used by `base.bindPatch`) -----
+  const mark = (node as { mark?: string }).mark
+  if (
+    mark &&
+    context.cache &&
+    context.cache.has(mark) &&
+    !(context.dirty && context.dirty.has(mark))
+  ) {
+    return context.cache.get(mark)
+  }
+
+  const value = evaluateForm(node, context)
+  if (mark && context.cache) context.cache.set(mark, value)
+  return value
+}
+
+function evaluateForm(node: Cast, context: TextContext): unknown {
+  if (node === null || node === undefined) return null
+  if (typeof node === 'string') return node
+  if (typeof node === 'number') return node
+  if (typeof node === 'boolean') return node
+  if (node instanceof Date) return node
+
   switch (node.form) {
     case 'list':
       return node.list.map(n => evaluateText(n, context))
@@ -267,12 +290,64 @@ function resolveCall(
 }
 
 function evaluateCall(node: Call, context: TextContext): unknown {
+  // Lazy verbs — args evaluate per-branch / per-frame, not eagerly.
+  // Only fires for make-form Calls (with `name`); wake-form (`code`)
+  // dispatches through the regular handler path.
+  if (typeof node.name === 'string') {
+    if (node.name === 'if') return evaluateIfLazy(node, context)
+    if (node.name === 'bind') return evaluateBindLazy(node, context)
+  }
+
   const handler = resolveCall(node, context)
   if (!handler) {
     throw new Error(`make.call: unknown operator '${node.name}'`)
   }
   const args = collectCallArgs(node, context, evaluateText)
   return handler(args, context)
+}
+
+/**
+ * Lazy `if`. Evaluate `test` first; only the selected branch
+ * (`then` or `else`) gets evaluated. Avoids the catalog flow's
+ * eager-arg trap where both branches would always run.
+ */
+function evaluateIfLazy(node: Call, context: TextContext): unknown {
+  const test = evalArg(node.test, context)
+  if (test) return evalArg(node.then, context)
+  return evalArg(node.else, context) ?? null
+}
+
+/**
+ * Lazy `bind`. Each `names` value evaluates against the OUTER
+ * scope; the resolved values are pushed as a single frame and
+ * `then` evaluates under the inner scope. This lets callers
+ * stage temporary bindings within an expression.
+ */
+function evaluateBindLazy(node: Call, context: TextContext): unknown {
+  const names = node.names
+  if (names == null || typeof names !== 'object' || Array.isArray(names)) {
+    return evalArg(node.then, context)
+  }
+  const frame: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(names as Record<string, unknown>)) {
+    frame[k] = evalArg(v, context)
+  }
+  const inner: TextContext = {
+    ...context,
+    scope: context.scope.push(frame),
+  }
+  return evalArg(node.then, inner)
+}
+
+/** Evaluate one Call arg slot — Cast nodes walk; native values pass. */
+function evalArg(value: unknown, context: TextContext): unknown {
+  if (value === null || value === undefined) return value
+  if (typeof value !== 'object') return value
+  if (value instanceof Date) return value
+  if ('form' in (value as Record<string, unknown>)) {
+    return evaluateText(value as Cast, context)
+  }
+  return value
 }
 
 function evaluateCallWithSubject(
