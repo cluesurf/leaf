@@ -141,6 +141,79 @@ const isFinite = ({ number }: { number: number }): boolean =>
 const isWhole = ({ number }: { number: number }): boolean =>
   Number.isInteger(number)
 
+// ─── Cast-shape predicates ────────────────────────────────
+//
+// Each takes a Cast node and returns whether it conforms to a
+// specific typed-literal / range shape. Used in `mold:` pipelines
+// to gate which Cast values are allowed at a field.
+
+/** Pattern characters in the query-system grammar.
+ *  `*`, `?`, `~` outside of literal escape; `[abc]` character class;
+ *  `\{name}` keyword reference. */
+const PATTERN_CHARS_RE = /[*?~]|\[[^\]]+\]|\\\{[^}]+\}/
+
+const hasPatternSyntax = (text: string): boolean =>
+  PATTERN_CHARS_RE.test(text)
+
+const isCastForm = (v: unknown, form: string): boolean =>
+  v !== null &&
+  typeof v === 'object' &&
+  !Array.isArray(v) &&
+  !(v instanceof Date) &&
+  (v as { form?: unknown }).form === form
+
+const isLiteralString = ({ thing }: { thing: unknown }): boolean => {
+  if (!isCastForm(thing, 'string')) return false
+  const text = (thing as { text?: unknown }).text
+  return typeof text === 'string' && !hasPatternSyntax(text)
+}
+
+const isStringPattern = ({ thing }: { thing: unknown }): boolean => {
+  if (!isCastForm(thing, 'string')) return false
+  return typeof (thing as { text?: unknown }).text === 'string'
+}
+
+const isIntegerLiteral = ({ thing }: { thing: unknown }): boolean => {
+  if (!isCastForm(thing, 'integer')) return false
+  return Number.isInteger((thing as { value?: unknown }).value)
+}
+
+const isIntegerRange = ({ thing }: { thing: unknown }): boolean => {
+  if (!isCastForm(thing, 'range')) return false
+  return (thing as { like?: unknown }).like === 'integer'
+}
+
+const isDecimalLiteral = ({ thing }: { thing: unknown }): boolean => {
+  if (!isCastForm(thing, 'decimal')) return false
+  return typeof (thing as { value?: unknown }).value === 'number'
+}
+
+const isDecimalRange = ({ thing }: { thing: unknown }): boolean => {
+  if (!isCastForm(thing, 'range')) return false
+  return (thing as { like?: unknown }).like === 'decimal'
+}
+
+const isBooleanLiteral = ({ thing }: { thing: unknown }): boolean => {
+  if (!isCastForm(thing, 'boolean')) return false
+  return typeof (thing as { value?: unknown }).value === 'boolean'
+}
+
+const isDateLiteral = ({ thing }: { thing: unknown }): boolean => {
+  if (!isCastForm(thing, 'date')) return false
+  const value = (thing as { value?: unknown }).value
+  return typeof value === 'string' && !Number.isNaN(Date.parse(value))
+}
+
+const isDateRange = ({ thing }: { thing: unknown }): boolean => {
+  if (!isCastForm(thing, 'range')) return false
+  return (thing as { like?: unknown }).like === 'date'
+}
+
+const isCodeLiteral = ({ thing }: { thing: unknown }): boolean => {
+  if (!isCastForm(thing, 'code')) return false
+  return typeof (thing as { text?: unknown }).text === 'string'
+}
+
 
 const flow = {
   'is:always_true': alwaysTrue,
@@ -179,6 +252,16 @@ const flow = {
   'is:zero': isZero,
   'is:finite': isFinite,
   'is:whole': isWhole,
+  'is:literal-string': isLiteralString,
+  'is:string-pattern': isStringPattern,
+  'is:integer-literal': isIntegerLiteral,
+  'is:integer-range': isIntegerRange,
+  'is:decimal-literal': isDecimalLiteral,
+  'is:decimal-range': isDecimalRange,
+  'is:boolean-literal': isBooleanLiteral,
+  'is:date-literal': isDateLiteral,
+  'is:date-range': isDateRange,
+  'is:code-literal': isCodeLiteral,
 }
 
 export default flow

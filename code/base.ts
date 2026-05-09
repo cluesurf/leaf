@@ -250,9 +250,15 @@ export class Base<R = Code> {
       this.fold.set(cast.case, compileFold(cast))
       return
     }
-    // Form / Hash / List don't register runtime state — they're
-    // codegen-time declarations. Registering them is a no-op so
-    // callers can pass them uniformly.
+    if (cast.form === 'seed') {
+      // Seeds in v1 are anonymous page-data instances; they live in
+      // the host's page table, not in Base. Accept silently so
+      // callers can pass any Make through `load(...)` uniformly.
+      return
+    }
+    // Other Makes (flow declarations) don't register runtime state
+    // here — flow handlers come in via `book.flow`. Loading the
+    // declaration alone is a no-op.
   }
 
   private tossBook(book: Book): void {

@@ -296,14 +296,14 @@ describe('localization template — full integration', () => {
       form: 'text' as const,
       flow: [
         'You have ',
-        { form: 'reference' as const, name: 'count' },
+        { form: 'bind' as const, name: 'count' },
         ' ',
         cast.pluralCases('count', {
           one: 'message',
           other: 'messages',
         }),
         ' in your ',
-        { form: 'reference' as const, name: 'thing' },
+        { form: 'bind' as const, name: 'thing' },
         ', ',
         cast.selectCases('gender', {
           male: 'Mr.',
@@ -311,7 +311,7 @@ describe('localization template — full integration', () => {
           other: '',
         }),
         ' ',
-        { form: 'reference' as const, name: 'name' },
+        { form: 'bind' as const, name: 'name' },
       ],
     }
 

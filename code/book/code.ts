@@ -90,8 +90,20 @@ import type {
   IsBlank,
   IsBlankTake,
   IsBoolean,
+  IsBooleanLiteral,
+  IsBooleanLiteralTake,
   IsBooleanTake,
+  IsCodeLiteral,
+  IsCodeLiteralTake,
+  IsDateLiteral,
+  IsDateLiteralTake,
+  IsDateRange,
+  IsDateRangeTake,
   IsDecimal,
+  IsDecimalLiteral,
+  IsDecimalLiteralTake,
+  IsDecimalRange,
+  IsDecimalRangeTake,
   IsDecimalTake,
   IsEmail,
   IsEmailTake,
@@ -100,6 +112,10 @@ import type {
   IsFinite,
   IsFiniteTake,
   IsInteger,
+  IsIntegerLiteral,
+  IsIntegerLiteralTake,
+  IsIntegerRange,
+  IsIntegerRangeTake,
   IsIntegerTake,
   IsIpa,
   IsIpaBroad,
@@ -109,6 +125,8 @@ import type {
   IsIpaTake,
   IsList,
   IsListTake,
+  IsLiteralString,
+  IsLiteralStringTake,
   IsLowercase,
   IsLowercaseTake,
   IsMap,
@@ -132,6 +150,8 @@ import type {
   IsSlug,
   IsSlugTake,
   IsString,
+  IsStringPattern,
+  IsStringPatternTake,
   IsStringTake,
   IsUppercase,
   IsUppercaseTake,
@@ -192,15 +212,48 @@ export type Code = {
   'flow:is:between': { take: IsBetweenTake; make: IsBetween }
   'flow:is:blank': { take: IsBlankTake; make: IsBlank }
   'flow:is:boolean': { take: IsBooleanTake; make: IsBoolean }
+  'flow:is:boolean-literal': {
+    take: IsBooleanLiteralTake
+    make: IsBooleanLiteral
+  }
+  'flow:is:code-literal': {
+    take: IsCodeLiteralTake
+    make: IsCodeLiteral
+  }
+  'flow:is:date-literal': {
+    take: IsDateLiteralTake
+    make: IsDateLiteral
+  }
+  'flow:is:date-range': { take: IsDateRangeTake; make: IsDateRange }
   'flow:is:decimal': { take: IsDecimalTake; make: IsDecimal }
+  'flow:is:decimal-literal': {
+    take: IsDecimalLiteralTake
+    make: IsDecimalLiteral
+  }
+  'flow:is:decimal-range': {
+    take: IsDecimalRangeTake
+    make: IsDecimalRange
+  }
   'flow:is:email': { take: IsEmailTake; make: IsEmail }
   'flow:is:equal': { take: IsEqualTake; make: IsEqual }
   'flow:is:finite': { take: IsFiniteTake; make: IsFinite }
   'flow:is:integer': { take: IsIntegerTake; make: IsInteger }
+  'flow:is:integer-literal': {
+    take: IsIntegerLiteralTake
+    make: IsIntegerLiteral
+  }
+  'flow:is:integer-range': {
+    take: IsIntegerRangeTake
+    make: IsIntegerRange
+  }
   'flow:is:ipa': { take: IsIpaTake; make: IsIpa }
   'flow:is:ipa:broad': { take: IsIpaBroadTake; make: IsIpaBroad }
   'flow:is:ipa:narrow': { take: IsIpaNarrowTake; make: IsIpaNarrow }
   'flow:is:list': { take: IsListTake; make: IsList }
+  'flow:is:literal-string': {
+    take: IsLiteralStringTake
+    make: IsLiteralString
+  }
   'flow:is:lowercase': { take: IsLowercaseTake; make: IsLowercase }
   'flow:is:map': { take: IsMapTake; make: IsMap }
   'flow:is:max': { take: IsMaxTake; make: IsMax }
@@ -213,6 +266,10 @@ export type Code = {
   'flow:is:present': { take: IsPresentTake; make: IsPresent }
   'flow:is:slug': { take: IsSlugTake; make: IsSlug }
   'flow:is:string': { take: IsStringTake; make: IsString }
+  'flow:is:string-pattern': {
+    take: IsStringPatternTake
+    make: IsStringPattern
+  }
   'flow:is:uppercase': { take: IsUppercaseTake; make: IsUppercase }
   'flow:is:url': { take: IsUrlTake; make: IsUrl }
   'flow:is:uuid': { take: IsUuidTake; make: IsUuid }
@@ -348,47 +405,57 @@ export const CodeLink = {
   'flow:is:between': 41,
   'flow:is:blank': 42,
   'flow:is:boolean': 43,
-  'flow:is:decimal': 44,
-  'flow:is:email': 45,
-  'flow:is:equal': 46,
-  'flow:is:finite': 47,
-  'flow:is:integer': 48,
-  'flow:is:ipa': 49,
-  'flow:is:ipa:broad': 50,
-  'flow:is:ipa:narrow': 51,
-  'flow:is:list': 52,
-  'flow:is:lowercase': 53,
-  'flow:is:map': 54,
-  'flow:is:max': 55,
-  'flow:is:min': 56,
-  'flow:is:negative': 57,
-  'flow:is:not': 58,
-  'flow:is:null': 59,
-  'flow:is:one': 60,
-  'flow:is:positive': 61,
-  'flow:is:present': 62,
-  'flow:is:slug': 63,
-  'flow:is:string': 64,
-  'flow:is:uppercase': 65,
-  'flow:is:url': 66,
-  'flow:is:uuid': 67,
-  'flow:is:whole': 68,
-  'flow:is:zero': 69,
-  'flow:make:difference': 70,
-  'flow:make:lowercase': 71,
-  'flow:make:now': 72,
-  'flow:make:product': 73,
-  'flow:make:quotient': 74,
-  'flow:make:sum': 75,
-  'flow:make:trimmed': 76,
-  'flow:make:uppercase': 77,
-  'flow:make:uuid': 78,
-  'flow:validate': 79,
-  'flow:walk:chunk': 80,
-  'flow:walk:distinct': 81,
-  'flow:walk:filter': 82,
-  'flow:walk:map': 83,
-  'flow:walk:reduce': 84,
+  'flow:is:boolean-literal': 44,
+  'flow:is:code-literal': 45,
+  'flow:is:date-literal': 46,
+  'flow:is:date-range': 47,
+  'flow:is:decimal': 48,
+  'flow:is:decimal-literal': 49,
+  'flow:is:decimal-range': 50,
+  'flow:is:email': 51,
+  'flow:is:equal': 52,
+  'flow:is:finite': 53,
+  'flow:is:integer': 54,
+  'flow:is:integer-literal': 55,
+  'flow:is:integer-range': 56,
+  'flow:is:ipa': 57,
+  'flow:is:ipa:broad': 58,
+  'flow:is:ipa:narrow': 59,
+  'flow:is:list': 60,
+  'flow:is:literal-string': 61,
+  'flow:is:lowercase': 62,
+  'flow:is:map': 63,
+  'flow:is:max': 64,
+  'flow:is:min': 65,
+  'flow:is:negative': 66,
+  'flow:is:not': 67,
+  'flow:is:null': 68,
+  'flow:is:one': 69,
+  'flow:is:positive': 70,
+  'flow:is:present': 71,
+  'flow:is:slug': 72,
+  'flow:is:string': 73,
+  'flow:is:string-pattern': 74,
+  'flow:is:uppercase': 75,
+  'flow:is:url': 76,
+  'flow:is:uuid': 77,
+  'flow:is:whole': 78,
+  'flow:is:zero': 79,
+  'flow:make:difference': 80,
+  'flow:make:lowercase': 81,
+  'flow:make:now': 82,
+  'flow:make:product': 83,
+  'flow:make:quotient': 84,
+  'flow:make:sum': 85,
+  'flow:make:trimmed': 86,
+  'flow:make:uppercase': 87,
+  'flow:make:uuid': 88,
+  'flow:validate': 89,
+  'flow:walk:chunk': 90,
+  'flow:walk:distinct': 91,
+  'flow:walk:filter': 92,
+  'flow:walk:map': 93,
+  'flow:walk:reduce': 94,
 } as const
 
 export type CodeLink = (typeof CodeLink)[keyof typeof CodeLink]

@@ -373,3 +373,99 @@ export const isWhole: Flow = {
   take: { number: { like: 'number' } },
   make: 'boolean',
 }
+
+// ─── Cast-shape predicates (Mold gating for typed-literal forms) ──
+//
+// Each takes a Cast node and returns whether it conforms to the
+// named typed-literal / range shape. Used in `mold:` pipelines on
+// Form fields to gate which Cast values are allowed.
+
+export const isLiteralString: Flow = {
+  form: 'flow',
+  save: 'is',
+  call: 'is',
+  case: 'literal-string',
+  take: { thing: { like: 'unknown' } },
+  make: 'boolean',
+}
+
+export const isStringPattern: Flow = {
+  form: 'flow',
+  save: 'is',
+  call: 'is',
+  case: 'string-pattern',
+  take: { thing: { like: 'unknown' } },
+  make: 'boolean',
+}
+
+export const isIntegerLiteral: Flow = {
+  form: 'flow',
+  save: 'is',
+  call: 'is',
+  case: 'integer-literal',
+  take: { thing: { like: 'unknown' } },
+  make: 'boolean',
+}
+
+export const isIntegerRange: Flow = {
+  form: 'flow',
+  save: 'is',
+  call: 'is',
+  case: 'integer-range',
+  take: { thing: { like: 'unknown' } },
+  make: 'boolean',
+}
+
+export const isDecimalLiteral: Flow = {
+  form: 'flow',
+  save: 'is',
+  call: 'is',
+  case: 'decimal-literal',
+  take: { thing: { like: 'unknown' } },
+  make: 'boolean',
+}
+
+export const isDecimalRange: Flow = {
+  form: 'flow',
+  save: 'is',
+  call: 'is',
+  case: 'decimal-range',
+  take: { thing: { like: 'unknown' } },
+  make: 'boolean',
+}
+
+export const isBooleanLiteral: Flow = {
+  form: 'flow',
+  save: 'is',
+  call: 'is',
+  case: 'boolean-literal',
+  take: { thing: { like: 'unknown' } },
+  make: 'boolean',
+}
+
+export const isDateLiteral: Flow = {
+  form: 'flow',
+  save: 'is',
+  call: 'is',
+  case: 'date-literal',
+  take: { thing: { like: 'unknown' } },
+  make: 'boolean',
+}
+
+export const isDateRange: Flow = {
+  form: 'flow',
+  save: 'is',
+  call: 'is',
+  case: 'date-range',
+  take: { thing: { like: 'unknown' } },
+  make: 'boolean',
+}
+
+export const isCodeLiteral: Flow = {
+  form: 'flow',
+  save: 'is',
+  call: 'is',
+  case: 'code-literal',
+  take: { thing: { like: 'unknown' } },
+  make: 'boolean',
+}

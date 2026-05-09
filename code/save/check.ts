@@ -47,6 +47,10 @@ export function collectCollisions(books: Book[]): string[] {
         case 'list':
           key = `list:(name=${cast.name})`
           break
+        case 'seed':
+          // Seeds are anonymous instances; no identity tuple to
+          // collide on. Skip.
+          continue
       }
       const entry = seen.get(key) ?? { count: 0, from: [] }
       entry.count += 1

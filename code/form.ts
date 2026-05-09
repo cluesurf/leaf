@@ -42,7 +42,7 @@ export type Book = {
  * primitive node type for trees built by `cast.text(...)`,
  * `cast.call(...)`, etc.
  */
-export type Make = Form | Flow | Fold | Hash | List
+export type Make = Form | Flow | Fold | Hash | List | Seed
 
 /**
  * A `Form` declares a data shape. Identity is the
@@ -156,6 +156,29 @@ export type List = {
   load?: unknown[]
   /** @internal codegen output path. */
   save?: string
+}
+
+/**
+ * A `Seed` is a typed-data record. Bundles a Form (the schema)
+ * with an instance Cast tree (the values). Used for page-level
+ * data containers per the seed-system spec.
+ *
+ * Field values inside `cast:` may be wrapped scalar literals
+ * (`string` / `integer` / ...), `code` references, `find` queries
+ * (host pre-resolves), `range` intervals, or `list` of any of the
+ * above. The `like:` mesh validates the per-field shape via
+ * `base.mold(...)`.
+ *
+ * Seeds are anonymous in v1 — no `name:` field.
+ */
+export type Seed = {
+  form: 'seed'
+  /** Schema reference. Either a string ref to a registered Form,
+   *  or an inline LinkMesh. */
+  like: string | LinkMesh
+  /** Per-field instance values. */
+  cast: Record<string, Cast>
+  mark?: string
 }
 
 /**

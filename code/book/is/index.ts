@@ -34,8 +34,26 @@ export type IsBlank = boolean
 export type IsBooleanTake = { thing: unknown }
 export type IsBoolean = boolean
 
+export type IsBooleanLiteralTake = { thing: unknown }
+export type IsBooleanLiteral = boolean
+
+export type IsCodeLiteralTake = { thing: unknown }
+export type IsCodeLiteral = boolean
+
+export type IsDateLiteralTake = { thing: unknown }
+export type IsDateLiteral = boolean
+
+export type IsDateRangeTake = { thing: unknown }
+export type IsDateRange = boolean
+
 export type IsDecimalTake = { thing: unknown }
 export type IsDecimal = boolean
+
+export type IsDecimalLiteralTake = { thing: unknown }
+export type IsDecimalLiteral = boolean
+
+export type IsDecimalRangeTake = { thing: unknown }
+export type IsDecimalRange = boolean
 
 export type IsEmailTake = { text: string }
 export type IsEmail = boolean
@@ -49,6 +67,12 @@ export type IsFinite = boolean
 export type IsIntegerTake = { thing: unknown }
 export type IsInteger = boolean
 
+export type IsIntegerLiteralTake = { thing: unknown }
+export type IsIntegerLiteral = boolean
+
+export type IsIntegerRangeTake = { thing: unknown }
+export type IsIntegerRange = boolean
+
 export type IsIpaTake = { text: string }
 export type IsIpa = boolean
 
@@ -60,6 +84,9 @@ export type IsIpaNarrow = boolean
 
 export type IsListTake = { thing: unknown }
 export type IsList = boolean
+
+export type IsLiteralStringTake = { thing: unknown }
+export type IsLiteralString = boolean
 
 export type IsLowercaseTake = { text: string }
 export type IsLowercase = boolean
@@ -96,6 +123,9 @@ export type IsSlug = boolean
 
 export type IsStringTake = { thing: unknown }
 export type IsString = boolean
+
+export type IsStringPatternTake = { thing: unknown }
+export type IsStringPattern = boolean
 
 export type IsUppercaseTake = { text: string }
 export type IsUppercase = boolean

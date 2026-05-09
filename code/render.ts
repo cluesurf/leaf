@@ -23,8 +23,10 @@
  */
 
 import type {
+  BindPrimitive,
   Call,
   Cast,
+  FindPrimitive,
   FoldPrimitive,
   ForkPrimitive,
   HashPrimitive,
@@ -32,9 +34,9 @@ import type {
   ListPrimitive,
   MatchPrimitive,
   PickPrimitive,
+  RangePrimitive,
   ReadLink,
   ReadPrimitive,
-  Reference,
   SwitchPrimitive,
   TextPrimitive,
   ViewPrimitive,
@@ -187,8 +189,8 @@ function compileBody(node: Cast, mode: Mode): Render {
       return compileTextNode(node, mode)
     case 'hash':
       return compileHashNode(node)
-    case 'reference':
-      return compileReferenceNode(node, mode)
+    case 'bind':
+      return compileBindNode(node, mode)
     case 'read':
       return compileReadNode(node, mode)
     case 'call':
@@ -209,6 +211,28 @@ function compileBody(node: Cast, mode: Mode): Render {
       return compileFoldRefNode(node, mode)
     case 'view':
       return compileViewNode(node, mode)
+    // typed-literal scalars — wrapped forms with explicit `form:`
+    case 'string':
+      return constOf(node.text)
+    case 'integer':
+    case 'decimal':
+      return mode === 'element' ? constOf(String(node.value)) : constOf(node.value)
+    case 'boolean':
+      return mode === 'element' ? constOf(String(node.value)) : constOf(node.value)
+    case 'date': {
+      const d = new Date(node.value)
+      return mode === 'element' ? constOf(d.toISOString()) : constOf(d)
+    }
+    case 'null':
+      return CONST_NULL
+    case 'code':
+      return constOf(node.text)
+    // structured ranges
+    case 'range':
+      return compileRangeNode(node, mode)
+    // unresolved query marker — host must pre-resolve before render
+    case 'find':
+      return compileFindNode(node)
   }
 
   throw new Error(
@@ -261,7 +285,9 @@ function compileHashNode(node: HashPrimitive): Render {
 // Reads
 // =============================================================================
 
-function compileReferenceNode(node: Reference, mode: Mode): Render {
+function compileBindNode(node: BindPrimitive, mode: Mode): Render {
+  // Standalone bind: a scope lookup. Position-tail binds inside
+  // a `read.link` go through compileSegment instead.
   const name = node.name
   if (mode === 'element') return (s) => toElementChild(s.get(name))
   return (s) => s.get(name)
@@ -270,22 +296,22 @@ function compileReferenceNode(node: Reference, mode: Mode): Render {
 function compileReadNode(node: ReadPrimitive, mode: Mode): Render {
   if (node.link.length === 0) return CONST_NULL
   const head = node.link[0]!
-  if (head.form !== 'variable') {
+  if (head.form !== 'bind' && head.form !== 'read') {
     throw new Error(
-      `cast.read: first segment must be a variable, got ${head.form}`,
+      `cast.read: first segment must be a bind or nested read, got ${head.form}`,
     )
   }
-  const headName = head.name
-  const headSafe = head.safe === true
-  const steps = node.link.slice(1).map(seg => compileSegment(seg))
+  const headStep = compileSegment(head, /*isHead*/ true)
+  const tailSteps = node.link
+    .slice(1)
+    .map(seg => compileSegment(seg, /*isHead*/ false))
   const reader: Render = (s, c) => {
-    let current: unknown = s.get(headName)
-    if (headSafe && current == null) return null
-    for (const step of steps) {
+    let current = headStep.run(undefined, s, c)
+    if (headStep.safe && current == null) return null
+    for (const step of tailSteps) {
       if (current == null) return null
-      const safe = step.safe
       current = step.run(current, s, c)
-      if (safe && current == null) return null
+      if (step.safe && current == null) return null
     }
     return current
   }
@@ -298,31 +324,40 @@ type CompiledSegment = {
   run: (current: unknown, s: Scope, c: BaseRenderContext) => unknown
 }
 
-function compileSegment(seg: ReadLink): CompiledSegment {
+function compileSegment(seg: ReadLink, isHead: boolean): CompiledSegment {
   const safe = (seg as { safe?: boolean }).safe === true
   switch (seg.form) {
-    case 'variable':
-      throw new Error('cast.read: variable segment only valid at head')
-    case 'field': {
+    case 'bind': {
       const name = seg.name
+      if (isHead) {
+        return {
+          safe,
+          run: (_current, s) => s.get(name),
+        }
+      }
+      // Tail-position bind: field / index access on `current`.
       return {
         safe,
-        run: current => (current as Record<string, unknown>)[name],
+        run: current => accessByName(current, name),
       }
     }
-    case 'index': {
-      const expr =
-        typeof seg.value === 'number' ? null : compile(seg.value, 'text')
-      const literal = typeof seg.value === 'number' ? seg.value : 0
+    case 'read': {
+      // Nested read — its result is the access key.
+      const inner = compile(seg as ReadPrimitive, 'text')
+      if (isHead) {
+        return {
+          safe,
+          run: (_current, s, c) => {
+            const key = inner(s, c)
+            return s.get(String(key))
+          },
+        }
+      }
       return {
         safe,
         run: (current, s, c) => {
-          const i = expr ? Number(expr(s, c)) : literal
-          if (Array.isArray(current)) {
-            const j = i < 0 ? current.length + i : i
-            return current[j]
-          }
-          return (current as Record<string, unknown>)[String(i)]
+          const key = inner(s, c)
+          return accessByName(current, String(key))
         },
       }
     }
@@ -356,6 +391,22 @@ function compileSegment(seg: ReadLink): CompiledSegment {
       }
     }
   }
+}
+
+/**
+ * Look up `name` on `current`. Stringified-integer names index
+ * arrays (with negative-index support); other names hit object
+ * keys.
+ */
+function accessByName(current: unknown, name: string): unknown {
+  if (Array.isArray(current)) {
+    const i = Number(name)
+    if (Number.isInteger(i)) {
+      const j = i < 0 ? current.length + i : i
+      return current[j]
+    }
+  }
+  return (current as Record<string, unknown>)?.[name]
 }
 
 // =============================================================================
@@ -658,6 +709,46 @@ function compileFoldRefNode(node: FoldPrimitive, mode: Mode): Render {
     const frame: Record<string, unknown> = {}
     for (const [k, r] of bindEntries) frame[k] = r(s, c)
     return inner(s.push(frame), c)
+  }
+}
+
+// =============================================================================
+// Range — structured interval. Renders to a plain object with
+// `like / start / end` resolved to native values; the host resolver
+// (or downstream consumer) interprets the interval semantically.
+// =============================================================================
+
+function compileRangeNode(node: RangePrimitive, mode: Mode): Render {
+  const startInner = node.start ? compile(node.start.value, mode) : null
+  const endInner = node.end ? compile(node.end.value, mode) : null
+  const startInclusive = node.start?.inclusive
+  const endInclusive = node.end?.inclusive
+  const like = node.like
+  return (s, c) => {
+    const out: Record<string, unknown> = { form: 'range', like }
+    if (startInner) {
+      out.start = { inclusive: startInclusive, value: startInner(s, c) }
+    }
+    if (endInner) {
+      out.end = { inclusive: endInclusive, value: endInner(s, c) }
+    }
+    return out
+  }
+}
+
+// =============================================================================
+// Find — unresolved query marker. The host must pre-resolve and
+// substitute the result into scope before render. Reaching this
+// closure at render time is a programming error.
+// =============================================================================
+
+function compileFindNode(node: FindPrimitive): Render {
+  const callId = node.call
+  return () => {
+    throw new Error(
+      `cast.find: unresolved query '${callId}' — host should have ` +
+        `resolved before render (see seed-system extractFinds + substituteFinds).`,
+    )
   }
 }
 

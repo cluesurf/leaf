@@ -16,26 +16,80 @@ describe('literals', () => {
     })
   })
 
-  it('integer literal — bare number', () => {
-    expect(cast.integer(42)).toBe(42)
+  it('integer literal — wrapped form', () => {
+    expect(cast.integer(42)).toEqual({ form: 'integer', value: 42 })
   })
 
-  it('natural_number literal — bare number', () => {
-    expect(cast.naturalNumber(5)).toBe(5)
+  it('natural_number literal — wrapped form', () => {
+    expect(cast.naturalNumber(5)).toEqual({ form: 'integer', value: 5 })
   })
 
-  it('number literal — bare number', () => {
-    expect(cast.number(3.14)).toBe(3.14)
+  it('number literal — wrapped decimal form', () => {
+    expect(cast.number(3.14)).toEqual({ form: 'decimal', value: 3.14 })
   })
 
-  it('boolean literal — bare boolean', () => {
-    expect(cast.boolean(true)).toBe(true)
+  it('boolean literal — wrapped form', () => {
+    expect(cast.boolean(true)).toEqual({ form: 'boolean', value: true })
   })
 
-  it('date literal — Date instance', () => {
+  it('date literal — wrapped form with ISO value', () => {
     const d = cast.date('2026-04-30T00:00:00Z')
-    expect(d).toBeInstanceOf(Date)
-    expect(d.toISOString()).toBe('2026-04-30T00:00:00.000Z')
+    expect(d).toEqual({ form: 'date', value: '2026-04-30T00:00:00.000Z' })
+  })
+
+  it('string literal — wrapped form', () => {
+    expect(cast.string('foo')).toEqual({ form: 'string', text: 'foo' })
+  })
+
+  it('null literal — wrapped form', () => {
+    expect(cast.nil()).toEqual({ form: 'null' })
+  })
+
+  it('code literal — wrapped form, with optional type hint', () => {
+    expect(cast.code('uuid-x')).toEqual({ form: 'code', text: 'uuid-x' })
+    expect(cast.code('uuid-y', 'language')).toEqual({
+      form: 'code',
+      text: 'uuid-y',
+      base: 'language',
+    })
+  })
+
+  it('range — structured bounds', () => {
+    const r = cast.range({
+      like: 'integer',
+      start: { inclusive: true, value: cast.integer(5) },
+      end: { inclusive: false, value: cast.integer(10) },
+    })
+    expect(r).toEqual({
+      form: 'range',
+      like: 'integer',
+      start: { inclusive: true, value: { form: 'integer', value: 5 } },
+      end: { inclusive: false, value: { form: 'integer', value: 10 } },
+    })
+  })
+
+  it('find — bare call ref', () => {
+    expect(cast.find('select:language')).toEqual({
+      form: 'find',
+      call: 'select:language',
+    })
+  })
+
+  it('find — with test, sort, size, slot', () => {
+    const f = cast.find('filter:word', {
+      test: cast.code('uuid-spanish'),
+      sort: ['frequency:desc'],
+      size: 20,
+      slot: 0,
+    })
+    expect(f).toEqual({
+      form: 'find',
+      call: 'filter:word',
+      test: { form: 'code', text: 'uuid-spanish' },
+      sort: ['frequency:desc'],
+      size: 20,
+      slot: 0,
+    })
   })
 
   it('list literal — tagged with form', () => {
@@ -48,7 +102,7 @@ describe('literals', () => {
   it('weave — woven sequence with bare-string leaves', () => {
     expect(cast.text('I am ', cast.reference('status'), '.')).toEqual({
       form: 'text',
-      flow: ['I am ', { form: 'reference', name: 'status' }, '.'],
+      flow: ['I am ', { form: 'bind', name: 'status' }, '.'],
     })
   })
 
@@ -96,14 +150,14 @@ describe('promote', () => {
 describe('reads', () => {
   it('reference (bare scope read)', () => {
     expect(cast.reference('count')).toEqual({
-      form: 'reference',
+      form: 'bind',
       name: 'count',
     })
   })
 
   it('path: single segment normalizes to reference', () => {
     expect(cast.path('count')).toEqual({
-      form: 'reference',
+      form: 'bind',
       name: 'count',
     })
   })
@@ -112,18 +166,18 @@ describe('reads', () => {
     expect(cast.read('user', 'name')).toEqual({
       form: 'read',
       link: [
-        { form: 'variable', name: 'user' },
-        { form: 'field', name: 'name' },
+        { form: 'bind', name: 'user' },
+        { form: 'bind', name: 'name' },
       ],
     })
   })
 
-  it('read: with index segment', () => {
+  it('read: with index segment (literal → stringified bind)', () => {
     expect(cast.read('items', cast.idx(0))).toEqual({
       form: 'read',
       link: [
-        { form: 'variable', name: 'items' },
-        { form: 'index', value: 0 },
+        { form: 'bind', name: 'items' },
+        { form: 'bind', name: '0' },
       ],
     })
   })
@@ -132,13 +186,13 @@ describe('reads', () => {
     expect(cast.read('items', cast.slice(3, 10))).toEqual({
       form: 'read',
       link: [
-        { form: 'variable', name: 'items' },
+        { form: 'bind', name: 'items' },
         { form: 'slice', start: 3, end: 10 },
       ],
     })
   })
 
-  it('read: with optional chaining (safe field)', () => {
+  it('read: with optional chaining (safe bind) + dynamic-key nested read', () => {
     const tree = cast.read(
       cast.variable('user'),
       cast.field('metadata', { safe: true }),
@@ -150,19 +204,18 @@ describe('reads', () => {
     expect(tree).toEqual({
       form: 'read',
       link: [
-        { form: 'variable', name: 'user' },
-        { form: 'field', name: 'metadata', safe: true },
+        { form: 'bind', name: 'user' },
+        { form: 'bind', name: 'metadata', safe: true },
+        // Dynamic-key index becomes a nested read whose result is
+        // the access key for the next chain step.
         {
-          form: 'index',
-          value: {
-            form: 'read',
-            link: [
-              { form: 'variable', name: 'some' },
-              { form: 'field', name: 'thing' },
-            ],
-          },
+          form: 'read',
+          link: [
+            { form: 'bind', name: 'some' },
+            { form: 'bind', name: 'thing' },
+          ],
         },
-        { form: 'field', name: 'ready', safe: true },
+        { form: 'bind', name: 'ready', safe: true },
       ],
     })
   })
@@ -174,7 +227,7 @@ describe('calls', () => {
       form: 'call',
       name: 'is',
       case: 'equal',
-      a: { form: 'reference', name: 'status' },
+      a: { form: 'bind', name: 'status' },
       b: 'published',
     })
   })
@@ -184,7 +237,7 @@ describe('calls', () => {
       form: 'call',
       name: 'is',
       case: 'above',
-      a: { form: 'reference', name: 'count' },
+      a: { form: 'bind', name: 'count' },
       b: 0,
     })
   })
@@ -204,7 +257,7 @@ describe('calls', () => {
     expect(cast.count(cast.reference('items'))).toEqual({
       form: 'call',
       name: 'count',
-      list: { form: 'reference', name: 'items' },
+      list: { form: 'bind', name: 'items' },
     })
   })
 
@@ -212,7 +265,7 @@ describe('calls', () => {
     expect(cast.plural(cast.reference('count'))).toEqual({
       form: 'call',
       name: 'plural',
-      value: { form: 'reference', name: 'count' },
+      value: { form: 'bind', name: 'count' },
     })
   })
 })
@@ -225,7 +278,7 @@ describe('control flow', () => {
         form: 'call',
         name: 'is',
         case: 'equal',
-        a: { form: 'reference', name: 'x' },
+        a: { form: 'bind', name: 'x' },
         b: 1,
       },
       then: 'yes',
@@ -262,7 +315,7 @@ describe('control flow', () => {
       ]),
     )
     expect(tree.form).toBe('walk')
-    expect(tree.list).toEqual({ form: 'reference', name: 'stanzas' })
+    expect(tree.list).toEqual({ form: 'bind', name: 'stanzas' })
     expect(tree.hook).toEqual({
       form: 'view',
       name: 'paragraph',
@@ -270,8 +323,8 @@ describe('control flow', () => {
         {
           form: 'read',
           link: [
-            { form: 'variable', name: 'item' },
-            { form: 'field', name: 'translation' },
+            { form: 'bind', name: 'item' },
+            { form: 'bind', name: 'translation' },
           ],
         },
       ],
@@ -299,7 +352,7 @@ describe('control flow', () => {
     )
     expect(tree).toEqual({
       form: 'switch',
-      value: { form: 'reference', name: 'role' },
+      value: { form: 'bind', name: 'role' },
       cases: [
         { when: 'admin', then: 'Administrator' },
         { when: 'editor', then: 'Editor' },
@@ -684,7 +737,7 @@ describe('higher-order helpers', () => {
       a: { form: string; name: string }
       b: string
     }
-    expect(firstTest.a).toEqual({ form: 'reference', name: 'gender' })
+    expect(firstTest.a).toEqual({ form: 'bind', name: 'gender' })
     expect(firstTest.b).toBe('male')
   })
 })

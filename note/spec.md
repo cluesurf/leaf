@@ -48,35 +48,61 @@ catalog.
 | `'fold'` | renderable tree. Document or template |
 | `'hash'` | record with dynamic keys, all values one shape |
 | `'list'` | homogeneous list of literals (an enum source) |
+| `'seed'` | typed-data instance (a Form schema + per-field instance values) |
 
 ```ts
-type Make = Form | Flow | Fold | Hash | List
+type Make = Form | Flow | Fold | Hash | List | Seed
 ```
 
 ## Cast: AST primitives + scalars
 
 `Cast` is the AST node type. Every node a Fold tree contains.
 
+### Structural
+
 | `form:` | role |
 |---|---|
 | `'text'` | string concatenation of children |
 | `'list'` | literal list |
 | `'hash'` | literal record |
-| `'reference'` | read a top-level scope key |
-| `'read'` | read a path through scope |
+| `'bind'` | name lookup — at head of `read.link` it's a scope read; mid-chain it's a field/index access |
+| `'read'` | a chain of binds / nested reads / slices |
 | `'call'` | invoke a registered Flow or operator |
 | `'fork'` | binary branch on a test |
 | `'switch'` | tagged union dispatch |
 | `'match'` | pattern match |
-| `'case'` | arm of switch / match |
 | `'pick'` | first non-null in a list |
 | `'walk'` | iterate a list / test / size range |
+| `'join'` | concatenate the items of a list with a separator |
 | `'fold'` | embed a registered Fold by name |
 | `'view'` | element node (vdom mode) |
-| `'join'` | concatenate the items of a list with a separator |
 
-Bare scalars (string, number, boolean, Date, null) sit anywhere
-a Cast does. They evaluate to themselves.
+### Typed-literal scalars (wrapped forms)
+
+Self-describing scalars that carry their own `form:`. Used in seeds
+and anywhere AST shape needs to be uniform for walking / validation.
+
+| `form:` | shape | renders to |
+|---|---|---|
+| `'string'` | `{form:'string', text}` | inner string (may contain pattern syntax in test contexts) |
+| `'integer'` | `{form:'integer', value}` | inner number |
+| `'decimal'` | `{form:'decimal', value}` | inner number |
+| `'boolean'` | `{form:'boolean', value}` | inner boolean |
+| `'date'` | `{form:'date', value}` (ISO string) | a Date |
+| `'null'` | `{form:'null'}` | `null` |
+| `'code'` | `{form:'code', text, base?}` | inner identifier (UUID / slug) |
+
+Bare scalars (string, number, boolean, Date, null) also sit anywhere
+a Cast does. They evaluate to themselves. The wrapped forms are for
+sites where uniformity matters (seed contents, dependency walking).
+
+### Structured query / range / filter forms
+
+| `form:` | role |
+|---|---|
+| `'find'` | unresolved query marker — the host pre-resolves before render; reaching it at render time throws |
+| `'range'` | bounded interval over a typed scalar (`{like: 'integer', start: {inclusive, value}, end: {...}}`) |
+| `'not'` / `'all'` / `'any'` | logical operators (call-form, registered in standard book) |
 
 ## Top-level declarations
 
@@ -171,6 +197,56 @@ A homogeneous list of literals.
 ```ts
 { form: 'list', name: 'iso_639_3', like: { like: 'string' } }
 ```
+
+### Seed
+
+A typed-data instance. Bundles a schema reference (`like`) with
+per-field instance values (`cast`). Used for page-level data
+containers — values can be wrapped scalar literals, `code`
+references, `find` queries, or `list`s of those. Anonymous in v1
+(no `name:` field).
+
+```ts
+{
+  form: 'seed',
+  like: 'page_data:language_overview',     // Form ref or inline LinkMesh
+  cast: {
+    language: cast.find('select:language', { test: cast.code('uuid-x') }),
+    top_n:    { form: 'integer', value: 20 },
+    show_audio: { form: 'boolean', value: true },
+  },
+}
+```
+
+The schema (`like`) validates the per-field shape. Field values
+must be wrapped typed-literal forms, `code`, `find`, or `list` —
+never inline `hash`. If a field needs nested structure, the model
+references a separate Form (and the value is a `code` or `find`
+pointing to a record of that Form).
+
+Hosts walk the seed for `find` nodes (resolving via host queries),
+then `code` nodes (writing dependency-tracking rows), before
+handing the resolved scope to `base.cast(...)`.
+
+## Find resolution
+
+Leaf does not execute `find` nodes. They're typed markers the
+host pre-resolves before render. The pre-render pipeline:
+
+1. `extractFinds(seed.cast)` returns every `find` in the tree.
+2. Host batches by `find.call`, runs each via its registered
+   resolver, builds a `Map<FindPrimitive, Cast>` of results.
+3. `substituteFinds(seed.cast, results)` produces a clone with
+   each find replaced by its resolved value.
+4. `extractCodes(seed.cast + view.cast)` collects record-id
+   references (UUIDs / slugs) for the dependency table.
+5. `base.cast(view.case, scope built from substituted seed)`
+   renders.
+
+The `extractFinds` / `extractCodes` / `substituteFinds` helpers
+live in `@cluesurf/leaf` (import from `'@cluesurf/leaf/extract'`).
+
+A `find` reached at render time without prior substitution throws.
 
 ## Link shape modifiers
 

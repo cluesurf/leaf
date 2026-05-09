@@ -73,7 +73,7 @@ describe('fold primitive', () => {
           case: 'list',
           cast: [
             'a-',
-            { form: 'reference', name: 'item' },
+            { form: 'bind', name: 'item' },
             '-z',
           ],
         },

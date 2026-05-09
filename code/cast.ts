@@ -46,31 +46,25 @@ export type TextPrimitive = {
 // Reads
 // ---------------------------------------------------------------------------
 
-export type Reference = {
-  form: 'reference'
+/**
+ * Scope / field lookup. At the head of a `read.link` (or
+ * standalone) it's a scope lookup. Mid-chain it's a field / index
+ * access on the previous step's result. The position decides the
+ * semantic.
+ */
+export type BindPrimitive = {
+  form: 'bind'
+  /** Name to look up. Numeric indices use the stringified form
+   *  (`'0'`, `'1'`, `'-1'`). */
   name: string
-  id?: string
-  meta?: Meta
-}
-
-export type VariableSeg = {
-  form: 'variable'
-  name: string
+  /** Optional-chain: short-circuit to null if prior value is null. */
   safe?: boolean
 }
 
-export type FieldSeg = {
-  form: 'field'
-  name: string
-  safe?: boolean
-}
-
-export type IndexSeg = {
-  form: 'index'
-  value: number | Cast
-  safe?: boolean
-}
-
+/**
+ * Range op inside a `read.link`. Distinct from `BindPrimitive` /
+ * nested `read` because it operates on a range, not a single key.
+ */
 export type SliceSeg = {
   form: 'slice'
   start?: number | Cast | null
@@ -78,7 +72,12 @@ export type SliceSeg = {
   safe?: boolean
 }
 
-export type ReadLink = VariableSeg | FieldSeg | IndexSeg | SliceSeg
+/**
+ * `read.link` accepts three element shapes: `bind` (static name),
+ * nested `read` (dynamic key — its result becomes the access key),
+ * `slice` (range op).
+ */
+export type ReadLink = BindPrimitive | ReadPrimitive | SliceSeg
 
 export type ReadPrimitive = {
   form: 'read'
@@ -86,6 +85,14 @@ export type ReadPrimitive = {
   id?: string
   meta?: Meta
 }
+
+// Legacy aliases — kept as type aliases so consumers of these names
+// keep typechecking, but every one points to BindPrimitive now.
+// New code should use BindPrimitive directly.
+export type Reference = BindPrimitive
+export type VariableSeg = BindPrimitive
+export type FieldSeg = BindPrimitive
+export type IndexSeg = BindPrimitive
 
 // ---------------------------------------------------------------------------
 // Calls
@@ -312,13 +319,126 @@ export type ViewPrimitive = {
 }
 
 // ---------------------------------------------------------------------------
+// Typed-literal scalars — wrapped scalar values with explicit `form:`
+//
+// Bare scalars (string / number / boolean / Date / null) still work
+// anywhere a Cast is expected. The wrapped forms below exist so a
+// seed / test / typed-record can carry self-describing values where
+// a uniform `form:` discriminator matters (dependency walking,
+// shape validation, AI authoring).
+// ---------------------------------------------------------------------------
+
+export type StringPrimitive = {
+  form: 'string'
+  /** The string value. May contain pattern syntax when used in a
+   *  filter test (per query-system-spec.md): wildcards (`*`, `?`),
+   *  fuzzy (`~`), character classes (`[abc]`), keyword refs
+   *  (`\{name}`). The `mold:` on the consuming field decides
+   *  whether pattern syntax is allowed. */
+  text: string
+  mark?: string
+}
+
+export type IntegerPrimitive = {
+  form: 'integer'
+  value: number
+  mark?: string
+}
+
+export type DecimalPrimitive = {
+  form: 'decimal'
+  value: number
+  mark?: string
+}
+
+export type BooleanPrimitive = {
+  form: 'boolean'
+  value: boolean
+  mark?: string
+}
+
+export type DatePrimitive = {
+  form: 'date'
+  /** ISO date string (yyyy-mm-dd) or full ISO timestamp. */
+  value: string
+  mark?: string
+}
+
+export type NullPrimitive = {
+  form: 'null'
+  mark?: string
+}
+
+export type CodePrimitive = {
+  form: 'code'
+  /** The identifier — UUID, slug, ISO code, kebab-keyword, etc. */
+  text: string
+  /** Optional resource-type hint (`'language'`, `'word'`, ...). */
+  base?: string
+  mark?: string
+}
+
+export type TypedLiteral =
+  | StringPrimitive
+  | IntegerPrimitive
+  | DecimalPrimitive
+  | BooleanPrimitive
+  | DatePrimitive
+  | NullPrimitive
+  | CodePrimitive
+
+// ---------------------------------------------------------------------------
+// Range — bounded interval over a typed scalar.
+//   { form: 'range', like: 'integer',
+//     start: { inclusive: true, value: { form: 'integer', value: 5 } },
+//     end:   { inclusive: false, value: { form: 'integer', value: 10 } } }
+// ---------------------------------------------------------------------------
+
+export type RangeBound = {
+  inclusive: boolean
+  value: Cast
+}
+
+export type RangePrimitive = {
+  form: 'range'
+  /** Inner type: `'integer'`, `'decimal'`, `'date'`, etc. */
+  like: string
+  /** Lower bound (omitted = unbounded below). */
+  start?: RangeBound
+  /** Upper bound (omitted = unbounded above). */
+  end?: RangeBound
+  mark?: string
+}
+
+// ---------------------------------------------------------------------------
+// Find — unresolved query marker. Leaf does NOT execute; the host
+// pre-resolves these (extracts, validates, runs, substitutes the
+// result back into scope) before the engine renders.
+// ---------------------------------------------------------------------------
+
+export type FindPrimitive = {
+  form: 'find'
+  /** Catalog Flow id (colon-scoped path) — e.g. `'select:language'`. */
+  call: string
+  /** Optional filter expression (typed Cast tree). */
+  test?: Cast
+  /** Optional sort spec. */
+  sort?: Cast[]
+  /** Page size — how many records to return. */
+  size?: number
+  /** Page slot — offset into the result stream (slot 0 = first page). */
+  slot?: number
+  mark?: string
+}
+
+// ---------------------------------------------------------------------------
 // Tagged structural nodes (everything carrying a `form:`)
 // ---------------------------------------------------------------------------
 
 export type Structural =
   | ListPrimitive
   | TextPrimitive
-  | Reference
+  | BindPrimitive
   | ReadPrimitive
   | Call
   | ControlFlow
@@ -326,6 +446,9 @@ export type Structural =
   | FoldPrimitive
   | JoinPrimitive
   | ViewPrimitive
+  | TypedLiteral
+  | RangePrimitive
+  | FindPrimitive
 
 // ---------------------------------------------------------------------------
 // Cast — the universal tree node
@@ -412,32 +535,92 @@ export function promote(value: Promotable): Cast {
 }
 
 // ---------------------------------------------------------------------------
-// Scalar pass-throughs
+// Typed-literal scalar builders
 //
-// Native scalars are first-class fold-tree leaves. These helpers
-// exist for symmetry with structural builders (so call sites can
-// read `cast.text(...)` / `cast.integer(...)` for clarity) but
-// they're identity functions that return the input native value.
+// Each builder returns the **wrapped form** carrying its own
+// `form:` discriminator. Used in seeds (per seed-system spec) and
+// anywhere the AST wants self-describing scalar values.
+//
+// Bare native scalars (`'foo'`, `42`, `true`, `null`, `new Date()`)
+// remain valid Cast leaves anywhere a Cast is expected; the wrapped
+// builders are for sites where uniformity matters (dependency
+// walking, shape validation, AI authoring).
 // ---------------------------------------------------------------------------
 
-export function integer(n: number): number {
-  return n
+export function string(text: string): StringPrimitive {
+  return { form: 'string', text }
 }
 
-export function naturalNumber(n: number): number {
-  return n
+export function integer(value: number): IntegerPrimitive {
+  return { form: 'integer', value }
 }
 
-export function number(n: number): number {
-  return n
+export function naturalNumber(value: number): IntegerPrimitive {
+  return { form: 'integer', value }
 }
 
-export function boolean(b: boolean): boolean {
-  return b
+export function number(value: number): DecimalPrimitive {
+  return { form: 'decimal', value }
 }
 
-export function date(value: string | Date): Date {
-  return value instanceof Date ? value : new Date(value)
+export function decimal(value: number): DecimalPrimitive {
+  return { form: 'decimal', value }
+}
+
+export function boolean(value: boolean): BooleanPrimitive {
+  return { form: 'boolean', value }
+}
+
+export function date(value: string | Date): DatePrimitive {
+  const d = value instanceof Date ? value : new Date(value)
+  return { form: 'date', value: d.toISOString() }
+}
+
+export function nil(): NullPrimitive {
+  return { form: 'null' }
+}
+
+export function code(text: string, base?: string): CodePrimitive {
+  return base !== undefined
+    ? { form: 'code', text, base }
+    : { form: 'code', text }
+}
+
+// ---------------------------------------------------------------------------
+// Range
+// ---------------------------------------------------------------------------
+
+export function range(options: {
+  like: string
+  start?: { inclusive: boolean; value: Cast }
+  end?: { inclusive: boolean; value: Cast }
+}): RangePrimitive {
+  const node: RangePrimitive = { form: 'range', like: options.like }
+  if (options.start !== undefined) node.start = options.start
+  if (options.end !== undefined) node.end = options.end
+  return node
+}
+
+// ---------------------------------------------------------------------------
+// Find — unresolved query marker. Leaf does not execute these; the
+// host pre-resolves them before render.
+// ---------------------------------------------------------------------------
+
+export function find(
+  call: string,
+  options?: {
+    test?: Promotable
+    sort?: Promotable[]
+    size?: number
+    slot?: number
+  },
+): FindPrimitive {
+  const node: FindPrimitive = { form: 'find', call }
+  if (options?.test !== undefined) node.test = promote(options.test)
+  if (options?.sort !== undefined) node.sort = options.sort.map(promote)
+  if (options?.size !== undefined) node.size = options.size
+  if (options?.slot !== undefined) node.slot = options.slot
+  return node
 }
 
 export function list(items: Cast[]): ListPrimitive {
@@ -501,37 +684,49 @@ export function fold(
 // Reads
 // ---------------------------------------------------------------------------
 
-export function reference(name: string): Reference {
-  return { form: 'reference', name }
-}
-
-// ----- path segments -----
-
-export function variable(
+export function bind(
   name: string,
   opts?: { safe?: boolean },
-): VariableSeg {
+): BindPrimitive {
   return opts?.safe
-    ? { form: 'variable', name, safe: true }
-    : { form: 'variable', name }
+    ? { form: 'bind', name, safe: true }
+    : { form: 'bind', name }
 }
 
-export function field(
-  name: string,
-  opts?: { safe?: boolean },
-): FieldSeg {
-  return opts?.safe
-    ? { form: 'field', name, safe: true }
-    : { form: 'field', name }
-}
+/** Alias — produces the same `bind` shape as `cast.bind(name)`. */
+export const reference = bind
 
+/** Alias for in-link bind (head). Same shape as `cast.bind`. */
+export const variable = bind
+
+/** Alias for in-link bind (tail). Same shape as `cast.bind`. */
+export const field = bind
+
+/**
+ * Index access in a `read.link`. Numeric literal becomes a
+ * stringified-name `bind`. A Cast (computed-at-runtime key)
+ * becomes a nested `read.link[bind]`.
+ */
 export function idx(
   value: number | Cast,
   opts?: { safe?: boolean },
-): IndexSeg {
-  return opts?.safe
-    ? { form: 'index', value, safe: true }
-    : { form: 'index', value }
+): BindPrimitive | ReadPrimitive {
+  if (typeof value === 'number') {
+    return opts?.safe
+      ? { form: 'bind', name: String(value), safe: true }
+      : { form: 'bind', name: String(value) }
+  }
+  // Cast value → wrap as a single-element read whose result is the
+  // dynamic access key.
+  if (
+    value !== null &&
+    typeof value === 'object' &&
+    !(value instanceof Date) &&
+    (value as Cast & { form?: string }).form === 'read'
+  ) {
+    return value as ReadPrimitive
+  }
+  return { form: 'read', link: [value as ReadLink] }
 }
 
 export function slice(
@@ -548,34 +743,33 @@ export function slice(
 
 /**
  * Build a Read tree from a chain of segments. First arg is the
- * head (string → variable segment by name; or a pre-built
- * segment object). Subsequent string args become field
- * segments; segment objects pass through.
+ * head (string → bind by name; or a pre-built segment object).
+ * Subsequent string args become tail-position binds (field /
+ * index access); segment objects pass through.
  *
  * Examples:
- *   read('count')                 // → reference (single segment, normalized)
+ *   read('count')                 // → bind(count)  (single segment, normalized)
  *   read('user', 'name')          // user.name
  *   read('items', idx(0))         // items[0]
  *   read('items', slice(3, 10))   // items[3..10]
  */
 export function read(
   ...segments: (string | ReadLink)[]
-): Reference | ReadPrimitive {
+): BindPrimitive | ReadPrimitive {
   if (segments.length === 0) {
     throw new Error('cast.read: at least one segment required')
   }
-  const built: ReadLink[] = segments.map((s, i) => {
+  const built: ReadLink[] = segments.map(s => {
     if (typeof s === 'string') {
-      return i === 0
-        ? { form: 'variable', name: s }
-        : { form: 'field', name: s }
+      return { form: 'bind', name: s }
     }
     return s
   })
-  // Normalize a single bare-variable to a `reference` node.
+  // Normalize a single bare-bind (no safe flag) to the standalone
+  // bind shape.
   const head = built[0]
-  if (built.length === 1 && head?.form === 'variable' && !head.safe) {
-    return { form: 'reference', name: head.name }
+  if (built.length === 1 && head?.form === 'bind' && !head.safe) {
+    return head
   }
   return { form: 'read', link: built }
 }
@@ -1163,18 +1357,27 @@ export function selectCases(
 export const cast = {
   // promotion
   promote,
-  // literals + structural
+  // typed-literal scalars
+  string,
   integer,
   naturalNumber,
   number,
+  decimal,
   boolean,
   date,
+  nil,
+  null: nil,
+  code,
+  // structural
   list,
   text,
   hash,
   join,
   fold,
+  range,
+  find,
   // reads
+  bind,
   reference,
   read,
   path,
