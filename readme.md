@@ -32,14 +32,14 @@ Just JSON.
 
 ## Why you need this
 
-| building                                   | leaf gives you                                                                       |
-| ------------------------------------------ | ------------------------------------------------------------------------------------ |
-| Notion-class doc editor                    | one tree shape for blocks / inline / embeds / database views                         |
-| HTML + React + email + AMP from one source | author once. Text + element renderers share the tree                                 |
-| Localization                               | locale-aware `format(*)`, CLDR plurals, gender select, RTL                           |
-| User- or AI-supplied logic, sandboxed      | rules + formulas run against a host scope. No `eval`, no DOM, no network             |
-| Reusable fragments                         | `Fold` declarations registered in the Book                                           |
-| Data-shape validation + normalization      | `Form` + `Mold` compile to per-field closures at load time. Fast under bulk import   |
+| building                                   | leaf gives you                                                                     |
+| ------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Notion-class doc editor                    | one tree shape for blocks / inline / embeds / database views                       |
+| HTML + React + email + AMP from one source | author once. Text + element renderers share the tree                               |
+| Localization                               | locale-aware `format(*)`, CLDR plurals, gender select, RTL                         |
+| User- or AI-supplied logic, sandboxed      | rules + formulas run against a host scope. No `eval`, no DOM, no network           |
+| Reusable fragments                         | `Fold` declarations registered in the Book                                         |
+| Data-shape validation + normalization      | `Form` + `Mold` compile to per-field closures at load time. Fast under bulk import |
 
 ## Install
 
@@ -76,10 +76,18 @@ One coherent example touching every feature.
 
 ```ts
 // code/book/blog/make.ts
-import type { Flow, Form, Fold, Hash, List, Norm, Test } from '@cluesurf/leaf'
+import type {
+  Flow,
+  Form,
+  Fold,
+  Hash,
+  List,
+  Norm,
+  Test,
+} from '@cluesurf/leaf'
 import { cast } from '@cluesurf/leaf'
 
-// --- Norm: trim. Test: non-empty. Compose into a per-field pipeline.
+// Norm: trim. Test: non-empty. Compose into a per-field pipeline.
 const trim: Norm = {
   form: 'norm',
   hook: cast.call('make:trimmed', { text: cast.read('self') }),
@@ -90,28 +98,31 @@ const present: Test = {
   miss: 'value must be present',
 }
 
-// --- List: enum source.
+// List: enum source.
 export const status: List = {
-  form: 'list', name: 'status',
+  form: 'list',
+  name: 'status',
   like: { take: ['draft', 'live'] },
   save: 'blog',
 }
 
-// --- Hash: dynamic-key map of one shape.
+// Hash: dynamic-key map of one shape.
 export const tags: Hash = {
-  form: 'hash', name: 'tags',
+  form: 'hash',
+  name: 'tags',
   like: { like: 'string' },
   save: 'blog',
 }
 
-// --- Form: data shape with per-field + form-level Mold.
+// Form: data shape with per-field + form-level Mold.
 export const post: Form = {
-  form: 'form', name: 'post',
+  form: 'form',
+  name: 'post',
   like: {
-    title:  { like: 'string', mold: [trim, present] },
-    body:   { like: 'string', mold: trim },
+    title: { like: 'string', mold: [trim, present] },
+    body: { like: 'string', mold: trim },
     status: { like: 'status' },
-    tags:   { like: 'string', list: true },
+    tags: { like: 'string', list: true },
   },
   mold: {
     form: 'test',
@@ -126,17 +137,21 @@ export const post: Form = {
   save: 'blog',
 }
 
-// --- Flow: function signature. Handler lives in flow.ts.
+// Flow: function signature. Handler lives in flow.ts.
 export const slugify: Flow = {
-  form: 'flow', call: 'slugify',
-  take: { text: { like: 'string' } }, make: 'string',
+  form: 'flow',
+  call: 'slugify',
+  take: { text: { like: 'string' } },
+  make: 'string',
   save: 'blog',
 }
 
-// --- Fold: renderable tree exercising the AST primitives.
+// Fold: renderable tree exercising the AST primitives.
 export const postCard: Fold = {
-  form: 'fold', case: 'post:card',
-  take: { post: { like: 'post' } }, save: 'blog',
+  form: 'fold',
+  case: 'post:card',
+  take: { post: { like: 'post' } },
+  save: 'blog',
   cast: [
     cast.text(
       cast.read('post', 'title'),
@@ -144,7 +159,8 @@ export const postCard: Fold = {
       // fork: binary branch on a test
       cast.fork(
         cast.eq(cast.read('post', 'status'), 'live'),
-        'live', 'draft',
+        'live',
+        'draft',
       ),
       ') — ',
       // walk: iterate. join: separator over walk results.
@@ -163,9 +179,12 @@ export const postCard: Fold = {
     // match: pattern dispatch. otherwise = case-default.
     cast.match([
       cast.case(
-        cast.gt(cast.call('get:length', {
-          value: cast.read('post', 'body'),
-        }), 200),
+        cast.gt(
+          cast.call('get:length', {
+            value: cast.read('post', 'body'),
+          }),
+          200,
+        ),
         ' [long read]',
       ),
       cast.otherwise(''),
@@ -191,7 +210,8 @@ import blogFlow from './blog/flow'
 import { CodeLink } from '<link>/code' // generated
 
 export default {
-  host: 'app', name: 'blog',
+  host: 'app',
+  name: 'blog',
   make: Object.values(blogFlows),
   flow: blogFlow,
   code: CodeLink,
@@ -208,7 +228,7 @@ const base = new Base<Code>()
 base.load(leafBook)
 base.load(blogBook)
 
-// --- mold: validate + normalize. Throws on Test failure.
+// mold: validate + normalize. Throws on Test failure.
 const post = base.mold('post', {
   title: '  Hello  ',
   body: 'Long enough body, please trust me, more than two hundred chars …',
@@ -217,15 +237,15 @@ const post = base.mold('post', {
 })
 // → { title: 'Hello', body: '…', status: 'live', tags: [...] }
 
-// --- cast: render a Fold. Text mode (default).
+// cast: render a Fold. Text mode (default).
 base.cast('post:card', { post })
 // → 'Hello (live) — Intro, Demo · slug=hello [long read]'
 
-// --- call: invoke a Flow directly.
+// call: invoke a Flow directly.
 base.call('slugify', { text: 'Some Title' })
 // → 'some-title'
 
-// --- React mode: register createElement + Fragment, then re-cast.
+// React mode: register createElement + Fragment, then re-cast.
 import { createElement, Fragment } from 'react'
 base.load({
   flow: { 'create:element': createElement },
@@ -245,8 +265,8 @@ await save({ link: './host', book: blogBook })
 
 ## The model
 
-The whole library reduces to one root concept (`make`) that
-branches two ways:
+The whole library reduces to one root concept (`make`) that branches two
+ways:
 
 ```
 make
@@ -254,9 +274,9 @@ make
 └── form → cast
 ```
 
-`flow` is a function. You invoke an instance with `call`. `form`
-is a data shape. You instantiate one with `cast`. Folds, hashes,
-lists, and views all sit on top of these two.
+`flow` is a function. You invoke an instance with `call`. `form` is a
+data shape. You instantiate one with `cast`. Folds, hashes, lists, and
+views all sit on top of these two.
 
 Read the full reference at [`note/spec.md`](./note/spec.md).
 
