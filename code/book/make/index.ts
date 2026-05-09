@@ -6,6 +6,9 @@ export type MakeDifference = number
 export type MakeLowercaseTake = { text: string }
 export type MakeLowercase = string
 
+export type MakeNowTake = unknown
+export type MakeNow = Date
+
 export type MakeProductTake = { a: number; b: number }
 export type MakeProduct = number
 
@@ -20,3 +23,6 @@ export type MakeTrimmed = string
 
 export type MakeUppercaseTake = { text: string }
 export type MakeUppercase = string
+
+export type MakeUuidTake = unknown
+export type MakeUuid = string

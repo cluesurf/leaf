@@ -6,7 +6,7 @@ export type IsAlwaysFalse = boolean
 export type IsAlwaysTrueTake = unknown
 export type IsAlwaysTrue = boolean
 
-export type IsAboveTake = { this: unknown; that: unknown }
+export type IsAboveTake = { a: unknown; b: unknown }
 export type IsAbove = boolean
 
 export type IsAllTake = { things: boolean[] }
@@ -18,10 +18,14 @@ export type IsAmong = boolean
 export type IsAnyTake = { things: boolean[] }
 export type IsAny = boolean
 
-export type IsBelowTake = { this: unknown; that: unknown }
+export type IsBelowTake = { a: unknown; b: unknown }
 export type IsBelow = boolean
 
-export type IsBetweenTake = { thing: unknown; min: unknown; max: unknown }
+export type IsBetweenTake = {
+  thing: unknown
+  min: unknown
+  max: unknown
+}
 export type IsBetween = boolean
 
 export type IsBlankTake = { thing: unknown }
@@ -36,7 +40,7 @@ export type IsDecimal = boolean
 export type IsEmailTake = { text: string }
 export type IsEmail = boolean
 
-export type IsEqualTake = { this: unknown; that: unknown }
+export type IsEqualTake = { a: unknown; b: unknown }
 export type IsEqual = boolean
 
 export type IsFiniteTake = { number: number }
@@ -63,10 +67,10 @@ export type IsLowercase = boolean
 export type IsMapTake = { thing: unknown }
 export type IsMap = boolean
 
-export type IsMaxTake = { this: unknown; that: unknown }
+export type IsMaxTake = { a: unknown; b: unknown }
 export type IsMax = boolean
 
-export type IsMinTake = { this: unknown; that: unknown }
+export type IsMinTake = { a: unknown; b: unknown }
 export type IsMin = boolean
 
 export type IsNegativeTake = { number: number }
@@ -83,6 +87,9 @@ export type IsOne = boolean
 
 export type IsPositiveTake = { number: number }
 export type IsPositive = boolean
+
+export type IsPresentTake = { thing: unknown }
+export type IsPresent = boolean
 
 export type IsSlugTake = { text: string }
 export type IsSlug = boolean

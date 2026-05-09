@@ -3,28 +3,62 @@
 export type FormatCapitalizedTake = { text: string }
 export type FormatCapitalized = string
 
-export type FormatCurrencyTake = { value: number; currency: string; locale?: string }
+export type FormatCurrencyTake = {
+  value: number
+  currency: string
+  locale?: string
+}
 export type FormatCurrency = string
 
-export type FormatDateTake = { value: Date; locale?: string; style?: string }
+export type FormatDateTake = {
+  value: Date
+  locale?: string
+  style?: 'full' | 'long' | 'medium' | 'short'
+}
 export type FormatDate = string
 
 export type FormatJoinedTake = { parts: string[]; separator?: string }
 export type FormatJoined = string
 
-export type FormatNumberTake = { value: number; locale?: string; minimum?: number; maximum?: number }
+export type FormatLowercaseTake = { text: string; locale?: string }
+export type FormatLowercase = string
+
+export type FormatNumberTake = {
+  value: number
+  locale?: string
+  minimum?: number
+  maximum?: number
+}
 export type FormatNumber = string
 
-export type FormatPercentTake = { value: number; locale?: string; minimum?: number; maximum?: number }
+export type FormatPercentTake = {
+  value: number
+  locale?: string
+  minimum?: number
+  maximum?: number
+}
 export type FormatPercent = string
 
-export type FormatPluralTake = { count: number; singular: string; plural: string; locale?: string }
+export type FormatPluralTake = {
+  count: number
+  singular: string
+  plural: string
+  locale?: string
+}
 export type FormatPlural = string
 
-export type FormatRelativeTake = { value: Date; locale?: string; now?: Date }
+export type FormatRelativeTake = {
+  value: Date
+  locale?: string
+  now?: Date
+}
 export type FormatRelative = string
 
-export type FormatReplacedTake = { text: string; pattern: string; replacement: string }
+export type FormatReplacedTake = {
+  text: string
+  pattern: string
+  replacement: string
+}
 export type FormatReplaced = string
 
 export type FormatReversedTake = { text: string }
@@ -33,8 +67,19 @@ export type FormatReversed = string
 export type FormatSplitTake = { text: string; separator: string }
 export type FormatSplit = { value: string[] }
 
-export type FormatTimeTake = { value: Date; locale?: string; style?: string }
+export type FormatTimeTake = {
+  value: Date
+  locale?: string
+  style?: 'full' | 'long' | 'medium' | 'short'
+}
 export type FormatTime = string
 
-export type FormatTruncatedTake = { text: string; length: number; suffix?: string }
+export type FormatTruncatedTake = {
+  text: string
+  length: number
+  suffix?: string
+}
 export type FormatTruncated = string
+
+export type FormatUppercaseTake = { text: string; locale?: string }
+export type FormatUppercase = string

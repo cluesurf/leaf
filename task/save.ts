@@ -1,34 +1,34 @@
 /**
- * Build-time script: generate `code/base/code.ts` (the bundled
- * `Code` aggregate + `CodeLink` table) and per-`save`-directory
- * `index.ts` files (one per verb group) from the standard
- * catalog Book. Run with `pnpm tsx task/save.ts` (or
- * `pnpm make:base`).
+ * Build-time codegen. Reads the standard catalog Book and
+ * regenerates the per-verb TS type aliases plus the bundled
+ * `Code` aggregate + `CodeLink` integer-id table.
+ *
+ * Output (rooted at `code/book`):
+ *   code.ts                — Code + CodeLink
+ *   <verb>/index.ts        — TS type aliases per declared cast
+ *   <verb>/data.ts         — literal data for Hash/List with `load:`
+ *
+ * Run with `pnpm tsx task/save.ts` (or `pnpm make:base`).
  */
 
-import { Make } from '../code/make'
+import save from '../code/save'
 import beadBook from '../code/book'
 
 async function main() {
-  const make = new Make({ link: 'code/base' })
-  make.load(beadBook)
+  const result = await save({ link: 'code/book', book: beadBook })
 
-  const result = await make.save()
-
+  const codeLines = result.code.split('\n').length
   console.log(
-    `wrote code/base/code.ts (${result.code.length} chars, ${
-      result.code.split('\n').length
-    } lines)`,
+    `wrote code/book/code.ts (${result.code.length} chars, ${codeLines} lines)`,
   )
   for (const [stream, bundle] of [
     ['index.ts', result.link],
-    ['form.ts', result.form],
-    ['base.ts', result.base],
+    ['data.ts', result.base],
   ] as const) {
-    for (const [save, content] of Object.entries(bundle)) {
-      const dir = save || '(root)'
+    for (const [verb, content] of Object.entries(bundle)) {
+      const dir = verb || '(root)'
       console.log(
-        `wrote code/base/${dir}/${stream} (${content.length} chars, ${
+        `wrote code/book/${dir}/${stream} (${content.length} chars, ${
           content.split('\n').length
         } lines)`,
       )
