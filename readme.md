@@ -29,6 +29,28 @@ The same tree shape works as a localization template, a computed label,
 a control-flow expression, or a small UI component. Trees are pure data,
 safe to ship over the wire and store as JSON.
 
+## Why you need this
+
+| building | what calm gives you |
+|---|---|
+| **Template docs editor** (Notion-class) | one tree shape for blocks, inline marks, embeds, and database views; per-mark patches via `bindPatch` so the editor updates in O(dirty) not O(tree) |
+| **Localization layer** | locale-aware `format(*)`, CLDR plural categories, gender select, RTL handling, runs through the same `make.render` |
+| **Read-only content site** (blog, docs, wiki) | author once as JSON, render to HTML server-side and to React/Preact client-side from the same tree |
+| **Form validation rules** | `validate` flow + `is(*)`/`has(*)` predicates compose into trees that round-trip to JSON for storage |
+| **Constraint engine** for user-authored data | tree-form rules ship over the wire; the host's `Base` evaluates them sandboxed against a host scope |
+| **Email / SMS templates** | text renderer spits strings; locale + scope thread through; no DOM dependency |
+| **Computed columns / formulas** in a database | `make.call('formula', ...)` compiled to integer-dispatched ops; safe arithmetic / string / date catalog |
+| **AI-generated documents** | LLM emits JSON conforming to your `Code` schema; Zod parsers from codegen reject malformed output before it reaches the renderer |
+| **Config-driven UIs** | declare views + bindings as data; the runtime hydrates against any vdom |
+| **Reusable doc fragments** (snippets, partials) | `Fold` declarations registered in the Book; reference by name with `make.fold(name, { …params })` and the runtime substitutes inline |
+| **Editor with undo / time-travel** | every Cast carries an optional `mark` (UUID v7); patches address by mark; cached outputs survive across patch chains |
+| **Wire-format-stable bytecode** | `compile(tree, codeTable)` rewrites string verbs to integer ids for fast dispatch; `decompile` reverses for editor inspection |
+
+You don't need calm for trivial templating (template literals will do).
+Reach for it when the **same tree** has to render in multiple targets,
+ship over the wire, survive editor patches, and resolve verbs against a
+typed catalog.
+
 ## Installation
 
 ```
