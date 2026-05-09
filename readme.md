@@ -17,39 +17,30 @@
 
 ## What is bead
 
-Bead is a JSON template language. You write trees of values, references,
-conditionals, loops, and views; the runtime renders them to text or to
-vdom elements (React, Preact, anything h-shaped).
+Bead is **not a pretty templating mini-language**. It's a simplified,
+easy-to-grok **JSON system** for building app features where end users
+author rich documents or rules and you save their work to your database
+as JSON. The runtime renders that JSON to text or vdom (React, Preact,
+anything h-shaped), and you extend it with your own components, hooks,
+and catalog flows.
 
-It comes with a typed catalog. You declare your verbs and types as Forms
-/ Flows, run codegen, and get strongly-typed runtime dispatch with
-compiled integer ids for hot paths.
-
-The same tree shape works as a localization template, a computed label,
-a control-flow expression, or a small UI component. Trees are pure data,
-safe to ship over the wire and store as JSON.
+The pitch: trees are pure data, safe to ship over the wire and store as
+JSON, with strongly-typed runtime dispatch via codegen and a sandbox so
+user-supplied logic can't reach the host runtime.
 
 ## Why you need this
 
-| building | what bead gives you |
-|---|---|
-| **Template docs editor** (Notion-class) | one tree shape for blocks, inline marks, embeds, and database views; per-mark patches via `bindPatch` so the editor updates in O(dirty) not O(tree) |
-| **Localization layer** | locale-aware `format(*)`, CLDR plural categories, gender select, RTL handling, runs through the same `make.render` |
-| **Read-only content site** (blog, docs, wiki) | author once as JSON, render to HTML server-side and to React/Preact client-side from the same tree |
-| **Form validation rules** | `validate` flow + `is(*)`/`has(*)` predicates compose into trees that round-trip to JSON for storage |
-| **Constraint engine** for user-authored data | tree-form rules ship over the wire; the host's `Base` evaluates them sandboxed against a host scope |
-| **Email / SMS templates** | text renderer spits strings; locale + scope thread through; no DOM dependency |
-| **Computed columns / formulas** in a database | `make.call('formula', ...)` compiled to integer-dispatched ops; safe arithmetic / string / date catalog |
-| **AI-generated documents** | LLM emits JSON conforming to your `Code` schema; Zod parsers from codegen reject malformed output before it reaches the renderer |
-| **Config-driven UIs** | declare views + bindings as data; the runtime hydrates against any vdom |
-| **Reusable doc fragments** (snippets, partials) | `Fold` declarations registered in the Book; reference by name with `make.fold(name, { …params })` and the runtime substitutes inline |
-| **Editor with undo / time-travel** | every Cast carries an optional `mark` (UUID v7); patches address by mark; cached outputs survive across patch chains |
-| **Wire-format-stable bytecode** | `compile(tree, codeTable)` rewrites string verbs to integer ids for fast dispatch; `decompile` reverses for editor inspection |
+| building                                                | what bead gives you                                                                                                                                                            |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Notion-class doc editor**                             | one tree shape for blocks / inline / embeds / database views; per-mark `bindPatch` updates only dirty subtrees                                                                 |
+| **Multi-target rendering** (HTML + React + email + AMP) | author once as JSON; text and vdom renderers share the same tree                                                                                                               |
+| **Localization**                                        | locale-aware `format(*)`, CLDR plurals, gender select, RTL — same render path                                                                                                  |
+| **User- or AI-supplied logic, sandboxed**               | tree-form rules + formulas run against a host-controlled scope. No `eval`, no DOM, no network. Zod parsers (from codegen) reject malformed input before it reaches the runtime |
 
-You don't need bead for trivial templating (template literals will do).
-Reach for it when the **same tree** has to render in multiple targets,
-ship over the wire, survive editor patches, and resolve verbs against a
-typed catalog.
+You don't need bead for trivial templating. Reach for it when the same
+tree has to render in multiple targets, ship over the wire, survive
+editor patches, sandbox user-supplied logic, and resolve verbs against a
+typed catalog you control.
 
 ## Installation
 
