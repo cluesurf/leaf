@@ -101,6 +101,49 @@ describe('fold primitive', () => {
       }),
     ).toBe(null)
   })
+
+  it('auto-resolves through a Book registered on Base', async () => {
+    const { Base } = await import('@/base')
+    const greetingTree = make.templateString(
+      'Hello, ',
+      make.read('name'),
+      '!',
+    )
+    const base = new Base()
+    base.load({
+      cast: [
+        {
+          form: 'fold',
+          cast: 'greeting',
+          tree: [greetingTree],
+        },
+      ],
+    })
+    const out = base.cast(
+      make.fold('greeting', { name: 'Lance' }),
+    )
+    expect(out).toBe('Hello, Lance!')
+  })
+
+  it('multi-node Fold trees concatenate in text mode', async () => {
+    const { Base } = await import('@/base')
+    const base = new Base()
+    base.load({
+      cast: [
+        {
+          form: 'fold',
+          cast: 'list',
+          tree: [
+            'a-',
+            { form: 'reference', name: 'item' },
+            '-z',
+          ],
+        },
+      ],
+    })
+    const out = base.cast(make.fold('list', { item: 'mid' }))
+    expect(out).toBe('a-mid-z')
+  })
 })
 
 describe('compile pass walks find / fold subtrees', () => {

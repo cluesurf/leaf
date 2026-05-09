@@ -108,6 +108,14 @@ function buildKey(
 
 export class Base<R = Code> {
   private hook = new Map<HookName, Hook>()
+  /**
+   * Registered Fold declarations keyed by `cast:` name. Loaded
+   * from `book.cast` entries with `form: 'fold'`. Looked up by
+   * `cast(tree)` when an AST `FoldPrimitive` is encountered, so
+   * `make.fold('greeting', { ... })` substitutes the named tree
+   * without needing a manual `context.fold` callback.
+   */
+  private fold = new Map<string, FoldNode>()
 
   /**
    * Register a Flow Hook. Three shapes:
@@ -252,6 +260,21 @@ export class Base<R = Code> {
     const codeTable = book.code
 
     for (const cast of book.cast ?? []) {
+      // Top-level Fold declarations: index by name for AST
+      // `make.fold(name, ...)` resolution at render time.
+      if (cast.form === 'fold') {
+        const fold = cast as { cast: string; tree: FoldNode[] }
+        // Wrap multi-node trees in a template_string so the
+        // single-Cast resolver contract holds. Renderers
+        // concatenate (text) or fragment (element).
+        const tree: FoldNode =
+          fold.tree.length === 1
+            ? fold.tree[0]!
+            : { form: 'template_string', flow: fold.tree }
+        this.fold.set(fold.cast, tree)
+        continue
+      }
+
       if (cast.form !== 'flow') continue
       const flow = cast as {
         call: string
@@ -306,6 +329,7 @@ export class Base<R = Code> {
     // lookup key from `(node.name, node.base, node.case)` or
     // short-circuit via `node.code` when present.
     const hookStore = this.hook
+    const foldStore = this.fold
     return evaluateText(tree, {
       scope: scope ?? makeScope(),
       call: node => {
@@ -320,6 +344,7 @@ export class Base<R = Code> {
           | ((input: any) => unknown)
           | undefined
       },
+      fold: name => foldStore.get(name),
     })
   }
 
