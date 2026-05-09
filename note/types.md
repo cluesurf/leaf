@@ -172,7 +172,7 @@ type story; that file is the reference implementation.
 
 ## Multiple registered Books
 
-A consumer registers multiple Books with `make.book(...)`.
+A consumer registers multiple Books with `make.load(...)`.
 Each Book's entries land in `Code` under the Book's own
 `host:name` prefix:
 

@@ -52,5 +52,5 @@ new Make({
   cast: CAST,
   hook: HOOK,
 })
-  .book(TEST_BOOK)
+  .load(TEST_BOOK)
   .save()

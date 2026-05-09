@@ -80,7 +80,7 @@ Three common sources:
 1. **Published packages.** A library author writes their schemas, runs
    their own codegen, and ships an `index.ts` that default-exports a
    `Book`. Consumers `import standard from '@cluesurf/calm'` and pass it
-   to `make.book(...)`.
+   to `make.load(...)`.
 2. **In-tree authoring.** A host application authors Forms and Flows in
    its own source tree, collects them into a Book, registers it with
    `Make` like any external Book.
@@ -96,7 +96,7 @@ All three paths produce the same type, registered the same way.
 | `Book` | type  | THIS DOC. The bundle.                                                           |
 | `Code` | type  | Generated. Aggregates every registered Book's entries into one type.            |
 | `Base` | class | Runtime. Hosts attach handlers to its registered flows and dispatch calls.      |
-| `Make` | class | Build-time. `make.book(book)` registers a Book; `make.save()` emits the bundle. |
+| `Make` | class | Build-time. `make.load(book)` registers a Book; `make.save()` emits the bundle. |
 
 See [`architecture.md`](./architecture.md) for the end-to-end flow and
 [`schema.md`](./schema.md) for the shape of `Form`, `Flow`, etc.
@@ -149,7 +149,7 @@ import { myBook } from '@cluesurf/calm-languages'
 
 const make = new Make({ link: './libs' })
 
-make.book(myBook)
+make.load(myBook)
 await make.save()
 ```
 

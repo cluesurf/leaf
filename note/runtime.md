@@ -171,8 +171,13 @@ type.
 
 ## Real-time partial recompilation
 
+> **Planned, not implemented.** `base.bindPatch` is part of the editor
+> roadmap. Today the runtime exposes `base.cast(tree, scope)` for
+> full-tree evaluation; partial-patch reuse is conceptually outlined
+> below.
+
 The editor calls `base.bindPatch(prev, patch)` instead of
-re-running `base.bind`. The runtime supports this via three
+re-running `base.cast`. The runtime supports this via three
 caches:
 
 1. **Compile cache.** Keyed by node `id` + content hash. The
@@ -232,11 +237,11 @@ use the `bind` flow to define a named subtree, then reference
 it from inside `walk`:
 
 ```typescript
-flow.call('bind', {
+make.call('bind', {
   names: {
-    check: <recursive subtree that calls flow.read('check') inside walk>,
+    check: <recursive subtree that calls make.read('check') inside walk>,
   },
-  then: flow.read('check'),
+  then: make.read('check'),
 })
 ```
 
@@ -268,7 +273,7 @@ the call boundary, not inside the authored Fold.
 
 ## Determinism
 
-Two runs of `base.bind(tree, host)` with the same `host` and
+Two runs of `base.cast(tree, scope)` with the same `scope` and
 the same `tree` always produce the same `output` (modulo
 async lookups whose backing data changed). This is essential
 for caching, testing, and reproducibility of authored
@@ -300,8 +305,8 @@ the boundary; the synchronous evaluator never sees parallelism.
 For an editor running at 60fps with 16ms frames, the runtime
 aims for:
 
-- **Cold `base.bind` of a 10,000-node document**: under 200ms.
-- **Hot `base.bindPatch` of a single-node edit**: under 5ms.
+- **Cold `base.cast` of a 10,000-node document**: under 200ms.
+- **Hot `base.cast`  of a single-node edit**: under 5ms.
 - **Memory** per cached tree: linear in node count, ~200 bytes
   per node.
 

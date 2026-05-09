@@ -1,6 +1,6 @@
-import make_types, { Hold } from './form'
-import make_parsers from './take'
-import make_constants from './base'
+import makeTypes, { Hold } from './form'
+import makeParsers from './take'
+import makeConstants from './base'
 import {
   Load,
   type Book,
@@ -31,7 +31,7 @@ export interface MakeBack {
  *
  * Most consumers should use the `Make` class wrapper below
  * instead of calling this function directly. The class
- * accepts `Book` values via `make.book(book)` and converts
+ * accepts `Book` values via `make.load(book)` and converts
  * them to `MakeInput` internally.
  */
 export default async function makeTree({
@@ -41,24 +41,24 @@ export default async function makeTree({
 }: MakeInput): Promise<MakeBack> {
   const hold: Hold = { load: {}, save: {} }
 
-  const type_list_hash = make_types(baseMesh, hold)
-  const parser_list_hash = make_parsers(baseMesh, hold)
-  const constant_list_hash = make_constants(baseMesh, hold)
+  const typeListHash = makeTypes(baseMesh, hold)
+  const parserListHash = makeParsers(baseMesh, hold)
+  const constantListHash = makeConstants(baseMesh, hold)
 
   const form: Record<string, string> = {}
   const take: Record<string, string> = {}
   const base: Record<string, string> = {}
 
-  for (const file in type_list_hash) {
-    const list = type_list_hash[file]
+  for (const file in typeListHash) {
+    const list = typeListHash[file]
     if (list?.length) {
       const castList = [...makeLoadList(hold, file), ...list]
       form[file] = castList.join('\n')
     }
   }
 
-  for (const file in constant_list_hash) {
-    const list = constant_list_hash[file]
+  for (const file in constantListHash) {
+    const list = constantListHash[file]
     if (list?.length) {
       const castList = [...makeLoadList(hold, file), ...list]
 
@@ -66,8 +66,8 @@ export default async function makeTree({
     }
   }
 
-  for (const file in parser_list_hash) {
-    const list = parser_list_hash[file]
+  for (const file in parserListHash) {
+    const list = parserListHash[file]
     if (list?.length) {
       const castList = [
         `import { z } from 'zod'`,
@@ -156,12 +156,12 @@ import type { CastHash, HookHash, NameHash } from '@/form'
  *
  *     const make = new Make({ link: './libs' })
  *
- *     make.book(standardCatalog)
- *     make.book(myAppBook)
+ *     make.load(standardCatalog)
+ *     make.load(myAppBook)
  *
  *     await make.save()
  *
- * `make.book(book)` registers a Book; `make.save()` runs the
+ * `make.load(book)` registers a Book; `make.save()` runs the
  * codegen and (when `link` is a real directory) writes the
  * generated files to disk.
  *
@@ -193,7 +193,7 @@ export class Make {
 
   constructor(private take: MakeTake) {}
 
-  book(book: Book): this {
+  load(book: Book): this {
     this.books.push(book)
     return this
   }
@@ -228,7 +228,7 @@ export class Make {
     const linkMap: Record<string, any> = {}
 
     for (const book of this.books) {
-      for (const cast of book.base ?? []) {
+      for (const cast of book.cast ?? []) {
         if ('save' in cast && typeof cast.save === 'string') {
           mesh[cast.save] = cast
           linkMap[cast.save] = cast
@@ -323,7 +323,7 @@ function makeCode(books: Book[]): {
   // the bundled aggregate can import the right alias.
   const formRegistry = new Map<string, Form>()
   for (const book of books) {
-    for (const cast of book.base ?? []) {
+    for (const cast of book.cast ?? []) {
       if (cast.form === 'form') formRegistry.set(cast.cast, cast)
     }
   }
@@ -333,7 +333,7 @@ function makeCode(books: Book[]): {
   // Group casts by their `save` value (`''` = root directory).
   const groups = new Map<string, (Cast & { save?: string })[]>()
   for (const book of books) {
-    for (const cast of book.base ?? []) {
+    for (const cast of book.cast ?? []) {
       const save =
         ('save' in cast && typeof cast.save === 'string'
           ? cast.save
@@ -412,7 +412,7 @@ function makeCode(books: Book[]): {
 
   const codeBodyLines: string[] = ['export type Code = {']
   for (const book of books) {
-    for (const cast of book.base ?? []) {
+    for (const cast of book.cast ?? []) {
       const save =
         ('save' in cast && typeof cast.save === 'string'
           ? cast.save
@@ -536,7 +536,7 @@ function collectCollisions(books: Book[]): string[] {
 
   for (const book of books) {
     const label = bookLabel(book)
-    for (const cast of book.base ?? []) {
+    for (const cast of book.cast ?? []) {
       let key: string
       switch (cast.form) {
         case 'form': {
@@ -699,7 +699,7 @@ const PRIMITIVE_ZOD: Record<string, string> = {
 function makeForm(books: Book[]): Record<string, string> {
   const formRegistry = new Map<string, Form>()
   for (const book of books) {
-    for (const cast of book.base ?? []) {
+    for (const cast of book.cast ?? []) {
       if (cast.form === 'form') formRegistry.set(cast.cast, cast)
     }
   }
@@ -708,7 +708,7 @@ function makeForm(books: Book[]): Record<string, string> {
   // Group casts by save directory, just like makeCode.
   const groups = new Map<string, (Cast & { save?: string })[]>()
   for (const book of books) {
-    for (const cast of book.base ?? []) {
+    for (const cast of book.cast ?? []) {
       const save =
         ('save' in cast && typeof cast.save === 'string'
           ? cast.save
@@ -853,7 +853,7 @@ function zodRef(name: string, ctx: RenderContext): string {
 function makeBase(books: Book[]): Record<string, string> {
   const groups = new Map<string, (Cast & { save?: string })[]>()
   for (const book of books) {
-    for (const cast of book.base ?? []) {
+    for (const cast of book.cast ?? []) {
       const save =
         ('save' in cast && typeof cast.save === 'string'
           ? cast.save

@@ -1,5 +1,13 @@
 # Editor protocol
 
+> **Status: design spec, not implemented.** The current `Base` runtime
+> exposes `base.cast(tree, scope)` for whole-tree evaluation and
+> `base.load(book)` for catalog registration. The patch-based
+> `base.bindPatch(...)` API and the tiered `BindResult` shape below
+> describe the planned editor integration; they have not landed in
+> code yet. References in this doc to `base.bind` / `base.bindPatch`
+> reflect the planned API.
+
 The contract between a `Base` runtime and a document editor
 (typically browser-based). Patches go in, render diffs come
 out, validation errors flow throughout. Designed so the editor

@@ -170,7 +170,7 @@ The constructor takes a `MakeTake` — just `link` for the output folder.
 No host/name — the consuming host doesn't need an identity prefix
 because Code keys don't carry one.
 
-`make.book(book)` registers a Book. That's the entire registration
+`make.load(book)` registers a Book. That's the entire registration
 surface — no builder, no chained pickers, no per-entry overrides at the
 `Make` layer. Customization happens at the Book level (compose, patch,
 filter the Book value before passing it in).

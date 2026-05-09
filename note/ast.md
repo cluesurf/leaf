@@ -172,7 +172,7 @@ Evaluate `test`, run `then` if truthy, `fall` otherwise.
 
 ### `walk`. Iteration
 
-One Cast form, four variants distinguished by `case`. Modeled after
+One Cast form, three variants distinguished by `case`. Modeled after
 Seed-language's iterator design (see Seed's `book/code/iterators.md`).
 
 ```typescript
@@ -180,7 +180,6 @@ type Walk =
   | WalkTest // condition-based (while loop)
   | WalkList // for-each over a collection
   | WalkSize // numeric range (counted loop)
-  | WalkForm // iterator-protocol object
 
 type WalkTest = {
   form: 'walk'
@@ -193,11 +192,9 @@ type WalkTest = {
 type WalkList = {
   form: 'walk'
   case: 'list'
-  bind: Cast // the list being iterated
-  take?: {
-    head?: Link // iterator binding name (default: 'head')
-    slot?: Link // optional index binding
-  }
+  list: Cast // the list being iterated
+  item?: string // iterator binding name (default 'item')
+  index?: string // optional index binding (default 'index')
   hook: Cast // body, evaluated per item with the bound names
   mark?: string
 }
@@ -207,29 +204,22 @@ type WalkSize = {
   case: 'size'
   base: Cast // start value (inclusive)
   head: Cast // end value (exclusive)
-  step?: Cast // increment (default 1)
-  item?: string // counter binding (default: 'i')
-  index?: string
+  move?: number // increment (default 1, may be negative)
+  item?: string // iterator binding name (default 'head')
+  index?: string // step counter binding (default 'index')
   hook: Cast // body, evaluated per step
   mark?: string
 }
-
-type WalkForm = {
-  form: 'walk'
-  case: 'form'
-  source: Cast // an iterator-protocol object
-  item?: string // iterator binding name
-  hook: Cast // body
-  mark?: string
-}
 ```
+
+The `WalkTest` body has an iteration cap (10,000 by default) so a
+mistakenly stuck condition can't burn the renderer.
 
 | variant      | traditional analogue | use                  |
 | ------------ | -------------------- | -------------------- |
 | `walk(test)` | `while (cond)`       | condition-based loop |
 | `walk(list)` | `for x in list`      | collection iteration |
 | `walk(size)` | `for i in 0..n`      | counted loop         |
-| `walk(form)` | `for x in iter`      | iterator protocol    |
 
 The `walk` family covers every iteration shape calm needs. There is no
 separate `loop` Cast form; numeric ranges are `walk` with
@@ -237,50 +227,73 @@ separate `loop` Cast form; numeric ranges are `walk` with
 
 ### Literals
 
-Primitive value Casts. All prefixed `Base` so they group as the base /
-primitive type-set, and to avoid collision with TypeScript's built-in
-`Number`, `Boolean`, `Date`:
+Scalar leaves are **bare native JS values** — no wrapper, no `form:`
+discriminant. Strings are strings; numbers are numbers; booleans are
+booleans; dates are `Date` instances; null is null. This keeps trees
+small on the wire and ergonomic in code.
 
 ```typescript
-type BaseString = { form: 'string'; text: string }
-type BaseInteger = { form: 'integer'; value: number }
-type BaseNaturalNumber = { form: 'natural_number'; value: number }
-type BaseNumber = { form: 'number'; value: number }
-type BaseBoolean = { form: 'boolean'; value: boolean }
-type BaseDate = { form: 'date'; value: string } // ISO string
-type BaseList = { form: 'list'; list: Cast[] }
-type BaseWeave = { form: 'weave'; list: Cast[] } // string concatenation
+type Literal = string | number | boolean | Date | null
 ```
 
-`weave` is a string-concatenation Cast. The renderer joins its
-children's rendered output.
+Two structural collection nodes stay tagged so they can't be confused
+with view `nest` children or arbitrary array-typed props:
 
-Note: the `Base` prefix on these literal types is a naming convention
-for the AST primitives. It is **not** the same as the `Code` interface
-that bundles every authored constant (see [`types.md`](./types.md)).
-They occupy different namespaces. Primitive-AST-type names start with
-`Base` followed by the primitive name; the bundled aggregate is `Base`
-alone.
+```typescript
+type ListPrimitive = { form: 'list'; list: Cast[] }
+type HashPrimitive = { form: 'hash'; base: Record<string, Cast> }
+```
+
+And one structural concatenation node, used in template-style trees:
+
+```typescript
+type TemplateStringPrimitive = { form: 'template_string'; flow: Cast[] }
+```
+
+`template_string` joins its children's rendered output. The text
+renderer concatenates strings; the element renderer wraps the children
+in a fragment.
+
+The full Cast union:
+
+```typescript
+type Cast = Literal | Structural
+
+type Structural =
+  | ListPrimitive
+  | HashPrimitive
+  | TemplateStringPrimitive
+  | Reference
+  | ReadPrimitive
+  | Call
+  | ForkPrimitive
+  | SwitchPrimitive
+  | MatchPrimitive
+  | CasePrimitive
+  | PickPrimitive
+  | WalkPrimitive
+  | ViewPrimitive
+```
 
 ## Auto-promotion
 
-When the Base builder DSL encounters a primitive where a Cast is
-expected, it wraps the primitive in the matching literal Cast
-automatically:
+The builder DSL accepts native scalars where a Cast is expected. Most
+inputs pass through identity; only plain arrays wrap into a tagged
+`list` so they don't collide with view-nest children:
 
 | input                  | becomes                                   |
 | ---------------------- | ----------------------------------------- |
-| `'hello'`              | `{ form: 'text', text: 'hello' }`         |
-| `0`                    | `{ form: 'natural_number', value: 0 }`    |
-| `-3`                   | `{ form: 'integer', value: -3 }`          |
-| `1.5`                  | `{ form: 'number', value: 1.5 }`          |
-| `true`                 | `{ form: 'boolean', value: true }`        |
-| `Date`                 | `{ form: 'date', value: <iso> }`          |
+| `'hello'`              | `'hello'` (unchanged)                     |
+| `42`                   | `42` (unchanged)                          |
+| `true`                 | `true` (unchanged)                        |
+| `Date` instance        | `Date` (unchanged)                        |
+| `null`                 | `null` (unchanged)                        |
 | `[a, b, c]`            | `{ form: 'list', list: [<promoted>...] }` |
 | object with `form` key | passed through unchanged                  |
 
-Promotion keeps authoring concise. The wire format is always the
-canonical Cast shape.
+Promotion is mostly a no-op now. The renderer's walkers handle native
+leaves up-front before dispatching on `node.form` for tagged
+structural nodes.
 
 ## Reading host
 
@@ -298,9 +311,9 @@ bindings. Built-in host variables (engine-provided):
 | `viewer`       | viewer's record id (optional)                |
 | `viewer_roles` | viewer's roles list (optional)               |
 
-User-bound variables come from `walk` iterators (any of the four cases.
-`test` / `list` / `size` / `form`) and from explicit `bind`
-(let-binding) calls in the standard catalog.
+User-bound variables come from `walk` iterators (any of the three
+cases: `test` / `list` / `size`) and from explicit `bind` (let-binding)
+calls in the standard catalog.
 
 ## Identity (`mark`)
 
@@ -329,9 +342,44 @@ Authors should never see the compiled form unless they're debugging.
 
 If a user-data key collides with a reserved key, that's a schema bug.
 Flag it at flow-registration time, not at runtime. The runtime then
-trusts that no Flow accepts an arg called `form` / `name` / `case` /
-`mark` / `code` / `bind`, because the validator already rejected such a
-Flow at registration.
+trusts that no Flow accepts an arg called `form` / `name` / `base` /
+`case` / `mark` / `code` / `bind`, because the validator already
+rejected such a Flow at registration.
+
+The full reserved set lives in code as
+[`RESERVED_CAST_KEYS`](../code/fold/types.ts):
+`form`, `name`, `base`, `case`, `mark`, `code`, `bind`.
 
 This means **flow args are guaranteed not to shadow reserved keys**,
 simplifying the dispatch code.
+
+## Builder API
+
+The runtime exposes builders under the `make` namespace from
+`@cluesurf/calm`. They produce the canonical Cast shape byte-for-byte
+and accept native scalars (auto-promoted only where structurally
+necessary, i.e. arrays).
+
+| builder                                     | produces                                                                                  |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `make.list([...])`                          | `{ form: 'list', list }`                                                                  |
+| `make.hash({ k: v })`                       | `{ form: 'hash', base: { k: v } }`                                                        |
+| `make.templateString(...children)`          | `{ form: 'template_string', flow }`                                                       |
+| `make.read(seg, seg, ...)`                  | `{ form: 'read', link: [...] }` (single bare-variable normalizes to `reference`)          |
+| `make.reference(name)`                      | `{ form: 'reference', name }`                                                             |
+| `make.variable / .field / .idx / .slice`    | typed `ReadLink` segments                                                                 |
+| `make.call(name, { base?, case?, ...args })` | make-form Call                                                                           |
+| `make.fork(test, then, fall?)`              | `{ form: 'fork', test, then, fall? }`                                                     |
+| `make.switch(value, [{ when, then }], fall?)` | `{ form: 'switch', value, cases, fall? }`                                                |
+| `make.match([{ test, then }], fall?)`       | `{ form: 'match', branches, fall? }`                                                      |
+| `make.case(test, [arm, ...])`               | `{ form: 'case', test, case: arms }`                                                      |
+| `make.value(v, body) / .testArm(call, body) / .otherwise(body)` | typed case arms                                                        |
+| `make.pick(...values)`                      | `{ form: 'pick', values: list }`                                                          |
+| `make.walk(list, hook, opts?)`              | `{ form: 'walk', case: 'list', list, hook, item?, index? }`                               |
+| `make.walkTest(test, hook)`                 | `{ form: 'walk', case: 'test', test, hook }`                                              |
+| `make.walkSize(base, head, hook, opts?)`    | `{ form: 'walk', case: 'size', base, head, hook, move?, item?, index? }`                  |
+| `make.view(name, props?, nest?)`            | `{ form: 'view', name, ...props, nest? }`                                                 |
+
+Plus rendering helpers (`make.render`, `make.scope`, `make.evaluate`)
+and the compile pass (`make.compile`, `make.decompile`,
+`make.buildDecodeTable`).

@@ -407,7 +407,7 @@ A host typically does:
    type from registered Books.
 2. `new Base<Code>(...)` instantiating the runtime.
 3. `base.flow(...)` for each app-specific handler.
-4. `base.bind(treeFromUser)` whenever a user-authored
+4. `base.cast(treeFromUser)` whenever a user-authored
    document needs to render.
 
 Handlers for upstream-Book flows are loaded from the

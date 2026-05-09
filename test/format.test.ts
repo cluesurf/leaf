@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { Base } from '../code'
-import standard, { hooks, CodeLink, type Code } from '../code/base'
+import standard, { hooks, CodeLink, type Code } from '../code/book'
 
 describe('format verb — text shaping', () => {
   const base = new Base<Code>()
-  base.bind(standard, hooks, CodeLink)
+  base.load(standard)
 
   it('format:capitalized capitalizes the first letter', () => {
     expect(
@@ -89,7 +89,7 @@ describe('format verb — text shaping', () => {
 
 describe('format verb — number formatting', () => {
   const base = new Base<Code>()
-  base.bind(standard, hooks, CodeLink)
+  base.load(standard)
 
   it('format:number applies locale-aware grouping', () => {
     expect(
@@ -125,7 +125,7 @@ describe('format verb — number formatting', () => {
 
 describe('format verb — date formatting', () => {
   const base = new Base<Code>()
-  base.bind(standard, hooks, CodeLink)
+  base.load(standard)
 
   it('format:date returns a non-empty string', () => {
     const result = base.call('format', {
@@ -153,7 +153,7 @@ describe('format verb — date formatting', () => {
 
 describe('format verb — pluralization', () => {
   const base = new Base<Code>()
-  base.bind(standard, hooks, CodeLink)
+  base.load(standard)
 
   it('format:plural picks singular for one', () => {
     expect(

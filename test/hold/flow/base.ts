@@ -1,6 +1,6 @@
-import type { Node } from '@cluesurf/form'
+import type { Cast } from '@cluesurf/form'
 
-export const MESSAGE_COUNT_TEMPLATE_TREE: Node[] = [
+export const MESSAGE_COUNT_TEMPLATE_TREE: Cast[] = [
   {
     form: 'text',
     text: 'You have ',

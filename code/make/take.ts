@@ -61,7 +61,7 @@ export default function make(base: Base, hold: Hold) {
     switch (site.form) {
       case 'form':
         list.push(``)
-        make_form({
+        makeForm({
           form: site,
           base,
           name,
@@ -72,7 +72,7 @@ export default function make(base: Base, hold: Hold) {
         })
         break
       case 'hash':
-        make_hash({
+        makeHash({
           hash: site,
           base,
           name,
@@ -84,7 +84,7 @@ export default function make(base: Base, hold: Hold) {
         break
       case 'list':
         list.push(``)
-        make_list({
+        makeList({
           list: site,
           base,
           name,
@@ -105,7 +105,7 @@ export default function make(base: Base, hold: Hold) {
   return hash
 }
 
-export function make_hash({
+export function makeHash({
   name,
   hash,
   base,
@@ -146,7 +146,7 @@ export function make_hash({
   return list
 }
 
-export function make_list({
+export function makeList({
   name,
   list,
   base,
@@ -193,7 +193,7 @@ export function make_list({
   return text
 }
 
-export function make_form({
+export function makeForm({
   name,
   form,
   base,
@@ -240,7 +240,7 @@ export function make_form({
     list.push(`export const ${typeParserName} =`)
   }
 
-  make_link_list({
+  makeLinkList({
     name,
     form,
     base,
@@ -288,7 +288,7 @@ export function make_form({
   return list
 }
 
-export function make_link_list({
+export function makeLinkList({
   form,
   base,
   leak,
@@ -437,7 +437,7 @@ export function make_link_list({
         }
       } else if (link.case) {
         if (Array.isArray(link.case)) {
-          const like_case: string[] = []
+          const likeCase: string[] = []
           link.case.forEach((c, i) => {
             if (c.like) {
               let type = castType(base, c.like)
@@ -445,12 +445,12 @@ export function make_link_list({
                 ? `.refine(TEST('${name}', code.${c.test}.test))`
                 : ''
               if (type) {
-                like_case.push(`${type}${r}`)
+                likeCase.push(`${type}${r}`)
               } else {
                 type = `${toPascalCase(c.like as string)}Parser`
                 if (base.mesh[c.like]) {
                   load[type] = true
-                  like_case.push(`z.lazy(() => ${type})${r}`)
+                  likeCase.push(`z.lazy(() => ${type})${r}`)
                 } else {
                   type = `z.instanceof(${findAndLinkName({
                     like: c.like as string,
@@ -458,13 +458,13 @@ export function make_link_list({
                     file,
                     hold,
                   })})`
-                  like_case.push(`${type}${r}`)
+                  likeCase.push(`${type}${r}`)
                 }
               }
             } else if (c.link) {
               const lines: string[] = []
               lines.push('z.object({')
-              make_link_list({
+              makeLinkList({
                 name,
                 form: c as LinkMesh,
                 base,
@@ -475,27 +475,27 @@ export function make_link_list({
                 lines.push(`  ${line}`)
               })
               lines.push('})')
-              like_case.push(lines.join('\n'))
+              likeCase.push(lines.join('\n'))
             }
           })
           list.push(
-            `  ${name}: ${oS}${aS}z.union([${like_case.join(
+            `  ${name}: ${oS}${aS}z.union([${likeCase.join(
               ', ',
             )}])${aE}${oE},`,
           )
         } else {
-          const like_case: string[] = []
+          const likeCase: string[] = []
           for (const name in link.case) {
-            like_case.push(`'${name}'`)
+            likeCase.push(`'${name}'`)
           }
           list.push(
-            `  ${name}: ${oS}${aS}z.enum([${like_case.join(
+            `  ${name}: ${oS}${aS}z.enum([${likeCase.join(
               ', ',
             )}])${aE}${oE},`,
           )
         }
       } else if (link.fuse) {
-        const like_fuse: string[] = []
+        const likeFuse: string[] = []
         link.fuse.forEach((c, i) => {
           if (c.like) {
             let type = castType(base, c.like)
@@ -503,12 +503,12 @@ export function make_link_list({
               ? `.refine(TEST('${name}', code.${c.test}.test))`
               : ''
             if (type) {
-              like_fuse.push(`${type}${r}`)
+              likeFuse.push(`${type}${r}`)
             } else {
               type = `${toPascalCase(c.like as string)}Parser`
               if (base.mesh[c.like]) {
                 load[type] = true
-                like_fuse.push(`z.lazy(() => ${type})${r}`)
+                likeFuse.push(`z.lazy(() => ${type})${r}`)
               } else {
                 type = `z.instanceof(${findAndLinkName({
                   like: c.like as string,
@@ -516,13 +516,13 @@ export function make_link_list({
                   file,
                   hold,
                 })})`
-                like_fuse.push(`${type}${r}`)
+                likeFuse.push(`${type}${r}`)
               }
             }
           }
         })
         list.push(
-          `  ${name}: ${oS}${aS}z.intersection([${like_fuse.join(
+          `  ${name}: ${oS}${aS}z.intersection([${likeFuse.join(
             ', ',
           )}])${aE}${oE},`,
         )
@@ -534,7 +534,7 @@ export function make_link_list({
           )
         } else {
           list.push(`  ${name}: ${oS}${aS}z.object({`)
-          make_link_list({
+          makeLinkList({
             name,
             form: link as LinkMesh,
             base,
@@ -589,7 +589,7 @@ export function make_link_list({
       } else if ('link' in item) {
         const lines: string[] = []
         lines.push('z.object({')
-        make_link_list({
+        makeLinkList({
           name,
           form: item as LinkMesh,
           base,

@@ -1,5 +1,5 @@
 import { Hash, List, Form, Flow, Fold } from '../code/form'
-import { flow } from '../code/fold'
+import { make } from '../code/fold'
 import DATA from './data.json'
 
 export const ffmpeg_audio_codec: List = {
@@ -764,18 +764,18 @@ export const message_count_input: Form = {
 }
 
 export const message_count_template: Fold = {
-  form: 'fold',
+  form: 'make',
   save: '~/test/hold/flow',
   take: 'message_count_input',
   tree: [
-    flow.text('You have '),
-    flow.reference('count'),
-    flow.text(' '),
-    flow.pluralCases('count', {
+    make.text('You have '),
+    make.reference('count'),
+    make.text(' '),
+    make.pluralCases('count', {
       one: 'message',
       other: 'messages',
     }),
-    flow.text(', '),
-    flow.reference('name'),
+    make.text(', '),
+    make.reference('name'),
   ],
 }

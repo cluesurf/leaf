@@ -7,7 +7,7 @@
 import { createElement, Fragment } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, it, expect } from 'vitest'
-import { flow, renderElement, type ElementBuilder } from './index'
+import { make, renderElement, type ElementBuilder } from './index'
 
 const REACT = {
   builder: createElement as unknown as ElementBuilder<unknown>,
@@ -16,32 +16,32 @@ const REACT = {
 
 describe('renderElement', () => {
   it('renders text literals', () => {
-    const out = renderElement(flow.text('hello'), {
-      scope: flow.scope(),
+    const out = renderElement(make.text('hello'), {
+      scope: make.scope(),
       ...REACT,
     })
     expect(out).toBe('hello')
   })
 
   it('renders a weave as a fragment', () => {
-    const tree = flow.weave('I am ', flow.reference('status'), '.')
+    const tree = make.templateString('I am ', make.reference('status'), '.')
     const out = renderElement(tree, {
-      scope: flow.scope({ status: 'fine' }),
+      scope: make.scope({ status: 'fine' }),
       ...REACT,
     })
     expect(renderToStaticMarkup(out as never)).toBe('I am fine.')
   })
 
-  it('renders branch — truthy goes to then', () => {
-    const tree = flow.branch(
-      flow.gt(flow.reference('x'), 0),
+  it('renders fork — truthy goes to then', () => {
+    const tree = make.fork(
+      make.gt(make.reference('x'), 0),
       'yes',
       'no',
     )
     expect(
       renderToStaticMarkup(
         renderElement(tree, {
-          scope: flow.scope({ x: 5 }),
+          scope: make.scope({ x: 5 }),
           ...REACT,
         }) as never,
       ),
@@ -49,12 +49,12 @@ describe('renderElement', () => {
   })
 
   it('renders walk over a list', () => {
-    const tree = flow.walk(
-      flow.reference('items'),
-      flow.weave(flow.reference('item'), '|'),
+    const tree = make.walk(
+      make.reference('items'),
+      make.templateString(make.reference('item'), '|'),
     )
     const out = renderElement(tree, {
-      scope: flow.scope({ items: ['a', 'b', 'c'] }),
+      scope: make.scope({ items: ['a', 'b', 'c'] }),
       ...REACT,
     })
     expect(renderToStaticMarkup(out as never)).toBe('a|b|c|')
@@ -68,13 +68,13 @@ describe('renderElement', () => {
         props.body,
       )
 
-    const tree = flow.view('callout', {
+    const tree = make.view('callout', {
       variant: 'note',
       body: 'No images yet.',
     })
 
     const out = renderElement(tree, {
-      scope: flow.scope(),
+      scope: make.scope(),
       ...REACT,
       component: { callout: Callout as never },
     })
@@ -98,14 +98,14 @@ describe('renderElement', () => {
     const Para = (props: { children?: unknown }) =>
       createElement('p', null, props.children as never)
 
-    const tree = flow.view(
+    const tree = make.view(
       'section',
       { title: 'Phonology' },
-      [flow.view('paragraph', ['Inventory.'])],
+      [make.view('paragraph', ['Inventory.'])],
     )
 
     const out = renderElement(tree, {
-      scope: flow.scope(),
+      scope: make.scope(),
       ...REACT,
       component: {
         section: Section as never,
@@ -119,9 +119,9 @@ describe('renderElement', () => {
   })
 
   it('falls back to the bare view name when no component is registered', () => {
-    const tree = flow.view('span', { className: 'note' }, ['hi'])
+    const tree = make.view('span', { className: 'note' }, ['hi'])
     const out = renderElement(tree, {
-      scope: flow.scope(),
+      scope: make.scope(),
       ...REACT,
     })
     expect(renderToStaticMarkup(out as never)).toBe(
@@ -139,9 +139,9 @@ describe('renderElement', () => {
       ...children: unknown[]
     ): Tup => [type, props, children]
 
-    const tree = flow.weave('a', 'b', 'c')
+    const tree = make.templateString('a', 'b', 'c')
     const out = renderElement<Tup>(tree, {
-      scope: flow.scope(),
+      scope: make.scope(),
       builder: tup,
       // no fragment → renderer returns the child array directly
     })

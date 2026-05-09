@@ -31,7 +31,7 @@
 
 import type { Form, HookHash } from '@/form'
 import * as builtIn from '@/make/hook'
-import type { Node } from '../types'
+import type { Cast } from '../types'
 import type { Scope } from './scope'
 
 // ---------------------------------------------------------------------------
@@ -46,6 +46,22 @@ export type BaseContext = {
    * additions / overrides.
    */
   hook?: HookHash
+  /**
+   * Optional override that resolves a Call node to its handler
+   * based on the full `(name, base?, case?, code?)` identity.
+   * When supplied, takes precedence over `hook[name]` lookup.
+   *
+   * The runtime `Base.cast` uses this to dispatch
+   * `make.call('format', { base: 'capitalized', text: 'hi' })`
+   * through the catalog's colon-keyed registry (and to honor
+   * `code:` integer ids when present).
+   */
+  call?: (node: {
+    name?: string
+    base?: string
+    case?: string
+    code?: number
+  }) => CallHandler | undefined
 }
 
 // ---------------------------------------------------------------------------
@@ -69,40 +85,66 @@ export type CallEntry = {
 
 export function getCall(
   context: BaseContext,
-  name: string,
+  name: string | undefined,
 ): CallHandler | undefined {
+  if (name == null) return undefined
   const fn = context.hook?.[name] ?? DEFAULT_HOOK[name]
   return fn as CallHandler | undefined
 }
 
 /**
  * Pull operator args off a `call` node, evaluating any nested
- * flow nodes via the supplied walker. Reserved keys (`form`,
- * `name`, `version`, `id`, `meta`) are stripped.
+ * flow nodes via the supplied walker.
+ *
+ * Two call shapes per `note/ast.md`:
+ *
+ *  - **Make form** (authored): args sit flat at the top level
+ *    alongside identity (`form`, `name`, `base?`, `case?`,
+ *    `mark?`). Reserved keys are stripped; everything else is
+ *    a take-side arg.
+ *
+ *  - **Wake form** (compiled): args sit nested under `bind`,
+ *    with identity collapsed to `code` (integer id) plus
+ *    optional `mark`. When `bind` is present, args are read
+ *    from there directly.
  */
 export function collectCallArgs(
   node: Record<string, unknown>,
   context: BaseContext,
-  evaluateNode: (n: Node, context: BaseContext) => unknown,
+  evaluateNode: (n: Cast, context: BaseContext) => unknown,
 ): Record<string, unknown> {
+  // Wake form: args live under `bind`. Walk those values
+  // through the evaluator so nested casts resolve.
+  const bind = node.bind
+  if (bind != null && typeof bind === 'object' && !Array.isArray(bind)) {
+    const args: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(bind as Record<string, unknown>)) {
+      args[k] = isCast(v) ? evaluateNode(v as Cast, context) : v
+    }
+    return args
+  }
+
+  // Make form: walk top-level fields, skip reserved.
   const args: Record<string, unknown> = {}
   for (const k of Object.keys(node)) {
     if (
       k === 'form' ||
       k === 'name' ||
-      k === 'version' ||
-      k === 'id' ||
-      k === 'meta'
+      k === 'base' || // identity tuple — not a take arg
+      k === 'case' || // identity tuple — not a take arg
+      k === 'code' || // compiled integer id
+      k === 'mark' || // schema version stamp
+      k === 'bind' // already handled above (defensive)
     ) {
       continue
     }
     const v = node[k]
-    args[k] = isNode(v) ? evaluateNode(v as Node, context) : v
+    args[k] = isCast(v) ? evaluateNode(v as Cast, context) : v
   }
   return args
 }
 
-export function isNode(v: unknown): v is Node {
+export function isCast(v: unknown): v is Cast {
   return (
     v !== null &&
     typeof v === 'object' &&

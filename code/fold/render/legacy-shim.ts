@@ -1,9 +1,9 @@
 /**
- * Compatibility re-export. Originally lived at `fold/render.ts`
- * as a deprecated shim pointing at `fold/render/index.ts`.
+ * Compatibility re-export. Originally lived at `make/render.ts`
+ * as a deprecated shim pointing at `make/render/index.ts`.
  * Migrated into the `render/` folder during the calm cutover.
  * Direct imports from this file are deprecated. Import from
- * `@cluesurf/calm/fold` instead.
+ * `@cluesurf/calm/make` instead.
  */
 
 export {

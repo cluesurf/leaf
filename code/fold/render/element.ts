@@ -5,7 +5,7 @@
  * vdom you pass in (React, Preact, h-script, anything with the
  * `(type, props, ...children) => element` shape).
  *
- *   import { renderElement } from '@cluesurf/calm/fold/render/element'
+ *   import { renderElement } from '@cluesurf/calm/make/render/element'
  *   import { createElement, Fragment } from 'react'
  *
  *   renderElement(tree, {
@@ -35,19 +35,19 @@
  */
 
 import type {
-  CallNode,
+  Call,
   CaseArm,
-  CaseNode,
+  CasePrimitive,
   CaseValueArm,
-  Node,
-  ViewNode,
+  Cast,
+  ViewPrimitive,
 } from '../types'
 import { evaluatePath } from './path'
 import {
   collectCallArgs,
   deepEq,
   getCall,
-  isNode,
+  isCast,
   type BaseContext,
 } from './registry'
 import type { Scope } from './scope'
@@ -82,7 +82,7 @@ export type ElementContext<T = unknown, C = unknown> = BaseContext & {
 // ---------------------------------------------------------------------------
 
 export function renderElement<T = unknown, C = unknown>(
-  node: Node,
+  node: Cast,
   context: ElementContext<T, C>,
 ): T | string | null {
   return walkElement(node, context) as T | string | null
@@ -92,37 +92,42 @@ export function renderElement<T = unknown, C = unknown>(
 // Walker
 // ---------------------------------------------------------------------------
 
-function walkElement(node: Node, context: ElementContext): unknown {
+function walkElement(node: Cast, context: ElementContext): unknown {
+  // ----- native leaves -----
+  if (node === null || node === undefined) return null
+  if (typeof node === 'string') return node
+  if (typeof node === 'number') return String(node)
+  if (typeof node === 'boolean') return String(node)
+  if (node instanceof Date) return node.toISOString()
+
   switch (node.form) {
-    // ----- literals -----
-    case 'text':
-      return node.text
-    case 'integer':
-    case 'natural_number':
-    case 'number':
-    case 'boolean':
-    case 'date':
-      return String(node.value)
     case 'list':
       return wrapFragment(
         context,
         node.list.map((n, i) => keyed(walkElement(n, context), i)),
       )
-    case 'weave':
+    case 'template_string':
       return wrapFragment(
         context,
         node.flow.map((n, i) => keyed(walkElement(n, context), i)),
       )
+    case 'hash': {
+      const out: Record<string, unknown> = {}
+      for (const [k, v] of Object.entries(node.base)) {
+        out[k] = walkValue(v, context)
+      }
+      return out
+    }
 
     // ----- reads -----
     case 'reference':
       return toElementChild(context.scope.get(node.name))
-    case 'path':
+    case 'read':
       return toElementChild(
         evaluatePath(
           node,
           context,
-          walkValue as (n: Node, c: BaseContext) => unknown,
+          walkValue as (n: Cast, c: BaseContext) => unknown,
         ),
       )
 
@@ -131,7 +136,7 @@ function walkElement(node: Node, context: ElementContext): unknown {
       return toElementChild(evaluateCall(node, context))
 
     // ----- control flow -----
-    case 'branch': {
+    case 'fork': {
       const t = walkValue(node.test, context)
       if (t) return walkElement(node.then, context)
       return node.fall === undefined ? null : walkElement(node.fall, context)
@@ -165,58 +170,71 @@ function walkElement(node: Node, context: ElementContext): unknown {
       return null
     }
     case 'walk': {
-      const list = walkValue(node.list, context) as
-        | unknown[]
-        | null
-        | undefined
-      if (!Array.isArray(list)) return null
-      const itemName = node.item ?? 'item'
-      const indexName = node.index ?? 'index'
       const out: unknown[] = []
-      for (let i = 0; i < list.length; i += 1) {
-        const frame: Record<string, unknown> = {}
-        frame[itemName] = list[i]
-        frame[indexName] = i
-        const inner: ElementContext = {
-          ...context,
-          scope: context.scope.push(frame),
+      switch (node.case) {
+        case 'list': {
+          const list = walkValue(node.list, context) as
+            | unknown[]
+            | null
+            | undefined
+          if (!Array.isArray(list)) return null
+          const itemName = node.item ?? 'item'
+          const indexName = node.index ?? 'index'
+          for (let i = 0; i < list.length; i += 1) {
+            const frame: Record<string, unknown> = {}
+            frame[itemName] = list[i]
+            frame[indexName] = i
+            const inner: ElementContext = {
+              ...context,
+              scope: context.scope.push(frame),
+            }
+            out.push(keyed(walkElement(node.hook, inner), i))
+          }
+          break
         }
-        out.push(keyed(walkElement(node.hook, inner), i))
+        case 'test': {
+          const cap = 10_000
+          for (let i = 0; i < cap; i += 1) {
+            const t = walkValue(node.test, context)
+            if (!t) break
+            out.push(keyed(walkElement(node.hook, context), i))
+          }
+          break
+        }
+        case 'size': {
+          const base = Number(walkValue(node.base, context))
+          const head = Number(walkValue(node.head, context))
+          const move = node.move ?? 1
+          if (
+            !Number.isFinite(base) ||
+            !Number.isFinite(head) ||
+            move === 0
+          ) {
+            return null
+          }
+          const itemName = node.item ?? 'head'
+          const indexName = node.index ?? 'index'
+          let step = 0
+          for (
+            let i = base;
+            move > 0 ? i < head : i > head;
+            i += move
+          ) {
+            const frame: Record<string, unknown> = {}
+            frame[itemName] = i
+            frame[indexName] = step
+            const inner: ElementContext = {
+              ...context,
+              scope: context.scope.push(frame),
+            }
+            out.push(keyed(walkElement(node.hook, inner), step))
+            step += 1
+          }
+          break
+        }
       }
       return wrapFragment(context, out)
     }
-    case 'loop': {
-      const start = Number(walkValue(node.start, context))
-      const end = Number(walkValue(node.end, context))
-      const step =
-        node.step === undefined ? 1 : Number(walkValue(node.step, context))
-      const itemName = node.item ?? 'i'
-      const indexName = node.index ?? 'index'
-      const out: unknown[] = []
-      let idx = 0
-      for (let n = start; step > 0 ? n < end : n > end; n += step) {
-        const frame: Record<string, unknown> = {}
-        frame[itemName] = n
-        frame[indexName] = idx
-        const inner: ElementContext = {
-          ...context,
-          scope: context.scope.push(frame),
-        }
-        out.push(keyed(walkElement(node.hook, inner), idx))
-        idx += 1
-      }
-      return wrapFragment(context, out)
-    }
-    case 'attempt': {
-      try {
-        return walkElement(node.flow, context)
-      } catch {
-        return node.catch === undefined
-          ? null
-          : walkElement(node.catch, context)
-      }
-    }
-
     // ----- views -----
     case 'view':
       return walkView(node, context)
@@ -224,7 +242,7 @@ function walkElement(node: Node, context: ElementContext): unknown {
 
   throw new Error(
     `flow.renderElement: unknown form '${
-      (node as Node & { form: string }).form
+      (node as Cast & { form: string }).form
     }'`,
   )
 }
@@ -233,27 +251,33 @@ function walkElement(node: Node, context: ElementContext): unknown {
 // Value walker — used inside paths, predicates, branch tests
 // ---------------------------------------------------------------------------
 
-function walkValue(node: Node, context: ElementContext): unknown {
+function walkValue(node: Cast, context: ElementContext): unknown {
+  // ----- native leaves -----
+  if (node === null || node === undefined) return null
+  if (typeof node === 'string') return node
+  if (typeof node === 'number') return node
+  if (typeof node === 'boolean') return node
+  if (node instanceof Date) return node
+
   switch (node.form) {
-    case 'text':
-      return node.text
-    case 'integer':
-    case 'natural_number':
-    case 'number':
-    case 'boolean':
-    case 'date':
-      return node.value
     case 'list':
       return node.list.map(n => walkValue(n, context))
-    case 'weave':
+    case 'template_string':
       return node.flow.map(n => walkValue(n, context)).join('')
+    case 'hash': {
+      const out: Record<string, unknown> = {}
+      for (const [k, v] of Object.entries(node.base)) {
+        out[k] = walkValue(v, context)
+      }
+      return out
+    }
     case 'reference':
       return context.scope.get(node.name)
-    case 'path':
+    case 'read':
       return evaluatePath(
         node,
         context,
-        walkValue as (n: Node, c: BaseContext) => unknown,
+        walkValue as (n: Cast, c: BaseContext) => unknown,
       )
     case 'call':
       return evaluateCall(node, context)
@@ -268,7 +292,7 @@ function walkValue(node: Node, context: ElementContext): unknown {
 // View dispatch
 // ---------------------------------------------------------------------------
 
-function walkView(node: ViewNode, context: ElementContext): unknown {
+function walkView(node: ViewPrimitive, context: ElementContext): unknown {
   const type = context.component?.[node.name] ?? node.name
 
   // Resolve flat props.
@@ -277,15 +301,13 @@ function walkView(node: ViewNode, context: ElementContext): unknown {
     if (
       k === 'form' ||
       k === 'name' ||
-      k === 'version' ||
-      k === 'id' ||
-      k === 'meta' ||
+      k === 'mark' ||
       k === 'nest'
     ) {
       continue
     }
     const v = (node as Record<string, unknown>)[k]
-    props[k] = isNode(v) ? walkValue(v, context) : v
+    props[k] = isCast(v) ? walkValue(v, context) : v
   }
 
   // Resolve nest children.
@@ -300,7 +322,7 @@ function walkView(node: ViewNode, context: ElementContext): unknown {
 // Case
 // ---------------------------------------------------------------------------
 
-function walkCase(node: CaseNode, context: ElementContext): unknown {
+function walkCase(node: CasePrimitive, context: ElementContext): unknown {
   const subject = walkValue(node.test, context)
   for (const arm of node.case) {
     if (matchArm(arm, subject, context)) {
@@ -332,7 +354,7 @@ function matchArm(
 // Call helpers
 // ---------------------------------------------------------------------------
 
-function evaluateCall(node: CallNode, context: ElementContext): unknown {
+function evaluateCall(node: Call, context: ElementContext): unknown {
   const handler = getCall(context, node.name)
   if (!handler) {
     throw new Error(`flow.call: unknown operator '${node.name}'`)
@@ -340,13 +362,13 @@ function evaluateCall(node: CallNode, context: ElementContext): unknown {
   const args = collectCallArgs(
     node,
     context,
-    walkValue as (n: Node, c: BaseContext) => unknown,
+    walkValue as (n: Cast, c: BaseContext) => unknown,
   )
   return handler(args, context)
 }
 
 function evaluateCallWithSubject(
-  node: CallNode,
+  node: Call,
   subject: unknown,
   context: ElementContext,
 ): unknown {
@@ -357,7 +379,7 @@ function evaluateCallWithSubject(
   const args = collectCallArgs(
     node,
     context,
-    walkValue as (n: Node, c: BaseContext) => unknown,
+    walkValue as (n: Cast, c: BaseContext) => unknown,
   )
   if (args.subject === undefined) args.subject = subject
   return handler(args, context)

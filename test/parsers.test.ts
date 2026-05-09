@@ -13,26 +13,26 @@ import {
   IsStringTakeForm,
   IsAmongTakeForm,
   IsAllTakeForm,
-} from '../code/base/is/form'
+} from '../code/book/is/form'
 
 import {
   MakeSumTakeForm,
   MakeLowercaseTakeForm,
-} from '../code/base/make/form'
+} from '../code/book/make/form'
 
-import { GetLengthTakeForm, GetSumTakeForm } from '../code/base/get/form'
+import { GetLengthTakeForm, GetSumTakeForm } from '../code/book/get/form'
 
 import {
   HasPrefixTakeForm,
   HasItemTakeForm,
-} from '../code/base/has/form'
+} from '../code/book/has/form'
 
 import {
   FormatNumberTakeForm,
   FormatDateTakeForm,
   FormatPluralTakeForm,
   FormatTruncatedTakeForm,
-} from '../code/base/format/form'
+} from '../code/book/format/form'
 
 describe('generated Zod parsers — is verb', () => {
   it('IsIpaBroadTakeForm parses { text: string }', () => {

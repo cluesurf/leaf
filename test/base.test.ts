@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { Base } from '../code'
-import standard, { hooks, CodeLink, type Code } from '../code/base'
+import standard, { hooks, CodeLink, type Code } from '../code/book'
 
 // IPA symbol predicate — minimal stub for the example.
 const is_ipa_symbol = (ch: string): boolean =>
@@ -125,9 +125,9 @@ describe('Base runtime — type inference', () => {
     expect([k1, k2, k3, k4].length).toBe(4)
   })
 
-  it('base.bind(book, hooks) registers every Flow handler at once', () => {
+  it('base.load(book) registers every Flow handler at once', () => {
     const base = new Base<Code>()
-    base.bind(standard, hooks)
+    base.load({ ...standard, code: undefined })
 
     // The standard catalog has many flows; bind should
     // register a handler for each (Form/Hash/List entries
@@ -150,7 +150,7 @@ describe('Base runtime — type inference', () => {
 
   it('base.call(<id>, bind) dispatches via CodeLink integer ids', () => {
     const base = new Base<Code>()
-    base.bind(standard, hooks, CodeLink)
+    base.load(standard)
 
     // After bind() with CodeLink, integer-id dispatch hits
     // the same handlers the typed string form does.

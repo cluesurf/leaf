@@ -11,11 +11,11 @@
  */
 
 import type {
-  CallNode,
+  Call,
   CaseArm,
-  CaseNode,
+  CasePrimitive,
   CaseValueArm,
-  Node,
+  Cast,
 } from '../types'
 import { evaluatePath } from './path'
 import {
@@ -23,6 +23,7 @@ import {
   deepEq,
   getCall,
   type BaseContext,
+  type CallHandler,
 } from './registry'
 import { type Scope } from './scope'
 
@@ -31,7 +32,7 @@ export type TextContext = BaseContext
 /**
  * Render a flow node to a string.
  */
-export function renderText(node: Node, context: TextContext): string {
+export function renderText(node: Cast, context: TextContext): string {
   const value = evaluateText(node, context)
   return value == null ? '' : String(value)
 }
@@ -40,26 +41,31 @@ export function renderText(node: Node, context: TextContext): string {
  * Evaluate a flow node to a JS value (for the text-side
  * walker). Most consumers want `renderText` instead.
  */
-export function evaluateText(node: Node, context: TextContext): unknown {
+export function evaluateText(node: Cast, context: TextContext): unknown {
+  // ----- native leaves -----
+  if (node === null || node === undefined) return null
+  if (typeof node === 'string') return node
+  if (typeof node === 'number') return node
+  if (typeof node === 'boolean') return node
+  if (node instanceof Date) return node
+
   switch (node.form) {
-    // ----- literals -----
-    case 'text':
-      return node.text
-    case 'integer':
-    case 'natural_number':
-    case 'number':
-    case 'boolean':
-    case 'date':
-      return node.value
     case 'list':
       return node.list.map(n => evaluateText(n, context))
-    case 'weave':
+    case 'template_string':
       return node.flow.map(n => renderText(n, context)).join('')
+    case 'hash': {
+      const out: Record<string, unknown> = {}
+      for (const [k, v] of Object.entries(node.base)) {
+        out[k] = evaluateText(v, context)
+      }
+      return out
+    }
 
     // ----- reads -----
     case 'reference':
       return context.scope.get(node.name)
-    case 'path':
+    case 'read':
       return evaluatePath(node, context, evaluateText)
 
     // ----- calls -----
@@ -67,7 +73,7 @@ export function evaluateText(node: Node, context: TextContext): unknown {
       return evaluateCall(node, context)
 
     // ----- control flow -----
-    case 'branch': {
+    case 'fork': {
       const t = evaluateText(node.test, context)
       if (t) return evaluateText(node.then, context)
       return node.fall === undefined ? null : evaluateText(node.fall, context)
@@ -101,52 +107,73 @@ export function evaluateText(node: Node, context: TextContext): unknown {
       return null
     }
     case 'walk': {
-      const list = evaluateText(node.list, context) as
-        | unknown[]
-        | null
-        | undefined
-      if (!Array.isArray(list)) return ''
-      const itemName = node.item ?? 'item'
-      const indexName = node.index ?? 'index'
       const out: string[] = []
-      for (let i = 0; i < list.length; i += 1) {
-        const frame: Record<string, unknown> = {}
-        frame[itemName] = list[i]
-        frame[indexName] = i
-        const inner: TextContext = { ...context, scope: context.scope.push(frame) }
-        out.push(renderText(node.hook, inner))
+      switch (node.case) {
+        case 'list': {
+          const list = evaluateText(node.list, context) as
+            | unknown[]
+            | null
+            | undefined
+          if (!Array.isArray(list)) return ''
+          const itemName = node.item ?? 'item'
+          const indexName = node.index ?? 'index'
+          for (let i = 0; i < list.length; i += 1) {
+            const frame: Record<string, unknown> = {}
+            frame[itemName] = list[i]
+            frame[indexName] = i
+            const inner: TextContext = {
+              ...context,
+              scope: context.scope.push(frame),
+            }
+            out.push(renderText(node.hook, inner))
+          }
+          return out.join('')
+        }
+        case 'test': {
+          // While-style loop. Cap iterations to prevent
+          // accidental infinite loops in authored content.
+          const cap = 10_000
+          for (let i = 0; i < cap; i += 1) {
+            const t = evaluateText(node.test, context)
+            if (!t) break
+            out.push(renderText(node.hook, context))
+          }
+          return out.join('')
+        }
+        case 'size': {
+          const base = Number(evaluateText(node.base, context))
+          const head = Number(evaluateText(node.head, context))
+          const move = node.move ?? 1
+          if (
+            !Number.isFinite(base) ||
+            !Number.isFinite(head) ||
+            move === 0
+          ) {
+            return ''
+          }
+          const itemName = node.item ?? 'head'
+          const indexName = node.index ?? 'index'
+          let step = 0
+          for (
+            let i = base;
+            move > 0 ? i < head : i > head;
+            i += move
+          ) {
+            const frame: Record<string, unknown> = {}
+            frame[itemName] = i
+            frame[indexName] = step
+            const inner: TextContext = {
+              ...context,
+              scope: context.scope.push(frame),
+            }
+            out.push(renderText(node.hook, inner))
+            step += 1
+          }
+          return out.join('')
+        }
       }
-      return out.join('')
+      return ''
     }
-    case 'loop': {
-      const start = Number(evaluateText(node.start, context))
-      const end = Number(evaluateText(node.end, context))
-      const step =
-        node.step === undefined ? 1 : Number(evaluateText(node.step, context))
-      const itemName = node.item ?? 'i'
-      const indexName = node.index ?? 'index'
-      const out: string[] = []
-      let idx = 0
-      for (let n = start; step > 0 ? n < end : n > end; n += step) {
-        const frame: Record<string, unknown> = {}
-        frame[itemName] = n
-        frame[indexName] = idx
-        const inner: TextContext = { ...context, scope: context.scope.push(frame) }
-        out.push(renderText(node.hook, inner))
-        idx += 1
-      }
-      return out.join('')
-    }
-    case 'attempt': {
-      try {
-        return evaluateText(node.flow, context)
-      } catch {
-        return node.catch === undefined
-          ? ''
-          : evaluateText(node.catch, context)
-      }
-    }
-
     // ----- views (placeholder in text mode) -----
     case 'view':
       return `[view:${node.name}]`
@@ -154,7 +181,7 @@ export function evaluateText(node: Node, context: TextContext): unknown {
 
   throw new Error(
     `flow.renderText: unknown form '${
-      (node as Node & { form: string }).form
+      (node as Cast & { form: string }).form
     }'`,
   )
 }
@@ -163,7 +190,7 @@ export function evaluateText(node: Node, context: TextContext): unknown {
 // Case
 // ---------------------------------------------------------------------------
 
-function evaluateCase(node: CaseNode, context: TextContext): unknown {
+function evaluateCase(node: CasePrimitive, context: TextContext): unknown {
   const subject = evaluateText(node.test, context)
   for (const arm of node.case) {
     if (matchArm(arm, subject, context)) {
@@ -192,23 +219,36 @@ function matchArm(
 // Calls
 // ---------------------------------------------------------------------------
 
-function evaluateCall(node: CallNode, context: TextContext): unknown {
-  const handler = getCall(context, node.name)
+function resolveCall(
+  node: Call,
+  context: TextContext,
+): CallHandler | undefined {
+  // Prefer the runtime-supplied `call` resolver when present —
+  // it knows the catalog's (name, base, case) identity tuple
+  // and the integer `code` shortcut. Fall back to the legacy
+  // hook[name] lookup for make-internal operators.
+  const fromContext = context.call?.(node)
+  if (fromContext != null) return fromContext
+  return getCall(context, node.name)
+}
+
+function evaluateCall(node: Call, context: TextContext): unknown {
+  const handler = resolveCall(node, context)
   if (!handler) {
-    throw new Error(`flow.call: unknown operator '${node.name}'`)
+    throw new Error(`make.call: unknown operator '${node.name}'`)
   }
   const args = collectCallArgs(node, context, evaluateText)
   return handler(args, context)
 }
 
 function evaluateCallWithSubject(
-  node: CallNode,
+  node: Call,
   subject: unknown,
   context: TextContext,
 ): unknown {
-  const handler = getCall(context, node.name)
+  const handler = resolveCall(node, context)
   if (!handler) {
-    throw new Error(`flow.call: unknown operator '${node.name}'`)
+    throw new Error(`make.call: unknown operator '${node.name}'`)
   }
   const args = collectCallArgs(node, context, evaluateText)
   if (args.subject === undefined) args.subject = subject

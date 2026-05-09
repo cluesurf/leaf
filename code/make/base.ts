@@ -37,21 +37,21 @@ export default function make(base: Base, hold: Hold) {
 
     switch (site.form) {
       case 'hash':
-        make_hash({ hash: site, base, name, hold, file }).forEach(
+        makeHash({ hash: site, base, name, hold, file }).forEach(
           line => {
             list.push(line)
           },
         )
         break
       case 'list':
-        make_list({ list: site, base, name, hold, file }).forEach(
+        makeList({ list: site, base, name, hold, file }).forEach(
           line => {
             list.push(line)
           },
         )
         break
       case 'fold':
-        make_flow({ flow: site, base, name, hold, file }).forEach(
+        makeFlow({ flow: site, base, name, hold, file }).forEach(
           line => {
             list.push(line)
           },
@@ -67,13 +67,13 @@ export default function make(base: Base, hold: Hold) {
  * Emit the `Fold` node tree as a const so consumers can do:
  *
  *   import { MESSAGE_COUNT_FLOW } from './hold/flow/base'
- *   flow.renderText({ form: 'weave', flow: MESSAGE_COUNT_FLOW }, context)
+ *   flow.renderText({ form: 'template_string', flow: MESSAGE_COUNT_FLOW }, context)
  *
  * The `flow:` payload is plain data; `JSON.stringify` round-trips
  * cleanly because builders only emit literal node objects.
  */
 
-export function make_flow({
+export function makeFlow({
   name,
   flow,
   base,
@@ -92,20 +92,20 @@ export function make_flow({
   hold.save[TYPE_NAME] ??= { file }
   hold.load[file] ??= {}
 
-  // The `Node` type comes from the package root. Inlined because
+  // The `Cast` type comes from the package root. Inlined because
   // there's no schema entry to thread through `hold.save`.
   list.push(``)
-  list.push(`import type { Node } from '@cluesurf/calm'`)
+  list.push(`import type { Cast } from '@cluesurf/calm'`)
   list.push(``)
   list.push(
-    `export const ${TYPE_NAME}: Node[] = ` +
+    `export const ${TYPE_NAME}: Cast[] = ` +
       JSON.stringify(flow.tree, null, 2),
   )
 
   return list
 }
 
-export function make_hash({
+export function makeHash({
   name,
   hash,
   base,
@@ -160,7 +160,7 @@ export function make_hash({
   return list
 }
 
-export function make_list({
+export function makeList({
   name,
   list,
   base,

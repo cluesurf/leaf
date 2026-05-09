@@ -8,12 +8,26 @@
 
 <h3 align='center'>@cluesurf/calm</h3>
 <p align='center'>
-  A Template Composer ⋈
+  A Template Language ⋈
 </p>
 
 <br/>
 <br/>
 <br/>
+
+## What is calm
+
+Calm is a JSON template language. You write trees of values, references,
+conditionals, loops, and views; the runtime renders them to text or to
+vdom elements (React, Preact, anything h-shaped).
+
+It comes with a typed catalog. You declare your verbs and types as Forms
+/ Flows, run codegen, and get strongly-typed runtime dispatch with
+compiled integer ids for hot paths.
+
+The same tree shape works as a localization template, a computed label,
+a control-flow expression, or a small UI component. Trees are pure data,
+safe to ship over the wire and store as JSON.
 
 ## Installation
 
@@ -32,7 +46,7 @@ dispatch flows through the typed runtime:
 // code/base/is/make.ts — authored declarations
 import type { Flow } from '@cluesurf/calm'
 
-export const is_ipa_broad: Flow = {
+export const isIPABroad: Flow = {
   form: 'flow',
   save: 'is',
   call: 'is',
@@ -45,17 +59,17 @@ export const is_ipa_broad: Flow = {
 
 ```ts
 // code/base/is/flow.ts — handler
-export const is_ipa_broad = ({ text }: { text: string }): boolean =>
+export const isIPABroad = ({ text }: { text: string }): boolean =>
   /^[\p{L}\p{M}ˈˌːʼʰ]+$/u.test(text)
 ```
 
 ```ts
 // app.ts — runtime
 import { Base } from '@cluesurf/calm'
-import standard, { hooks, CodeLink, type Code } from './code/base'
+import standard, { type Code } from './code/book'
 
 const base = new Base<Code>()
-base.bind(standard, hooks, CodeLink)
+base.load(standard)
 
 base.call('is', { base: 'ipa', case: 'broad', text: 'fəˈnɛtɪk' })
 // → true
@@ -66,12 +80,24 @@ table, and per-verb Zod parsers from the registered Books.
 
 ## Architecture
 
-| name   | shape | role                                                          |
-| ------ | ----- | ------------------------------------------------------------- |
-| `Book` | type  | a published bundle of declarations (`host`, `name`, `base[]`) |
-| `Code` | type  | generated registry: every entry's colon-key → its TS type     |
-| `Base` | class | runtime; registers flow handlers AND dispatches calls         |
-| `Make` | class | codegen orchestrator; reads Books, emits artifacts            |
+| name   | shape | role                                                            |
+| ------ | ----- | --------------------------------------------------------------- |
+| `Book` | type  | a published bundle: `{ host?, name?, cast?, call?, code? }`     |
+| `Code` | type  | generated registry: every entry's colon-key → its TS type       |
+| `Base` | class | runtime; loads books, registers flow handlers, dispatches calls |
+| `Make` | class | codegen orchestrator; loads books, emits artifacts              |
+
+A `Book` carries three slots:
+
+| slot   | shape                    | role                                  |
+| ------ | ------------------------ | ------------------------------------- |
+| `cast` | `Cast[]`                 | the declarations (Form / Flow / …)    |
+| `call` | `Record<string, Hook>`   | runtime hook implementations          |
+| `code` | `Record<string, number>` | generated `CodeLink` integer-id table |
+
+`make.load(book)` registers a Book with the codegen orchestrator.
+`base.load(book)` wires every Flow's hook into the runtime in one call
+(plus integer-id mirrors when `book.code` is present).
 
 Two type primitives drive the schema layer:
 
@@ -88,16 +114,69 @@ Five verbs ship by default:
 
 | verb     | purpose                                          |
 | -------- | ------------------------------------------------ |
-| `is`     | predicates (`is_string`, `is_ipa_broad`, …)      |
+| `is`     | predicates (`is_string`, `isIPABroad`, …)        |
 | `make`   | transformations (`make_sum`, `make_lowercase`)   |
 | `get`    | accessors / aggregates (`get_length`, `get_sum`) |
 | `has`    | possession predicates (`has_prefix`, `has_key`)  |
 | `format` | locale-aware text/number/date formatting         |
 
-`code/fold/` adds an authored render-tree DSL — `flow.*` builders
-produce JSON ASTs that `renderText` turns into strings and
-`renderElement` turns into vdom elements (React, Preact, any
+## Fold trees — the render DSL
+
+`code/fold/` adds an authored render-tree DSL. The `make.*` builders
+produce JSON ASTs; `make.renderText` turns them into strings,
+`renderElement` turns them into vdom elements (React, Preact, any
 `createElement`-compatible factory).
+
+```ts
+import { make } from '@cluesurf/calm'
+
+const tree = make.templateString(
+  'You have ',
+  make.read('count'),
+  ' ',
+  make.pluralCases('count', { one: 'message', other: 'messages' }),
+)
+
+make.render(tree, { scope: make.scope({ count: 3 }) })
+// → 'You have 3 messages'
+```
+
+Native scalars (`string` / `number` / `boolean` / `Date`) are
+first-class fold-tree leaves — no wrapping required. Tagged structural
+nodes carry a `form:` discriminant: `template_string`, `list`, `hash`,
+`read`, `reference`, `fork`, `switch`, `match`, `case`, `pick`, `walk`,
+`view`, `call`.
+
+`walk` has three case-discriminated variants: `walk(list)` (for-each
+over a collection — the default `make.walk(list, hook)`), `walk(test)`
+(while-style — `make.walkTest(test, hook)`), and `walk(size)` (counted
+range — `make.walkSize(start, end, hook)`).
+
+## Make ↔ Wake compile pass
+
+Calls have two flavors. **Make form** (`name`, `base?`, `case?`, flat
+args) is what authors write and what's stored at rest. **Wake form**
+(`code: number`, `bind: {…args}`) is what the runtime evaluates.
+
+```ts
+import { make } from '@cluesurf/calm'
+import { CodeLink } from './code/book'
+
+const authored = make.eq(make.read('status'), 'on')
+// → { form: 'call', name: 'eq', a: {…}, b: 'on' }
+
+const compiled = make.compile(authored, CodeLink)
+// → { form: 'call', code: 1, bind: { a: {…}, b: 'on' } }
+
+const back = make.decompile(compiled, make.buildDecodeTable(CodeLink))
+// → original `authored` shape
+```
+
+Both flavors render identically. The runtime short-circuits via `code`
+when present and falls back to `(name, base, case)` lookup otherwise.
+The optional `mark?: string` (UUID v7 recommended) on every Call
+survives both directions, so editor identity and memoization keys stay
+stable across compile.
 
 ## Spec
 

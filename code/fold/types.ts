@@ -1,83 +1,38 @@
 /**
- * @cluesurf/flow type definitions.
+ * @cluesurf/calm fold-tree type definitions.
  *
- * Every flow tree node carries a `form` discriminant. Reserved
- * metadata keys are `form`, `name`, `version`, `id`, `meta`.
- * Operator-like nodes carry their args directly at the top
- * level (no `bind:` wrapper).
+ * Scalar leaves are native JS values: `string`, `number`,
+ * `boolean`, `Date`, `null`. Structural nodes carry a `form`
+ * discriminant. Reserved metadata keys on tagged nodes are
+ * `form`, `name`, `version`, `id`, `meta`.
  */
 
 export type Meta = Record<string, unknown>
 
 // ---------------------------------------------------------------------------
-// Literals
+// Literals — bare native values, no wrapper
 // ---------------------------------------------------------------------------
 
-export type TextNode = {
-  form: 'text'
-  text: string
-  id?: string
-  meta?: Meta
-}
+export type Literal = string | number | boolean | Date | null
 
-export type IntegerNode = {
-  form: 'integer'
-  value: number
-  id?: string
-  meta?: Meta
-}
+// ---------------------------------------------------------------------------
+// List + weave (structural — kept tagged so they don't collide
+// with view `nest` children or arbitrary native arrays in props)
+// ---------------------------------------------------------------------------
 
-export type NaturalNumberNode = {
-  form: 'natural_number'
-  value: number
-  id?: string
-  meta?: Meta
-}
-
-export type NumberNode = {
-  form: 'number'
-  value: number
-  id?: string
-  meta?: Meta
-}
-
-export type BooleanNode = {
-  form: 'boolean'
-  value: boolean
-  id?: string
-  meta?: Meta
-}
-
-export type DateNode = {
-  form: 'date'
-  value: string
-  id?: string
-  meta?: Meta
-}
-
-export type ListNode = {
+export type ListPrimitive = {
   form: 'list'
-  list: Node[]
+  list: Cast[]
   id?: string
   meta?: Meta
 }
 
-export type WeaveNode = {
-  form: 'weave'
-  flow: Node[]
+export type TemplateStringPrimitive = {
+  form: 'template_string'
+  flow: Cast[]
   id?: string
   meta?: Meta
 }
-
-export type Literal =
-  | TextNode
-  | IntegerNode
-  | NaturalNumberNode
-  | NumberNode
-  | BooleanNode
-  | DateNode
-  | ListNode
-  | WeaveNode
 
 // ---------------------------------------------------------------------------
 // Reads
@@ -104,22 +59,22 @@ export type FieldSeg = {
 
 export type IndexSeg = {
   form: 'index'
-  value: number | Node
+  value: number | Cast
   safe?: boolean
 }
 
 export type SliceSeg = {
   form: 'slice'
-  rise?: number | Node | null
-  fall?: number | Node | null
+  rise?: number | Cast | null
+  fall?: number | Cast | null
   safe?: boolean
 }
 
-export type PathSeg = VariableSeg | FieldSeg | IndexSeg | SliceSeg
+export type ReadLink = VariableSeg | FieldSeg | IndexSeg | SliceSeg
 
-export type PathNode = {
-  form: 'path'
-  path: PathSeg[]
+export type ReadPrimitive = {
+  form: 'read'
+  link: ReadLink[]
   id?: string
   meta?: Meta
 }
@@ -128,13 +83,33 @@ export type PathNode = {
 // Calls
 // ---------------------------------------------------------------------------
 
-export type CallNode = {
+/**
+ * A Call carries one of two flavors per `note/ast.md`:
+ *
+ *  - **Make form** (`name` set, args flat at top level) — what
+ *    authors write and what's stored at rest.
+ *  - **Wake form** (`code` set, args under `bind`) — what the
+ *    runtime evaluates after the compile step. Faster lookup,
+ *    args validated.
+ *
+ * Both forms share `mark?` (schema-version stamp / editor
+ * memoization key). The compile step preserves `mark`.
+ */
+export type Call = {
   form: 'call'
-  name: string
-  version?: number
-  id?: string
-  meta?: Meta
-  // operator args sit flat at the top level alongside metadata
+  /** Verb identity (make form). */
+  name?: string
+  /** Resource the verb acts on (make form). */
+  base?: string
+  /** Variant within `(name, base)` (make form). */
+  case?: string
+  /** Compiled integer id from `CodeLink` (wake form). */
+  code?: number
+  /** Args bag (wake form — produced by compile). */
+  bind?: Record<string, unknown>
+  /** Per-instance schema-version stamp (semver). */
+  mark?: string
+  // make-form take-side args sit flat at the top level
   [arg: string]: unknown
 }
 
@@ -142,30 +117,30 @@ export type CallNode = {
 // Control flow
 // ---------------------------------------------------------------------------
 
-export type BranchNode = {
-  form: 'branch'
-  test: Node
-  then: Node
-  fall?: Node
+export type ForkPrimitive = {
+  form: 'fork'
+  test: Cast
+  then: Cast
+  fall?: Cast
   version?: number
   id?: string
   meta?: Meta
 }
 
-export type SwitchNode = {
+export type SwitchPrimitive = {
   form: 'switch'
-  value: Node
-  cases: { when: Node; then: Node }[]
-  fall?: Node
+  value: Cast
+  cases: { when: Cast; then: Cast }[]
+  fall?: Cast
   version?: number
   id?: string
   meta?: Meta
 }
 
-export type MatchNode = {
+export type MatchPrimitive = {
   form: 'match'
-  branches: { test: Node; then: Node }[]
-  fall?: Node
+  branches: { test: Cast; then: Cast }[]
+  fall?: Cast
   version?: number
   id?: string
   meta?: Meta
@@ -174,107 +149,143 @@ export type MatchNode = {
 export type CaseValueArm = {
   form: 'case-value'
   value: string | number | boolean
-  flow: Node[]
+  flow: Cast[]
 }
 
 export type CaseTestArm = {
   form: 'case-test'
-  test: CallNode
-  flow: Node[]
+  test: Call
+  flow: Cast[]
 }
 
 export type CaseDefaultArm = {
   form: 'case-default'
-  flow: Node[]
+  flow: Cast[]
 }
 
 export type CaseArm = CaseValueArm | CaseTestArm | CaseDefaultArm
 
-export type CaseNode = {
+export type CasePrimitive = {
   form: 'case'
-  test: Node
+  test: Cast
   case: CaseArm[]
   id?: string
   meta?: Meta
 }
 
-export type PickNode = {
+export type PickPrimitive = {
   form: 'pick'
-  values: Node
+  values: Cast
   version?: number
   id?: string
   meta?: Meta
 }
 
-export type WalkNode = {
+/**
+ * Iteration. Three case-discriminated variants per
+ * `note/ast.md`:
+ *
+ *  - `walk(list)`  — for-each over a collection (the original)
+ *  - `walk(test)`  — while-style; loop while a test is truthy
+ *  - `walk(size)`  — counted range (i = base..head step move)
+ */
+export type WalkListPrimitive = {
   form: 'walk'
-  list: Node
+  case: 'list'
+  list: Cast
   item?: string
   index?: string
-  hook: Node
+  hook: Cast
   version?: number
   id?: string
   meta?: Meta
+  mark?: string
 }
 
-export type LoopNode = {
-  form: 'loop'
-  start: Node
-  end: Node
-  step?: Node
-  item?: string
-  index?: string
-  hook: Node
+export type WalkTestPrimitive = {
+  form: 'walk'
+  case: 'test'
+  test: Cast
+  hook: Cast
   version?: number
   id?: string
   meta?: Meta
+  mark?: string
 }
 
-export type AttemptNode = {
-  form: 'attempt'
-  flow: Node
-  catch?: Node
+export type WalkSizePrimitive = {
+  form: 'walk'
+  case: 'size'
+  base: Cast               // start (inclusive)
+  head: Cast               // end (exclusive)
+  move?: number            // increment, default 1
+  item?: string            // iterator binding name (default 'head')
+  index?: string           // optional index binding
+  hook: Cast
   version?: number
   id?: string
   meta?: Meta
+  mark?: string
 }
+
+export type WalkPrimitive =
+  | WalkListPrimitive
+  | WalkTestPrimitive
+  | WalkSizePrimitive
 
 export type ControlFlow =
-  | BranchNode
-  | SwitchNode
-  | MatchNode
-  | CaseNode
-  | PickNode
-  | WalkNode
-  | LoopNode
-  | AttemptNode
+  | ForkPrimitive
+  | SwitchPrimitive
+  | MatchPrimitive
+  | CasePrimitive
+  | PickPrimitive
+  | WalkPrimitive
+
+// ---------------------------------------------------------------------------
+// Hash (object literal — keys to Cast values)
+// ---------------------------------------------------------------------------
+
+export type HashPrimitive = {
+  form: 'hash'
+  base: Record<string, Cast>
+  id?: string
+  meta?: Meta
+}
 
 // ---------------------------------------------------------------------------
 // Views
 // ---------------------------------------------------------------------------
 
-export type ViewNode = {
+export type ViewPrimitive = {
   form: 'view'
   name: string
   version?: number
   id?: string
   meta?: Meta
-  nest?: Node[]
+  nest?: Cast[]
   // typed props sit flat at the top level
   [prop: string]: unknown
 }
 
 // ---------------------------------------------------------------------------
-// Union
+// Tagged structural nodes (everything carrying a `form:`)
 // ---------------------------------------------------------------------------
 
-export type Node =
-  | Literal
+export type Structural =
+  | ListPrimitive
+  | TemplateStringPrimitive
   | Reference
-  | PathNode
-  | CallNode
+  | ReadPrimitive
+  | Call
   | ControlFlow
-  | ViewNode
+  | HashPrimitive
+  | ViewPrimitive
+
+// ---------------------------------------------------------------------------
+// Cast — the universal tree node
+// ---------------------------------------------------------------------------
+
+export type Cast = Literal | Structural
 
 // ---------------------------------------------------------------------------
 // Reserved keys
@@ -285,10 +296,12 @@ export type Node =
  * Anything else at the top level of a `view` or `call` is a
  * user-defined prop / arg.
  */
-export const RESERVED_NODE_KEYS = new Set<string>([
+export const RESERVED_CAST_KEYS = new Set<string>([
   'form',
   'name',
-  'version',
-  'id',
-  'meta',
+  'base',
+  'case',
+  'mark',
+  'code',
+  'bind',
 ])

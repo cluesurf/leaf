@@ -79,7 +79,7 @@ See [`schema.md`](./schema.md) for the full reserved-prop spec.
 ## What the consumer provides
 
 A consumer host writes one codegen script. The pattern is flat: register
-one or more Books with `make.book(...)`, then call `make.save()`.
+one or more Books with `make.load(...)`, then call `make.save()`.
 
 ```typescript
 import { Make } from '@cluesurf/calm/make'
@@ -89,14 +89,14 @@ import myApp from './my-app/source'
 
 const make = new Make({ link: './libs' })
 
-make.book(standard)
-make.book(linguistics)
-make.book(myApp)
+make.load(standard)
+make.load(linguistics)
+make.load(myApp)
 
 await make.save()
 ```
 
-Each `make.book(book)` call registers the entire Book — every Form,
+Each `make.load(book)` call registers the entire Book — every Form,
 Flow, Fold, Hash, and List the Book contains.
 
 Calm assumes **globally unique entry names** across every registered
@@ -108,7 +108,7 @@ if two Books contribute entries with colliding identity tuples (see
 
 There is no per-entry override DSL on `Make`. If the host wants to
 rename, drop, or replace specific entries from a published Book, the
-host composes a new Book value before passing it to `make.book(...)`:
+host composes a new Book value before passing it to `make.load(...)`:
 
 ```typescript
 import linguistics from '@cluesurf/calm-linguistics'
@@ -138,9 +138,9 @@ const merged: Book = {
   base: [...(linguistics.base ?? []), ...(standard.base ?? [])],
 }
 
-make.book(filtered)
-make.book(renamed)
-make.book(merged)
+make.load(filtered)
+make.load(renamed)
+make.load(merged)
 ```
 
 A Book is plain data. Composition is plain object spread. That's the
@@ -158,7 +158,7 @@ Book always resolve. The host doesn't need to walk the dependency graph.
 
 Cross-book references are still constrained. A Form in Book A that
 references a Form in Book B requires Book B to be registered too
-(`make.book(b)`). Cross-book references where Book B isn't registered
+(`make.load(b)`). Cross-book references where Book B isn't registered
 throw a codegen error during `make.save()`.
 
 ## Make class API
@@ -499,7 +499,7 @@ renames.
 
 ## Summary
 
-- **Books are bulk-include by default.** `make.book(book)` registers
+- **Books are bulk-include by default.** `make.load(book)` registers
   everything the Book publishes.
 - **Customization is Book-level.** Compose a new Book before
   registering. No per-entry DSL on `Make`.

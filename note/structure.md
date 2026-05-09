@@ -64,8 +64,7 @@ full mapping.
 
 - **`Form`**. A mold for data. Inherited from Seed.
 - **`Flow`**. A function defined by what flows in (`take`)
-  and out (`make`). Also matches the existing `flow.*`
-  builder DSL.
+  and out (`make`).
 - **`Call`**. Invoking a Flow. Literal English for "make a
   call to this function."
 - **`Fold`**. A Form whose instances are tree-shaped.
@@ -159,12 +158,12 @@ that the runtime evaluates. Renamed to `Fold` in calm.
 `Find` is the find / test query-filter shape consolidated from
 the existing query-system spec. See [`find.md`](./find.md).
 
-A `Fold` is built with the `flow.*` builder DSL:
+A `Fold` is built with the `make.*` builder DSL:
 
 ```typescript
-import { flow } from '@cluesurf/calm'
+import { make } from '@cluesurf/calm'
 
-export const default_filter: Find = flow.call('find', {
+export const default_filter: Find = make.call('find', {
   base: 'list',
   resource: 'language_string',
   where: { /* ... a Cast of `find` ... */ },
@@ -562,17 +561,17 @@ match child-Flow `like` declarations.
 ```typescript
 import { flow } from '@cluesurf/calm'
 
-flow.call('is', {
+make.call('is', {
   case: 'all',
-  things: flow.list([
-    flow.call('is', {
+  things: make.list([
+    make.call('is', {
       case: 'string',
-      thing: flow.read('value'),
+      thing: make.read('value'),
     }),
-    flow.call('is', {
+    make.call('is', {
       case: 'among',
-      thing: flow.read('value'),
-      choices: flow.list(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']),
+      thing: make.read('value'),
+      choices: make.list(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']),
     }),
   ]),
 })
@@ -677,20 +676,20 @@ base.flow('get', { case: 'length' }, ({ text }) => text.length)
 ```typescript
 import { flow } from '@cluesurf/calm'
 
-const constraint = flow.call('is', {
+const constraint = make.call('is', {
   case: 'all',
-  things: flow.list([
-    flow.call('is', { case: 'string', thing: flow.read('record', 'text') }),
-    flow.call('is', { case: 'ipa',    text:  flow.read('record', 'text') }),
-    flow.call('is', {
+  things: make.list([
+    make.call('is', { case: 'string', thing: make.read('record', 'text') }),
+    make.call('is', { case: 'ipa',    text:  make.read('record', 'text') }),
+    make.call('is', {
       case: 'above',
-      this: flow.call('get', { case: 'length', text: flow.read('record', 'text') }),
+      this: make.call('get', { case: 'length', text: make.read('record', 'text') }),
       that: 0,
     }),
-    flow.call('is', {
+    make.call('is', {
       case: 'among',
-      thing: flow.read('record', 'cefr_level'),
-      choices: flow.list(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']),
+      thing: make.read('record', 'cefr_level'),
+      choices: make.list(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']),
     }),
   ]),
 })
@@ -732,9 +731,10 @@ deck/calm/code/
     build.ts                     # form / link / case builders
     parse.ts                     # validation parsers
 
-  flow/                          # the AST builder DSL (`flow.*`)
-    type.ts                      # Call / read / view / literal types
-    build.ts                     # flow.call / flow.read / flow.list etc.
+  fold/                          # the AST builder DSL (`make.*`)
+    types.ts                     # Call / Read / View / literal types
+    build.ts                     # make.call / make.read / make.list etc.
+    compile.ts                   # make ↔ wake compile pass
 
   base/                          # authored declarations + handlers
     language/
@@ -822,10 +822,10 @@ const login: Flow = {
 
 // Fold (the body of `login` would be its own subtree of calls,
 // authored by the user inside the editor)
-flow.call('login', {
+make.call('login', {
   case: 'service',
-  email:    flow.read('email'),
-  password: flow.read('password'),
+  email:    make.read('email'),
+  password: make.read('password'),
 })
 ```
 

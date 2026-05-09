@@ -232,7 +232,7 @@ Used in a Tree:
 ```typescript
 import { flow } from '@cluesurf/calm'
 
-flow.call('find', {
+make.call('find', {
   base: 'list',
   resource: 'language_string',
   where: {
@@ -295,7 +295,7 @@ A host can then iterate a list and apply the lowered Flow:
 ```typescript
 const filter_fn = calm.compile(lower(query))
 const matches = records.filter(record =>
-  base.bind(filter_fn, { record }).output as boolean
+  base.cast(filter_fn, { record }).output as boolean
 )
 ```
 

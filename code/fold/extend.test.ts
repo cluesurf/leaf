@@ -8,20 +8,20 @@
  * built-in operators, task implementations, and ad-hoc
  * extensions.
  *
- * Custom transformations live as `flow.call(name, args)` in
+ * Custom transformations live as `make.call(name, args)` in
  * the tree and resolve through `context.hook[name]`. Args are
  * pre-evaluated by the walker before the hook runs.
  */
 
 import { describe, it, expect } from 'vitest'
-import { flow, renderText } from '.'
+import { make, renderText } from '.'
 
 describe('hook (call operators)', () => {
   it('adds a new call operator via context.hook', () => {
-    const tree = flow.call('reverse', { value: 'hello' })
+    const tree = make.call('reverse', { value: 'hello' })
     expect(
       renderText(tree, {
-        scope: flow.scope(),
+        scope: make.scope(),
         hook: {
           reverse: ({ value }) =>
             String(value).split('').reverse().join(''),
@@ -34,12 +34,12 @@ describe('hook (call operators)', () => {
     // The `value` arg references a scope key. The walker
     // resolves it before passing into the hook — the hook sees
     // the resolved string, not the reference node.
-    const tree = flow.call('shout', {
-      value: flow.reference('msg'),
+    const tree = make.call('shout', {
+      value: make.reference('msg'),
     })
     expect(
       renderText(tree, {
-        scope: flow.scope({ msg: 'hi' }),
+        scope: make.scope({ msg: 'hi' }),
         hook: {
           shout: ({ value }) => `${String(value).toUpperCase()}!`,
         },
@@ -48,10 +48,10 @@ describe('hook (call operators)', () => {
   })
 
   it('overrides built-ins via context.hook', () => {
-    const tree = flow.count(flow.list([flow.text('a'), flow.text('b')]))
+    const tree = make.count(make.list([make.text('a'), make.text('b')]))
     expect(
       renderText(tree, {
-        scope: flow.scope(),
+        scope: make.scope(),
         hook: { count: () => 999 },
       }),
     ).toBe('999')
@@ -61,12 +61,12 @@ describe('hook (call operators)', () => {
     // `upper` is what the user originally proposed as a
     // form-level extension; it works fine as a `call` with a
     // pre-evaluated `text` arg.
-    const tree = flow.call('upper', {
-      text: flow.reference('greeting'),
+    const tree = make.call('upper', {
+      text: make.reference('greeting'),
     })
     expect(
       renderText(tree, {
-        scope: flow.scope({ greeting: 'good morning' }),
+        scope: make.scope({ greeting: 'good morning' }),
         hook: {
           upper: ({ text }: { text: string }) =>
             text.toLocaleUpperCase(),

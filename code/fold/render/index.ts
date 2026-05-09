@@ -5,8 +5,8 @@
  * point so `react` stays an optional peer dep rather than
  * forcing every form.js consumer to install it.
  *
- *   import { flow } from '@cluesurf/calm'              // text + builders
- *   import { renderReact } from '@cluesurf/calm/fold/render/react'
+ *   import { make } from '@cluesurf/calm'              // text + builders
+ *   import { renderReact } from '@cluesurf/calm/make/render/react'
  */
 
 export type { Scope } from './scope'
@@ -21,7 +21,7 @@ export {
   DEFAULT_HOOK,
   deepEq,
   getCall,
-  isNode,
+  isCast,
 } from './registry'
 
 export type { TextContext } from './text'

@@ -58,7 +58,7 @@ pipeline. Living docs — refine in place as decisions firm up.
 authored declarations           runtime registration
 ─────────────────────           ────────────────────
 code/base/<verb>/make.ts        new Base<Code>()
-code/base/<verb>/flow.ts        base.bind(standard, hooks)
+code/base/<verb>/flow.ts        base.load(standard)
 
            ↓                           ↓
 
@@ -85,7 +85,7 @@ verb's `flow.ts`, run `pnpm make:base`.
 | `Make` codegen class with `book()` + `save()` | implemented |
 | Generated `Code` type from registered Books | implemented |
 | Standard catalog: `is` / `make` / `get` / `has` verbs (58 flows) | implemented |
-| `base.bind(book, hooks)` bulk handler registration | implemented |
+| `base.load(book)` bulk handler registration | implemented |
 | `base.call(name, { base, case, ...take })` typed dispatch | implemented |
 | 128 tests + clean TypeScript | green |
 
@@ -129,7 +129,7 @@ verb's `flow.ts`, run `pnpm make:base`.
 - **Async batching for `find:*` flows.** Spec describes a
   pre-resolution pass that batches every `async: true` flow
   call. Not implemented.
-- **`base.bind(tree, host?)` evaluator.** Compile + execute
+- **`base.cast(tree, scope?)` evaluator.** Compile + execute
   an editable tree. Spec is in `runtime.md`; current `Base`
   class only does per-flow `call()`.
 - **Real-time partial recompilation** (`base.bindPatch`).

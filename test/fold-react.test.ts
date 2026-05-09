@@ -1,9 +1,9 @@
 /**
- * Smoke test that the existing fold/render React surface
+ * Smoke test that the existing make/render React surface
  * still works alongside the new `Base<Code>` catalog runtime.
  *
  * The two systems live in parallel today:
- *   - `flow.*` builders + `renderText` / `renderElement` for
+ *   - `make.*` builders + `renderText` / `renderElement` for
  *     authored render trees (the FOLD AST)
  *   - `Base<Code>` + `base.call(...)` for the catalog runtime
  *     (Form / Flow declarations)
@@ -16,34 +16,34 @@
 import { describe, it, expect } from 'vitest'
 import { createElement, Fragment } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { flow, renderElement } from '../code'
+import { make, renderElement } from '../code'
 
-const { renderText } = flow
+const { renderText } = make
 import { Base } from '../code'
-import standard, { hooks, CodeLink, type Code } from '../code/base'
+import standard, { hooks, CodeLink, type Code } from '../code/book'
 
-describe('fold + Base catalog: parallel runtimes', () => {
+describe('make + Base catalog: parallel runtimes', () => {
   it('renders a flow text tree with locale + scope', () => {
-    const tree = flow.weave(
-      flow.text('Hello, '),
-      flow.path('user', 'name'),
-      flow.text('!'),
+    const tree = make.templateString(
+      make.text('Hello, '),
+      make.path('user', 'name'),
+      make.text('!'),
     )
 
     const out = renderText(tree, {
-      scope: flow.scope({ user: { name: 'Lance' } }),
+      scope: make.scope({ user: { name: 'Lance' } }),
     })
 
     expect(out).toBe('Hello, Lance!')
   })
 
   it('renders a flow element tree through React', () => {
-    const tree = flow.view('section', { className: 'greeting' }, [
-      flow.view('p', {}, [flow.text('hi')]),
+    const tree = make.view('section', { className: 'greeting' }, [
+      make.view('p', {}, [make.text('hi')]),
     ])
 
     const element = renderElement(tree, {
-      scope: flow.scope(),
+      scope: make.scope(),
       builder: createElement,
       fragment: Fragment,
       component: {},
@@ -55,10 +55,10 @@ describe('fold + Base catalog: parallel runtimes', () => {
     )
   })
 
-  it('Base catalog runs in parallel with the fold renderer', () => {
+  it('Base catalog runs in parallel with the make renderer', () => {
     // Set up the catalog runtime.
     const base = new Base<Code>()
-    base.bind(standard, hooks, CodeLink)
+    base.load(standard)
 
     // Use a catalog flow to derive a value.
     const upper = base.call('format', {
@@ -66,27 +66,26 @@ describe('fold + Base catalog: parallel runtimes', () => {
       text: 'hello',
     })
 
-    // Then render that value through the fold tree.
-    const tree = flow.weave(flow.text('Greeting: '), flow.text(upper))
+    // Then render that value through the make tree.
+    const tree = make.templateString(make.text('Greeting: '), make.text(upper))
 
-    expect(renderText(tree, { scope: flow.scope() })).toBe(
+    expect(renderText(tree, { scope: make.scope() })).toBe(
       'Greeting: Hello',
     )
   })
 
-  it('a fold call node can dispatch to a Base hook via context.hook', () => {
-    // The fold renderer accepts a `hook` map for resolving
-    // `flow.call(name, args)` operators. Wiring catalog hooks
-    // into that map lets fold trees invoke catalog flows
-    // directly (with the args passed positionally as one
-    // record).
-    const tree = flow.call('format_capitalized', { text: 'world' })
+  it('a make call node dispatches via Base.cast through (name, base) lookup', () => {
+    // The runtime resolves `make.call('format', { base: 'capitalized', text })`
+    // against the catalog by building the colon-key from the
+    // node's (name, base, case) and looking it up in the
+    // registered hook map.
+    const base = new Base<Code>()
+    base.load(standard)
 
-    const out = renderText(tree, {
-      scope: flow.scope(),
-      hook: { format_capitalized: hooks.format_capitalized },
+    const tree = make.call('format', {
+      base: 'capitalized',
+      text: 'world',
     })
-
-    expect(out).toBe('World')
+    expect(base.cast(tree)).toBe('World')
   })
 })

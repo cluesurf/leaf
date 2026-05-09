@@ -70,21 +70,21 @@ export default function make(base: Base, hold: Hold, need = true) {
 
     switch (site.form) {
       case 'form':
-        make_form({ form: site, base, name, hold, file, need }).forEach(
+        makeForm({ form: site, base, name, hold, file, need }).forEach(
           line => {
             list.push(line)
           },
         )
         break
       case 'hash':
-        make_hash({ hash: site, base, name, hold, file, need }).forEach(
+        makeHash({ hash: site, base, name, hold, file, need }).forEach(
           line => {
             list.push(line)
           },
         )
         break
       case 'list':
-        make_list({ list: site, base, name, hold, file, need }).forEach(
+        makeList({ list: site, base, name, hold, file, need }).forEach(
           line => {
             list.push(line)
           },
@@ -102,7 +102,7 @@ export default function make(base: Base, hold: Hold, need = true) {
   return hash
 }
 
-export function make_form({
+export function makeForm({
   name,
   form,
   base,
@@ -143,7 +143,7 @@ export function make_form({
     list.push(`export type ${formName} =`)
   }
 
-  make_link_list({
+  makeLinkList({
     form,
     base,
     hold,
@@ -160,7 +160,7 @@ export function make_form({
   return list
 }
 
-export function make_hash({
+export function makeHash({
   name,
   hash,
   base,
@@ -187,7 +187,7 @@ export function make_hash({
 
   const bond = hash.bond!
   if ('case' in bond) {
-    make_form_case({
+    makeFormCase({
       form: bond as FormLikeCase,
       base,
       file,
@@ -197,7 +197,7 @@ export function make_hash({
       list.push(line)
     })
   } else {
-    make_form_like({
+    makeFormLike({
       form: bond,
       base,
       hold,
@@ -248,7 +248,7 @@ ${keyList.map(key => `  | '${key}'`).join('\n')}`)
   return list
 }
 
-export function make_list({
+export function makeList({
   name,
   list,
   base,
@@ -280,7 +280,7 @@ ${(list.list ?? []).map(key => `  | '${key}'`).join('\n')}`)
   return text
 }
 
-export function make_link_list({
+export function makeLinkList({
   form,
   base,
   hold,
@@ -315,7 +315,7 @@ export function make_link_list({
         list.push(`  ${name}${optional}: ${aS}${type}${aE}`)
       } else if (link.case) {
         if (Array.isArray(link.case)) {
-          const like_case: string[] = []
+          const likeCase: string[] = []
           link.case.forEach(c => {
             if (c.like) {
               const type = findAndLinkName({
@@ -325,11 +325,11 @@ export function make_link_list({
                 hold,
                 need,
               })
-              like_case.push(type)
+              likeCase.push(type)
             } else if (c.link) {
               const lines: string[] = []
               lines.push('{')
-              make_link_list({
+              makeLinkList({
                 form: c as LinkMesh,
                 base,
                 hold,
@@ -339,23 +339,23 @@ export function make_link_list({
                 lines.push(`  ${line}`)
               })
               lines.push('}')
-              like_case.push(lines.join('\n'))
+              likeCase.push(lines.join('\n'))
             }
           })
           list.push(
-            `  ${name}${optional}: ${aS}${like_case.join(' | ')}${aE}`,
+            `  ${name}${optional}: ${aS}${likeCase.join(' | ')}${aE}`,
           )
         } else {
-          const like_case: string[] = []
+          const likeCase: string[] = []
           for (const name in link.case) {
-            like_case.push(`'${name}'`)
+            likeCase.push(`'${name}'`)
           }
           list.push(
-            `  ${name}${optional}: ${aS}${like_case.join(' | ')}${aE}`,
+            `  ${name}${optional}: ${aS}${likeCase.join(' | ')}${aE}`,
           )
         }
       } else if (link.fuse) {
-        const like_fuse: string[] = []
+        const likeFuse: string[] = []
         link.fuse.forEach(c => {
           if (c.like) {
             const type = findAndLinkName({
@@ -365,11 +365,11 @@ export function make_link_list({
               hold,
               need,
             })
-            like_fuse.push(type)
+            likeFuse.push(type)
           }
         })
         list.push(
-          `  ${name}${optional}: ${aS}${like_fuse.join(' & ')}${aE}`,
+          `  ${name}${optional}: ${aS}${likeFuse.join(' & ')}${aE}`,
         )
       } else if (link.link) {
         const enumStyle = detectEnumStyleNesting(link.link)
@@ -380,7 +380,7 @@ export function make_link_list({
           list.push(`  ${name}${optional}: ${aS}${union}${aE}`)
         } else {
           list.push(`  ${name}${optional}: ${aS}{`)
-          make_link_list({
+          makeLinkList({
             form: link as LinkMesh,
             base,
             hold,
@@ -400,7 +400,7 @@ export function make_link_list({
       }
     }
   } else if ('case' in form) {
-    make_form_case({
+    makeFormCase({
       form: form as unknown as FormBaseCase,
       base,
       file,
@@ -431,7 +431,7 @@ export function make_link_list({
   return list
 }
 
-function make_form_case({
+function makeFormCase({
   form,
   base,
   hold,
@@ -461,7 +461,7 @@ function make_form_case({
     } else if (typeof item === 'object' && 'link' in item) {
       const lines: string[] = []
       lines.push('{')
-      make_link_list({
+      makeLinkList({
         form: item as LinkMesh,
         base,
         hold,
@@ -486,7 +486,7 @@ function make_form_case({
   return [formSite]
 }
 
-function make_form_like({
+function makeFormLike({
   form,
   base,
   hold,

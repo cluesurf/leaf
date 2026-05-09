@@ -7,14 +7,14 @@
  * The `flow` namespace export bundles every builder helper
  * and renderer entry under one import:
  *
- *   import { flow } from '@cluesurf/calm'
- *   const tree = flow.branch(flow.gt(flow.path('count'), 0), ...)
- *   const out = flow.renderText(tree, { scope: flow.scope({ count: 5 }) })
+ *   import { make } from '@cluesurf/calm'
+ *   const tree = make.branch(make.gt(make.path('count'), 0), ...)
+ *   const out = make.renderText(tree, { scope: make.scope({ count: 5 }) })
  *
  * Extension via the render context:
  *
- *   flow.renderText(tree, {
- *     scope: flow.scope({ count: 5 }),
+ *   make.renderText(tree, {
+ *     scope: make.scope({ count: 5 }),
  *     hook: {
  *       reverse: ({ value }) =>
  *         String(value).split('').reverse().join(''),
@@ -24,50 +24,49 @@
  * `hook` is the same `HookHash` used by `Base.hook` at codegen
  * time — one name → function table covers built-in operators,
  * custom call operators, and task implementations. Custom
- * transformations show up in the tree as `flow.call('reverse',
+ * transformations show up in the tree as `make.call('reverse',
  * { value: ... })` and resolve through the same dispatch path.
  */
 
 import * as builders from './build'
 import { evaluateText, makeScope, renderText } from './render'
+import {
+  buildDecodeTable as buildDecodeTableImpl,
+  compile as compileImpl,
+  decompile as decompileImpl,
+} from './compile'
 
 export type {
-  AttemptNode,
-  BooleanNode,
-  BranchNode,
-  CallNode,
+  ForkPrimitive,
+  Call,
   CaseArm,
   CaseDefaultArm,
-  CaseNode,
+  CasePrimitive,
   CaseTestArm,
   CaseValueArm,
+  Cast,
   ControlFlow,
-  DateNode,
   FieldSeg,
+  HashPrimitive,
   IndexSeg,
-  IntegerNode,
-  WeaveNode,
-  ListNode,
+  ListPrimitive,
   Literal,
-  LoopNode,
-  MatchNode,
+  MatchPrimitive,
   Meta,
-  NaturalNumberNode,
-  Node,
-  NumberNode,
-  PathNode,
-  PathSeg,
-  PickNode,
+  ReadPrimitive,
+  ReadLink,
+  PickPrimitive,
   Reference,
   SliceSeg,
-  SwitchNode,
-  TextNode,
+  Structural,
+  SwitchPrimitive,
   VariableSeg,
-  ViewNode,
-  WalkNode,
+  ViewPrimitive,
+  WalkPrimitive,
+  TemplateStringPrimitive,
 } from './types'
 
-export { RESERVED_NODE_KEYS } from './types'
+export { RESERVED_CAST_KEYS } from './types'
 
 export type { Promotable } from './build'
 
@@ -84,7 +83,7 @@ export {
   deepEq,
   evaluateText,
   getCall,
-  isNode,
+  isCast,
   makeScope,
   renderText,
 } from './render'
@@ -92,7 +91,10 @@ export {
 export type { ElementBuilder, ElementContext } from './render/element'
 export { renderElement } from './render/element'
 
-export const flow = {
+export type { CodeTable, DecodeEntry, DecodeTable } from './compile'
+export { compile, decompile, buildDecodeTable } from './compile'
+
+export const make = {
   // promotion
   promote: builders.promote,
 
@@ -104,11 +106,13 @@ export const flow = {
   boolean: builders.boolean,
   date: builders.date,
   list: builders.list,
-  weave: builders.weave,
+  templateString: builders.templateString,
+  hash: builders.hash,
 
   // reads
   reference: builders.reference,
-  path: builders.path,
+  read: builders.read,
+  path: builders.path, // back-compat alias of read
   variable: builders.variable,
   field: builders.field,
   idx: builders.idx,
@@ -147,7 +151,7 @@ export const flow = {
   fmtTime: builders.fmtTime,
 
   // control flow
-  branch: builders.branch,
+  fork: builders.fork,
   switch: builders.switchOn,
   match: builders.match,
   case: builders.caseOf,
@@ -156,8 +160,8 @@ export const flow = {
   otherwise: builders.otherwise,
   pick: builders.pick,
   walk: builders.walk,
-  loop: builders.loop,
-  attempt: builders.attempt,
+  walkTest: builders.walkTest,
+  walkSize: builders.walkSize,
 
   // views
   view: builders.view,
@@ -170,6 +174,11 @@ export const flow = {
   scope: makeScope,
   renderText,
   evaluate: evaluateText,
+
+  // make/wake compile pass
+  compile: compileImpl,
+  decompile: decompileImpl,
+  buildDecodeTable: buildDecodeTableImpl,
 
   // back-compat alias
   render: renderText,

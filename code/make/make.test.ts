@@ -8,7 +8,7 @@
 import { describe, expect, it } from 'vitest'
 import makeTree from './index'
 import type { Fold, Form, Hash, List, Flow } from '@/form'
-import { flow as flowNs } from '@/fold'
+import { make as flowNs } from '@/fold'
 
 describe('makeTree — task + flow + cast', () => {
   it('Flow references a Form for input — input codegen comes from the Form', async () => {
@@ -82,7 +82,7 @@ describe('makeTree — task + flow + cast', () => {
     expect(takeOut).toContain('count: z.number()')
   })
 
-  it('emits the Fold tree as a Node[] const in base.ts', async () => {
+  it('emits the Fold tree as a Cast[] const in base.ts', async () => {
     const message_input: Form = {
       form: 'form',
       save: '~/hold/flow',
@@ -106,11 +106,11 @@ describe('makeTree — task + flow + cast', () => {
 
     const baseOut = tree.base['~/hold/flow/base']!
     expect(baseOut).toContain(
-      `import type { Node } from '@cluesurf/calm'`,
+      `import type { Cast } from '@cluesurf/calm'`,
     )
-    expect(baseOut).toContain('export const MESSAGE_TREE: Node[]')
-    expect(baseOut).toContain(`form: 'text'`)
-    expect(baseOut).toContain(`text: 'You have '`)
+    expect(baseOut).toContain('export const MESSAGE_TREE: Cast[]')
+    // Native string leaf serializes as a bare quoted string.
+    expect(baseOut).toContain(`'You have '`)
     expect(baseOut).toContain(`form: 'reference'`)
     expect(baseOut).toContain(`name: 'count'`)
   })

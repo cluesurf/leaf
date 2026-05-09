@@ -2,7 +2,7 @@
  * `flow.*` builder helpers.
  *
  * Helpers compose into the canonical JSON shape, byte for byte.
- * Promotion: a primitive passed where a Node is expected gets
+ * Promotion: a primitive passed where a Cast is expected gets
  * wrapped automatically (`0` → integer/natural_number,
  * `'hello'` → text, `true` → boolean, `Date` → date,
  * `[...]` → list, plain object with a `form` field passes
@@ -10,36 +10,29 @@
  */
 
 import type {
-  AttemptNode,
-  BooleanNode,
-  BranchNode,
-  CallNode,
+  ForkPrimitive,
+  Call,
   CaseArm,
   CaseDefaultArm,
-  CaseNode,
+  CasePrimitive,
   CaseTestArm,
   CaseValueArm,
-  DateNode,
+  Cast,
   FieldSeg,
+  HashPrimitive,
   IndexSeg,
-  IntegerNode,
-  WeaveNode,
-  ListNode,
-  LoopNode,
-  MatchNode,
-  NaturalNumberNode,
-  Node,
-  NumberNode,
-  PathNode,
-  PathSeg,
-  PickNode,
+  ListPrimitive,
+  MatchPrimitive,
+  ReadPrimitive,
+  ReadLink,
+  PickPrimitive,
   Reference,
   SliceSeg,
-  SwitchNode,
-  TextNode,
+  SwitchPrimitive,
   VariableSeg,
-  ViewNode,
-  WalkNode,
+  ViewPrimitive,
+  WalkPrimitive,
+  TemplateStringPrimitive,
 } from './types'
 
 // ---------------------------------------------------------------------------
@@ -47,7 +40,7 @@ import type {
 // ---------------------------------------------------------------------------
 
 export type Promotable =
-  | Node
+  | Cast
   | string
   | number
   | boolean
@@ -55,71 +48,79 @@ export type Promotable =
   | unknown[]
 
 /**
- * Wrap a primitive in the matching literal flow node. If the
- * argument is already a flow node (has a `form` field), pass
- * it through unchanged.
+ * Normalize a value for inclusion in a fold tree.
+ *
+ * Native scalars (`string`, `number`, `boolean`, `Date`, `null`)
+ * pass through unchanged — they ARE leaves of the tree. Tagged
+ * structural nodes (anything with a `form` field) pass through.
+ * Plain arrays wrap into a `list` so they can't be confused
+ * with view-nest children or arbitrary array-typed props.
  */
-export function promote(value: Promotable): Node {
-  if (
-    value !== null &&
-    typeof value === 'object' &&
-    !Array.isArray(value) &&
-    !(value instanceof Date)
-  ) {
-    if ('form' in (value as Record<string, unknown>)) {
-      return value
-    }
-  }
-  if (typeof value === 'string') return text(value)
-  if (typeof value === 'boolean') return boolean(value)
-  if (value instanceof Date) return date(value.toISOString())
-  if (typeof value === 'number') {
-    return Number.isInteger(value) && value >= 0
-      ? naturalNumber(value)
-      : Number.isInteger(value)
-      ? integer(value)
-      : number(value)
-  }
+export function promote(value: Promotable): Cast {
+  if (value === null) return null
+  if (typeof value === 'string') return value
+  if (typeof value === 'number') return value
+  if (typeof value === 'boolean') return value
+  if (value instanceof Date) return value
   if (Array.isArray(value)) {
     return list(value.map(v => promote(v as Promotable)))
   }
-  throw new Error(`flow.promote: unsupported value ${String(value)}`)
+  if (
+    typeof value === 'object' &&
+    'form' in (value as Record<string, unknown>)
+  ) {
+    return value as Cast
+  }
+  throw new Error(`make.promote: unsupported value ${String(value)}`)
 }
 
 // ---------------------------------------------------------------------------
-// Literals
+// Scalar pass-throughs
+//
+// Native scalars are first-class fold-tree leaves. These helpers
+// exist for symmetry with structural builders (so call sites can
+// read `make.text(...)` / `make.integer(...)` for clarity) but
+// they're identity functions that return the input native value.
 // ---------------------------------------------------------------------------
 
-export function text(s: string): TextNode {
-  return { form: 'text', text: s }
+export function text(s: string): string {
+  return s
 }
 
-export function integer(n: number): IntegerNode {
-  return { form: 'integer', value: n }
+export function integer(n: number): number {
+  return n
 }
 
-export function naturalNumber(n: number): NaturalNumberNode {
-  return { form: 'natural_number', value: n }
+export function naturalNumber(n: number): number {
+  return n
 }
 
-export function number(n: number): NumberNode {
-  return { form: 'number', value: n }
+export function number(n: number): number {
+  return n
 }
 
-export function boolean(b: boolean): BooleanNode {
-  return { form: 'boolean', value: b }
+export function boolean(b: boolean): boolean {
+  return b
 }
 
-export function date(s: string): DateNode {
-  return { form: 'date', value: s }
+export function date(value: string | Date): Date {
+  return value instanceof Date ? value : new Date(value)
 }
 
-export function list(items: Node[]): ListNode {
+export function list(items: Cast[]): ListPrimitive {
   return { form: 'list', list: items }
 }
 
-export function weave(...children: Promotable[]): WeaveNode {
-  return { form: 'weave', flow: children.map(promote) }
+export function templateString(...children: Promotable[]): TemplateStringPrimitive {
+  return { form: 'template_string', flow: children.map(promote) }
+}
+
+export function hash(base: Record<string, Promotable>): HashPrimitive {
+  const out: Record<string, Cast> = {}
+  for (const [k, v] of Object.entries(base)) {
+    out[k] = promote(v)
+  }
+  return { form: 'hash', base: out }
 }
 
 // ---------------------------------------------------------------------------
@@ -151,7 +152,7 @@ export function field(
 }
 
 export function idx(
-  value: number | Node,
+  value: number | Cast,
   opts?: { safe?: boolean },
 ): IndexSeg {
   return opts?.safe
@@ -160,8 +161,8 @@ export function idx(
 }
 
 export function slice(
-  rise?: number | Node | null,
-  fall?: number | Node | null,
+  rise?: number | Cast | null,
+  fall?: number | Cast | null,
   opts?: { safe?: boolean },
 ): SliceSeg {
   const seg: SliceSeg = { form: 'slice' }
@@ -172,24 +173,24 @@ export function slice(
 }
 
 /**
- * Build a path. First arg is the head (string → variable
- * segment by name; or a pre-built segment object). Subsequent
- * string args become field segments; segment objects pass
- * through.
+ * Build a Read tree from a chain of segments. First arg is the
+ * head (string → variable segment by name; or a pre-built
+ * segment object). Subsequent string args become field
+ * segments; segment objects pass through.
  *
  * Examples:
- *   path('count')                 // → reference (single segment, normalized)
- *   path('user', 'name')          // user.name
- *   path('items', idx(0))         // items[0]
- *   path('items', slice(3, 10))   // items[3..10]
+ *   read('count')                 // → reference (single segment, normalized)
+ *   read('user', 'name')          // user.name
+ *   read('items', idx(0))         // items[0]
+ *   read('items', slice(3, 10))   // items[3..10]
  */
-export function path(
-  ...segments: (string | PathSeg)[]
-): Reference | PathNode {
+export function read(
+  ...segments: (string | ReadLink)[]
+): Reference | ReadPrimitive {
   if (segments.length === 0) {
-    throw new Error('flow.path: at least one segment required')
+    throw new Error('make.read: at least one segment required')
   }
-  const built: PathSeg[] = segments.map((s, i) => {
+  const built: ReadLink[] = segments.map((s, i) => {
     if (typeof s === 'string') {
       return i === 0
         ? { form: 'variable', name: s }
@@ -202,8 +203,11 @@ export function path(
   if (built.length === 1 && head?.form === 'variable' && !head.safe) {
     return { form: 'reference', name: head.name }
   }
-  return { form: 'path', path: built }
+  return { form: 'read', link: built }
 }
+
+// Back-compat alias for callers that still use `path()`.
+export const path = read
 
 // ---------------------------------------------------------------------------
 // Calls
@@ -212,11 +216,18 @@ export function path(
 export function call(
   name: string,
   args?: Record<string, Promotable>,
-): CallNode {
-  const node: CallNode = { form: 'call', name }
+): Call {
+  const node: Call = { form: 'call', name }
   if (args) {
     for (const [k, v] of Object.entries(args)) {
-      ;(node as Record<string, unknown>)[k] = promote(v)
+      // `base` and `case` are part of the call's identity
+      // tuple — keep them as bare strings on the node, not
+      // wrapped as literal AST nodes.
+      if ((k === 'base' || k === 'case') && typeof v === 'string') {
+        ;(node as Record<string, unknown>)[k] = v
+      } else {
+        ;(node as Record<string, unknown>)[k] = promote(v)
+      }
     }
   }
   return node
@@ -236,19 +247,19 @@ export const lte = (a: Promotable, b: Promotable) =>
 export function inOf(
   value: Promotable,
   listOf: Promotable[],
-): CallNode {
+): Call {
   return call('in', { value, list: listOf })
 }
 
-export function negate(value: Promotable): CallNode {
+export function negate(value: Promotable): Call {
   return call('negate', { value })
 }
 
-export function and(...values: Promotable[]): CallNode {
+export function and(...values: Promotable[]): Call {
   return call('and', { values })
 }
 
-export function or(...values: Promotable[]): CallNode {
+export function or(...values: Promotable[]): Call {
   return call('or', { values })
 }
 
@@ -282,7 +293,7 @@ export type FormatOptions =
   | Promotable
   | Record<string, unknown>
 
-function withOptions(name: string, value: Promotable, options?: FormatOptions): CallNode {
+function withOptions(name: string, value: Promotable, options?: FormatOptions): Call {
   if (options === undefined) return call(name, { value })
   return call(name, { value, options: options as Promotable })
 }
@@ -314,13 +325,13 @@ export const fmtTime = formatTime
 // Control flow
 // ---------------------------------------------------------------------------
 
-export function branch(
+export function fork(
   test: Promotable,
   thenNode: Promotable,
   fall?: Promotable,
-): BranchNode {
-  const node: BranchNode = {
-    form: 'branch',
+): ForkPrimitive {
+  const node: ForkPrimitive = {
+    form: 'fork',
     test: promote(test),
     then: promote(thenNode),
   }
@@ -332,8 +343,8 @@ export function switchOn(
   value: Promotable,
   cases: { when: Promotable; then: Promotable }[],
   fall?: Promotable,
-): SwitchNode {
-  const node: SwitchNode = {
+): SwitchPrimitive {
+  const node: SwitchPrimitive = {
     form: 'switch',
     value: promote(value),
     cases: cases.map(c => ({
@@ -348,8 +359,8 @@ export function switchOn(
 export function match(
   branches: { test: Promotable; then: Promotable }[],
   fall?: Promotable,
-): MatchNode {
-  const node: MatchNode = {
+): MatchPrimitive {
+  const node: MatchPrimitive = {
     form: 'match',
     branches: branches.map(b => ({
       test: promote(b.test),
@@ -364,7 +375,7 @@ export function match(
 
 export function valueArm(
   value: string | number | boolean,
-  flow: Node[] | string,
+  flow: Cast[] | string,
 ): CaseValueArm {
   return {
     form: 'case-value',
@@ -374,8 +385,8 @@ export function valueArm(
 }
 
 export function testArm(
-  testCall: CallNode,
-  flow: Node[] | string,
+  testCall: Call,
+  flow: Cast[] | string,
 ): CaseTestArm {
   return {
     form: 'case-test',
@@ -384,35 +395,40 @@ export function testArm(
   }
 }
 
-export function otherwise(flow: Node[] | string): CaseDefaultArm {
+export function otherwise(flow: Cast[] | string): CaseDefaultArm {
   return {
     form: 'case-default',
     flow: typeof flow === 'string' ? [text(flow)] : flow,
   }
 }
 
-export function caseOf(test: Promotable, arms: CaseArm[]): CaseNode {
+export function caseOf(test: Promotable, arms: CaseArm[]): CasePrimitive {
   return { form: 'case', test: promote(test), case: arms }
 }
 
 // ----- pick -----
 
-export function pick(...values: Promotable[]): PickNode {
+export function pick(...values: Promotable[]): PickPrimitive {
   return {
     form: 'pick',
     values: { form: 'list', list: values.map(promote) },
   }
 }
 
-// ----- walk / loop -----
+// ----- walk: 3 variants per note/ast.md -----
 
+/**
+ * For-each over a collection. The body (`hook`) renders once
+ * per item with `item` and `index` bound in scope.
+ */
 export function walk(
   listOf: Promotable,
   hook: Promotable,
   opts?: { item?: string; index?: string },
-): WalkNode {
-  const node: WalkNode = {
+): WalkPrimitive {
+  const node: WalkPrimitive = {
     form: 'walk',
+    case: 'list',
     list: promote(listOf),
     hook: promote(hook),
   }
@@ -421,30 +437,45 @@ export function walk(
   return node
 }
 
-export function loop(
-  start: Promotable,
-  end: Promotable,
+/**
+ * While-style loop. Re-evaluate `test`; while truthy, render
+ * `hook`. Body renders concatenated (text mode) or as a
+ * fragment (element mode).
+ */
+export function walkTest(
+  test: Promotable,
   hook: Promotable,
-  opts?: { step?: Promotable; item?: string; index?: string },
-): LoopNode {
-  const node: LoopNode = {
-    form: 'loop',
-    start: promote(start),
-    end: promote(end),
+): WalkPrimitive {
+  return {
+    form: 'walk',
+    case: 'test',
+    test: promote(test),
     hook: promote(hook),
   }
-  if (opts?.step !== undefined) node.step = promote(opts.step)
-  if (opts?.item) node.item = opts.item
-  if (opts?.index) node.index = opts.index
-  return node
 }
 
-export function attempt(
-  flow: Promotable,
-  catchNode?: Promotable,
-): AttemptNode {
-  const node: AttemptNode = { form: 'attempt', flow: promote(flow) }
-  if (catchNode !== undefined) node.catch = promote(catchNode)
+/**
+ * Counted range. Iterates from `base` (inclusive) to `head`
+ * (exclusive) by `move` (default 1). The current value is
+ * bound under `item` (default `'head'`); `index` (default
+ * `'index'`) carries the 0-based step counter.
+ */
+export function walkSize(
+  base: Promotable,
+  head: Promotable,
+  hook: Promotable,
+  opts?: { move?: number; item?: string; index?: string },
+): WalkPrimitive {
+  const node: WalkPrimitive = {
+    form: 'walk',
+    case: 'size',
+    base: promote(base),
+    head: promote(head),
+    hook: promote(hook),
+  }
+  if (opts?.move !== undefined) node.move = opts.move
+  if (opts?.item) node.item = opts.item
+  if (opts?.index) node.index = opts.index
   return node
 }
 
@@ -452,19 +483,19 @@ export function attempt(
 // Views
 // ---------------------------------------------------------------------------
 
-export function view(name: string): ViewNode
-export function view(name: string, nest: Promotable[]): ViewNode
+export function view(name: string): ViewPrimitive
+export function view(name: string, nest: Promotable[]): ViewPrimitive
 export function view(
   name: string,
   props: Record<string, Promotable>,
   nest?: Promotable[],
-): ViewNode
+): ViewPrimitive
 export function view(
   name: string,
   propsOrNest?: Record<string, Promotable> | Promotable[],
   nest?: Promotable[],
-): ViewNode {
-  const node: ViewNode = { form: 'view', name }
+): ViewPrimitive {
+  const node: ViewPrimitive = { form: 'view', name }
 
   // Two-arg shorthand: `view('paragraph', ['Inventory.'])` —
   // skip the empty-props slot entirely when the second arg is
@@ -498,8 +529,8 @@ export function view(
  */
 export function pluralCases(
   refName: string,
-  arms: Record<string, Node[] | string>,
-): CaseNode {
+  arms: Record<string, Cast[] | string>,
+): CasePrimitive {
   const armsList: CaseArm[] = []
   for (const [k, v] of Object.entries(arms)) {
     if (k === 'other') continue
@@ -522,8 +553,8 @@ export function pluralCases(
  */
 export function selectCases(
   refName: string,
-  arms: Record<string, Node[] | string>,
-): CaseNode {
+  arms: Record<string, Cast[] | string>,
+): CasePrimitive {
   const armsList: CaseArm[] = []
   for (const [k, v] of Object.entries(arms)) {
     if (k === 'other') continue

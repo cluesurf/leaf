@@ -5,79 +5,69 @@ What's done, what's left, and what's still vague in the spec.
 ## Where we are now
 
 - The form.js source has been migrated into `calm/code/`.
-- Folder structure aligns with the calm layout (`form/`, `fold/`, `make/`).
+- Folder structure: `form/`, `fold/`, `make/` (codegen), `base/` (runtime), `book/` (standard catalog).
 - `pnpm exec tsc --noEmit` is clean.
-- All 96 tests pass.
-- The notes folder has the full vocabulary spec across 12 docs.
+- All 196 tests pass.
+- The notes folder has the full vocabulary spec across 12+ docs.
+- The bulk of the AST-shape reconciliation with `note/ast.md` has landed.
 
-But: the migrated code still speaks the **form.js dialect** (old type names, old AST shape). The note docs describe the **calm dialect**. Closing that gap is the bulk of what's left.
+## Code work — completed
 
-## Code work remaining
+### Phase 1. AST shape (`fold/`) ✅
 
-### Phase 1. AST shape rewrite (`fold/`)
+- [x] `BranchPrimitive` → `ForkPrimitive`. `'branch'` → `'fork'`.
+- [x] `AttemptPrimitive` removed entirely. Calm has no try/catch.
+- [x] `LoopPrimitive` collapsed into `WalkPrimitive` variants. Single `'walk'` discriminant with `case: 'test' | 'list' | 'size'`. (Spec teases a 4th `'form'` variant for object-entries-style; not implemented.)
+- [x] `PathPrimitive` → `ReadPrimitive`. `path: PathSeg[]` → `link: ReadLink[]`.
+- [x] Literal types collapsed to **bare native scalars** (`string` / `number` / `boolean` / `Date` / `null`). No `*Primitive` wrappers for scalars. Tagged structural nodes stay: `list`, `hash`, `template_string`, `read`, `reference`, `call`, `fork`, `switch`, `match`, `case`, `pick`, `walk`, `view`.
+- [x] `id` / `meta` / `version` reserved fields dropped from the reserved set.
+- [x] `mark` carried through (UUID v7 recommended, optional).
+- [ ] Add `Find` primitive type (query filter). Not yet implemented.
+- [ ] Add `Fold` primitive type (document template variant). Currently the AST tree itself is implicit.
 
-The current `fold/types.ts` uses form.js node names. Calm spec names need to land:
+### Phase 2. Builder rename (`fold/build.ts`) ✅
 
-- [ ] `BranchNode` rename to `ForkNode`. Drop `'branch'` literal, use `'fork'`.
-- [ ] `AttemptNode` removed entirely. Calm has no try/catch.
-- [ ] `LoopNode` collapsed into `WalkNode` variants. Single `'walk'` discriminant with `case: 'test' | 'list' | 'size' | 'form'`.
-- [ ] `PathNode` rename to `ReadNode`. `path: PathSeg[]` field renames to `link: ReadLink[]`.
-- [ ] Literal node types prefixed `Base*`. `TextNode` becomes `BaseText`, `IntegerNode` becomes `BaseInteger`, etc.
-- [ ] `id` field removed. Replace with `mark` (semver string).
-- [ ] `meta` field removed entirely.
-- [ ] Add `Find` primitive type (query filter). Doesn't exist in form.js.
-- [ ] Add `Fold` primitive type (document template Form variant). Currently the AST tree itself is implicit.
+The namespace is now `make` (not `flow`). Calm spec names:
 
-### Phase 2. Builder rename (`fold/build.ts`)
+- [x] `make.fork(...)` (was `make.branch`).
+- [x] `make.read(...)` (was `make.path`). Internal field renamed too.
+- [x] `make.walk(...)` for the list case; `make.walkTest(...)` for while-style; `make.walkSize(...)` for counted ranges.
+- [x] `make.attempt(...)` dropped.
+- [x] `make.loop(...)` dropped. Use `make.walkSize(...)`.
+- [x] `make.templateString(...)` (was `make.weave`).
+- [x] `make.hash(...)` added.
+- [ ] Add `make.find(...)` for filter authoring.
+- [ ] Add `make.fold(...)` for document trees (or reuse the tree-of-calls shape).
 
-Current `flow.*` builders reflect form.js shape. Calm spec names:
+### Phase 3. CallMake / CallWake split ✅
 
-- [ ] `flow.branch(...)` rename to `flow.fork(...)`.
-- [ ] `flow.path(...)` rename to `flow.read(...)`. Field rename internally.
-- [ ] `flow.walk(...)` becomes 4 variants. Add `flow.walk.test`, `flow.walk.list`, `flow.walk.size`, `flow.walk.form`.
-- [ ] Drop `flow.attempt(...)`.
-- [ ] Drop `flow.loop(...)`. Use `flow.walk.size(...)` instead.
-- [ ] Add `flow.find(...)` for filter authoring.
-- [ ] Add `flow.fold(...)` for document trees (or reuse the tree-of-calls shape).
+- [x] Single `Call` type covers both flavors via `name` (make) vs `code` (wake).
+- [x] `make.compile(tree, codeTable)` produces wake form: `(name, base, case)` resolved to `code`, args folded under `bind`.
+- [x] `make.decompile(tree, decodeTable)` reverses.
+- [x] `make.buildDecodeTable(codeTable)` derives the inverse.
+- [x] `mark` survives both directions.
 
-### Phase 3. CallMake / CallWake split
+### Phase 4. The `Base` runtime class (`code/base/`) ✅ (renamed from `code/runtime/`)
 
-Spec says editable form is `CallMake<T>` with args at top level via `& T`, compiled form is `CallWake<T>` with `bind: T` and `code: number`. Currently form.js has one `CallNode` shape with flat args.
+- [x] `code/base/index.ts` exports `class Base<R extends Code>`.
+- [x] `base.flow(...)`, `base.call(...)`, `base.cast(tree)`, `base.load(book)`.
+- [x] Generic typecheck via the bundled `Code` interface.
+- [x] Internal `Map<HookName, Hook>` keyed by colon-namespace string AND integer code (when `book.code` table is supplied).
+- [ ] `base.bindPatch(...)` for partial recompilation (planned, not yet implemented).
 
-- [ ] Split `CallNode` into `CallMake<T> | CallWake<T>` union.
-- [ ] Compile step assigns integer codes (mapping `(name, base, case)` to int).
-- [ ] Wake form replaces `name`/`base`/`case` with `code: number` and moves args under `bind: T`.
-- [ ] Inverse decompile.
+### Phase 5. The `Make` codegen class (`code/make/`) ✅
 
-### Phase 4. The `Base` runtime class (`code/runtime/`)
+- [x] `Make` class with `load(book)` / `save()`.
+- [x] Per-leaf 3-file emit (`index.ts`, `form.ts`, `base.ts`).
+- [x] Bundled `Code` type (kysely-style aggregate).
+- [x] Numeric-id `CodeLink` table.
 
-The class doesn't exist yet. Spec is in `note/runtime.md`,
-`note/architecture.md`, and `note/book.md`.
+### Phase 6. The standard catalog (`code/book/`) ✅ (renamed from `code/base/`)
 
-- [ ] `code/runtime/index.ts` exports `class Base<T extends Code>`.
-- [ ] `base.flow(...)`, `base.call(...)`, `base.bind(...)`, `base.bindPatch(...)`.
-- [ ] Generic typecheck via the bundled `Code` interface.
-- [ ] Internal registries: `flows`, `handlers` keyed by integer code.
-
-### Phase 5. The `Make` codegen class (`code/make/`)
-
-Currently `code/make/index.ts` exports a `make()` function. Spec describes a `Make` class with `book` / `save` methods.
-
-- [ ] Wrap existing make logic in a `Make` class.
-- [ ] `make.book(book)` registers a Book by its `host:name` key.
-- [ ] `make.save()` walks every registered Book and emits per-leaf `index.ts` / `form.ts` / `base.ts`.
-- [ ] Per-leaf 3-file emit pattern instead of form.js's flat `*.form.ts` / `*.take.ts` / `*.base.ts`.
-- [ ] Emit bundled `Code` type (kysely-style aggregate).
-- [ ] Emit numeric-id table for compile-time call-site rewriting.
-
-### Phase 6. The standard catalog (`code/base/`)
-
-The folder doesn't exist. Spec describes the nine-verb seed catalog (`is`, `has`, `make`, `get`, `find`, `if`, `bind`, `walk`, `validate`).
-
-- [ ] `code/base/<logical-group>/make.ts` files exporting batches of related declarations.
-- [ ] `code/base/<logical-group>/flow.ts` files exporting handlers for the Flows in the sibling `make.ts`.
-- [ ] All 100+ entries from `note/catalog.md`.
-- [ ] Generated `index.ts` / `form.ts` / `base.ts` for the bundle.
+- [x] `code/book/<verb>/make.ts` declarations.
+- [x] `code/book/<verb>/flow.ts` handlers.
+- [ ] Full 100+ entries from `note/catalog.md` — currently has `is`, `make`, `get`, `has`, `format` (5 of 9 verbs). Missing: `validate`, `find`, `if`, `bind`, `walk` as catalog verbs.
+- [x] Generated artifacts.
 
 ### Phase 7. Runtime evaluator pipeline
 
@@ -192,20 +182,5 @@ Spec gaps: close them as the corresponding phase needs them. Constraint grammar 
 
 ## Risks
 
-- The form.js renderer is mature and tested. Replacing it wholesale risks regressions. Prefer **incremental migration**: rename + adapt rather than rewrite.
-- The `flow.*` builder name is exported as a stable API. Renaming methods (`branch` → `fork` etc.) is a breaking change. Either ship as `@cluesurf/calm v1` from day one with the new names, or maintain shim aliases through a transition period.
-- The integer-keyed compiled form is a **wire format**. Get it right before publishing or face migration pain.
-
-## Quick-win starter tasks
-
-If picking up the migration cold, these are good first commits:
-
-- [ ] Rename `BranchNode` to `ForkNode` and `'branch'` to `'fork'` across `fold/`.
-- [ ] Rename `flow.branch(...)` to `flow.fork(...)`. Provide a deprecated alias.
-- [ ] Rename `PathNode` to `ReadNode`, `path: PathSeg[]` to `link: ReadLink[]`.
-- [ ] Drop `AttemptNode` and `flow.attempt(...)`.
-- [ ] Replace `id` with `mark` on every node form.
-- [ ] Drop `meta` from every node form.
-- [ ] Rename test fixtures to match.
-
-These are mostly perl substitutions plus test updates. Get the green-test gate moving before the deeper structural work.
+- The integer-keyed compiled (wake) form is a **wire format**. Get it right before publishing or face migration pain. Currently `make.compile` / `make.decompile` are stable and round-trip; the integer ids come from the codegen `CodeLink` table per Book.
+- The `make.*` builder namespace is now exported. Further renames are breaking changes; treat the current shape as the v1 surface.

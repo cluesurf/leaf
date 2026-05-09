@@ -1,29 +1,29 @@
 /**
- * Shared `path` evaluation. Walks typed segments, threads
+ * Shared `read` evaluation. Walks typed segments, threads
  * scope, applies optional-chain (`safe`) short-circuiting.
  */
 
-import type { Node, PathNode, PathSeg } from '../types'
+import type { Cast, ReadPrimitive, ReadLink } from '../types'
 import type { BaseContext } from './registry'
 
 /**
- * Resolve a path node to its value. The renderer passes a
+ * Resolve a read node to its value. The renderer passes a
  * `evaluateNode` callback so nested nodes inside index/slice
  * bounds are evaluated in the same flavor (text or react).
  */
 export function evaluatePath(
-  node: PathNode,
+  node: ReadPrimitive,
   context: BaseContext,
-  evaluateNode: (n: Node, context: BaseContext) => unknown,
+  evaluateNode: (n: Cast, context: BaseContext) => unknown,
 ): unknown {
   let current: unknown = undefined
-  for (let i = 0; i < node.path.length; i += 1) {
-    const seg = node.path[i]
+  for (let i = 0; i < node.link.length; i += 1) {
+    const seg = node.link[i]
     if (!seg) continue
     if (i === 0) {
       if (seg.form !== 'variable') {
         throw new Error(
-          `flow.path: first segment must be a variable, got ${seg.form}`,
+          `make.read: first segment must be a variable, got ${seg.form}`,
         )
       }
       current = context.scope.get(seg.name)
@@ -38,14 +38,14 @@ export function evaluatePath(
 }
 
 function evaluateSeg(
-  seg: PathSeg,
+  seg: ReadLink,
   current: unknown,
   context: BaseContext,
-  evaluateNode: (n: Node, context: BaseContext) => unknown,
+  evaluateNode: (n: Cast, context: BaseContext) => unknown,
 ): unknown {
   switch (seg.form) {
     case 'variable':
-      throw new Error('flow.path: variable segment only valid at head')
+      throw new Error('make.read: variable segment only valid at head')
     case 'field':
       return (current as Record<string, unknown>)[seg.name]
     case 'index': {
