@@ -5,7 +5,7 @@
  * wire `@cluesurf/kink` as the error factory used by
  * `code/base/parse.ts`:
  *
- *   import '@cluesurf/bead/base/kink'
+ *   import '@cluesurf/leaf/base/kink'
  *
  * Side effects:
  *   1. Registers each parse-error form with KinkBase.
@@ -17,12 +17,12 @@
  * throws plain `Error` objects with the same `path` / `form` /
  * `link` info attached as own-properties.
  */
-// @ts-ignore - opt-in dependency; not in @cluesurf/bead's runtime deps
+// @ts-ignore - opt-in dependency; not in @cluesurf/leaf's runtime deps
 
 import { KinkBase } from '@cluesurf/kink'
 import { setKinkFactory } from '@/bind'
 
-const host = '@cluesurf/bead'
+const host = '@cluesurf/leaf'
 
 type ParseBase = {
   shape_object: { take: { path: string; got: string } }

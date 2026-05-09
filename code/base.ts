@@ -6,14 +6,14 @@
  * across every registered Book). `base.flow(...)` registrations
  * typecheck the (name, base, case) triple against the registry.
  *
- *   import { Base } from '@cluesurf/bead'
+ *   import { Base } from '@cluesurf/leaf'
  *   import type Code from './libs'
  *
  *   const base = new Base<Code>({ castView: React.createElement })
  *   base.load(emailBook)
  *
- *   base.cast('email:status', { input: 'hi@bead.dev' })
- *   base.call('is:email', { text: 'hi@bead.dev' })
+ *   base.cast('email:status', { input: 'hi@leaf.dev' })
+ *   base.call('is:email', { text: 'hi@leaf.dev' })
  */
 
 import type {
@@ -41,6 +41,7 @@ import {
   type CompiledFold,
   type ElementBuilder,
   type Parser,
+  type Render,
 } from '@/bind'
 import type { Cast as FoldNode } from '@/cast'
 import { makeScope } from '@/scope'
@@ -292,7 +293,7 @@ export class Base<R = Code> {
   /**
    * Invoke a registered Flow.
    *
-   *   base.call('is:email', { text: 'hi@bead.dev' })
+   *   base.call('is:email', { text: 'hi@leaf.dev' })
    *   base.call('is:ipa:broad', { text: 'foo' })
    */
 
@@ -344,7 +345,7 @@ export class Base<R = Code> {
    * scope. Returns whatever the renderer produces (string in
    * text mode, vdom in element mode).
    *
-   *   base.cast('email:status', { input: 'hi@bead.dev' })
+   *   base.cast('email:status', { input: 'hi@leaf.dev' })
    *
    * Trees come from `Fold` declarations registered via
    * `base.load(book)`. Never inline.
@@ -429,15 +430,28 @@ export class Base<R = Code> {
   }
 
   /**
-   * Evaluate a Mold hook against a `self` value. Compiles the
-   * hook tree on demand (Mold hooks are typically tiny — call
-   * + read + literal — so the compile cost is negligible).
+   * Cache of compiled Mold-hook trees, keyed by tree identity.
+   * Hook trees are typically reused across thousands of mold
+   * applications (one per validated row), so compiling once and
+   * reusing the closure is a meaningful win on bulk imports.
+   * Scalar trees skip the cache (compile is a no-op for them).
    */
+  private moldHookCache = new WeakMap<object, Render>()
+
   private evaluateMoldHook(tree: FoldNode, self: unknown): unknown {
-    return compile(tree, 'text')(
-      makeScope({ self }),
-      this.renderContext(),
-    )
+    const render = this.compileMoldHook(tree)
+    return render(makeScope({ self }), this.renderContext())
+  }
+
+  private compileMoldHook(tree: FoldNode): Render {
+    if (tree === null || typeof tree !== 'object' || tree instanceof Date) {
+      return compile(tree, 'text')
+    }
+    const cached = this.moldHookCache.get(tree)
+    if (cached) return cached
+    const render = compile(tree, 'text')
+    this.moldHookCache.set(tree, render)
+    return render
   }
 
   /** Number of registered Flows (debugging). */

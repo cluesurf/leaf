@@ -63,7 +63,7 @@ const flow = {
 
 const beadBook: Book = {
   host: 'cluesurf',
-  name: 'bead',
+  name: 'leaf',
   make,
   flow,
   code: CodeLink,

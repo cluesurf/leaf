@@ -3,7 +3,7 @@
  * wrapped in `make.join` when a separator is needed.
  */
 
-import { make, makeScope, renderText } from '@cluesurf/bead'
+import { make, makeScope, renderText } from '@cluesurf/leaf'
 
 // walk(list) — for-each over a collection.
 const listLine = make.join(

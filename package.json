@@ -1,20 +1,16 @@
 {
-  "name": "@cluesurf/bead",
+  "name": "@cluesurf/leaf",
   "version": "0.0.2",
   "license": "MIT",
   "packageManager": "pnpm@10.33.0",
-  "description": "A Template Language \u22c8",
+  "description": "A Template Language ᛉ",
   "type": "module",
   "main": "./host/code/index.js",
   "exports": {
     ".": "./host/code/index.js",
     "./make": "./host/code/make/index.js"
   },
-  "files": [
-    "host",
-    "readme.md",
-    "license.md"
-  ],
+  "files": ["host", "readme.md", "license.md"],
   "scripts": {
     "test": "pnpm exec vitest run",
     "make:base": "pnpm exec tsx task/save.ts",
@@ -25,10 +21,7 @@
   "dependencies": {
     "@formatjs/intl": "catalog:",
     "p-limit": "catalog:",
-    "prettier": "catalog:",
-    "ts-morph": "catalog:",
-    "yaml": "catalog:",
-    "yargs": "catalog:"
+    "prettier": "catalog:"
   },
   "devDependencies": {
     "@cluesurf/wash": "catalog:",
@@ -46,6 +39,8 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
+    "ts-morph": "catalog:",
+    "yaml": "catalog:",
     "yargs": "catalog:"
   },
   "peerDependencies": {

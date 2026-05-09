@@ -5,6 +5,7 @@ packages:
 # `"<pkg>": "catalog:"` in their own package.json so a version
 # bump only happens here. Mirrors the mesh repo's pattern.
 catalog:
+  '@cluesurf/kink': 1.6.4
   '@cluesurf/wash': 0.9.0
   '@formatjs/intl': 3.1.6
   '@types/fs-extra': 11.0.4

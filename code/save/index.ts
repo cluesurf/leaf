@@ -10,7 +10,7 @@ import { wash } from './wash'
  * identity-tuple uniqueness, and emits the generated artifacts
  * to `link` (or returns them in-memory when `fake: true`).
  *
- *     import save from '@cluesurf/bead/save'
+ *     import save from '@cluesurf/leaf/save'
  *     import beadBook from './book'
  *
  *     await save({ link: 'host/code', book: beadBook })

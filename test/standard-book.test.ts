@@ -5,7 +5,7 @@ import standard from '../code/book'
 describe('standard catalog Book', () => {
   it('has a `host`, `name`, and a `cast` array of declarations', async () => {
     expect(standard.host).toBe('cluesurf')
-    expect(standard.name).toBe('bead')
+    expect(standard.name).toBe('leaf')
     expect(Array.isArray(standard.make)).toBe(true)
     expect((standard.make ?? []).length).toBeGreaterThan(0)
   })

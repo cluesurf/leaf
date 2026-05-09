@@ -3,8 +3,8 @@
  * the `validate` envelope flow to collect typed failures.
  */
 
-import { make, Base } from '@cluesurf/bead'
-import standard, { type Code } from '@cluesurf/bead/book'
+import { make, Base } from '@cluesurf/leaf'
+import standard, { type Code } from '@cluesurf/leaf/book'
 
 const base = new Base<Code>()
 base.load(standard)

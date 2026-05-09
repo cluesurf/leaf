@@ -7,7 +7,7 @@
  */
 
 /**
- * @cluesurf/bead fold-tree type definitions.
+ * @cluesurf/leaf fold-tree type definitions.
  *
  * Scalar leaves are native JS values: `string`, `number`,
  * `boolean`, `Date`, `null`. Structural nodes carry a `form`
@@ -92,7 +92,7 @@ export type ReadPrimitive = {
 // ---------------------------------------------------------------------------
 
 /**
- * A Call carries one of two flavors per `note/ast.md`:
+ * A Call carries one of two flavors:
  *
  *  - **Make form** (`name` set, args flat at top level) — what
  *    authors write and what's stored at rest.
@@ -190,8 +190,7 @@ export type PickPrimitive = {
 }
 
 /**
- * Iteration. Three case-discriminated variants per
- * `note/ast.md`:
+ * Iteration. Three case-discriminated variants:
  *
  *  - `walk(list)`  — for-each over a collection (the original)
  *  - `walk(test)`  — while-style; loop while a test is truthy
@@ -822,7 +821,7 @@ export function pick(...values: Promotable[]): PickPrimitive {
   }
 }
 
-// ----- walk: 3 variants per note/ast.md -----
+// ----- walk: 3 variants -----
 
 /**
  * For-each over a collection. The body (`hook`) renders once

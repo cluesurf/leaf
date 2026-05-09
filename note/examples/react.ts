@@ -10,7 +10,7 @@ import {
   makeScope,
   renderElement,
   type ElementBuilder,
-} from '@cluesurf/bead'
+} from '@cluesurf/leaf'
 
 const REACT = {
   builder: createElement as unknown as ElementBuilder<ReactElement>,

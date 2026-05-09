@@ -11,7 +11,7 @@ import {
   compile,
   decompile,
   buildDecodeTable,
-} from '@cluesurf/bead'
+} from '@cluesurf/leaf'
 
 // Hosts get this from their generated `code.ts`. Inlined here
 // so the example stands alone.

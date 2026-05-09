@@ -424,7 +424,7 @@ function runMold(
  *   - In every mesh, has a `take:` array of length 1 (the tag value).
  *   - Tag values are unique across meshes.
  *
- * In practice the discriminant is `form` for Bead-shaped trees,
+ * In practice the discriminant is `form` for Leaf-shaped trees,
  * but we don't hardcode the key.
  */
 function detectTaggedUnion(

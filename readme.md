@@ -19,7 +19,7 @@
 <br/>
 <br/>
 
-## What is leaf
+## Introduction
 
 Leaf is a **JSON system for app features**. Author rich documents or
 rules. Save them as JSON. The runtime renders that JSON to text or vdom.
@@ -32,14 +32,14 @@ Just JSON.
 
 ## Why you need this
 
-| building                                   | leaf gives you                                                           |
-| ------------------------------------------ | ------------------------------------------------------------------------ |
-| Notion-class doc editor                    | one tree shape for blocks / inline / embeds / database views             |
-| HTML + React + email + AMP from one source | author once. Text + element renderers share the tree                     |
-| Localization                               | locale-aware `format(*)`, CLDR plurals, gender select, RTL               |
-| User- or AI-supplied logic, sandboxed      | rules + formulas run against a host scope. No `eval`, no DOM, no network |
-| Reusable fragments                         | `Fold` declarations registered in the Book                               |
-| Wire-format-stable bytecode                | `compile(tree)` rewrites call names to integer ids                       |
+| building                                   | leaf gives you                                                                     |
+| ------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Notion-class doc editor                    | one tree shape for blocks / inline / embeds / database views                       |
+| HTML + React + email + AMP from one source | author once. Text + element renderers share the tree                               |
+| Localization                               | locale-aware `format(*)`, CLDR plurals, gender select, RTL                         |
+| User- or AI-supplied logic, sandboxed      | rules + formulas run against a host scope. No `eval`, no DOM, no network           |
+| Reusable fragments                         | `Fold` declarations registered in the Book                                         |
+| Data-shape validation + normalization      | `Form` + `Mold` compile to per-field closures at load time. Fast under bulk import |
 
 ## Install
 
@@ -50,7 +50,7 @@ pnpm add @cluesurf/leaf
 ## Hello world
 
 ```ts
-import { Base, make } from '@cluesurf/leaf'
+import { Base, cast } from '@cluesurf/leaf'
 import leafBook, { type Code } from '@cluesurf/leaf/book'
 
 const base = new Base<Code>()
@@ -61,7 +61,7 @@ base.load({
     {
       form: 'fold',
       case: 'greeting',
-      tree: [make.text('Hello, ', make.read('name'), '!')],
+      cast: [cast.text('Hello, ', cast.read('name'), '!')],
     },
   ],
 })
@@ -70,12 +70,12 @@ base.cast('greeting', { name: 'Lance' })
 // → 'Hello, Lance!'
 ```
 
-## End-to-end: a typed Book
+## End-to-end
 
 ```ts
 // code/book/email/make.ts
 import type { Flow, Fold } from '@cluesurf/leaf'
-import { make } from '@cluesurf/leaf'
+import { cast } from '@cluesurf/leaf'
 
 export const isEmail: Flow = {
   form: 'flow',
@@ -90,13 +90,13 @@ export const emailStatus: Fold = {
   form: 'fold',
   case: 'email:status',
   take: { input: { like: 'string' } },
-  tree: [
-    make.text(
+  cast: [
+    cast.text(
       'Mail to ',
-      make.read('input'),
+      cast.read('input'),
       ' is ',
-      make.fork(
-        make.call('is:email', { text: make.read('input') }),
+      cast.fork(
+        cast.call('is:email', { text: cast.read('input') }),
         'valid',
         'invalid',
       ),
@@ -108,22 +108,25 @@ export const emailStatus: Fold = {
 
 ```ts
 // code/book/email/flow.ts
-export const isEmail = ({ text }: { text: string }): boolean =>
+const isEmail = ({ text }: { text: string }): boolean =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)
+
+const flow = { 'is:email': isEmail }
+export default flow
 ```
 
 ```ts
 // code/book/index.ts
 import type { Book } from '@cluesurf/leaf'
 import * as emailFlows from './email/make'
-import * as emailHooks from './email/flow'
-import { CodeLink } from './code' // generated
+import emailFlow from './email/flow'
+import { CodeLink } from '<link>/code' // generated
 
 export default {
   host: 'app',
   name: 'email',
-  cast: Object.values(emailFlows),
-  call: emailHooks,
+  make: Object.values(emailFlows),
+  flow: emailFlow,
   code: CodeLink,
 } satisfies Book
 ```
@@ -142,194 +145,3 @@ base.cast('email:status', { input: 'hi@leaf.dev' })
 base.call('is:email', { text: 'hi@leaf.dev' })
 // → true (typed)
 ```
-
-## Five top-level shapes
-
-Every entry in `book.cast` carries a `form:` discriminant.
-
-| `form:`  | role                                           |
-| -------- | ---------------------------------------------- |
-| `'form'` | data shape with fields and types               |
-| `'flow'` | function with input, output, and handler       |
-| `'fold'` | renderable tree (document or template)         |
-| `'hash'` | record with dynamic keys, all values one shape |
-| `'list'` | homogeneous list of literals (an enum source)  |
-
-**Form** identity is `(name, flow?, case?)`. **Flow** identity is
-`(call, case?)`. **Fold** identity is `(case)`. Hash and List are keyed
-by `name`.
-
-### Link modifiers
-
-Each field in a `like:` mesh accepts these modifiers:
-
-| modifier      | role                                                             |
-| ------------- | ---------------------------------------------------------------- |
-| `like`        | the type (primitive name, Form ref, inline mesh, or union array) |
-| `need: false` | mark the field optional                                          |
-| `list: true`  | wrap as array (`T[]`)                                            |
-| `take: [...]` | enum of allowed values                                           |
-
-```ts
-{
-  form: 'form', name: 'event',
-  like: {
-    action:   { take: ['create', 'update', 'delete'] },
-    priority: { take: ['high', 'low'], need: false },
-    flags:    { take: ['archived', 'pinned'], list: true },
-    tags:     { like: 'string', list: true },
-  },
-}
-```
-
-→ TS: `action: 'create' | 'update' | 'delete'`,
-`priority?: 'high' | 'low'`, `flags: ('archived' | 'pinned')[]`.
-
-→ Zod: `action: z.enum([...])`, `priority: z.enum([...]).optional()`,
-`flags: z.array(z.enum([...]))`.
-
-## AST primitives
-
-Inside a `Fold.tree`. Build with `make.*`:
-
-| primitive             | builder                                                                        |
-| --------------------- | ------------------------------------------------------------------------------ |
-| string concat         | `make.text(...)`                                                               |
-| literal list          | `make.list(...)`                                                               |
-| literal record        | `make.hash(k, v, ...)`                                                         |
-| join with separator   | `make.join(sep, list)`                                                         |
-| read scope key        | `make.reference('name')`                                                       |
-| read path             | `make.read('user', 'name')`                                                    |
-| call a Flow           | `make.call('is:email', { text })`                                              |
-| binary fork           | `make.fork(test, then, else)`                                                  |
-| tagged dispatch       | `make.switch(value, [arms])`                                                   |
-| pattern match         | `make.match(value, [arms])`                                                    |
-| arm                   | `make.case(test, body)` / `make.value(literal, body)` / `make.otherwise(body)` |
-| pick from list        | `make.pick(list, index)`                                                       |
-| iterate               | `make.walk(list, body)`                                                        |
-| resolve resource      | `make.find('page', { where, sort, limit })`                                    |
-| embed registered Fold | `make.fold('greeting', { name })`                                              |
-| view node             | `make.view('section', props, [children])`                                      |
-
-Bare scalars (string, number, boolean, Date, null) sit anywhere.
-
-## Base: the runtime
-
-```ts
-const base = new Base<Code>({ createElement?: ElementBuilder })
-```
-
-`createElement` enables vdom mode. Omit it for text mode.
-
-| method                             | what it does                      |
-| ---------------------------------- | --------------------------------- |
-| `base.load(book \| cast \| array)` | register declarations. Idempotent |
-| `base.toss(book \| cast \| array)` | inverse of load                   |
-| `base.flow(name, ?options, hook)`  | register one handler ad-hoc       |
-| `base.call('verb:case', args)`     | invoke a Flow. Sync. Typed        |
-| `base.cast('case', params)`        | render a registered Fold. Sync    |
-
-`base.cast` accepts **only a Fold's `case:`**, never an inline tree.
-Production code goes through registered Folds.
-
-## React mode
-
-```ts
-import { createElement, Fragment } from 'react'
-
-const base = new Base<Code>({ createElement })
-base.load({
-  ...leafBook,
-  view: { fragment: Fragment, callout: Callout },
-})
-
-base.cast('page:greeting', { user })
-// → React vdom
-```
-
-`view:` carries components keyed by name. The reserved `'fragment'` key
-is the fragment value the renderer uses for sibling wrapping.
-
-## Make: the codegen
-
-```ts
-import { Make } from '@cluesurf/leaf'
-
-const make = new Make({ link: './host' }) // or wherever you want
-
-make.load(leafBook)
-make.load(myAppBook)
-
-await make.save()
-```
-
-`link` is **whatever path you choose**. Leaf doesn't impose a directory
-name. pick `host/`, `generated/`, `dist/types/`, or nest it inside an
-existing `code/` tree. The path is the root for all emitted files.
-
-`save()` emits four streams keyed by each cast's `save:`:
-
-- `<link>/code.ts` is the bundled `Code` aggregate type and `CodeLink`
-  integer-id table.
-- `<link>/<save>/index.ts` is TS type aliases.
-- `<link>/<save>/form.ts` is the Zod parsers locked via
-  `satisfies z.ZodType<TypeName>`.
-- `<link>/<save>/base.ts` is the literal data exports for Hash/List with
-  `load:`.
-
-Identity-tuple uniqueness is validated across all loaded books.
-Collisions abort `save()` before any file write.
-
-Every emitted file is washed through the host's ESLint + Prettier
-configs (when present). Mirrors VS Code "Save" semantics:
-organize-imports, ESLint --fix, then Prettier. With no host configs, the
-only pass is organize-imports. No bundled defaults.
-
-## Compile: tree → wake
-
-```ts
-import { compile } from '@cluesurf/leaf'
-
-const wake = compile(tree, leafBook.code!)
-// every named call rewritten to { form: 'call', code: <int>, bind: {...} }
-```
-
-Wire-stable across catalog renames as long as `CodeLink` is stable.
-
-## Standard book
-
-`@cluesurf/leaf/book` ships verbs:
-
-`is`, `make`, `get`, `has`, `format`, `fork`, `bind`, `validate`,
-`walk`, `find`.
-
-Plus AST operators (`eq`, `gt`, `plural`, `count`, `now`, `uuid`, …)
-under `code/book/check/flow.ts`.
-
-Replace any handler by loading your own Book on top:
-
-```ts
-base.load(leafBook)
-base.load(myAppBook) // overrides matching keys
-```
-
-## Sandbox
-
-Trees are JSON. `compile(tree)` produces JSON. The runtime evaluates
-JSON. There is no `eval`, no `Function`, no DOM, no network access from
-a tree.
-
-Hosts gate side effects through `book.call` and `base.flow(...)`. A
-handler that talks to the network is the host's choice. The tree
-language can't introduce one.
-
-## Conventions
-
-- Discriminant property is always `form:`.
-- File names are kebab-case, identifiers camelCase.
-- Snake_case appears only in `form:` string values (e.g.
-  `'natural_number'`).
-
-## Reference
-
-Full spec at [`note/spec-v2.md`](./note/spec-v2.md).
