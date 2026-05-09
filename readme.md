@@ -50,46 +50,156 @@ yarn add @cluesurf/bead
 npm i @cluesurf/bead
 ```
 
-## Example
+## Quick Example
 
-Author a Book of Forms / Flows, generate the bundled `Code` type, then
-dispatch flows through the typed runtime:
+Hello world:
 
 ```ts
-// code/base/is/make.ts — authored declarations
+import { make, makeScope, renderText } from '@cluesurf/bead'
+
+const greeting = make.templateString('Hello, ', make.read('name'), '!')
+
+renderText(greeting, { scope: makeScope({ name: 'World' }) })
+// → 'Hello, World!'
+```
+
+A bit richer — pluralization + iteration + join:
+
+```ts
+const summary = make.templateString(
+  make.read('user'),
+  ' has ',
+  make.read('count'),
+  ' ',
+  make.pluralCases('count', { one: 'message', other: 'messages' }),
+  '. Tags: ',
+  make.join(', ', make.walk(make.read('tags'), make.read('item'))),
+  '.',
+)
+
+renderText(summary, {
+  scope: makeScope({
+    user: 'Lance',
+    count: 3,
+    tags: ['urgent', 'review'],
+  }),
+})
+// → 'Lance has 3 messages. Tags: urgent, review.'
+```
+
+## Usage
+
+End-to-end. A bead host has four files:
+
+```
+code/
+  book/
+    email/
+      make.ts     # 1. authored declarations
+      flow.ts     # 2. handler implementations
+    index.ts      # 3. the Book (aggregates groups)
+scripts/
+  codegen.ts      # 4. codegen entry
+```
+
+**1. Authored declarations** — declare a `Form`, `Flow`, `Fold`,
+`Hash`, or `List`. The `save:` field tells codegen which output
+folder to emit into.
+
+```ts
+// code/book/email/make.ts
 import type { Flow } from '@cluesurf/bead'
 
-export const isIPABroad: Flow = {
+export const is_email: Flow = {
   form: 'flow',
-  save: 'is',
+  save: 'email',
   call: 'is',
-  base: 'ipa',
-  case: 'broad',
+  base: 'email',
   take: { text: { like: 'string' } },
   make: 'boolean',
 }
 ```
 
-```ts
-// code/base/is/flow.ts — handler
-export const isIPABroad = ({ text }: { text: string }): boolean =>
-  /^[\p{L}\p{M}ˈˌːʼʰ]+$/u.test(text)
-```
+**2. Handler** — function per Flow, named exactly like the
+declaration. Args + return type derive from `take` / `make`.
 
 ```ts
-// app.ts — runtime
+// code/book/email/flow.ts
+export const is_email = ({ text }: { text: string }): boolean =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)
+```
+
+**3. Aggregate the Book.**
+
+```ts
+// code/book/index.ts
+import type { Book } from '@cluesurf/bead'
+import * as email_flows from './email/make'
+import * as email_hooks from './email/flow'
+import { CodeLink } from './code'  // generated in step 4
+
+export default {
+  host: 'app',
+  cast: Object.values(email_flows),
+  call: email_hooks,
+  code: CodeLink,
+} satisfies Book
+
+export type { Code } from './code'
+```
+
+**4. Run codegen** — emits per-group `index.ts` (TS types), `form.ts`
+(Zod parsers), and the bundled `code/book/code.ts` (`Code` aggregate
++ `CodeLink` integer table).
+
+```ts
+// scripts/codegen.ts
+import { Make } from '@cluesurf/bead'
+import standard from '../code/book'
+
+await new Make({ link: './code/book' }).load(standard).save()
+```
+
+```bash
+pnpm tsx scripts/codegen.ts
+```
+
+**5. Run** — load the Book into a `Base` runtime and call:
+
+```ts
+// app.ts
 import { Base } from '@cluesurf/bead'
 import standard, { type Code } from './code/book'
 
 const base = new Base<Code>()
 base.load(standard)
 
-base.call('is', { base: 'ipa', case: 'broad', text: 'fəˈnɛtɪk' })
-// → true
+base.call('is', { base: 'email', text: 'hi@bead.dev' })  // → true
 ```
 
-`pnpm make:base` runs the codegen — emits the `Code` type, integer-id
-table, and per-verb Zod parsers from the registered Books.
+The `<Code>` generic gives TS end-to-end inference: every
+`base.call(...)` is checked for verb / base / case existence and
+typed args + return.
+
+**6. Author trees + render** — author trees from your editor (or
+build them with `make.*`); store as JSON; render via `base.cast` or
+`renderText`:
+
+```ts
+import { make } from '@cluesurf/bead'
+
+const tree = make.fork(
+  make.call('is', { base: 'email', text: make.read('input') }),
+  'OK',
+  'Invalid email',
+)
+
+base.cast(tree, makeScope({ input: 'hi@bead.dev' }))  // → 'OK'
+```
+
+For production hot paths, run `compile(tree, CodeLink)` once and
+store the wake form (integer ids, args under `bind:`) — `base.cast`
+accepts both flavors transparently.
 
 ## Architecture
 
@@ -123,15 +233,32 @@ Plus utility shapes: `Hash`, `List`, `Fold`, `Find`.
 
 ## Standard catalog
 
-Five verbs ship by default:
+Ten verbs ship by default. They cover the bulk of what user-authored
+trees need; hosts extend with their own domain flows.
 
-| verb     | purpose                                          |
-| -------- | ------------------------------------------------ |
-| `is`     | predicates (`is_string`, `isIPABroad`, …)        |
-| `make`   | transformations (`make_sum`, `make_lowercase`)   |
-| `get`    | accessors / aggregates (`get_length`, `get_sum`) |
-| `has`    | possession predicates (`has_prefix`, `has_key`)  |
-| `format` | locale-aware text/number/date formatting         |
+| verb       | returns | purpose                                                 | examples                                |
+| ---------- | ------- | ------------------------------------------------------- | --------------------------------------- |
+| `is`       | boolean | predicates (the bulk of the catalog)                    | `is_string`, `is_email`, `is_ipa_broad` |
+| `has`      | boolean | possession predicates (a list / map "has X")            | `has_prefix`, `has_key`, `has_pattern`  |
+| `make`     | varies  | transformations (string ops, arithmetic, normalize)     | `make_sum`, `make_lowercase`            |
+| `get`      | varies  | accessors and aggregates                                | `get_length`, `get_sum`, `get_first`    |
+| `format`   | string  | locale-aware text / number / date / currency            | `format_number`, `format_relative`      |
+| `find`     | varies  | async lookups (record fetch, list, count, enum members) | `find_record`, `find_list`              |
+| `if`       | varies  | value selector (`{ test, then, else? }`)                | one form                                |
+| `bind`     | varies  | let-binding (`{ names, then }`)                         | one form                                |
+| `walk`     | varies  | array transforms (map / filter / reduce / chunk)        | `walk_map`, `walk_filter`, `walk_chunk` |
+| `validate` | object  | error-collecting wrapper around any test                | one form                                |
+
+Negation composes via `is(not: { thing: <X> })` rather than parallel
+`is-not-X` flows. The verb set is fixed at ten; bases and cases are
+open. Add new bases / cases by registering Flow declarations in your
+own Book — codegen wires them into the typed `Code` registry
+automatically.
+
+`if` / `bind` are evaluated **lazily** by the AST walker (only the
+selected branch / new scope frame walks) so they behave like real
+control-flow primitives, not eager-arg function calls. `find` handlers
+default to throwing — hosts override with their own data layer.
 
 ## Fold trees — the render DSL
 
