@@ -51,73 +51,73 @@ type ParseBase = {
   mold_failed: { take: { path: string; note: string } }
 }
 
-const parseKinkBase = new KinkBase<ParseBase>({
+const base = new KinkBase<ParseBase>({
   host,
   makeCode: (code: number) => code.toString(16).padStart(4, '0'),
 })
 
-parseKinkBase.form('shape_object', take => ({
+base.form('shape_object', take => ({
   link: take,
   note: `expected an object at \`${take?.path}\``,
 }))
-parseKinkBase.form('shape_string', take => ({
+base.form('shape_string', take => ({
   link: take,
   note: `expected a string at \`${take?.path}\``,
 }))
-parseKinkBase.form('shape_number', take => ({
+base.form('shape_number', take => ({
   link: take,
   note: `expected a number at \`${take?.path}\``,
 }))
-parseKinkBase.form('shape_integer', take => ({
+base.form('shape_integer', take => ({
   link: take,
   note: `expected an integer at \`${take?.path}\``,
 }))
-parseKinkBase.form('shape_natural_number', take => ({
+base.form('shape_natural_number', take => ({
   link: take,
   note: `expected a natural number at \`${take?.path}\``,
 }))
-parseKinkBase.form('shape_boolean', take => ({
+base.form('shape_boolean', take => ({
   link: take,
   note: `expected a boolean at \`${take?.path}\``,
 }))
-parseKinkBase.form('shape_date', take => ({
+base.form('shape_date', take => ({
   link: take,
   note: `expected a Date at \`${take?.path}\``,
 }))
-parseKinkBase.form('shape_uuid', take => ({
+base.form('shape_uuid', take => ({
   link: take,
   note: `expected a UUID at \`${take?.path}\``,
 }))
-parseKinkBase.form('shape_array', take => ({
+base.form('shape_array', take => ({
   link: take,
   note: `expected an array at \`${take?.path}\``,
 }))
-parseKinkBase.form('enum_invalid', take => ({
+base.form('enum_invalid', take => ({
   link: take,
   note: `invalid enum value at \`${take?.path}\``,
 }))
-parseKinkBase.form('field_missing', take => ({
+base.form('field_missing', take => ({
   link: take,
   note: `missing required field at \`${take?.path}\``,
 }))
-parseKinkBase.form('union_tag', take => ({
+base.form('union_tag', take => ({
   link: take,
   note: `unknown union tag at \`${take?.path}\``,
 }))
-parseKinkBase.form('union_invalid', take => ({
+base.form('union_invalid', take => ({
   link: take,
   note: `value matched no union member at \`${take?.path}\``,
 }))
-parseKinkBase.form('schema_missing', take => ({
+base.form('schema_missing', take => ({
   link: take,
   note: `unregistered schema \`${take?.name}\` referenced at \`${take?.path}\``,
 }))
-parseKinkBase.form('mold_failed', take => ({
+base.form('mold_failed', take => ({
   link: take,
   note: `mold pipeline failed at \`${take?.path}\`: ${take?.note}`,
 }))
 
-const PARSE_ERROR = parseKinkBase.make()
+const PARSE_ERROR = base.make()
 
 // Wire into the walker as the default factory.
 setKinkFactory((form, link) => {

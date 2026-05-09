@@ -27,7 +27,6 @@ export type {
   Cast,
   ControlFlow,
   FieldSeg,
-  FindPrimitive,
   FoldPrimitive,
   ForkPrimitive,
   HashPrimitive,
@@ -52,8 +51,17 @@ export type {
 } from './cast'
 
 export { Scope, makeScope } from './scope'
-export { evaluateText, renderText } from './render'
-export { renderElement } from './render-element'
-export type { ElementBuilder, ElementContext } from './render-element'
-export type { TextContext } from './render'
-export type { BaseContext } from './render-context'
+export {
+  compile,
+  compileFold,
+  DEFAULT_HOOK,
+  type BaseRenderContext,
+  type CallHandler,
+  type CompiledFold,
+  type ElementBuilder,
+  type FoldRender,
+  type HandlerContext,
+  type HookHash,
+  type Mode,
+  type Render,
+} from './render'

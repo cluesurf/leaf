@@ -92,18 +92,18 @@ const length = ({ value }: Record<string, unknown>) =>
 // AST primitive used by `cast.plural(value)` and `cast.match(...)`
 // arms keyed on plural categories.
 
-import type { BaseContext } from '@/render-context'
+import type { HandlerContext } from '@/render'
 
 const DEFAULT_LOCALE = 'en'
 
-const readLocale = (context?: BaseContext): string => {
+const readLocale = (context?: HandlerContext): string => {
   const v = context?.scope.get('locale')
   return typeof v === 'string' ? v : DEFAULT_LOCALE
 }
 
 const plural = (
   { value }: Record<string, unknown>,
-  context?: BaseContext,
+  context?: HandlerContext,
 ) => new Intl.PluralRules(readLocale(context)).select(Number(value))
 
 

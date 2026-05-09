@@ -14,7 +14,9 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { cast, makeScope, renderText } from '@/render'
+import { cast } from '@/cast'
+import { makeScope } from '@/scope'
+import { renderText } from './helper'
 
 describe('hook (call operators)', () => {
   it('adds a new call operator via context.hook', () => {

@@ -1,79 +1,13 @@
 /**
- * AST `find` and `fold` primitives.
- *
- * `find` resolves through `context.find`. `fold` resolves a
- * named template through `context.fold` and renders it under a
- * scope frame populated from `bind`.
+ * AST `fold` primitive — embeds a named template and renders it
+ * under a scope frame populated from `bind`.
  */
 
 import { describe, expect, it } from 'vitest'
-import {
-  cast,
-  makeScope,
-  renderText,
-  evaluateText,
-  compile,
-} from '@/render'
+import { cast } from '@/cast'
+import { compile, type CompiledFold } from '@/render'
+import { makeScope } from '@/scope'
 import type { Cast } from '@/cast'
-
-describe('find primitive', () => {
-  it('builds the canonical shape', async () => {
-    const tree = cast.find('page', {
-      where: cast.eq(cast.read('status'), 'on'),
-      sort: ['title'],
-      limit: 10,
-    })
-    expect(tree).toEqual({
-      form: 'find',
-      resource: 'page',
-      where: {
-        form: 'call',
-        name: 'is',
-        case: 'equal',
-        a: { form: 'reference', name: 'status' },
-        b: 'on',
-      },
-      sort: ['title'],
-      limit: 10,
-    })
-  })
-
-  it('resolves through context.find', async () => {
-    const rows = [{ id: 1 }, { id: 2 }]
-    const tree = cast.find('page', { limit: 5 })
-    const out = evaluateText(tree, {
-      scope: makeScope({}),
-      find: ({ resource, limit }) => {
-        expect(resource).toBe('page')
-        expect(limit).toBe(5)
-        return rows
-      },
-    })
-    expect(out).toEqual(rows)
-  })
-
-  it('returns null when no resolver is supplied', async () => {
-    const tree = cast.find('page')
-    expect(evaluateText(tree, { scope: makeScope({}) })).toBe(null)
-  })
-
-  it('evaluates `where` and `sort` before passing to the resolver', async () => {
-    const tree = cast.find('page', {
-      where: cast.read('filter'),
-      sort: [cast.read('order')],
-    })
-    let captured: { where?: unknown; sort?: unknown[] } = {}
-    evaluateText(tree, {
-      scope: makeScope({ filter: { status: 'on' }, order: 'title' }),
-      find: ({ where, sort }) => {
-        captured = { where, sort }
-        return []
-      },
-    })
-    expect(captured.where).toEqual({ status: 'on' })
-    expect(captured.sort).toEqual(['title'])
-  })
-})
 
 describe('fold primitive', () => {
   it('builds the canonical shape', async () => {
@@ -85,26 +19,25 @@ describe('fold primitive', () => {
     })
   })
 
-  it('embeds a named template and renders it under a scope frame', async () => {
+  it('embeds a named template and renders it under a scope frame', () => {
     const greeting: Cast = cast.text(
       'Hello, ',
       cast.read('name'),
       '!',
     )
+    const greetingRender = compile(greeting, 'text')
     const tree = cast.fold('greeting', { name: 'Lance' })
-    const out = renderText(tree, {
-      scope: makeScope({}),
-      fold: name => (name === 'greeting' ? greeting : undefined),
+    const out = compile(tree, 'text')(makeScope({}), {
+      resolveFold: name => (name === 'greeting' ? greetingRender : undefined),
     })
     expect(out).toBe('Hello, Lance!')
   })
 
-  it('returns null when the named fold is unknown', async () => {
+  it('returns null when the named fold is unknown', () => {
     const tree = cast.fold('missing')
     expect(
-      evaluateText(tree, {
-        scope: makeScope({}),
-        fold: () => undefined,
+      compile(tree, 'text')(makeScope({}), {
+        resolveFold: () => undefined,
       }),
     ).toBe(null)
   })
@@ -150,4 +83,3 @@ describe('fold primitive', () => {
     expect(out).toBe('a-mid-z')
   })
 })
-

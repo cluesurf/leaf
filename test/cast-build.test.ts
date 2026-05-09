@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { cast, makeScope, renderText } from '@/render'
+import { cast } from '@/cast'
+import { makeScope } from '@/scope'
+import { renderText } from './helper'
 
 describe('literals', () => {
   it('bare strings are first-class leaves (no builder needed)', () => {
@@ -131,7 +133,7 @@ describe('reads', () => {
       form: 'read',
       link: [
         { form: 'variable', name: 'items' },
-        { form: 'slice', rise: 3, fall: 10 },
+        { form: 'slice', start: 3, end: 10 },
       ],
     })
   })

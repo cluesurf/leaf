@@ -33,17 +33,17 @@ import type {
 } from '@/form'
 import type { Book, Make, Fold, Mold } from '@/form'
 import {
+  compile,
   compileFold,
   compileForm,
   compileHash,
   compileList,
-  type FoldRender,
+  type CompiledFold,
+  type ElementBuilder,
   type Parser,
 } from '@/bind'
 import type { Cast as FoldNode } from '@/cast'
-import { evaluateText } from '@/render'
 import { makeScope } from '@/scope'
-import { renderElement, type ElementBuilder } from '@/render-element'
 
 export type {
   BareFlowName,
@@ -101,7 +101,7 @@ const CREATE_ELEMENT_KEY = 'flow:create:element'
 
 export class Base<R = Code> {
   private hook = new Map<string | number, Hook>()
-  private fold = new Map<string, FoldRender>()
+  private fold = new Map<string, CompiledFold>()
   private view = new Map<string, unknown>()
   private code: Record<string, number> = {}
   /**
@@ -218,11 +218,11 @@ export class Base<R = Code> {
       const hooks = Array.isArray(m.hook) ? m.hook : [m.hook]
       if (m.form === 'norm') {
         for (const h of hooks) {
-          current = this.evaluate(h, { self: current })
+          current = this.evaluateMoldHook(h, current)
         }
       } else {
         for (const h of hooks) {
-          const ok = this.evaluate(h, { self: current })
+          const ok = this.evaluateMoldHook(h, current)
           if (!ok) {
             throw new Error(m.miss ?? 'base.mold: test failed')
           }
@@ -247,6 +247,7 @@ export class Base<R = Code> {
     }
     if (cast.form === 'fold') {
       this.fold.set(cast.case, compileFold(cast))
+      return
     }
     // Form / Hash / List don't register runtime state — they're
     // codegen-time declarations. Registering them is a no-op so
@@ -359,21 +360,26 @@ export class Base<R = Code> {
   ): unknown
   cast(name: string, params?: Record<string, unknown>): unknown
   cast(name: string, params: Record<string, unknown> = {}): unknown {
-    const render = this.fold.get(name)
-    if (render == null) {
+    const compiled = this.fold.get(name)
+    if (compiled == null) {
       throw new Error(`base.cast: no Fold registered for '${name}'`)
     }
+    return compiled.cast(params, this.renderContext())
+  }
+
+  private renderContext() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const castView = this.hook.get(CREATE_ELEMENT_KEY) as
       | ElementBuilder<any>
       | undefined
-    return render(params, {
+    return {
       resolveCall: this.callResolver,
-      resolveFold: name => this.fold.get(name),
+      resolveFold: (name: string, mode: 'text' | 'element') =>
+        this.fold.get(name)?.[mode],
       castView,
       fragment: this.view.get(FRAGMENT_KEY),
       component: castView ? Object.fromEntries(this.view) : undefined,
-    })
+    }
   }
 
   // Pre-bound for capture in closures.
@@ -422,59 +428,16 @@ export class Base<R = Code> {
     return parser(cast, name)
   }
 
-  private evaluate(
-    tree: FoldNode,
-    params: Record<string, unknown>,
-  ): unknown {
-    const scope = makeScope(params)
-    const hookStore = this.hook
-    const foldStore = this.fold
-    const viewStore = this.view
-
-    const callResolver = (node: {
-      name?: string
-      base?: string
-      case?: string
-      code?: number
-    }) => {
-      if (typeof node.code === 'number') {
-        return hookStore.get(node.code)
-      }
-      if (typeof node.name !== 'string') return undefined
-      const caseValue =
-        node.base && node.case
-          ? `${node.base}:${node.case}`
-          : (node.base ?? node.case)
-      const key = buildKey(node.name, caseValue)
-      return hookStore.get(key)
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const castView = hookStore.get(CREATE_ELEMENT_KEY) as
-      | ElementBuilder<any>
-      | undefined
-
-    if (castView) {
-      const component = Object.fromEntries(viewStore)
-      return renderElement(tree, {
-        scope,
-        cache: undefined,
-        dirty: undefined,
-        call: callResolver,
-        fold: () => undefined,
-        builder: castView,
-        fragment: viewStore.get(FRAGMENT_KEY),
-        component,
-      })
-    }
-
-    return evaluateText(tree, {
-      scope,
-      cache: undefined,
-      dirty: undefined,
-      call: callResolver,
-      fold: () => undefined,
-    })
+  /**
+   * Evaluate a Mold hook against a `self` value. Compiles the
+   * hook tree on demand (Mold hooks are typically tiny — call
+   * + read + literal — so the compile cost is negligible).
+   */
+  private evaluateMoldHook(tree: FoldNode, self: unknown): unknown {
+    return compile(tree, 'text')(
+      makeScope({ self }),
+      this.renderContext(),
+    )
   }
 
   /** Number of registered Flows (debugging). */

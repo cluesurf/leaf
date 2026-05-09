@@ -18,53 +18,26 @@
  * `path` / `note` / `link` info so failure detail is preserved.
  */
 
-import type {
-  Fold,
-  Form,
-  Hash,
-  Link,
-  LinkMesh,
-  List,
-  Mold,
-} from '@/form'
-import type { Cast } from '@/cast'
-import type { Scope } from '@/scope'
-import { makeScope } from '@/scope'
-import { evaluateText } from '@/render'
-import { renderElement, type ElementBuilder } from '@/render-element'
+import type { Form, Hash, Link, LinkMesh, List, Mold } from '@/form'
+
+// Re-export render types so consumers can import them from a single
+// place (bind.ts is the schema-bind entry; render.ts owns the AST
+// engine). The runtime `Base` class wires Form/Hash/List validation
+// (compileForm/Hash/List below) alongside Fold rendering
+// (compileFold from @/render).
+export {
+  compile,
+  compileFold,
+  type BaseRenderContext,
+  type CompiledFold,
+  type ElementBuilder,
+  type FoldRender,
+  type Render,
+} from '@/render'
 
 export type Parser = (cast: unknown, path?: string) => unknown
 
 export type ParserStore = Map<string, Parser>
-
-/**
- * A compiled Fold: closure that takes the live scope params
- * plus the host `Base` and returns the rendered output (string
- * in text mode, vdom in element mode).
- */
-export type FoldRender = (
-  params: Record<string, unknown>,
-  base: BaseRenderContext,
-) => unknown
-
-/**
- * Minimal slice of `Base` that compiled Fold closures need at
- * render time. Decoupled so `bind.ts` doesn't import the full
- * `Base` class (avoids a cycle).
- */
-export type BaseRenderContext = {
-  resolveCall: (node: {
-    name?: string
-    base?: string
-    case?: string
-    code?: number
-  }) => ((args: unknown) => unknown) | undefined
-  resolveFold: (name: string) => FoldRender | undefined
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  castView?: ElementBuilder<any>
-  fragment?: unknown
-  component?: Record<string, unknown>
-}
 
 /**
  * Lookup helper passed into compiled closures. The closure
@@ -520,76 +493,6 @@ function makeKink(form: string, link: Record<string, unknown>): Error {
   return err
 }
 
-// ---------------------------------------------------------------------------
-// Fold → render closure
-// ---------------------------------------------------------------------------
-
-/**
- * Compile a `Fold` declaration into a render closure stored in
- * `base.fold`. The closure captures the Fold's tree and a
- * lazy resolver chain. Each `base.cast(name, params)` call
- * invokes the closure directly — no per-call walker setup.
- *
- * Element mode is **view-only**: when the host has registered
- * `'flow:create:element'` (typically `React.createElement`) the
- * renderer wraps `cast.view(...)` nodes through it. Text /
- * literal / scope-read paths return native JS values regardless.
- */
-export function compileFold(fold: Fold): FoldRender {
-  // The Fold's tree is one node when it has a single child,
-  // otherwise wrapped as an implicit `text` node so siblings
-  // concatenate. Mirrors the legacy `Base.loadCast` shape.
-  const tree: Cast =
-    fold.cast.length === 1
-      ? fold.cast[0]!
-      : { form: 'text', flow: fold.cast }
-
-  return (params, ctx) => {
-    const scope = makeScope(params)
-    const callResolver = (node: {
-      name?: string
-      base?: string
-      case?: string
-      code?: number
-    }) => ctx.resolveCall(node)
-
-    if (ctx.castView) {
-      return renderElement(tree, {
-        scope,
-        cache: undefined,
-        dirty: undefined,
-        call: callResolver,
-        fold: name => {
-          const closure = ctx.resolveFold(name)
-          if (!closure) return undefined
-          // The element-mode renderer expects a tree to walk.
-          // Re-invoke the inner Fold's closure (which builds its
-          // own scope) and treat the result as opaque content.
-          return undefined
-        },
-        builder: ctx.castView,
-        fragment: ctx.fragment,
-        component: ctx.component,
-      })
-    }
-
-    return evaluateText(tree, {
-      scope,
-      cache: undefined,
-      dirty: undefined,
-      call: callResolver,
-      fold: name => {
-        // For text mode, recursively evaluate the named Fold via
-        // its compiled closure (yields a string). Wrap as a
-        // pre-evaluated leaf so the parent renderer doesn't
-        // re-walk.
-        const inner = ctx.resolveFold(name)
-        if (!inner) return undefined
-        // We don't have inner-bind params here (no fold-call
-        // node bind support yet); pass the current scope's
-        // surface. Future: thread `bind` from FoldPrimitive.
-        return undefined
-      },
-    })
-  }
-}
+// Fold → render closure lives in `@/render` (compileFold,
+// compile). It's re-exported above so consumers can import
+// everything from this one module.

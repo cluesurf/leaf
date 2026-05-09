@@ -73,8 +73,8 @@ export type IndexSeg = {
 
 export type SliceSeg = {
   form: 'slice'
-  rise?: number | Cast | null
-  fall?: number | Cast | null
+  start?: number | Cast | null
+  end?: number | Cast | null
   safe?: boolean
 }
 
@@ -285,31 +285,6 @@ export type HashPrimitive = {
 }
 
 // ---------------------------------------------------------------------------
-// Find — query expression. Resolved by a host-supplied `find`
-// resolver (typically batched, async).
-// ---------------------------------------------------------------------------
-
-export type FindPrimitive = {
-  form: 'find'
-  /** Resource to query (`'language_string'`, `'page'`, …). */
-  resource: string
-  /** Filter expression. Tree of predicates; resolver-defined. */
-  where?: Cast
-  /** Ordering — list of `{ field, direction }` Casts. */
-  sort?: Cast[]
-  /** Page size. */
-  limit?: number
-  /** Page offset. */
-  offset?: number
-  /**
-   * Aggregation kind: when set, returns the aggregate instead
-   * of the row list (`'count' | 'sum' | 'mean' | 'first' | …`).
-   */
-  kind?: string
-  mark?: string
-}
-
-// ---------------------------------------------------------------------------
 // Fold — embedded template reference. Resolves the named Fold
 // declaration through a host-supplied `fold` resolver and
 // renders its tree with the supplied bindings.
@@ -351,7 +326,6 @@ export type Structural =
   | Call
   | ControlFlow
   | HashPrimitive
-  | FindPrimitive
   | FoldPrimitive
   | JoinPrimitive
   | ViewPrimitive
@@ -507,32 +481,6 @@ export function hash(base: Record<string, Promotable>): HashPrimitive {
 }
 
 /**
- * Query expression. Resolves through a host-supplied `find`
- * resolver — typically batched and async. Renderers that don't
- * supply a resolver render `find` as `null`.
- *
- *   cast.find('page', { where: ..., sort: [...], limit: 20 })
- */
-export function find(
-  resource: string,
-  options?: {
-    where?: Promotable
-    sort?: Promotable[]
-    limit?: number
-    offset?: number
-    kind?: string
-  },
-): FindPrimitive {
-  const node: FindPrimitive = { form: 'find', resource }
-  if (options?.where !== undefined) node.where = promote(options.where)
-  if (options?.sort !== undefined) node.sort = options.sort.map(promote)
-  if (options?.limit !== undefined) node.limit = options.limit
-  if (options?.offset !== undefined) node.offset = options.offset
-  if (options?.kind !== undefined) node.kind = options.kind
-  return node
-}
-
-/**
  * Embed a named Fold declaration with optional bindings.
  *
  *   cast.fold('greeting', { count: 5, name: 'Lance' })
@@ -590,13 +538,13 @@ export function idx(
 }
 
 export function slice(
-  rise?: number | Cast | null,
-  fall?: number | Cast | null,
+  start?: number | Cast | null,
+  end?: number | Cast | null,
   opts?: { safe?: boolean },
 ): SliceSeg {
   const seg: SliceSeg = { form: 'slice' }
-  if (rise !== undefined) seg.rise = rise
-  if (fall !== undefined) seg.fall = fall
+  if (start !== undefined) seg.start = start
+  if (end !== undefined) seg.end = end
   if (opts?.safe) seg.safe = true
   return seg
 }
@@ -1028,3 +976,83 @@ export function selectCases(
 }
 
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Builder namespace
+//
+// The `cast.text(...)` / `cast.call(...)` ergonomic surface. Mirrors the
+// named exports above, with a few key remaps where the JS identifier
+// can't match the desired namespace key (`switch` / `case` / `in` are
+// reserved, etc.).
+// ---------------------------------------------------------------------------
+
+export const cast = {
+  // promotion
+  promote,
+  // literals + structural
+  integer,
+  naturalNumber,
+  number,
+  boolean,
+  date,
+  list,
+  text,
+  hash,
+  join,
+  fold,
+  // reads
+  reference,
+  read,
+  path,
+  variable,
+  field,
+  idx,
+  slice,
+  // calls
+  call,
+  eq,
+  ne,
+  gt,
+  gte,
+  lt,
+  lte,
+  in: inOf,
+  negate,
+  and,
+  or,
+  isNull,
+  isEmpty,
+  count,
+  sum,
+  mean,
+  min,
+  max,
+  plural,
+  length,
+  formatNumber,
+  currency,
+  percent,
+  formatDate,
+  formatTime,
+  relative,
+  fmtNumber,
+  fmtDate,
+  fmtTime,
+  // control flow
+  fork,
+  switch: switchOn,
+  match,
+  case: caseOf,
+  value: valueArm,
+  test: testArm,
+  otherwise,
+  pick,
+  walk,
+  walkTest,
+  walkSize,
+  // views
+  view,
+  // higher-order
+  pluralCases,
+  selectCases,
+} as const
