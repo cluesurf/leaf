@@ -19,7 +19,7 @@
 <br/>
 <br/>
 
-## What is leaf
+## Introduction
 
 Leaf is a **JSON system for app features**. Author rich documents or
 rules. Save them as JSON. The runtime renders that JSON to text or vdom.
