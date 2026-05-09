@@ -98,13 +98,13 @@ code/
       make.ts     # 1. authored declarations
       flow.ts     # 2. handler implementations
     index.ts      # 3. the Book (aggregates groups)
-scripts/
-  codegen.ts      # 4. codegen entry
+task/
+  make.ts         # 4. codegen entry
 ```
 
-**1. Authored declarations** — declare a `Form`, `Flow`, `Fold`,
-`Hash`, or `List`. The `save:` field tells codegen which output
-folder to emit into.
+**1. Authored declarations** — declare a `Form`, `Flow`, `Fold`, `Hash`,
+or `List`. The `save:` field tells codegen which output folder to emit
+into.
 
 ```ts
 // code/book/email/make.ts
@@ -120,8 +120,8 @@ export const is_email: Flow = {
 }
 ```
 
-**2. Handler** — function per Flow, named exactly like the
-declaration. Args + return type derive from `take` / `make`.
+**2. Handler** — function per Flow, named exactly like the declaration.
+Args + return type derive from `take` / `make`.
 
 ```ts
 // code/book/email/flow.ts
@@ -136,7 +136,7 @@ export const is_email = ({ text }: { text: string }): boolean =>
 import type { Book } from '@cluesurf/bead'
 import * as email_flows from './email/make'
 import * as email_hooks from './email/flow'
-import { CodeLink } from './code'  // generated in step 4
+import { CodeLink } from './code' // generated in step 4
 
 export default {
   host: 'app',
@@ -150,10 +150,11 @@ export type { Code } from './code'
 
 **4. Run codegen** — emits per-group `index.ts` (TS types), `form.ts`
 (Zod parsers), and the bundled `code/book/code.ts` (`Code` aggregate
-+ `CodeLink` integer table).
+
+- `CodeLink` integer table).
 
 ```ts
-// scripts/codegen.ts
+// task/make.ts
 import { Make } from '@cluesurf/bead'
 import standard from '../code/book'
 
@@ -161,7 +162,7 @@ await new Make({ link: './code/book' }).load(standard).save()
 ```
 
 ```bash
-pnpm tsx scripts/codegen.ts
+pnpm tsx task/make.ts
 ```
 
 **5. Run** — load the Book into a `Base` runtime and call:
@@ -174,15 +175,15 @@ import standard, { type Code } from './code/book'
 const base = new Base<Code>()
 base.load(standard)
 
-base.call('is', { base: 'email', text: 'hi@bead.dev' })  // → true
+base.call('is', { base: 'email', text: 'hi@bead.dev' }) // → true
 ```
 
 The `<Code>` generic gives TS end-to-end inference: every
-`base.call(...)` is checked for verb / base / case existence and
-typed args + return.
+`base.call(...)` is checked for verb / base / case existence and typed
+args + return.
 
-**6. Author trees + render** — author trees from your editor (or
-build them with `make.*`); store as JSON; render via `base.cast` or
+**6. Author trees + render** — author trees from your editor (or build
+them with `make.*`); store as JSON; render via `base.cast` or
 `renderText`:
 
 ```ts
@@ -194,12 +195,12 @@ const tree = make.fork(
   'Invalid email',
 )
 
-base.cast(tree, makeScope({ input: 'hi@bead.dev' }))  // → 'OK'
+base.cast(tree, makeScope({ input: 'hi@bead.dev' })) // → 'OK'
 ```
 
-For production hot paths, run `compile(tree, CodeLink)` once and
-store the wake form (integer ids, args under `bind:`) — `base.cast`
-accepts both flavors transparently.
+For production hot paths, run `compile(tree, CodeLink)` once and store
+the wake form (integer ids, args under `bind:`) — `base.cast` accepts
+both flavors transparently.
 
 ## Architecture
 
@@ -251,9 +252,8 @@ trees need; hosts extend with their own domain flows.
 
 Negation composes via `is(not: { thing: <X> })` rather than parallel
 `is-not-X` flows. The verb set is fixed at ten; bases and cases are
-open. Add new bases / cases by registering Flow declarations in your
-own Book — codegen wires them into the typed `Code` registry
-automatically.
+open. Add new bases / cases by registering Flow declarations in your own
+Book — codegen wires them into the typed `Code` registry automatically.
 
 `if` / `bind` are evaluated **lazily** by the AST walker (only the
 selected branch / new scope frame walks) so they behave like real
