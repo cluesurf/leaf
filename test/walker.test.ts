@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from 'vitest'
 import { Base, cast } from '../code'
-import type { Norm, Test } from '../code/form'
+import type { Norm, Rule, Test } from '../code/form'
 
 describe('base.mold(name, cast) — Form validation', () => {
   it('parses an object that matches the Form', () => {
@@ -133,8 +133,9 @@ describe('base.mold(name, cast) — Form validation', () => {
         text: cast.read('self'),
       }),
     }
-    const present: Test = {
-      form: 'test',
+    const present: Rule = {
+      form: 'rule',
+      name: 'is:present',
       hook: cast.call('is:present', {
         thing: cast.read('self'),
       }),
@@ -249,7 +250,8 @@ describe('Form-level mold (whole-record validation)', () => {
           },
           mold: [
             {
-              form: 'test',
+              form: 'rule',
+              name: 'is:any-of-yes-or-no',
               hook: cast.call('is:any', {
                 things: [
                   cast.call('is:present', {
@@ -321,7 +323,8 @@ describe('Link pipeline (the blogPost pattern)', () => {
               mold: [
                 trimmed,
                 {
-                  form: 'test',
+                  form: 'rule',
+                  name: 'is:present',
                   hook: cast.call('is:present', {
                     thing: cast.read('self'),
                   }),
@@ -386,7 +389,8 @@ describe('Link pipeline (the blogPost pattern)', () => {
                   }),
                 },
                 {
-                  form: 'test',
+                  form: 'rule',
+                  name: 'is:present',
                   hook: cast.call('is:present', {
                     thing: cast.read('self'),
                   }),
@@ -407,6 +411,45 @@ describe('Link pipeline (the blogPost pattern)', () => {
     expect(() =>
       base.mold('note', { body: '   ' }),
     ).toThrow(/must be present|mold_failed/)
+  })
+})
+
+describe('Mold legacy `form: \'test\'` compat shim (0.9.x)', () => {
+  it('still validates when a Mold uses the deprecated `form: \'test\'`', async () => {
+    const standardBook = (await import('../code/book')).default
+    const base = new Base()
+    base.load(standardBook)
+
+    base.load({
+      make: [
+        {
+          form: 'form',
+          name: 'note_legacy',
+          like: {
+            title: {
+              like: 'string',
+              // Deliberately uses the legacy `'test'` form to
+              // verify the 0.9 compat shim. Will be removed in
+              // 0.10 alongside the form itself.
+              mold: {
+                form: 'test',
+                hook: cast.call('is:present', {
+                  thing: cast.read('self'),
+                }),
+                miss: 'must be present (legacy)',
+              } as unknown as Test,
+            },
+          },
+        },
+      ],
+    })
+
+    expect(base.mold('note_legacy', { title: 'hi' })).toEqual({
+      title: 'hi',
+    })
+    expect(() => base.mold('note_legacy', { title: '' })).toThrow(
+      /must be present \(legacy\)|mold_failed/,
+    )
   })
 })
 

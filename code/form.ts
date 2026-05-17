@@ -195,6 +195,11 @@ export type Seed = {
  *    values.
  *  - `mold` carries validators / normalizers (replaces the
  *    earlier `test` field; see `Mold` below).
+ *  - `hold` declares runtime storage policy for the field's
+ *    value when bound to a state-manager record (URL query,
+ *    localStorage, sessionStorage). Inert at the schema
+ *    layer; consumed by `@cluesurf/face`'s `useRecord` (see
+ *    `Hold` below).
  */
 export type Link = {
   like?: string | string[] | LinkMesh | LinkMesh[]
@@ -208,9 +213,46 @@ export type Link = {
    * (read via `cast.read('self')`). Single Mold or array.
    */
   mold?: Mold | Mold[]
+  /**
+   * Runtime storage policy. See `Hold` below. Inert at the
+   * schema / codegen layer.
+   */
+  hold?: Hold
 }
 
 export type LinkMesh = Record<string, Link>
+
+// ─── Hold ─────────────────────────────────────────────────
+
+/**
+ * A `Hold` declares where a field's value lives at runtime
+ * once bound to a reactive record. Pure declarative metadata;
+ * the schema and codegen layers ignore it. The persistence
+ * engine in `@cluesurf/face` (`useRecord`) reads it to wire
+ * URL sync, local / session storage, and TTL sweeps.
+ *
+ *  - `site` is the storage substrate:
+ *      `'url'`     mirror to the page's URL query string.
+ *      `'local'`   persist across sessions in `localStorage`.
+ *      `'session'` persist across reloads in `sessionStorage`.
+ *      `'none'`    memory only (the default when `hold` is
+ *                  omitted).
+ *  - `time` is an optional TTL. When present, the persistence
+ *    engine writes an expiration alongside the value and
+ *    discards expired entries at app boot. Accepted formats
+ *    are duration shorthand: `'30s'`, `'15m'`, `'12h'`,
+ *    `'7d'`, `'4w'`. Ignored when `site` is `'url'` or
+ *    `'none'`.
+ *
+ * When a parent Form's containing context also declares a
+ * `hold`, the field-level value wins; the parent provides
+ * the default. Mixing `site` values across fields in the
+ * same Form is allowed.
+ */
+export type Hold = {
+  site: 'url' | 'local' | 'session' | 'none'
+  time?: string
+}
 
 // ─── Mold ─────────────────────────────────────────────────
 
@@ -223,16 +265,19 @@ export type LinkMesh = Record<string, Link>
  *    against a scope where the current value is bound as
  *    `self`. The result replaces the value.
  *
- *  - `Test` ("validate") asserts a boolean. `hook` is a Call
+ *  - `Rule` ("validate") asserts a boolean. `hook` is a Call
  *    (or array; all must pass) evaluated against the same
- *    `{ self }` scope. On failure throws with `miss`.
+ *    `{ self }` scope. On failure throws with `miss`. Rules
+ *    carry a required `name:` (e.g. `'is:slug'`) used by UI
+ *    tooling to look up contextual hints / autocomplete /
+ *    inline help per field.
  *
  * `mold:` accepts a single Mold or an array. Array entries
  * run in order; for Norms the threaded `self` is the prior
- * Norm's output. Tests check whatever the current `self` is
+ * Norm's output. Rules check whatever the current `self` is
  * at that point in the pipeline.
  */
-export type Mold = Norm | Test
+export type Mold = Norm | Rule
 
 /**
  * Normalizer / cleaner / formatter. Returns a new value the
@@ -240,6 +285,8 @@ export type Mold = Norm | Test
  */
 export type Norm = {
   form: 'norm'
+  /** Optional identifier for the normalizer (e.g. `'make:trimmed'`). */
+  name?: string
   /** Optional declared input shape (for codegen / typing). */
   take?: string | LinkMesh | (string | LinkMesh)[]
   /** Optional declared output shape (for codegen / typing). */
@@ -252,13 +299,28 @@ export type Norm = {
  * Validator. Boolean Call (or array — all must pass). On
  * failure, the runtime throws an `Error` with `miss` as the
  * message (or a generic fallback when omitted).
+ *
+ * `name:` is a required identifier the UI layer matches on
+ * to render contextual help / autocomplete / placeholder hints.
+ * Examples: `'is:present'`, `'is:slug'`, `'is:integer-range'`,
+ * `'is:text-search-mode'`. By convention the rule name matches
+ * the dominant Flow its `hook:` calls, but this is not
+ * enforced.
  */
-export type Test = {
-  form: 'test'
+export type Rule = {
+  form: 'rule'
+  /** UI hint identifier (e.g. `'is:slug'`). */
+  name: string
   hook: Cast | Cast[]
-  /** Error message when the test fails. */
+  /** Error message when the rule fails. */
   miss?: string
 }
+
+/**
+ * @deprecated Use `Rule`. `Test` is the legacy name kept as a
+ * compat alias for one release. Will be removed in 0.10.
+ */
+export type Test = Rule
 /**
  * Type helpers for the `Base` runtime class.
  *

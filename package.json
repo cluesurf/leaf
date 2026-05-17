@@ -1,6 +1,6 @@
 {
   "name": "@cluesurf/leaf",
-  "version": "0.8.0",
+  "version": "0.9.2",
   "license": "MIT",
   "packageManager": "pnpm@10.33.0",
   "description": "A Template Language ᛉ",

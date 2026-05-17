@@ -260,6 +260,7 @@ set of modifiers. All optional.
 | `list: true` | wrap in an array (`T[]` in TS) |
 | `take: [...]` | enum / allowed-values. String-literal union in TS |
 | `mold` | `Mold` or array. Validators / normalizers per-field |
+| `hold` | `Hold`. Runtime storage policy (see below). Inert at the schema layer |
 
 `take` short-circuits the `like` path. `take` + `list: true`
 produces an array of the enum.
@@ -285,6 +286,51 @@ export type Event = {
   flags: ('archived' | 'pinned')[]
 }
 ```
+
+## Hold: runtime storage policy
+
+`Hold` declares where a field's value lives at runtime once
+bound to a reactive record. Pure declarative metadata. The
+schema and codegen layers ignore it. The persistence engine
+in `@cluesurf/face` (`useRecord`) reads it to wire URL sync,
+local / session storage, and TTL sweeps.
+
+```ts
+type Hold = {
+  site: 'url' | 'local' | 'session' | 'none'
+  time?: string  // '30s' | '15m' | '12h' | '7d' | '4w'
+}
+```
+
+| `site` | meaning |
+|---|---|
+| `'url'` | mirror to the page's URL query string |
+| `'local'` | persist across sessions in `localStorage` |
+| `'session'` | persist across reloads in `sessionStorage` |
+| `'none'` | memory only (default when `hold` is omitted) |
+
+`time` is optional. When present, the persistence engine
+writes an expiration alongside the value and discards
+expired entries at app boot. Ignored when `site` is `'url'`
+or `'none'`.
+
+Field-level `hold` wins over any parent-level default. Mixing
+`site` values across fields in the same Form is allowed.
+
+```ts
+{
+  form: 'form',
+  name: 'note_settings',
+  like: {
+    density:     { take: ['compact', 'comfortable'], hold: { site: 'url' } },
+    showDrafts:  { like: 'boolean', base: false, hold: { site: 'local', time: '30d' } },
+    notes:       { like: 'string', hold: { site: 'session' } },
+  },
+}
+```
+
+`hold` does not appear in the generated TS alias — it only
+affects runtime binding inside a record-aware host.
 
 ## Mold: validators + normalizers
 

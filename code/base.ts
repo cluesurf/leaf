@@ -222,10 +222,20 @@ export class Base<R = Code> {
           current = this.evaluateMoldHook(h, current)
         }
       } else {
+        // Accept both the new `'rule'` form and the legacy
+        // `'test'` form. The latter is deprecated; the deprecation
+        // window closes in 0.10.
+        const legacyForm =
+          (m as { form: string }).form === 'test'
+        if (legacyForm && process.env.NODE_ENV !== 'production') {
+          console.warn(
+            "base.mold: Mold variant `form: 'test'` is deprecated. Use `form: 'rule'` with a `name:` field. Compat shim removed in 0.10.",
+          )
+        }
         for (const h of hooks) {
           const ok = this.evaluateMoldHook(h, current)
           if (!ok) {
-            throw new Error(m.miss ?? 'base.mold: test failed')
+            throw new Error(m.miss ?? 'base.mold: rule failed')
           }
         }
       }
