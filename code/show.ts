@@ -322,6 +322,26 @@ function walk({
       continue
     }
 
+    /*
+     * AN OPTIONAL FIELD WITH NO DEFAULT IS LEFT OUT, not emitted as
+     * null.
+     *
+     * Found by running this over real Forms: a font search came out
+     * as `{"test":{"weight":700},"sample":null,"page":1,"size":100,
+     * "cursor":null}`, and nobody would paste that. `sample` and
+     * `cursor` are optional and undefaulted, so the honest example of
+     * a request that does not use them is a request that does not
+     * mention them.
+     *
+     * COMPLETE STILL MEANS COMPLETE. Every field a caller MUST send
+     * is present, and so is every optional field carrying a default,
+     * because `page: 1` and `size: 100` are what the server will use
+     * and a reader wants to see them. What goes is the noise.
+     */
+    if (link.need === false) {
+      continue
+    }
+
     const made = guess(link)
 
     out[key] = link.list ? [made] : made

@@ -1,6 +1,33 @@
 # Changelog
 
-## 0.9.4
+## 0.10.2
+
+### Fixed
+
+An optional field with no default is now LEFT OUT of a composed
+example rather than emitted as `null`.
+
+Found by running `readShow` over the real Forms in `@cluesurf/base`
+rather than over test shapes. A font search composed to:
+
+```json
+{"test":{"weight":700},"sample":null,"page":1,"size":100,"cursor":null}
+```
+
+Nobody would paste that. `sample` and `cursor` are optional and
+undefaulted, so the honest example of a request that does not use them
+is one that does not mention them:
+
+```json
+{"test":{"weight":700},"page":1,"size":100}
+```
+
+COMPLETE STILL MEANS COMPLETE. Every field a caller must send is
+present, and so is every optional field carrying a default, because
+`page: 1` and `size: 100` are what the server will actually use and a
+reader wants to see them. What goes is the noise.
+
+## 0.10.0
 
 ### Added
 

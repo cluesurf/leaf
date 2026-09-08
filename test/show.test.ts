@@ -165,6 +165,57 @@ describe('readShow, falling back', () => {
   })
 })
 
+describe('readShow, an optional field with no default', () => {
+  /*
+   * FOUND BY RUNNING THIS OVER REAL FORMS. A font search composed to
+   * `{"test":{"weight":700},"sample":null,"page":1,"size":100,
+   * "cursor":null}`, and nobody would paste that: `sample` and
+   * `cursor` are optional and undefaulted, so an example that does
+   * not use them should not mention them.
+   */
+  const form = {
+    form: 'form',
+    name: 'optional',
+    like: {
+      test: { like: 'string', show: { one: 'x' } },
+      spare: { like: 'string', need: false },
+      paged: { like: 'number', need: false, base: 1 },
+      wanted: { like: 'string' },
+    },
+  } satisfies Form
+
+  it('leaves it out rather than emitting null', () => {
+    const made = readShow(form).case[0]!.base as Record<string, unknown>
+
+    expect('spare' in made).toBe(false)
+  })
+
+  it('keeps an optional field that carries a default', () => {
+    const made = readShow(form).case[0]!.base as Record<string, unknown>
+
+    expect(made.paged).toBe(1)
+  })
+
+  it('still emits a required field with no default', () => {
+    const made = readShow(form).case[0]!.base as Record<string, unknown>
+
+    expect('wanted' in made).toBe(true)
+    expect(made.wanted).toBeNull()
+  })
+
+  it('keeps an optional field that was told a value', () => {
+    const told = {
+      form: 'form',
+      name: 'told',
+      like: {
+        spare: { like: 'string', need: false, show: { one: 'here' } },
+      },
+    } satisfies Form
+
+    expect(readShow(told).case[0]!.base).toEqual({ spare: 'here' })
+  })
+})
+
 describe('readShow, nesting', () => {
   it('reaches a field declared inside a nested shape', () => {
     const form = {

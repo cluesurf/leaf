@@ -1,9 +1,9 @@
 {
   "name": "@cluesurf/leaf",
-  "version": "0.10.0",
+  "version": "0.10.2",
   "license": "MIT",
   "packageManager": "pnpm@10.33.0",
-  "description": "A Template Language ᛉ",
+  "description": "A Template Language \u16c9",
   "type": "module",
   "main": "./host/index.js",
   "types": "./host/index.d.ts",
@@ -29,7 +29,11 @@
       "default": "./host/kink.js"
     }
   },
-  "files": ["host", "readme.md", "license.md"],
+  "files": [
+    "host",
+    "readme.md",
+    "license.md"
+  ],
   "scripts": {
     "test": "pnpm exec vitest run",
     "make:base": "pnpm exec tsx task/save.ts",
