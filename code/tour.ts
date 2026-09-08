@@ -1,7 +1,13 @@
 /**
  * Named examples, composed from the shape that declares them.
  *
- * A field carries `show: { by_weight: 800 }`, and every field
+ * NAMED `tour` FROM 0.11.0, and `show` before it. The value a field
+ * declares is what the example GROWS from: `readTour` walks the whole
+ * shape and fills every other field around it, so one annotated field
+ * yields a complete object. "Show" named the rendering, which belongs
+ * to whoever draws the docs page, not to the schema.
+ *
+ * A field carries `tour: { by_weight: 800 }`, and every field
  * mentioning `by_weight` contributes its value to an example of that
  * name. The example lives BESIDE THE FIELD IT VARIES rather than as
  * one blob at the top of the declaration, which is the same argument
@@ -17,16 +23,16 @@
  *
  * So each field resolves in order:
  *
- *   show[name]  ??  base  ??  a value synthesised from like / take
+ *   tour[name]  ??  base  ??  a value synthesised from like / take
  *
- * `base` is "what this field usually is" and `show` is "what it is in
+ * `base` is "what this field usually is" and `tour` is "what it is in
  * this scenario", so every named example comes out COMPLETE with the
  * interesting field standing out. That is the difference between an
  * example somebody pastes and one they have to finish.
  *
  * ## Lists
  *
- * On a `list: true` field, `show` gives ONE ELEMENT and the walker
+ * On a `list: true` field, `tour` gives ONE ELEMENT and the walker
  * wraps it. An array passes through untouched, which is how a caller
  * says "these exact elements". Without the rule, a single value and a
  * one-element array would be indistinguishable and half the examples
@@ -49,7 +55,7 @@
  *
  * ## What is NOT here
  *
- * No Form-level `show`. Every leaf of every shape is a `Link`,
+ * No Form-level `tour`. Every leaf of every shape is a `Link`,
  * including the ones inside a union member, so per-field annotation
  * reaches everywhere and a wholesale override would only be a second
  * way to say the same thing.
@@ -58,8 +64,8 @@
 import type { Form, Link, LinkMesh, Mark } from '@/form'
 
 /** A named example, and the fields that had a hand in it. */
-export type ShowCase = {
-  /** The example name, as written in a `show` key. */
+export type TourCase = {
+  /** The example name, as written in a `tour` key. */
   name: string
   /** The composed value. Complete, not a fragment. */
   base: unknown
@@ -71,7 +77,7 @@ export type ShowCase = {
   from: string[]
 }
 
-export type ShowMiss = {
+export type TourMiss = {
   /** Dotted path of the field, or `''` for the shape itself. */
   path: string
   /** What is wrong, in one sentence. */
@@ -80,13 +86,13 @@ export type ShowMiss = {
   name?: string
 }
 
-export type ShowRead = {
-  case: ShowCase[]
+export type TourRead = {
+  case: TourCase[]
   /**
    * Everything wrong, rather than the first thing wrong. A generator
    * reports the list and a caller fixes them in one pass.
    */
-  miss: ShowMiss[]
+  miss: TourMiss[]
 }
 
 /** Is this shape a union of meshes rather than one mesh? */
@@ -97,7 +103,7 @@ function isUnion(like: Form['like']): like is LinkMesh[] {
 /** Every example name any field in a mesh declares, in first-seen order. */
 function readNames(mesh: LinkMesh, into: string[] = []): string[] {
   for (const link of Object.values(mesh)) {
-    for (const name of Object.keys(link.show ?? {})) {
+    for (const name of Object.keys(link.tour ?? {})) {
       if (!into.includes(name)) {
         into.push(name)
       }
@@ -182,8 +188,8 @@ function refuse({
   value: unknown
   path: string
   name?: string
-}): ShowMiss[] {
-  const miss: ShowMiss[] = []
+}): TourMiss[] {
+  const miss: TourMiss[] = []
 
   // A list takes one element or an array of them, and either is fine.
   // Unwrap before checking the element type.
@@ -264,7 +270,7 @@ function walk({
   mesh: LinkMesh
   name: string
   path: string
-  miss: ShowMiss[]
+  miss: TourMiss[]
   from: string[]
 }): Record<string, unknown> {
   const out: Record<string, unknown> = {}
@@ -281,14 +287,14 @@ function walk({
     }
 
     const told = Object.prototype.hasOwnProperty.call(
-      link.show ?? {},
+      link.tour ?? {},
       name,
     )
 
     if (told) {
       from.push(here)
 
-      const value = link.show![name]
+      const value = link.tour![name]
 
       miss.push(...refuse({ link, value, path: here, name }))
 
@@ -367,7 +373,7 @@ function pick({
   union: LinkMesh[]
   name: string
   path: string
-  miss: ShowMiss[]
+  miss: TourMiss[]
 }): LinkMesh {
   const held = union
     .map((mesh, at) => ({ mesh, at }))
@@ -393,8 +399,8 @@ function pick({
  * throwing on the first fault: a generator wants to report the whole
  * list so a caller fixes them in one pass.
  */
-export function readShow(form: Form): ShowRead {
-  const miss: ShowMiss[] = []
+export function readTour(form: Form): TourRead {
+  const miss: TourMiss[] = []
 
   if (marked(form.mark, 'internal')) {
     return { case: [], miss }
@@ -409,7 +415,7 @@ export function readShow(form: Form): ShowRead {
     readNames(mesh, names)
   }
 
-  const out: ShowCase[] = []
+  const out: TourCase[] = []
 
   for (const name of names) {
     const from: string[] = []

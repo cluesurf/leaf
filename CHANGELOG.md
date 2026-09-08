@@ -1,5 +1,77 @@
 # Changelog
 
+## 0.11.0
+
+### Breaking
+
+**`show` is `tour`.** The field on a `Link`, the module, the reader and
+the types:
+
+```
+show           ->  tour
+Show           ->  TourMesh
+readShow       ->  readTour
+ShowCase       ->  TourCase
+ShowMiss       ->  TourMiss
+ShowRead       ->  TourRead
+code/show.ts   ->  code/tour.ts
+```
+
+A tour is a walk through the shape with real values in it, which is
+what the reader gets: `readTour` fills every field, so one annotated
+field yields a complete object rather than a fragment. "Show" named the
+rendering, and the rendering belongs to whoever draws the page rather
+than to the schema.
+
+**One word for a sample, across both systems.** The exception registry
+in `@cluesurf/belt` carries a `tour` on each error definition, meaning
+the same thing: one filled-in body a docs page can print. A reader who
+learns the word on a field already knows it on an error.
+
+**It also clears a collision.** That registry has its own `Show`,
+meaning "may this error be shown to whoever caused it", and two `Show`
+types across one codebase with unrelated meanings is a trap for
+whoever reads the second one.
+
+The type is `TourMesh` rather than `Tour`, following `LinkMesh`: `Mesh`
+is this file's suffix for a keyed record.
+
+### Added
+
+**`send` on a `Form`**: every status a call can answer with, and the
+exception behind each refusal.
+
+```ts
+send: [
+  { code: 200, note: 'The font, with its variants.' },
+  { code: 404, note: 'No font has that key.', case: 'absence' },
+  { code: 400, note: 'The key is not a key.', case: 'defect' },
+]
+```
+
+A field table says what a caller sends and what a success holds, and
+says nothing about the four ways the call can fail, which is most of
+what integrating against it costs.
+
+- **`case` names an exception rather than restating it**, and it is
+  `case` because that is what an exception already calls its own name
+  on the wire: `{ form: 'exception', case: 'absence', … }`. The
+  exception's definition carries its fields and a filled-in sample, so
+  a docs page renders a real refusal body by looking the name up.
+  Duplicating the body here would let the two disagree.
+- **A success is a `send` too**, which is why it is `send` and not
+  `halt`, as it was first written. `halt` fits a refusal and fights a
+  200: a success is not the call stopping, it is the call answering.
+  Leaving the successes out would make the list read as "the failures"
+  and leave nowhere to say what a 201 or a 301 means.
+- **On the Form, not on a field**, because a status is a fact about the
+  call. Two fields cannot each own the 404.
+
+**Inert, like the rest of the documentation layer.** `test/send.test.ts`
+asserts that a Form with a full `send` list composes byte-identically
+to the same Form without one, so it can be added to a live schema a
+field at a time.
+
 ## 0.10.2
 
 ### Fixed

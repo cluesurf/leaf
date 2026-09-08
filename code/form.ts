@@ -92,10 +92,64 @@ export type Mark =
  * argument that puts `note` there: a shape and its documentation move
  * together or they drift.
  *
- * See `readShow` in `./show` for the composition rules, which cover
+ * See `readTour` in `./tour` for the composition rules, which cover
  * lists, unions and defaults.
+ *
+ * NAMED `tour` FROM 0.11.0, and `show` before it. A tour is a walk
+ * through the shape with real values in it, which is what the reader
+ * gets: `readTour` fills every field, so one annotated field yields a
+ * complete object rather than a fragment. "Show" named the rendering,
+ * and the rendering belongs to whoever draws the page.
+ *
+ * ONE WORD FOR A SAMPLE, EVERYWHERE. The exception registry in
+ * `@cluesurf/belt` carries a `tour` on each error definition, meaning
+ * the same thing: one filled-in body a docs page can print. A reader
+ * who learns the word on a field already knows it on an error.
+ *
+ * `Mesh` is the suffix this file uses for a keyed record, as in
+ * `LinkMesh`.
  */
-export type Show = Record<string, unknown>
+export type TourMesh = Record<string, unknown>
+
+/**
+ * One way a call can answer: a status code, and the exception behind
+ * it when the code is a refusal.
+ *
+ * THE DOCS CANNOT GUESS THIS. A field table says what a caller sends
+ * and what a success holds, and says nothing about the four ways the
+ * call can fail, which is most of what integrating against it costs.
+ * `send` is that list, declared where the shape is, so the two move
+ * together.
+ *
+ * `case` NAMES AN EXCEPTION rather than restating it, and it is `case`
+ * because that is what an exception already calls its own name on the
+ * wire: `{ form: 'exception', case: 'absence', … }`. The exception's
+ * definition carries its fields and its `tour` sample values, so a
+ * docs page renders a real example body by looking the name up instead
+ * of by repeating it here, and the two cannot disagree.
+ *
+ * `note` says WHEN, which is the part the code alone does not carry: a
+ * 404 on a select means the record is absent, and a 404 on an owned
+ * resource can also mean the caller may not see it, and those are
+ * different things to a reader.
+ *
+ * NAMED `send` RATHER THAN `halt`, which it was first. `halt` fits a
+ * refusal and fights a 200: a success is not the call stopping, it is
+ * the call answering, and the list is every answer. Leaving the
+ * successes out would make it read as "the failures" and leave nowhere
+ * to say what a 201 or a 301 means.
+ */
+export type Send = {
+  /** The HTTP status. */
+  code: number
+  /** When this happens, in one line. */
+  note?: string
+  /**
+   * The exception's name, for a refusal. Looked up rather than
+   * restated, so a sample body comes from the exception itself.
+   */
+  case?: string
+}
 
 /**
  * A `Form` declares a data shape. Identity is the
@@ -142,6 +196,14 @@ export type Form = {
    * entirely, so the docs and the promise stay the same thing.
    */
   mark?: Mark[]
+  /**
+   * Every status this call can answer with, and the exception behind
+   * each refusal. See `Send`.
+   *
+   * ON THE FORM, NOT ON A FIELD, because a status is a fact about the
+   * CALL. Two fields cannot each own the 404.
+   */
+  send?: Send[]
 }
 
 /**
@@ -325,13 +387,14 @@ export type Link = {
    */
   note?: string
   /**
-   * Example values for this field, keyed by example name. See `Show`.
+   * Example values for this field, keyed by example name. See
+   * `TourMesh`.
    *
    * Composed against `base`, so a name mentioned by one field still
    * produces a complete object: every other field falls back to its
-   * default. `readShow` in `./show` does the composing.
+   * default. `readTour` in `./seed` does the composing.
    */
-  show?: Show
+  tour?: TourMesh
   /**
    * Annotations: deprecated, experimental, internal, since. See
    * `Mark`.

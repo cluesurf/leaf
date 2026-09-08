@@ -49,19 +49,19 @@ const said = {
         name: {
           like: 'string',
           note: 'The family name from the OS/2 table.',
-          show: { by_weight: 'Inter', by_status: 'Inter' },
+          tour: { by_weight: 'Inter', by_status: 'Inter' },
         },
         weight: {
           like: 'number',
           base: 400,
           note: 'The OS/2 weight class.',
-          show: { by_weight: 800 },
+          tour: { by_weight: 800 },
           mark: [{ form: 'since' as const, note: '2026-09' }],
         },
         status: {
           take: ['draft', 'live'],
           note: 'Whether the family is published.',
-          show: { by_status: 'live' },
+          tour: { by_status: 'live' },
           mark: [
             { form: 'deprecated' as const, note: 'Use `visibility`.' },
           ],
@@ -70,7 +70,7 @@ const said = {
           like: 'string',
           list: true,
           note: 'Free-form labels.',
-          show: { by_status: 'display' },
+          tour: { by_status: 'display' },
         },
       },
     },

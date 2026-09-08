@@ -19,7 +19,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { readShow, readMark } from '../code/show'
+import { readTour, readMark } from '../code/tour'
 import type { Form } from '../code/form'
 
 /** A filter request, the shape most of these rules are about. */
@@ -33,19 +33,19 @@ const font = {
       like: 'number',
       base: 400,
       note: 'The OS/2 weight class.',
-      show: { by_weight: 800 },
+      tour: { by_weight: 800 },
     },
     script: {
       like: 'string',
       base: 'latin',
-      show: { by_script: 'hebrew' },
+      tour: { by_script: 'hebrew' },
     },
   },
 } satisfies Form
 
-describe('readShow, composing a named example', () => {
+describe('readTour, composing a named example', () => {
   it('names every example any field declares', () => {
-    const read = readShow(font)
+    const read = readTour(font)
 
     expect(read.case.map(one => one.name)).toEqual([
       'by_weight',
@@ -60,14 +60,14 @@ describe('readShow, composing a named example', () => {
    * a request rather than a fragment of one.
    */
   it('fills every other field from base, so the example is complete', () => {
-    const read = readShow(font)
+    const read = readTour(font)
     const one = read.case.find(x => x.name === 'by_weight')!
 
     expect(one.base).toEqual({ size: 20, weight: 800, script: 'latin' })
   })
 
   it('gives each example its own values', () => {
-    const read = readShow(font)
+    const read = readTour(font)
     const one = read.case.find(x => x.name === 'by_script')!
 
     expect(one.base).toEqual({ size: 20, weight: 400, script: 'hebrew' })
@@ -79,7 +79,7 @@ describe('readShow, composing a named example', () => {
    * misspelling, and a generator can say so.
    */
   it('records which fields had a hand in each example', () => {
-    const read = readShow(font)
+    const read = readTour(font)
 
     expect(read.case.find(x => x.name === 'by_weight')!.from).toEqual([
       'weight',
@@ -96,23 +96,23 @@ describe('readShow, composing a named example', () => {
       like: { id: { like: 'string' } },
     } satisfies Form
 
-    expect(readShow(bare).case).toEqual([])
+    expect(readTour(bare).case).toEqual([])
   })
 })
 
-describe('readShow, falling back', () => {
+describe('readTour, falling back', () => {
   it('prefers show, then base, then a synthesised value', () => {
     const form = {
       form: 'form',
       name: 'order',
       like: {
-        told: { like: 'string', base: 'from base', show: { one: 'from show' } },
+        told: { like: 'string', base: 'from base', tour: { one: 'from show' } },
         based: { like: 'string', base: 'from base' },
         bare: { like: 'string' },
       },
     } satisfies Form
 
-    expect(readShow(form).case[0]!.base).toEqual({
+    expect(readTour(form).case[0]!.base).toEqual({
       told: 'from show',
       based: 'from base',
       bare: null,
@@ -129,11 +129,11 @@ describe('readShow, falling back', () => {
       name: 'kind',
       like: {
         form: { like: 'string', take: ['create'] },
-        name: { like: 'string', show: { one: 'Inter' } },
+        name: { like: 'string', tour: { one: 'Inter' } },
       },
     } satisfies Form
 
-    expect(readShow(form).case[0]!.base).toEqual({
+    expect(readTour(form).case[0]!.base).toEqual({
       form: 'create',
       name: 'Inter',
     })
@@ -151,11 +151,11 @@ describe('readShow, falling back', () => {
         c: { like: 'number' },
         d: { like: 'integer' },
         e: { like: { deep: { like: 'string' } } },
-        f: { like: 'string', show: { one: 'x' } },
+        f: { like: 'string', tour: { one: 'x' } },
       },
     } satisfies Form
 
-    const made = readShow(form).case[0]!.base as Record<string, unknown>
+    const made = readTour(form).case[0]!.base as Record<string, unknown>
 
     expect(made.a).toBeNull()
     expect(made.b).toBe(false)
@@ -165,7 +165,7 @@ describe('readShow, falling back', () => {
   })
 })
 
-describe('readShow, an optional field with no default', () => {
+describe('readTour, an optional field with no default', () => {
   /*
    * FOUND BY RUNNING THIS OVER REAL FORMS. A font search composed to
    * `{"test":{"weight":700},"sample":null,"page":1,"size":100,
@@ -177,7 +177,7 @@ describe('readShow, an optional field with no default', () => {
     form: 'form',
     name: 'optional',
     like: {
-      test: { like: 'string', show: { one: 'x' } },
+      test: { like: 'string', tour: { one: 'x' } },
       spare: { like: 'string', need: false },
       paged: { like: 'number', need: false, base: 1 },
       wanted: { like: 'string' },
@@ -185,19 +185,19 @@ describe('readShow, an optional field with no default', () => {
   } satisfies Form
 
   it('leaves it out rather than emitting null', () => {
-    const made = readShow(form).case[0]!.base as Record<string, unknown>
+    const made = readTour(form).case[0]!.base as Record<string, unknown>
 
     expect('spare' in made).toBe(false)
   })
 
   it('keeps an optional field that carries a default', () => {
-    const made = readShow(form).case[0]!.base as Record<string, unknown>
+    const made = readTour(form).case[0]!.base as Record<string, unknown>
 
     expect(made.paged).toBe(1)
   })
 
   it('still emits a required field with no default', () => {
-    const made = readShow(form).case[0]!.base as Record<string, unknown>
+    const made = readTour(form).case[0]!.base as Record<string, unknown>
 
     expect('wanted' in made).toBe(true)
     expect(made.wanted).toBeNull()
@@ -208,15 +208,15 @@ describe('readShow, an optional field with no default', () => {
       form: 'form',
       name: 'told',
       like: {
-        spare: { like: 'string', need: false, show: { one: 'here' } },
+        spare: { like: 'string', need: false, tour: { one: 'here' } },
       },
     } satisfies Form
 
-    expect(readShow(told).case[0]!.base).toEqual({ spare: 'here' })
+    expect(readTour(told).case[0]!.base).toEqual({ spare: 'here' })
   })
 })
 
-describe('readShow, nesting', () => {
+describe('readTour, nesting', () => {
   it('reaches a field declared inside a nested shape', () => {
     const form = {
       form: 'form',
@@ -225,14 +225,14 @@ describe('readShow, nesting', () => {
         size: { like: 'number', base: 20 },
         test: {
           like: {
-            weight: { like: 'number', base: 400, show: { heavy: 900 } },
+            weight: { like: 'number', base: 400, tour: { heavy: 900 } },
             script: { like: 'string', base: 'latin' },
           },
         },
       },
     } satisfies Form
 
-    const read = readShow(form)
+    const read = readTour(form)
 
     expect(read.case[0]!.base).toEqual({
       size: 20,
@@ -242,15 +242,15 @@ describe('readShow, nesting', () => {
   })
 })
 
-describe('readShow, lists', () => {
+describe('readTour, lists', () => {
   it('wraps a single show value on a list field', () => {
     const form = {
       form: 'form',
       name: 'listed',
-      like: { tags: { like: 'string', list: true, show: { one: 'latin' } } },
+      like: { tags: { like: 'string', list: true, tour: { one: 'latin' } } },
     } satisfies Form
 
-    expect(readShow(form).case[0]!.base).toEqual({ tags: ['latin'] })
+    expect(readTour(form).case[0]!.base).toEqual({ tags: ['latin'] })
   })
 
   /* An array passes through, which is how a caller says "these exact
@@ -263,12 +263,12 @@ describe('readShow, lists', () => {
         tags: {
           like: 'string',
           list: true,
-          show: { one: ['latin', 'greek'] },
+          tour: { one: ['latin', 'greek'] },
         },
       },
     } satisfies Form
 
-    expect(readShow(form).case[0]!.base).toEqual({
+    expect(readTour(form).case[0]!.base).toEqual({
       tags: ['latin', 'greek'],
     })
   })
@@ -280,18 +280,18 @@ describe('readShow, lists', () => {
       like: {
         based: { like: 'string', list: true, base: 'latin' },
         bare: { like: 'boolean', list: true },
-        told: { like: 'string', show: { one: 'x' } },
+        told: { like: 'string', tour: { one: 'x' } },
       },
     } satisfies Form
 
-    const made = readShow(form).case[0]!.base as Record<string, unknown>
+    const made = readTour(form).case[0]!.base as Record<string, unknown>
 
     expect(made.based).toEqual(['latin'])
     expect(made.bare).toEqual([false])
   })
 })
 
-describe('readShow, unions', () => {
+describe('readTour, unions', () => {
   /** The shape a `mutate` request actually has. */
   const mutate = {
     form: 'form',
@@ -301,7 +301,7 @@ describe('readShow, unions', () => {
         form: { like: 'string', take: ['create'] },
         base: {
           like: {
-            name: { like: 'string', show: { create_one: 'Inter' } },
+            name: { like: 'string', tour: { create_one: 'Inter' } },
             weight: { like: 'number', base: 400 },
           },
         },
@@ -310,7 +310,7 @@ describe('readShow, unions', () => {
         form: { like: 'string', take: ['update'] },
         base: {
           like: {
-            id: { like: 'string', show: { update_one: 'kvmtnhbs' } },
+            id: { like: 'string', tour: { update_one: 'kvmtnhbs' } },
           },
         },
       },
@@ -322,7 +322,7 @@ describe('readShow, unions', () => {
   } satisfies Form
 
   it('selects the member whose fields declare the name', () => {
-    const read = readShow(mutate)
+    const read = readTour(mutate)
     const made = read.case.find(x => x.name === 'create_one')!
 
     expect(made.base).toEqual({
@@ -333,7 +333,7 @@ describe('readShow, unions', () => {
   })
 
   it('selects a different member for a different name', () => {
-    const made = readShow(mutate).case.find(
+    const made = readTour(mutate).case.find(
       x => x.name === 'update_one',
     )!
 
@@ -353,12 +353,12 @@ describe('readShow, unions', () => {
       form: 'form',
       name: 'both',
       like: [
-        { a: { like: 'string', show: { one: 'x' } } },
-        { b: { like: 'string', show: { one: 'y' } } },
+        { a: { like: 'string', tour: { one: 'x' } } },
+        { b: { like: 'string', tour: { one: 'y' } } },
       ],
     } satisfies Form
 
-    const read = readShow(both)
+    const read = readTour(both)
 
     expect(read.miss).toHaveLength(1)
     expect(read.miss[0]!.name).toBe('one')
@@ -366,7 +366,7 @@ describe('readShow, unions', () => {
   })
 
   it('falls back to the first member when nothing declares it', () => {
-    const read = readShow({
+    const read = readTour({
       form: 'form',
       name: 'neither',
       like: [
@@ -379,12 +379,12 @@ describe('readShow, unions', () => {
   })
 })
 
-describe('readShow, refusing a value that disagrees with its field', () => {
+describe('readTour, refusing a value that disagrees with its field', () => {
   it('reports a wrong primitive type', () => {
-    const read = readShow({
+    const read = readTour({
       form: 'form',
       name: 'wrong',
-      like: { weight: { like: 'number', show: { one: 'heavy' } } },
+      like: { weight: { like: 'number', tour: { one: 'heavy' } } },
     } satisfies Form)
 
     expect(read.miss).toHaveLength(1)
@@ -393,14 +393,14 @@ describe('readShow, refusing a value that disagrees with its field', () => {
   })
 
   it('reports a value outside a take', () => {
-    const read = readShow({
+    const read = readTour({
       form: 'form',
       name: 'wrong',
       like: {
         status: {
           like: 'string',
           take: ['candidate', 'accepted'],
-          show: { one: 'rejected' },
+          tour: { one: 'rejected' },
         },
       },
     } satisfies Form)
@@ -410,10 +410,10 @@ describe('readShow, refusing a value that disagrees with its field', () => {
   })
 
   it('reports an array on a field that is not a list', () => {
-    const read = readShow({
+    const read = readTour({
       form: 'form',
       name: 'wrong',
-      like: { name: { like: 'string', show: { one: ['a', 'b'] } } },
+      like: { name: { like: 'string', tour: { one: ['a', 'b'] } } },
     } satisfies Form)
 
     expect(read.miss.some(one => one.note.includes('not a list'))).toBe(
@@ -422,7 +422,7 @@ describe('readShow, refusing a value that disagrees with its field', () => {
   })
 
   it('checks every element of a list against its take', () => {
-    const read = readShow({
+    const read = readTour({
       form: 'form',
       name: 'wrong',
       like: {
@@ -430,7 +430,7 @@ describe('readShow, refusing a value that disagrees with its field', () => {
           like: 'string',
           list: true,
           take: ['latin', 'greek'],
-          show: { one: ['latin', 'runic'] },
+          tour: { one: ['latin', 'runic'] },
         },
       },
     } satisfies Form)
@@ -445,22 +445,22 @@ describe('readShow, refusing a value that disagrees with its field', () => {
    * example, so an unknown type name is left alone.
    */
   it('leaves a Form reference alone rather than guessing at it', () => {
-    const read = readShow({
+    const read = readTour({
       form: 'form',
       name: 'ref',
-      like: { at: { like: 'some_other_form', show: { one: { id: 'x' } } } },
+      like: { at: { like: 'some_other_form', tour: { one: { id: 'x' } } } },
     } satisfies Form)
 
     expect(read.miss).toEqual([])
   })
 
   it('checks a base as well as a show', () => {
-    const read = readShow({
+    const read = readTour({
       form: 'form',
       name: 'wrong',
       like: {
         weight: { like: 'number', base: 'heavy' },
-        name: { like: 'string', show: { one: 'Inter' } },
+        name: { like: 'string', tour: { one: 'Inter' } },
       },
     } satisfies Form)
 
@@ -470,12 +470,12 @@ describe('readShow, refusing a value that disagrees with its field', () => {
   /* Everything wrong, not the first thing wrong, so a caller fixes
    * them in one pass. */
   it('reports every fault rather than the first', () => {
-    const read = readShow({
+    const read = readTour({
       form: 'form',
       name: 'wrong',
       like: {
-        a: { like: 'number', show: { one: 'no' } },
-        b: { like: 'boolean', show: { one: 'no' } },
+        a: { like: 'number', tour: { one: 'no' } },
+        b: { like: 'boolean', tour: { one: 'no' } },
       },
     } satisfies Form)
 
@@ -488,7 +488,7 @@ describe('mark', () => {
     form: 'form',
     name: 'marked',
     like: {
-      name: { like: 'string', show: { one: 'Inter' } },
+      name: { like: 'string', tour: { one: 'Inter' } },
       origin: {
         like: 'string',
         base: 'natural',
@@ -511,14 +511,14 @@ describe('mark', () => {
    * meant.
    */
   it('omits an internal field from the example', () => {
-    const made = readShow(form).case[0]!.base as Record<string, unknown>
+    const made = readTour(form).case[0]!.base as Record<string, unknown>
 
     expect(made).toEqual({ name: 'Inter', origin: 'natural' })
     expect('secret' in made).toBe(false)
   })
 
   it('keeps a deprecated field, because it still works', () => {
-    const made = readShow(form).case[0]!.base as Record<string, unknown>
+    const made = readTour(form).case[0]!.base as Record<string, unknown>
 
     expect(made.origin).toBe('natural')
   })
@@ -569,10 +569,10 @@ describe('mark', () => {
       form: 'form',
       name: 'hidden',
       mark: [{ form: 'internal' }],
-      like: { name: { like: 'string', show: { one: 'x' } } },
+      like: { name: { like: 'string', tour: { one: 'x' } } },
     } satisfies Form
 
-    expect(readShow(hidden).case).toEqual([])
+    expect(readTour(hidden).case).toEqual([])
   })
 })
 
