@@ -45,6 +45,59 @@ export type Book = {
 export type Make = Form | Flow | Fold | Hash | List | Seed
 
 /**
+ * An annotation on a shape or a field. Order is not meaningful and a
+ * thing may carry several: a field can be deprecated AND experimental
+ * without either needing to know about the other, which is the whole
+ * reason this is a list of tagged records rather than a boolean per
+ * idea.
+ *
+ * A CLOSED VOCABULARY, deliberately. An open `form: string` would let
+ * anybody write a mark nothing renders, which is a comment with extra
+ * syntax. Adding a kind is a one-line edit here, and that edit is the
+ * moment somebody decides how it is shown.
+ *
+ * `form` is the discriminant, as it is on every tagged union in this
+ * codebase.
+ */
+export type Mark =
+  /**
+   * Going away. `note` says what to use instead, which is the half
+   * that makes a deprecation actionable rather than alarming.
+   */
+  | { form: 'deprecated'; note?: string }
+  /**
+   * Real, and may change without notice. Outside whatever stability
+   * contract the surface publishes.
+   */
+  | { form: 'experimental'; note?: string }
+  /**
+   * Real, and NOT part of the public surface. A documentation
+   * generator omits it entirely rather than showing it as available,
+   * so the docs and the promise stay the same thing.
+   */
+  | { form: 'internal'; note?: string }
+  /** When it appeared. `note` carries the version or the date. */
+  | { form: 'since'; note?: string }
+
+/**
+ * The example values a field takes, keyed by EXAMPLE NAME.
+ *
+ * Every field mentioning a name contributes its value to that named
+ * example, and a field that does not mention it falls back to `base`,
+ * so each named example composes into a COMPLETE object rather than a
+ * fragment. That is the difference between an example somebody can
+ * paste and one they have to finish.
+ *
+ * The example lives beside the field it varies, which is the same
+ * argument that puts `note` there: a shape and its documentation move
+ * together or they drift.
+ *
+ * See `readShow` in `./show` for the composition rules, which cover
+ * lists, unions and defaults.
+ */
+export type Show = Record<string, unknown>
+
+/**
  * A `Form` declares a data shape. Identity is the
  * `(cast, call?, case?)` triple.
  *
@@ -75,6 +128,20 @@ export type Form = {
   mold?: Mold | Mold[]
   /** Output sub-directory under `MakeTake.link`. */
   save?: string
+  /**
+   * Markdown. What this shape is, and when a caller reaches for it.
+   *
+   * BESIDE THE THING IT DESCRIBES, so a change meets its own
+   * documentation in the same diff. Prose kept in another file goes
+   * stale without anybody noticing.
+   */
+  note?: string
+  /**
+   * Annotations: deprecated, experimental, internal, since. See
+   * `Mark`. Marked `internal` means a public reference omits it
+   * entirely, so the docs and the promise stay the same thing.
+   */
+  mark?: Mark[]
 }
 
 /**
@@ -116,6 +183,14 @@ export type Flow = {
   mold?: Mold | Mold[]
   /** Output sub-directory under `MakeTake.link`. */
   save?: string
+  /**
+   * Markdown. What this function does.
+   *
+   * BESIDE THE THING IT DESCRIBES, so a change meets its own
+   * documentation in the same diff. Prose kept in another file goes
+   * stale without anybody noticing.
+   */
+  note?: string
 }
 
 /**
@@ -130,6 +205,14 @@ export type Fold = {
   cast: Cast[]
   /** @internal codegen output path. */
   save?: string
+  /**
+   * Markdown. What this tree renders.
+   *
+   * BESIDE THE THING IT DESCRIBES, so a change meets its own
+   * documentation in the same diff. Prose kept in another file goes
+   * stale without anybody noticing.
+   */
+  note?: string
 }
 
 /**
@@ -143,6 +226,14 @@ export type Hash = {
   load?: Record<string, unknown>
   /** @internal codegen output path. */
   save?: string
+  /**
+   * Markdown. What this record holds.
+   *
+   * BESIDE THE THING IT DESCRIBES, so a change meets its own
+   * documentation in the same diff. Prose kept in another file goes
+   * stale without anybody noticing.
+   */
+  note?: string
 }
 
 /**
@@ -156,6 +247,14 @@ export type List = {
   load?: unknown[]
   /** @internal codegen output path. */
   save?: string
+  /**
+   * Markdown. What this list enumerates.
+   *
+   * BESIDE THE THING IT DESCRIBES, so a change meets its own
+   * documentation in the same diff. Prose kept in another file goes
+   * stale without anybody noticing.
+   */
+  note?: string
 }
 
 /**
@@ -179,6 +278,14 @@ export type Seed = {
   /** Per-field instance values. */
   cast: Record<string, Cast>
   mark?: string
+  /**
+   * Markdown. What this record is an instance of.
+   *
+   * BESIDE THE THING IT DESCRIBES, so a change meets its own
+   * documentation in the same diff. Prose kept in another file goes
+   * stale without anybody noticing.
+   */
+  note?: string
 }
 
 /**
@@ -207,6 +314,29 @@ export type Link = {
   base?: unknown
   take?: string[] | unknown[]
   list?: boolean
+  /**
+   * Markdown. What this field is, in prose, for whoever reads the
+   * docs rather than the declaration.
+   *
+   * BESIDE THE FIELD, not in a document elsewhere, so a change to the
+   * shape meets its own documentation in the same diff. A description
+   * kept in another file is a description that goes stale without
+   * anybody noticing.
+   */
+  note?: string
+  /**
+   * Example values for this field, keyed by example name. See `Show`.
+   *
+   * Composed against `base`, so a name mentioned by one field still
+   * produces a complete object: every other field falls back to its
+   * default. `readShow` in `./show` does the composing.
+   */
+  show?: Show
+  /**
+   * Annotations: deprecated, experimental, internal, since. See
+   * `Mark`.
+   */
+  mark?: Mark[]
   /**
    * Validators / normalizers applied to this field's value.
    * Inside a Mold's `hook`, the field is bound as `self`

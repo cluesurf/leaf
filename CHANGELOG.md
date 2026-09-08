@@ -1,5 +1,64 @@
 # Changelog
 
+## 0.9.4
+
+### Added
+
+The documentation layer. Three optional fields, all additive, none of
+which reach the codegen path: a Form annotated to the hilt emits
+byte-identical TypeScript to the same Form with nothing on it, which
+is what makes annotating an existing schema safe to do a field at a
+time.
+
+- **`note`** on `Form`, `Link`, `Flow`, `Fold`, `Hash`, `List` and
+  `Seed`. Markdown, rendered beside the thing it describes. It lives
+  next to the shape so a change meets its own documentation in the
+  same diff; prose kept in another file goes stale without anybody
+  noticing.
+
+- **`show`** on `Link`. Example values keyed by example NAME. Every
+  field mentioning a name contributes to that example and every other
+  field falls back to `base`, so each named example composes into a
+  COMPLETE object rather than a fragment. `readShow(form)` does the
+  composing and returns the cases together with everything wrong with
+  them.
+
+  Four rules, each pinned by a test:
+
+  - `show[name] ?? base ?? a value synthesised from like / take`
+  - on `list: true`, `show` is ONE ELEMENT and the walker wraps it; an
+    array passes through, which is how a caller says "these exact
+    elements"
+  - a union selects the member whose fields declare the name;
+    declaring it in several is reported rather than guessed at, since
+    picking silently makes an example right about its values and wrong
+    about its shape
+  - a value that disagrees with its own `like`, `take` or `list` is
+    reported, because an example that contradicts its schema is worse
+    than none
+
+  A discriminant needs no annotation: `form: { take: ['create'] }` has
+  a single-value `take`, so synthesis emits `'create'` and the union
+  member labels itself.
+
+- **`mark`** on `Form` and `Link`. A list of tagged annotations, so a
+  field can be deprecated AND experimental without either knowing
+  about the other. A closed vocabulary — `deprecated`, `experimental`,
+  `internal`, `since` — because an open `form: string` lets anybody
+  write a mark nothing renders, which is a comment with extra syntax.
+  `readMark(form, kind)` returns every one of a kind by dotted path.
+
+  `internal` is load bearing rather than decorative: a field carrying
+  it is omitted from composed examples entirely, so the examples and
+  the public promise stay the same thing.
+
+  `Seed` keeps its existing `mark?: string`, which is the render cache
+  key and unrelated. Seeds take `note` only.
+
+Verified against 1,997 real Forms in `@cluesurf/base`: no throws, no
+faults, and a single grafted `show` composes a complete object from
+its siblings' defaults.
+
 ## 0.9.0
 
 ### Breaking

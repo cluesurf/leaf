@@ -250,9 +250,26 @@ function renderShape(
   const fields: string[] = []
   for (const [name, link] of Object.entries(shape)) {
     const optional = link.need === false ? '?' : ''
-    fields.push(`${name}${optional}: ${renderLink(link, ctx)}`)
+    fields.push(
+      `${propertyName(name)}${optional}: ${renderLink(link, ctx)}`,
+    )
   }
   return `{ ${fields.join('; ')} }`
+}
+
+/** Matches a name TypeScript accepts unquoted in a type literal. */
+const IDENTIFIER_PATTERN = /^[A-Za-z_$][A-Za-z0-9_$]*$/
+
+/**
+ * A field name as TypeScript will parse it: bare when it is a valid
+ * identifier, single-quoted otherwise. Kebab-case keys (`iso639-1`,
+ * the URL-facing spelling) emitted bare produced syntactically invalid
+ * type files.
+ */
+function propertyName(name: string): string {
+  return IDENTIFIER_PATTERN.test(name)
+    ? name
+    : `'${name.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`
 }
 
 function renderLink(link: Link, ctx: RenderContext): string {

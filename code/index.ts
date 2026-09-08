@@ -1,5 +1,12 @@
 export * from './form'
 export * from './tool'
+/**
+ * Named examples and annotations, read off a Form's own `show` and
+ * `mark`. A documentation generator's entry point; nothing in the
+ * codegen or runtime path reads these.
+ */
+export { readShow, readMark } from './show'
+export type { ShowCase, ShowMiss, ShowRead } from './show'
 export { Base } from './base'
 export type {
   BareFlowName,
