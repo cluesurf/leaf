@@ -31,8 +31,15 @@ export type {
   CaseTestArm,
   CaseValueArm,
   Cast,
+  // `find` and `code` are primitives like the rest and were the two
+  // missing from this list. A consumer resolving finds against its own
+  // data hooks needs to name them, and with neither entry point
+  // exposing them it had to derive them from the return type of
+  // `extractFinds`.
+  CodePrimitive,
   ControlFlow,
   FieldSeg,
+  FindPrimitive,
   FoldPrimitive,
   ForkPrimitive,
   HashPrimitive,
